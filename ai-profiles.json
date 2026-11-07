@@ -1,0 +1,45 @@
+{
+  "updatedAt": "2026-11-07T18:47:08.371Z",
+  "activeProfileId": "prof_1793898298436_8rn4",
+  "profiles": [
+    {
+      "id": "prof_1793935117849_kmbc",
+      "profileId": "prof_1793935117849_kmbc",
+      "profileName": "Custom API • google/gemma-4-31b-it",
+      "provider": "custom",
+      "apiKey": "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",
+      "model": "meta/llama2-70b",
+      "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
+      "customPrompt": "",
+      "useLocalProxy": true,
+      "autoFallbackLocal": true,
+      "updatedAt": "2026-11-06T03:46:40.311Z"
+    },
+    {
+      "id": "prof_1793934295030_r1r6",
+      "profileId": "prof_1793934295030_r1r6",
+      "profileName": "Custom API • deepseek-chat",
+      "provider": "custom",
+      "apiKey": "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",
+      "model": "deepseek-chat",
+      "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
+      "customPrompt": "",
+      "useLocalProxy": true,
+      "autoFallbackLocal": true,
+      "updatedAt": "2026-11-06T03:04:55.031Z"
+    },
+    {
+      "id": "prof_1793898298436_8rn4",
+      "profileId": "prof_1793898298436_8rn4",
+      "profileName": "Gemini • gemini-3.5-flash",
+      "provider": "gemini",
+      "apiKey": "AQ.Ab8RN6IzFx5UF4agZ2hYdLX7syF07SYT1yuHuevTwMUf3Is7Ng",
+      "model": "gemini-3.1-flash-live-preview",
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta",
+      "customPrompt": "",
+      "useLocalProxy": false,
+      "autoFallbackLocal": true,
+      "updatedAt": "2026-11-07T18:47:08.371Z"
+    }
+  ]
+}
