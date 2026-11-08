@@ -3350,7 +3350,7 @@ async function callExternalLLMAPI(conversationMessages) {
     orderId: relevantOrderId || null,
     followUps: parsed.followUps,
     agentTrace: agentTrace.steps.length > 0 ? agentTrace : null,
-    sourceBadge: `🟢 ${badgeLabel} (${lastMeta.model})${lastMeta.viaProxy ? ' • Proxy' : ''}${stageSuffix}`
+    sourceBadge: `${badgeLabel} (${lastMeta.model})${lastMeta.viaProxy ? ' • Proxy' : ''}${stageSuffix}`
   };
 }
 

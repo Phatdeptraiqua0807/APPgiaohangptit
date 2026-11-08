@@ -145,7 +145,7 @@ function renderCatalogManagerView() {
     ? `🔗 Đang ghi trực tiếp: ${DB.linkedFileName}`
     : DB.fileSyncStatus === 'server-api'
       ? '🟢 Đang đồng bộ trực tiếp database.json'
-      : '💾 Đã lưu vĩnh viễn tự động';
+      : '💾 Đã lưu  tự động';
 
   const tabs = [
     ['items', '📦', 'Mặt hàng', items.length],
@@ -170,7 +170,7 @@ function renderCatalogManagerView() {
           <div>
             <div class="db-hero-badge">${syncLabel}</div>
             <div class="db-hero-title">Mặt hàng • Cửa hàng • Danh mục • Mã giảm giá</div>
-            <div class="db-hero-sub">Tạo thủ công hoặc nhờ AI tạo hàng loạt — mọi thay đổi lưu vĩnh viễn</div>
+            <div class="db-hero-sub">Tạo thủ công hoặc nhờ AI tạo hàng loạt — mọi thay đổi lưu </div>
           </div>
           <div class="db-hero-actions">
             <button class="db-btn-white" onclick="switchCatalogTab('ai')">✨ AI tạo hàng</button>
@@ -375,11 +375,17 @@ function renderDbmBulkBar(visibleList) {
     return `
       <div class="dbm-bulk-bar active" role="region" aria-label="Thanh công cụ mặt hàng đã chọn">
         <div class="dbm-bulk-bar-inner">
-          <div class="dbm-bulk-left">
-            <label class="dbm-bulk-selectall">
-              <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisible(this.checked)">
-              <span>Đã chọn <strong>${n}</strong> mặt hàng</span>
-            </label>
+          <div class="dbm-bulk-top-row">
+            <div class="dbm-bulk-left">
+              <label class="dbm-bulk-selectall">
+                <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisible(this.checked)">
+                <span>Đã chọn <strong>${n}</strong> mặt hàng</span>
+              </label>
+            </div>
+            <div class="dbm-bulk-top-actions">
+              <button class="danger" onclick="dbmBulkDelete()" title="Xóa các món đã chọn">🗑️ Xóa</button>
+              <button class="dbm-bulk-clear-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+            </div>
           </div>
           <div class="dbm-bulk-actions">
             <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('items')" title="Dùng AI đánh giá các món đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
@@ -392,8 +398,6 @@ function renderDbmBulkBar(visibleList) {
             <button onclick="dbmOpenBulkModal('vouchers')">🎟️ Mã giảm</button>
             <button onclick="dbmBulkStock(true)">✅ Mở bán</button>
             <button onclick="dbmBulkStock(false)">⛔ Tạm hết</button>
-            <button class="danger" onclick="dbmBulkDelete()">🗑️ Xóa</button>
-            <button class="dbm-bulk-clear-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
           </div>
         </div>
       </div>
@@ -544,7 +548,7 @@ function dbmPruneSelection() {
 function handleDeleteItem(itemId) {
   const item = DB.getItemById(itemId);
   if (!item) return;
-  if (!confirm(`Xóa vĩnh viễn mặt hàng "${item.name}" khỏi Database?`)) return;
+  if (!confirm(`Xóa  mặt hàng "${item.name}" khỏi Database?`)) return;
   const res = DB.deleteItem(itemId);
   if (res.ok) {
     dbmPruneSelection();
@@ -701,7 +705,7 @@ function dbmBulkStock(inStock) {
 
 function dbmBulkDelete() {
   const n = dbmSelectedIds.size;
-  if (!n || !confirm(`Xóa vĩnh viễn ${n} mặt hàng đã chọn? Không thể hoàn tác.`)) return;
+  if (!n || !confirm(`Xóa  ${n} mặt hàng đã chọn? Không thể hoàn tác.`)) return;
   const res = DB.deleteItems([...dbmSelectedIds]);
   dbmSelectedIds.clear();
   showToast('deleteRegular', `Đã xóa ${res.count} mặt hàng`);

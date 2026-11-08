@@ -2,7 +2,7 @@
    ptitngon - Unified JSON Database Engine (js/database.js)
    Quản lý toàn diện Mặt hàng (Items), Loại mặt hàng tùy chỉnh (Categories),
    Cửa hàng (Restaurants), Hồ sơ người dùng (Users: SĐT, Địa chỉ, Đơn đã đặt).
-   Lưu trữ vĩnh viễn tự động (LocalStorage + Đồng bộ trực tiếp file database.json)
+   Lưu trữ  tự động (LocalStorage + Đồng bộ trực tiếp file database.json)
    ========================================================================== */
 
 const DB_STORAGE_KEY = 'ptitngon_complete_db_v2';
@@ -96,7 +96,7 @@ const DB = {
     if (typeof window !== 'undefined' && window.__DATABASE_SEED__) {
       try {
         loadedFromSeed = JSON.parse(JSON.stringify(window.__DATABASE_SEED__));
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // 1. Dò tìm Server Backend (/api/database): dùng được chung cho cả start-server.bat (:3000), Live Server (:5500) và file:///
@@ -112,7 +112,7 @@ const DB = {
       try {
         const hasAbort = typeof AbortController === 'function';
         const ctrl = hasAbort ? new AbortController() : null;
-        const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) {} }, 1600) : null;
+        const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) { } }, 1600) : null;
         const apiRes = await fetch(`${origin}/api/database`, {
           method: 'GET',
           cache: 'no-store',
@@ -141,7 +141,7 @@ const DB = {
         if (jsonRes && jsonRes.ok) {
           loadedFromFetch = await jsonRes.json();
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // 3. Giải quyết xung đột dữ liệu thông minh giữa các nguồn (API vs File đĩa vs LocalStorage vs Seed)
@@ -163,14 +163,14 @@ const DB = {
       } else {
         this.data = loadedFromApi;
         // Cập nhật lại localStorage để tab này không còn bị cũ
-        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(this.data, null, 2)); } catch (_) {}
+        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(this.data, null, 2)); } catch (_) { }
       }
     } else if (diskCand) {
       // Server không chạy: đối chiếu giữa file đĩa (database.json / food-data.js) và localStorage
       // Nếu file đĩa mới hơn hoặc có nhiều món hơn -> lấy file đĩa và làm mới localStorage
       if (diskItems > localItems || diskTime > localTime + 1200 || localTime === 0 || !loadedFromLocal) {
         this.data = diskCand;
-        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(this.data, null, 2)); } catch (_) {}
+        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(this.data, null, 2)); } catch (_) { }
       } else {
         this.data = loadedFromLocal;
       }
@@ -386,7 +386,7 @@ const DB = {
     }
   },
 
-  // ── 3. Lưu vĩnh viễn Database (LocalStorage + File .json trực tiếp) ──
+  // ── 3. Lưu  Database (LocalStorage + File .json trực tiếp) ──
   save(reason = 'update', skipTimestamp = false) {
     if (!this.data) return;
     if (!skipTimestamp) {
@@ -396,7 +396,7 @@ const DB = {
 
     const serialized = JSON.stringify(this.data, null, 2);
 
-    // A. Lưu vĩnh viễn ngay lập tức vào LocalStorage
+    // A. Lưu  ngay lập tức vào LocalStorage
     try {
       localStorage.setItem(DB_STORAGE_KEY, serialized);
     } catch (e) {
@@ -564,7 +564,7 @@ const DB = {
       this._ensureSchemaIntegrity();
       this.syncToGlobals();
       this.save('import_json_file');
-      return { ok: true, message: 'Đã nhập và lưu vĩnh viễn dữ liệu từ file .json!' };
+      return { ok: true, message: 'Đã nhập và lưu  dữ liệu từ file .json!' };
     } catch (err) {
       return { ok: false, message: 'File JSON không hợp lệ: ' + err.message };
     }
@@ -1177,7 +1177,7 @@ const DB = {
     return true;
   },
 
-  // Ghi nhận đơn hàng vào đúng hồ sơ người dùng & lưu vĩnh viễn
+  // Ghi nhận đơn hàng vào đúng hồ sơ người dùng & lưu 
   recordOrderForCurrentUser(newOrder) {
     const user = this.getCurrentUser();
     if (!user) return;
@@ -1308,7 +1308,7 @@ const DB = {
       // Nếu server có dữ liệu mới hơn hoặc số lượng món khác biệt (được sửa từ tab/cách mở khác)
       if (remoteUpdated > currentUpdated || (remoteUpdated === currentUpdated && remoteItemsCount !== currentItemsCount) || (remoteItemsCount > currentItemsCount)) {
         this.data = remote;
-        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(remote, null, 2)); } catch (_) {}
+        try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(remote, null, 2)); } catch (_) { }
         this.syncToGlobals();
         if (typeof window.renderFoodItems === 'function') {
           window.renderFoodItems();
@@ -1325,7 +1325,7 @@ const DB = {
         console.log('🔄 Đã tự động cập nhật database mới nhất từ máy chủ (Focus sync)!');
         return true;
       }
-    } catch (_) {}
+    } catch (_) { }
     return false;
   }
 };
@@ -1354,7 +1354,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
           if (typeof window.renderRestaurantsSection === 'function') window.renderRestaurantsSection();
           if (typeof window.refreshDbmView === 'function') window.refreshDbmView();
         }
-      } catch (_) {}
+      } catch (_) { }
     }
   });
 }

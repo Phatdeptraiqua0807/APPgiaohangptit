@@ -10,8 +10,9 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=5.5">
-  <link rel="stylesheet" href="css/db-manager.css?v=4.3">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/style.css?v=6.7">
+  <link rel="stylesheet" href="css/db-manager.css?v=4.4">
 </head>
 <body>
 
@@ -216,6 +217,11 @@
     <div class="floating-topbar-inner" id="floating-topbar-inner"></div>
   </div>
 
+  <!-- Floating Search Bar (Hiện ở đỉnh màn hình dạng viên thuốc nổi chỉ khi lướt qua search-view-header) -->
+  <div class="floating-search-bar" id="floating-search-bar" aria-hidden="true">
+    <div class="floating-search-inner" id="floating-search-inner"></div>
+  </div>
+
   <!-- Floating Cart Bar (Hiện khi giỏ có món) -->
   <div class="floating-cart-bar" id="floating-cart-bar" style="display: none;" onclick="openCartView()">
     <div class="floating-cart-left">
@@ -245,22 +251,30 @@
     </div>
   </div>
 
+  <!-- Search & Filter Modal Overlay -->
+  <div class="modal-overlay search-filter-overlay" id="search-filter-overlay" onclick="closeSearchFilterModalOnBackdrop(event)">
+    <div class="bottom-sheet search-filter-bottom-sheet" id="search-filter-bottom-sheet">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div class="toast-container" id="toast-container"></div>
 
   <!-- JavaScript -->
   <script src="js/fluent-icons.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="js/food-data.js"></script>
   <script src="js/database.js"></script>
-  <script src="js/app.js?v=5.2"></script>
-  <script src="js/catalog-profile.js"></script>
+  <script src="js/app.js?v=5.9"></script>
+  <script src="js/catalog-profile.js?v=4.2"></script>
   <script src="js/ai-chat.js?v=4.2"></script>
   <script src="js/dish-detail.js?v=4.2"></script>
   <script src="js/user-nutrition.js"></script>
   <script src="js/qr-payment.js"></script>
   <script src="js/db-manager-core.js?v=4.0"></script>
-  <script src="js/db-manager-ui.js?v=4.0"></script>
-  <script src="js/db-manager-editors.js?v=4.0"></script>
+  <script src="js/db-manager-ui.js?v=4.1"></script>
+  <script src="js/db-manager-editors.js?v=4.1"></script>
   <script src="js/db-manager-ai.js?v=4.0"></script>
   <script src="js/db-manager-audit.js?v=4.0"></script>
 

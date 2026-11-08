@@ -94,10 +94,10 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
 
   dbmOpenSheet(`
     ${dbmSheetHeader(
-      '📦',
-      editing ? 'Chỉnh sửa mặt hàng' : 'Thêm mặt hàng mới',
-      '<button type="button" class="dbm-expand-all-btn" onclick="dbmToggleAllSections(this)">↕ Mở rộng tất cả</button>'
-    )}
+    '📦',
+    editing ? 'Chỉnh sửa mặt hàng' : 'Thêm mặt hàng mới',
+    '<button type="button" class="dbm-expand-all-btn" onclick="dbmToggleAllSections(this)">↕ Mở rộng tất cả</button>'
+  )}
     <div class="delivery-modal-body dbm-editor-body">
       <details class="dbm-section" open>
         <summary><span>📋 Thông tin cơ bản</span></summary>
@@ -513,13 +513,13 @@ async function dbmPreviewGoogleImagesForEditor() {
       </div>
       <div class="dbm-google-thumbs-grid">
         ${dbmEditorGoogleCandidates.map((c, idx) => {
-          const badge = typeof dbmImageSourceLabel === 'function' ? dbmImageSourceLabel(c.provider || res.source) : '';
-          return `
+      const badge = typeof dbmImageSourceLabel === 'function' ? dbmImageSourceLabel(c.provider || res.source) : '';
+      return `
           <button type="button" class="dbm-google-thumb-btn" onclick="dbmPickGooglePreviewResult(${idx})" title="Dùng ảnh #${idx + 1} (${escapeHtml(badge)})">
             <img src="${escapeHtml(c.thumbUrl || c.url)}" alt="Ảnh #${idx + 1}" loading="lazy" onerror="this.closest('button').style.opacity='0.35'">
             <span class="dbm-google-rank-badge">#${idx + 1}${badge ? ` • ${escapeHtml(badge)}` : ''}</span>
           </button>`;
-        }).join('')}
+    }).join('')}
       </div>`;
   } catch (err) {
     strip.innerHTML = `<div class="dbm-hint warn">⚠️ ${escapeHtml(err.message || 'Không tìm được ảnh')}</div>`;
@@ -828,7 +828,7 @@ function handleDeleteCategory(catId) {
     ? `Xóa danh mục theo tag "${cat.name}"? (Các mặt hàng và tag của chúng không bị ảnh hưởng)`
     : (count > 0
       ? `Danh mục "${cat.name}" đang có ${count} mặt hàng — nếu xóa, chúng sẽ chuyển sang danh mục thủ công đầu tiên. Xóa?`
-      : `Xóa vĩnh viễn danh mục "${cat.name}"?`);
+      : `Xóa  danh mục "${cat.name}"?`);
   if (!confirm(msg)) return;
   const res = DB.deleteCategory(catId);
   if (res.ok) {
@@ -869,11 +869,17 @@ function renderDbmCategoryBulkBar(visibleCats) {
     return `
       <div class="dbm-bulk-bar active" role="region" aria-label="Thanh công cụ danh mục đã chọn">
         <div class="dbm-bulk-bar-inner">
-          <div class="dbm-bulk-left">
-            <label class="dbm-bulk-selectall">
-              <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisibleCategories(this.checked)">
-              <span>Đã chọn <strong>${n}</strong> danh mục</span>
-            </label>
+          <div class="dbm-bulk-top-row">
+            <div class="dbm-bulk-left">
+              <label class="dbm-bulk-selectall">
+                <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisibleCategories(this.checked)">
+                <span>Đã chọn <strong>${n}</strong> danh mục</span>
+              </label>
+            </div>
+            <div class="dbm-bulk-top-actions">
+              <button class="danger" onclick="dbmBulkDeleteCategories()" title="Xóa các danh mục đã chọn">🗑️ Xóa</button>
+              <button class="dbm-bulk-clear-btn" onclick="dbmClearCategorySelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+            </div>
           </div>
           <div class="dbm-bulk-actions">
             <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('categories')" title="Dùng AI đánh giá các danh mục đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
@@ -881,8 +887,6 @@ function renderDbmCategoryBulkBar(visibleCats) {
             <button onclick="dbmBulkCategoriesHome(false)">🙈 Ẩn lưới 2 dòng</button>
             <button onclick="dbmBulkCategoriesResSection(true)">🍽️ Bật dãy quán</button>
             <button onclick="dbmBulkCategoriesResSection(false)">➖ Tắt dãy quán</button>
-            <button class="danger" onclick="dbmBulkDeleteCategories()">🗑️ Xóa</button>
-            <button class="dbm-bulk-clear-btn" onclick="dbmClearCategorySelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
           </div>
         </div>
       </div>
@@ -1248,17 +1252,21 @@ function renderDbmStoreBulkBar(visibleStores) {
     return `
       <div class="dbm-bulk-bar active" role="region" aria-label="Thanh công cụ nhà hàng đã chọn">
         <div class="dbm-bulk-bar-inner">
-          <div class="dbm-bulk-left">
-            <label class="dbm-bulk-selectall">
-              <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisibleStores(this.checked)">
-              <span>Đã chọn <strong>${n}</strong> nhà hàng</span>
-            </label>
+          <div class="dbm-bulk-top-row">
+            <div class="dbm-bulk-left">
+              <label class="dbm-bulk-selectall">
+                <input type="checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="dbmSelectAllVisibleStores(this.checked)">
+                <span>Đã chọn <strong>${n}</strong> nhà hàng</span>
+              </label>
+            </div>
+            <div class="dbm-bulk-top-actions">
+              <button class="danger" onclick="dbmBulkDeleteStores()" title="Xóa các nhà hàng đã chọn">🗑️ Xóa</button>
+              <button class="dbm-bulk-clear-btn" onclick="dbmClearStoreSelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+            </div>
           </div>
           <div class="dbm-bulk-actions">
             <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('stores')" title="Dùng AI đánh giá các nhà hàng đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
             <button onclick="dbmBulkStoresFreeship()">🚚 Đặt Freeship 0đ</button>
-            <button class="danger" onclick="dbmBulkDeleteStores()">🗑️ Xóa</button>
-            <button class="dbm-bulk-clear-btn" onclick="dbmClearStoreSelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
           </div>
         </div>
       </div>

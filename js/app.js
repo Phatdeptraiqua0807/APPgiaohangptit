@@ -78,7 +78,35 @@ let activeFilters = {
   freeship: false,
   budget: false,
   voucher: false,
+  area: 'all', // 'all' | 'near_ptit' | 'ao_sen' | 'nguyen_van_loc' | 'van_quan' | 'tran_phu'
+  promo: 'all', // 'all' | 'freeship' | 'voucher' | 'flash_sale' | 'partner'
+  shipping: 'all', // 'all' | 'ptit_express' | 'grab_express' | 'shopeefood' | 'be_delivery'
+  priceRange: 'all', // 'all' | 'under30' | '30to60' | '60to100' | 'above100' | 'custom'
+  minPrice: null,
+  maxPrice: null,
+  ratingMin: 0
 };
+let tempFilters = { ...activeFilters };
+
+// ── Geolocation & Distance Calculation (Hà Đông / PTIT Center: 20.9806, 105.7878) ──
+function calculateHaversineKm(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 0.5;
+  const R = 6371; // Bán kính Trái Đất (km)
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 10) / 10;
+}
+
+function getRestaurantDistance(r) {
+  if (userDeliveryInfo && userDeliveryInfo.lat && userDeliveryInfo.lng && r && r.lat && r.lng) {
+    return calculateHaversineKm(userDeliveryInfo.lat, userDeliveryInfo.lng, r.lat, r.lng);
+  }
+  return typeof r.distance === 'number' ? r.distance : 0.5;
+}
 let selectedVisualSuggestion = null;
 
 // ── Global View Scroll Persistence (Mỗi tab độc lập hoàn toàn, không liên kết scroll) ──
@@ -114,10 +142,49 @@ function updateFloatingTopBar() {
 
   const scrollY = window.scrollY || window.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || 0;
 
+  // ── Đồng bộ Floating Search Bar dạng viên thuốc nổi chỉ khi lướt qua search-view-header ──
+  const floatingSearchBar = document.getElementById('floating-search-bar');
+  const isSearchView = currentView === 'search';
+  const inPageSearchHeader = document.querySelector('.search-view-header');
+
+  if (floatingSearchBar) {
+    if (isSearchView && inPageSearchHeader && scrollY > 45) {
+      if (typeof initFloatingSearchBar === 'function') initFloatingSearchBar();
+      floatingSearchBar.classList.add('visible');
+      floatingSearchBar.setAttribute('aria-hidden', 'false');
+
+      const floatingInput = document.getElementById('floating-search-input');
+      const clearBtn = document.getElementById('floating-search-clear-btn');
+      const filterBtn = document.getElementById('floating-search-filter-btn');
+      if (floatingInput && floatingInput.value !== searchQuery) {
+        floatingInput.value = searchQuery;
+      }
+      if (clearBtn) {
+        clearBtn.style.display = searchQuery ? 'flex' : 'none';
+      }
+      if (filterBtn) {
+        const hasActiveFilter = (activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0);
+        filterBtn.classList.toggle('active', hasActiveFilter);
+      }
+    } else {
+      floatingSearchBar.classList.remove('visible');
+      floatingSearchBar.setAttribute('aria-hidden', 'true');
+    }
+  }
+
   // Cập nhật cả class is-scrolled trên in-page header nếu có
   if (inPageHeader && inPageHeader.classList) {
     if (scrollY > 20) inPageHeader.classList.add('is-scrolled');
     else inPageHeader.classList.remove('is-scrolled');
+  }
+
+  // Ở điện thoại (< 768px), page-nav-header gốc đã hiển thị tốt nên không dùng floating-topbar-inner
+  if (window.innerWidth < 768) {
+    if (floatingBar) {
+      floatingBar.classList.remove('visible');
+      floatingBar.setAttribute('aria-hidden', 'true');
+    }
+    return;
   }
 
   // Đổi chỗ mượt mà với dbm-bulk-bar khi được active trong cơ sở dữ liệu
@@ -155,6 +222,57 @@ function updateHeaderScrolledState() {
   updateFloatingTopBar();
 }
 
+// ── Khởi tạo thanh Search dạng nổi (Floating Search Bar) ──
+function initFloatingSearchBar() {
+  const inner = document.getElementById('floating-search-inner');
+  if (!inner || inner.dataset.initialized) return;
+  inner.dataset.initialized = 'true';
+  const hasActiveFilter = (activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0);
+  inner.innerHTML = `
+    <button class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
+      ${FluentIcons.arrowLeft}
+    </button>
+    <div class="search-view-input-box">
+      <span class="search-icon">${FluentIcons.searchRegular}</span>
+      <input 
+        type="text" 
+        placeholder="Tìm món ngon, quán ăn, loại mặt hàng..." 
+        id="floating-search-input" 
+        value="${escapeHtml(searchQuery)}"
+        autocomplete="off"
+        oninput="onFloatingSearchInputChange(this.value)"
+      >
+      <span class="search-clear-btn" id="floating-search-clear-btn" onclick="clearSearch()" style="${searchQuery ? 'display:flex;' : 'display:none;'}" title="Xóa tìm kiếm">
+        ${FluentIcons.dismiss}
+      </span>
+    </div>
+    <button class="search-filter-toggle-btn ${hasActiveFilter ? 'active' : ''}" id="floating-search-filter-btn" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
+      ${FluentIcons.filterRegular}
+    </button>
+  `;
+}
+
+function onFloatingSearchInputChange(val) {
+  searchQuery = val;
+  const inPageInput = document.getElementById('search-view-input');
+  if (inPageInput && inPageInput.value !== val) {
+    inPageInput.value = val;
+  }
+  const clearBtn = document.getElementById('floating-search-clear-btn');
+  if (clearBtn) {
+    clearBtn.style.display = val ? 'flex' : 'none';
+  }
+  const inPageClearBtn = document.querySelector('.search-view-header .search-clear-btn');
+  if (inPageClearBtn) {
+    inPageClearBtn.style.display = val ? 'flex' : 'none';
+  }
+  const desktopInput = document.getElementById('desktop-search-input');
+  if (desktopInput && desktopInput.value !== val) {
+    desktopInput.value = val;
+  }
+  updateSearchResultsOnly();
+}
+
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
   window.addEventListener('scroll', updateFloatingTopBar, { passive: true });
 }
@@ -167,12 +285,29 @@ let userDeliveryInfo = {
   address: 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội',
   shortAddress: 'PTIT Km10 Trần Phú, Hà Đông',
   label: 'PTIT Hà Đông',
-  note: 'Giao sảnh nhà A2 hoặc Cổng trường'
+  note: 'Giao sảnh nhà A2 hoặc Cổng trường',
+  lat: 20.9806,
+  lng: 105.7878
+};
+
+window.syncAppStateFromUser = function (user) {
+  if (!user) return;
+  if (user.name) userDeliveryInfo.name = user.name;
+  if (user.phone) userDeliveryInfo.phone = user.phone;
+  if (user.email) userDeliveryInfo.email = user.email;
+  if (user.address) {
+    userDeliveryInfo.address = user.address;
+    userDeliveryInfo.shortAddress = user.shortAddress || (user.address.length > 30 ? user.address.substring(0, 28) + '...' : user.address);
+  }
+  if (user.addressLabel) userDeliveryInfo.label = user.addressLabel;
+  if (user.addressNote) userDeliveryInfo.note = user.addressNote;
+  if (typeof user.lat === 'number') userDeliveryInfo.lat = user.lat;
+  if (typeof user.lng === 'number') userDeliveryInfo.lng = user.lng;
 };
 
 let savedAddressPresets = [];
 
-// ── Activity & Orders State (Đồng bộ vĩnh viễn theo từng User trong database.json) ──
+// ── Activity & Orders State (Đồng bộ  theo từng User trong database.json) ──
 let activityFilter = 'all'; // 'all' | 'delivering' | 'completed' | 'cancelled'
 let viewingOrderDetailId = null; // null: show 4-tab list; string: show full tracking detail of specific order!
 let userRatingScore = 5;
@@ -347,14 +482,14 @@ function renderHomeView() {
 
       <!-- Location -->
       <div class="location-row fade-in">
-        <div class="location-left" onclick="openDeliveryInfoModal()">
+        <div class="location-left" onclick="openDeliveryInfoModal()" title="Thay đổi địa chỉ giao hàng">
           <div class="location-icon">${FluentIcons.locationFilled}</div>
-          <div>
-            <div class="location-label">Giao đến (${escapeHtml(userDeliveryInfo.label || 'Văn phòng')})</div>
-            <div class="location-address">
+          <div class="location-text-wrap">
+            <span class="location-label">${escapeHtml(userDeliveryInfo.label || 'Giao đến')}:</span>
+            <span class="location-address">
               ${escapeHtml(userDeliveryInfo.shortAddress || userDeliveryInfo.address)}
-              <span class="location-arrow">${FluentIcons.chevronDown}</span>
-            </div>
+            </span>
+            <span class="location-arrow">${FluentIcons.chevronDown}</span>
           </div>
         </div>
         <div class="header-actions">
@@ -380,7 +515,7 @@ function renderHomeView() {
       <div class="search-bar fade-in fade-in-delay-2" onclick="openSearchView()">
         <span class="search-bar-icon">${FluentIcons.searchRegular}</span>
         <input type="text" placeholder="Tìm món ăn, quán ăn, loại mặt hàng..." readonly style="cursor: pointer;">
-        <button class="search-filter-btn" onclick="event.stopPropagation(); openSearchView('', 'near');" aria-label="Bộ lọc">
+        <button class="search-filter-btn" onclick="event.stopPropagation(); openSearchFilterModal();" aria-label="Bộ lọc">
           ${FluentIcons.filterRegular}
         </button>
       </div>
@@ -487,16 +622,16 @@ function renderHomeView() {
       </div>
       <div class="restaurants-scroll" id="restaurants-scroll">
         ${(() => {
-          const activeStores = restaurants.filter(r => Number(r.id) !== 1000 || (Array.isArray(r.relatedDishes) && r.relatedDishes.length > 0));
-          const displayStores = typeof dbmFairShuffle === 'function'
-            ? dbmFairShuffle(activeStores, 'home-popular-stores')
-            : activeStores;
-          return displayStores.map(r => {
-            const availDishes = (r.relatedDishes || []).filter(d => d.inStock !== false);
-            const highlightDish = availDishes.length > 0
-              ? (typeof dbmFairShuffle === 'function' ? dbmFairShuffle(availDishes, `store-highlight-${r.id}`)[0] : availDishes[0])
-              : null;
-            return `
+      const activeStores = restaurants.filter(r => Number(r.id) !== 1000 || (Array.isArray(r.relatedDishes) && r.relatedDishes.length > 0));
+      const displayStores = typeof dbmFairShuffle === 'function'
+        ? dbmFairShuffle(activeStores, 'home-popular-stores')
+        : activeStores;
+      return displayStores.map(r => {
+        const availDishes = (r.relatedDishes || []).filter(d => d.inStock !== false);
+        const highlightDish = availDishes.length > 0
+          ? (typeof dbmFairShuffle === 'function' ? dbmFairShuffle(availDishes, `store-highlight-${r.id}`)[0] : availDishes[0])
+          : null;
+        return `
           <div class="restaurant-card" onclick="openSearchView('${escapeHtml(r.name)}')">
             <div class="restaurant-card-img-wrapper">
               <img class="restaurant-card-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
@@ -518,8 +653,8 @@ function renderHomeView() {
             </div>
           </div>
         `;
-          }).join('');
-        })()}
+      }).join('');
+    })()}
       </div>
     </div>
 
@@ -554,17 +689,78 @@ function renderHomeView() {
 // 2. SEARCH VIEW & RESULTS
 // ========================================
 
+// ── Comprehensive Filter Calculation & Matching ──
+function calculateFilterMatches(f) {
+  let list = [...restaurants];
+  if (!f) return list.length;
+
+  // Area
+  if (f.area && f.area !== 'all') {
+    if (f.area === 'near_ptit') {
+      list = list.filter(r => r.area === 'near_ptit' || getRestaurantDistance(r) <= 0.5);
+    } else {
+      list = list.filter(r => r.area === f.area);
+    }
+  }
+
+  // Promo
+  if (f.promo && f.promo !== 'all') {
+    if (f.promo === 'freeship') {
+      list = list.filter(r => r.isFreeship);
+    } else if (f.promo === 'voucher') {
+      list = list.filter(r => r.vouchers && r.vouchers.length > 0);
+    } else if (f.promo === 'flash_sale') {
+      list = list.filter(r => r.hasFlashSale);
+    } else if (f.promo === 'partner') {
+      list = list.filter(r => r.isPartner);
+    }
+  }
+
+  // Shipping
+  if (f.shipping && f.shipping !== 'all') {
+    list = list.filter(r => Array.isArray(r.shippingProviders) && r.shippingProviders.includes(f.shipping));
+  }
+
+  // Price range
+  if (f.priceRange && f.priceRange !== 'all') {
+    if (f.priceRange === 'under30') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price <= 30000) || r.priceLevel === '$');
+    } else if (f.priceRange === '30to60') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 30000 && d.price <= 60000) || r.priceLevel === '$' || r.priceLevel === '$$');
+    } else if (f.priceRange === '60to100') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 60000 && d.price <= 100000) || r.priceLevel === '$$');
+    } else if (f.priceRange === 'above100') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 100000) || r.priceLevel === '$$$');
+    }
+  }
+
+  // Custom Min & Max Price
+  if (f.minPrice !== null && !isNaN(f.minPrice)) {
+    list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= f.minPrice));
+  }
+  if (f.maxPrice !== null && !isNaN(f.maxPrice)) {
+    list = list.filter(r => (r.relatedDishes || []).some(d => d.price <= f.maxPrice));
+  }
+
+  // Rating
+  if (f.ratingMin && f.ratingMin > 0) {
+    list = list.filter(r => r.rating >= f.ratingMin);
+  }
+
+  return list.length;
+}
+
 function getFilteredRestaurants() {
   let list = [...restaurants];
 
-  // Text search query (matches restaurant name, category, review, OR individual dish name/category!)
+  // 1. Text search query
   if (searchQuery) {
     const q = searchQuery.toLowerCase().trim();
     list = list.filter(r => {
       const matchName = r.name.toLowerCase().includes(q);
       const matchCat = (r.category || '').toLowerCase().includes(q);
       const matchReview = (r.shortReview || '').toLowerCase().includes(q);
-      const matchDish = r.relatedDishes.some(d =>
+      const matchDish = (r.relatedDishes || []).some(d =>
         d.name.toLowerCase().includes(q) ||
         (d.category || '').toLowerCase().includes(q) ||
         (typeof dbmItemMatchesQuery === 'function' && dbmItemMatchesQuery(d, q))
@@ -573,31 +769,435 @@ function getFilteredRestaurants() {
     });
   }
 
-  // Distance filter
+  // 2. Distance filter
   if (distanceFilter !== null) {
-    list = list.filter(r => r.distance <= distanceFilter);
+    list = list.filter(r => getRestaurantDistance(r) <= distanceFilter);
   }
 
-  // Multi-filters
-  if (activeFilters.rating45) {
-    list = list.filter(r => r.rating >= 4.8);
+  // 3. Area / Location
+  if (activeFilters.area && activeFilters.area !== 'all') {
+    if (activeFilters.area === 'near_ptit') {
+      list = list.filter(r => r.area === 'near_ptit' || getRestaurantDistance(r) <= 0.5);
+    } else {
+      list = list.filter(r => r.area === activeFilters.area);
+    }
   }
+
+  // 4. Promo
+  if (activeFilters.promo && activeFilters.promo !== 'all') {
+    if (activeFilters.promo === 'freeship') {
+      list = list.filter(r => r.isFreeship);
+    } else if (activeFilters.promo === 'voucher') {
+      list = list.filter(r => r.vouchers && r.vouchers.length > 0);
+    } else if (activeFilters.promo === 'flash_sale') {
+      list = list.filter(r => r.hasFlashSale);
+    } else if (activeFilters.promo === 'partner') {
+      list = list.filter(r => r.isPartner);
+    }
+  }
+
+  // Legacy promo quick pills
   if (activeFilters.freeship) {
     list = list.filter(r => r.isFreeship);
-  }
-  if (activeFilters.budget) {
-    list = list.filter(r => r.priceLevel === '$');
   }
   if (activeFilters.voucher) {
     list = list.filter(r => r.vouchers && r.vouchers.length > 0);
   }
+  if (activeFilters.budget) {
+    list = list.filter(r => r.priceLevel === '$');
+  }
 
-  // Sort by nearest distance if 'near' is active
+  // 5. Shipping Providers
+  if (activeFilters.shipping && activeFilters.shipping !== 'all') {
+    list = list.filter(r => Array.isArray(r.shippingProviders) && r.shippingProviders.includes(activeFilters.shipping));
+  }
+
+  // 6. Price Range
+  if (activeFilters.priceRange && activeFilters.priceRange !== 'all') {
+    if (activeFilters.priceRange === 'under30') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price <= 30000) || r.priceLevel === '$');
+    } else if (activeFilters.priceRange === '30to60') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 30000 && d.price <= 60000) || r.priceLevel === '$' || r.priceLevel === '$$');
+    } else if (activeFilters.priceRange === '60to100') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 60000 && d.price <= 100000) || r.priceLevel === '$$');
+    } else if (activeFilters.priceRange === 'above100') {
+      list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= 100000) || r.priceLevel === '$$$');
+    }
+  }
+
+  // Custom Min & Max Price
+  if (activeFilters.minPrice !== null && !isNaN(activeFilters.minPrice)) {
+    list = list.filter(r => (r.relatedDishes || []).some(d => d.price >= activeFilters.minPrice));
+  }
+  if (activeFilters.maxPrice !== null && !isNaN(activeFilters.maxPrice)) {
+    list = list.filter(r => (r.relatedDishes || []).some(d => d.price <= activeFilters.maxPrice));
+  }
+
+  // 7. Ratings
+  if (activeFilters.rating45) {
+    list = list.filter(r => r.rating >= 4.8);
+  } else if (activeFilters.ratingMin && activeFilters.ratingMin > 0) {
+    list = list.filter(r => r.rating >= activeFilters.ratingMin);
+  }
+
+  // 8. Sort by nearest distance if 'near' is active
   if (activeFilters.near) {
-    list.sort((a, b) => a.distance - b.distance);
+    list.sort((a, b) => getRestaurantDistance(a) - getRestaurantDistance(b));
   }
 
   return list;
+}
+
+// ==========================================================================
+// SEARCH & FILTER MODAL CONTROLLER
+// ==========================================================================
+
+const filterLabelsMap = {
+  area: {
+    near_ptit: '🏫 Quanh PTIT (<500m)',
+    ao_sen: '🍜 Ao Sen & Mộ Lao',
+    nguyen_van_loc: '☕ Nguyễn Văn Lộc',
+    van_quan: '🏘️ Văn Quán - Chiến Thắng',
+    tran_phu: '🚇 Trục Trần Phú'
+  },
+  promo: {
+    freeship: '🚚 Freeship 0đ',
+    voucher: '🎟️ Có mã Voucher',
+    flash_sale: '⚡ Flash Sale SV',
+    partner: '⭐ Quán đối tác PTIT'
+  },
+  shipping: {
+    ptit_express: '⚡ PTIT Express (15p)',
+    grab_express: '🟢 GrabExpress',
+    shopeefood: '🟠 ShopeeFood',
+    be_delivery: '🟡 BeDelivery'
+  },
+  priceRange: {
+    'under30': '💰 Dưới 30k',
+    '30to60': '💰 30k - 60k',
+    '60to100': '💰 60k - 100k',
+    'above100': '💰 Trên 100k'
+  }
+};
+
+function openSearchFilterModal() {
+  const overlay = document.getElementById('search-filter-overlay');
+  const sheet = document.getElementById('search-filter-bottom-sheet');
+  if (!overlay || !sheet) return;
+
+  tempFilters = { ...activeFilters };
+  renderSearchFilterModalContent();
+  overlay.classList.add('active');
+}
+
+function closeSearchFilterModal() {
+  const overlay = document.getElementById('search-filter-overlay');
+  if (overlay) overlay.classList.remove('active');
+}
+
+function closeSearchFilterModalOnBackdrop(e) {
+  if (e && e.target && e.target.id === 'search-filter-overlay') {
+    closeSearchFilterModal();
+  }
+}
+
+function renderSearchFilterModalContent() {
+  const sheet = document.getElementById('search-filter-bottom-sheet');
+  if (!sheet) return;
+
+  const matchCount = calculateFilterMatches(tempFilters);
+
+  sheet.innerHTML = `
+    <div class="filter-sheet-header">
+      <div class="filter-sheet-title-row">
+        <div class="filter-sheet-icon">
+          ${FluentIcons.filterRegular}
+        </div>
+        <div>
+          <div class="filter-sheet-title">Bộ lọc &amp; Tìm kiếm nâng cao</div>
+          <div class="filter-sheet-subtitle">Lọc quán ngon quanh Học viện PTIT &amp; Hà Đông</div>
+        </div>
+      </div>
+      <button type="button" class="filter-sheet-close-btn" onclick="closeSearchFilterModal()" title="Đóng">
+        ${FluentIcons.dismiss}
+      </button>
+    </div>
+
+    <div class="filter-sheet-body">
+      <!-- 1. Nơi bán / Khu vực -->
+      <div class="filter-group">
+        <div class="filter-group-title">
+          <span>📍 Nơi bán / Khu vực quanh PTIT</span>
+          <span class="filter-group-badge">${tempFilters.area === 'all' ? 'Tất cả' : 'Đã chọn'}</span>
+        </div>
+        <div class="filter-options-grid">
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'all' ? 'active' : ''}" onclick="setFilterTemp('area', 'all')">
+            Tất cả khu vực
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'near_ptit' ? 'active' : ''}" onclick="setFilterTemp('area', 'near_ptit')">
+            🏫 Quanh PTIT (&lt;500m)
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'ao_sen' ? 'active' : ''}" onclick="setFilterTemp('area', 'ao_sen')">
+            🍜 Ao Sen &amp; Mộ Lao
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'nguyen_van_loc' ? 'active' : ''}" onclick="setFilterTemp('area', 'nguyen_van_loc')">
+            ☕ Nguyễn Văn Lộc
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'van_quan' ? 'active' : ''}" onclick="setFilterTemp('area', 'van_quan')">
+            🏘️ Văn Quán - Chiến Thắng
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.area === 'tran_phu' ? 'active' : ''}" onclick="setFilterTemp('area', 'tran_phu')">
+            🚇 Trục đường Trần Phú
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Khuyến mãi & Ưu đãi -->
+      <div class="filter-group">
+        <div class="filter-group-title">
+          <span>🎁 Khuyến mãi &amp; Ưu đãi đặc biệt</span>
+          <span class="filter-group-badge">${tempFilters.promo === 'all' ? 'Tất cả' : 'Đã chọn'}</span>
+        </div>
+        <div class="filter-options-grid">
+          <button type="button" class="filter-chip-btn ${tempFilters.promo === 'all' ? 'active' : ''}" onclick="setFilterTemp('promo', 'all')">
+            Tất cả ưu đãi
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.promo === 'freeship' ? 'active' : ''}" onclick="setFilterTemp('promo', 'freeship')">
+            🚚 Freeship 0đ
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.promo === 'voucher' ? 'active' : ''}" onclick="setFilterTemp('promo', 'voucher')">
+            🎟️ Có mã Voucher
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.promo === 'flash_sale' ? 'active' : ''}" onclick="setFilterTemp('promo', 'flash_sale')">
+            ⚡ Flash Sale sinh viên
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.promo === 'partner' ? 'active' : ''}" onclick="setFilterTemp('promo', 'partner')">
+            ⭐ Quán đối tác PTIT
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Đơn vị vận chuyển -->
+      <div class="filter-group">
+        <div class="filter-group-title">
+          <span>🛵 Đơn vị vận chuyển</span>
+          <span class="filter-group-badge">${tempFilters.shipping === 'all' ? 'Tất cả' : 'Đã chọn'}</span>
+        </div>
+        <div class="filter-options-grid">
+          <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'all' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'all')">
+            Tất cả đơn vị
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'ptit_express' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'ptit_express')">
+            ⚡ PTIT Express (15p)
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'grab_express' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'grab_express')">
+            🟢 GrabExpress
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'shopeefood' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'shopeefood')">
+            🟠 ShopeeFood
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'be_delivery' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'be_delivery')">
+            🟡 BeDelivery
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Khoảng giá -->
+      <div class="filter-group">
+        <div class="filter-group-title">
+          <span>💰 Khoảng giá món ăn</span>
+          <span class="filter-group-badge">${tempFilters.priceRange === 'all' && !tempFilters.minPrice && !tempFilters.maxPrice ? 'Tất cả' : 'Đã chọn'}</span>
+        </div>
+        <div class="filter-options-grid">
+          <button type="button" class="filter-chip-btn ${tempFilters.priceRange === 'all' && !tempFilters.minPrice && !tempFilters.maxPrice ? 'active' : ''}" onclick="setFilterTempPrice('all')">
+            Tất cả mức giá
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.priceRange === 'under30' ? 'active' : ''}" onclick="setFilterTempPrice('under30')">
+            Dưới 30.000đ
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.priceRange === '30to60' ? 'active' : ''}" onclick="setFilterTempPrice('30to60')">
+            30.000đ - 60.000đ
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.priceRange === '60to100' ? 'active' : ''}" onclick="setFilterTempPrice('60to100')">
+            60.000đ - 100.000đ
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.priceRange === 'above100' ? 'active' : ''}" onclick="setFilterTempPrice('above100')">
+            Trên 100.000đ
+          </button>
+        </div>
+
+        <div class="filter-price-inputs-row">
+          <div class="filter-price-input-wrap">
+            <input 
+              type="number" 
+              class="filter-price-input" 
+              id="filter-min-price" 
+              placeholder="Giá từ" 
+              value="${tempFilters.minPrice || ''}"
+              oninput="onCustomPriceChange()"
+            >
+            <span class="filter-price-unit">đ</span>
+          </div>
+          <span class="filter-price-dash">—</span>
+          <div class="filter-price-input-wrap">
+            <input 
+              type="number" 
+              class="filter-price-input" 
+              id="filter-max-price" 
+              placeholder="Đến giá" 
+              value="${tempFilters.maxPrice || ''}"
+              oninput="onCustomPriceChange()"
+            >
+            <span class="filter-price-unit">đ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Đánh giá sao -->
+      <div class="filter-group">
+        <div class="filter-group-title">
+          <span>⭐ Đánh giá quán ăn</span>
+          <span class="filter-group-badge">${tempFilters.ratingMin > 0 ? `${tempFilters.ratingMin}+ sao` : 'Tất cả'}</span>
+        </div>
+        <div class="filter-options-grid">
+          <button type="button" class="filter-chip-btn ${!tempFilters.ratingMin ? 'active' : ''}" onclick="setFilterTemp('ratingMin', 0)">
+            Tất cả đánh giá
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.ratingMin === 4.8 ? 'active' : ''}" onclick="setFilterTemp('ratingMin', 4.8)">
+            ⭐ 4.8+ (Tuyệt hảo)
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.ratingMin === 4.5 ? 'active' : ''}" onclick="setFilterTemp('ratingMin', 4.5)">
+            ⭐ 4.5+ (Rất tốt)
+          </button>
+          <button type="button" class="filter-chip-btn ${tempFilters.ratingMin === 4.0 ? 'active' : ''}" onclick="setFilterTemp('ratingMin', 4.0)">
+            ⭐ 4.0+ (Tốt trở lên)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-sheet-footer">
+      <button type="button" class="filter-btn-reset" onclick="resetSearchFilterModal()">
+        Đặt lại
+      </button>
+      <button type="button" class="filter-btn-apply" id="filter-btn-apply" onclick="applySearchFilters()">
+        <span>Áp dụng</span>
+        <span style="opacity: 0.9;">(${matchCount} quán)</span>
+      </button>
+    </div>
+  `;
+}
+
+function setFilterTemp(key, val) {
+  tempFilters[key] = val;
+  renderSearchFilterModalContent();
+}
+
+function setFilterTempPrice(range) {
+  tempFilters.priceRange = range;
+  tempFilters.minPrice = null;
+  tempFilters.maxPrice = null;
+  renderSearchFilterModalContent();
+}
+
+function onCustomPriceChange() {
+  const minVal = parseInt(document.getElementById('filter-min-price')?.value, 10);
+  const maxVal = parseInt(document.getElementById('filter-max-price')?.value, 10);
+  tempFilters.minPrice = (!isNaN(minVal) && minVal > 0) ? minVal : null;
+  tempFilters.maxPrice = (!isNaN(maxVal) && maxVal > 0) ? maxVal : null;
+  tempFilters.priceRange = (tempFilters.minPrice || tempFilters.maxPrice) ? 'custom' : 'all';
+
+  const count = calculateFilterMatches(tempFilters);
+  const btn = document.getElementById('filter-btn-apply');
+  if (btn) {
+    btn.innerHTML = `<span>Áp dụng</span><span style="opacity:0.9;">(${count} quán)</span>`;
+  }
+}
+
+function resetSearchFilterModal() {
+  tempFilters = {
+    near: false,
+    rating45: false,
+    freeship: false,
+    budget: false,
+    voucher: false,
+    area: 'all',
+    promo: 'all',
+    shipping: 'all',
+    priceRange: 'all',
+    minPrice: null,
+    maxPrice: null,
+    ratingMin: 0
+  };
+  renderSearchFilterModalContent();
+}
+
+function applySearchFilters() {
+  activeFilters = { ...tempFilters };
+  closeSearchFilterModal();
+
+  if (currentView !== 'search') {
+    openSearchView();
+  } else {
+    renderSearchView();
+  }
+
+  const matchCount = getFilteredRestaurants().length;
+  showToast('filterRegular', `Đã áp dụng bộ lọc: Tìm thấy ${matchCount} quán phù hợp`);
+}
+
+function removeSearchFilterChip(filterKey) {
+  if (filterKey === 'area') activeFilters.area = 'all';
+  else if (filterKey === 'promo') activeFilters.promo = 'all';
+  else if (filterKey === 'shipping') activeFilters.shipping = 'all';
+  else if (filterKey === 'priceRange') activeFilters.priceRange = 'all';
+  else if (filterKey === 'customPrice') {
+    activeFilters.minPrice = null;
+    activeFilters.maxPrice = null;
+    activeFilters.priceRange = 'all';
+  } else if (filterKey === 'ratingMin') {
+    activeFilters.ratingMin = 0;
+    activeFilters.rating45 = false;
+  }
+  renderSearchView();
+}
+
+function renderActiveFilterPillsHtml() {
+  const pills = [];
+
+  if (activeFilters.area && activeFilters.area !== 'all') {
+    const lbl = filterLabelsMap.area[activeFilters.area] || activeFilters.area;
+    pills.push(`<span class="active-filter-pill"><span>${escapeHtml(lbl)}</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('area')" title="Xóa lọc">✕</span></span>`);
+  }
+  if (activeFilters.promo && activeFilters.promo !== 'all') {
+    const lbl = filterLabelsMap.promo[activeFilters.promo] || activeFilters.promo;
+    pills.push(`<span class="active-filter-pill"><span>${escapeHtml(lbl)}</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('promo')" title="Xóa lọc">✕</span></span>`);
+  }
+  if (activeFilters.shipping && activeFilters.shipping !== 'all') {
+    const lbl = filterLabelsMap.shipping[activeFilters.shipping] || activeFilters.shipping;
+    pills.push(`<span class="active-filter-pill"><span>${escapeHtml(lbl)}</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('shipping')" title="Xóa lọc">✕</span></span>`);
+  }
+  if (activeFilters.priceRange && activeFilters.priceRange !== 'all') {
+    const lbl = filterLabelsMap.priceRange[activeFilters.priceRange] || activeFilters.priceRange;
+    pills.push(`<span class="active-filter-pill"><span>${escapeHtml(lbl)}</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('priceRange')" title="Xóa lọc">✕</span></span>`);
+  } else if (activeFilters.minPrice || activeFilters.maxPrice) {
+    const minTxt = activeFilters.minPrice ? formatVND(activeFilters.minPrice) : '0';
+    const maxTxt = activeFilters.maxPrice ? formatVND(activeFilters.maxPrice) : 'Max';
+    pills.push(`<span class="active-filter-pill"><span>💰 ${minTxt} - ${maxTxt}</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('customPrice')" title="Xóa lọc">✕</span></span>`);
+  }
+  if (activeFilters.ratingMin && activeFilters.ratingMin > 0) {
+    pills.push(`<span class="active-filter-pill"><span>⭐ ${activeFilters.ratingMin}+ sao</span><span class="active-filter-pill-remove" onclick="removeSearchFilterChip('ratingMin')" title="Xóa lọc">✕</span></span>`);
+  }
+
+  if (pills.length === 0) return '';
+  return `
+    <div class="active-filters-scroll">
+      ${pills.join('')}
+      <button type="button" onclick="openSearchFilterModal()" style="background:none;border:none;color:var(--green-600);font-size:11.5px;font-weight:700;cursor:pointer;padding:0 4px;white-space:nowrap;">
+        + Tùy chỉnh thêm
+      </button>
+    </div>
+  `;
 }
 
 function renderSearchEmptyStateHtml() {
@@ -637,7 +1237,7 @@ function renderSearchView() {
 
   app.innerHTML = `
     <div class="search-view fade-in">
-      <!-- Sticky Search Header -->
+      <!-- In-Page Search Header: Hiển thị tự nhiên, phẳng, không đổ bóng hay nổi tách biệt -->
       <div class="search-view-header">
         <button class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
@@ -658,7 +1258,7 @@ function renderSearchView() {
             </span>
           ` : ''}
         </div>
-        <button class="search-filter-toggle-btn" onclick="toggleSortNear()" title="Sắp xếp gần bạn">
+        <button class="search-filter-toggle-btn ${(activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0) ? 'active' : ''}" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
           ${FluentIcons.filterRegular}
         </button>
       </div>
@@ -730,6 +1330,7 @@ function renderSearchView() {
             <span>🎟️ Có Voucher</span>
           </div>
         </div>
+        ${renderActiveFilterPillsHtml()}
       </div>
 
       <!-- Results Summary Bar -->
@@ -758,6 +1359,39 @@ function renderSearchView() {
   if (inputEl && !searchQuery) {
     setTimeout(() => inputEl.focus(), 80);
   }
+  setTimeout(() => enableDragToScroll('visual-suggestions-scroll'), 50);
+}
+
+function enableDragToScroll(elId) {
+  if (typeof document === 'undefined') return;
+  const el = typeof elId === 'string' ? document.getElementById(elId) : elId;
+  if (!el || typeof el.addEventListener !== 'function' || el._dragAttached) return;
+  el._dragAttached = true;
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
+
+  el.addEventListener('mousedown', (e) => {
+    isDown = true;
+    el.classList.add('dragging');
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  el.addEventListener('mouseleave', () => {
+    isDown = false;
+    el.classList.remove('dragging');
+  });
+  el.addEventListener('mouseup', () => {
+    isDown = false;
+    el.classList.remove('dragging');
+  });
+  el.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    el.scrollLeft = scrollLeft - walk;
+  });
 }
 
 // Helper: render a single restaurant card for search results
@@ -1202,6 +1836,127 @@ function confirmAddOptionToCart() {
 }
 
 // ========================================
+// 3A. MAP SERVICE (GOOGLE MAPS & OPENSTREETMAP PROVIDER ENGINE)
+// ========================================
+
+const MapService = {
+  CONFIG_KEY: 'ptitngon_map_config',
+  DEFAULT_CONFIG: {
+    provider: 'osm', // 'osm' | 'google'
+    googleApiKey: '',
+    mapType: 'roadmap', // 'roadmap' | 'satellite' | 'hybrid' | 'terrain'
+    autoReverseGeocode: true,
+    enableTraffic: false
+  },
+
+  getConfig() {
+    try {
+      const raw = localStorage.getItem(this.CONFIG_KEY);
+      if (raw) {
+        return { ...this.DEFAULT_CONFIG, ...JSON.parse(raw) };
+      }
+    } catch (_) { }
+    if (typeof DB !== 'undefined' && DB.isReady && DB.data && DB.data.mapConfig) {
+      return { ...this.DEFAULT_CONFIG, ...DB.data.mapConfig };
+    }
+    return { ...this.DEFAULT_CONFIG };
+  },
+
+  saveConfig(newConfig) {
+    const merged = { ...this.getConfig(), ...newConfig };
+    try {
+      localStorage.setItem(this.CONFIG_KEY, JSON.stringify(merged));
+    } catch (_) { }
+    if (typeof DB !== 'undefined' && DB.isReady && DB.data) {
+      DB.data.mapConfig = merged;
+      if (typeof DB.save === 'function') DB.save();
+    }
+    return merged;
+  },
+
+  isGoogleMapsActive() {
+    const cfg = this.getConfig();
+    return cfg.provider === 'google' && Boolean(cfg.googleApiKey && cfg.googleApiKey.trim());
+  },
+
+  loadGoogleMaps(apiKey, callback) {
+    const key = (apiKey || this.getConfig().googleApiKey || '').trim();
+    if (!key) {
+      if (typeof callback === 'function') callback(false, 'Chưa nhập Google Maps API Key');
+      return;
+    }
+    if (typeof window.google !== 'undefined' && window.google.maps) {
+      if (typeof callback === 'function') callback(true);
+      return;
+    }
+    const oldScript = document.getElementById('google-maps-script');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'google-maps-script';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places,geometry&language=vi`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (typeof callback === 'function') callback(true);
+    };
+    script.onerror = (e) => {
+      console.warn('Google Maps script load error:', e);
+      if (typeof callback === 'function') callback(false, 'Không thể tải Google Maps (kiểm tra lại API Key hoặc quyền truy cập mạng)');
+    };
+    document.head.appendChild(script);
+  },
+
+  async testGoogleApiKey(apiKey) {
+    const key = (apiKey || '').trim();
+    if (!key) {
+      return { ok: false, message: 'Vui lòng nhập chuỗi API Key của Google Maps (bắt đầu bằng AIzaSy...) trước khi kiểm tra!' };
+    }
+
+    try {
+      // 1. Kiểm tra tải SDK Google Maps
+      const sdkResult = await new Promise((resolve) => {
+        this.loadGoogleMaps(key, (success, err) => {
+          if (success) resolve({ ok: true });
+          else resolve({ ok: false, message: err });
+        });
+      });
+
+      if (!sdkResult.ok) {
+        return sdkResult;
+      }
+
+      // 2. Thử nghiệm Geocoding API với tọa độ PTIT Hà Đông
+      if (window.google && window.google.maps && window.google.maps.Geocoder) {
+        const geocoder = new google.maps.Geocoder();
+        const geoResult = await new Promise((resolve) => {
+          geocoder.geocode({ location: { lat: 20.9806, lng: 105.7878 } }, (results, status) => {
+            if (status === 'OK' && results && results.length > 0) {
+              resolve({
+                ok: true,
+                message: `Kết nối Google Maps API thành công!\nĐịa chỉ xác thực: "${results[0].formatted_address}"`,
+                sampleAddress: results[0].formatted_address
+              });
+            } else {
+              resolve({
+                ok: true,
+                message: 'Kết nối Google Maps JavaScript API thành công! (Lưu ý: Geocoding API có thể cần bật thêm trên Google Cloud Console nếu muốn tự động dịch tên đường).'
+              });
+            }
+          });
+        });
+        return geoResult;
+      }
+
+      return { ok: true, message: 'Kết nối Google Maps API thành công! Sẵn sàng sử dụng.' };
+    } catch (err) {
+      return { ok: false, message: `Lỗi kết nối: ${err.message || 'Không thể liên lạc với máy chủ Google Maps'}` };
+    }
+  }
+};
+window.MapService = MapService;
+
+// ========================================
 // 3B. DELIVERY LOCATION & RECIPIENT MODAL (ĐỒNG BỘ DATABASE HỒ SƠ NGƯỜI DÙNG)
 // ========================================
 
@@ -1215,6 +1970,8 @@ function openDeliveryInfoModal() {
   tempDeliveryLabel = userDeliveryInfo.label || 'PTIT Hà Đông';
   const rememberedUsers = (typeof DB !== 'undefined' && DB.isReady) ? DB.getUsers() : [];
   const activeUser = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCurrentUser() : null;
+  const mapCfg = MapService.getConfig();
+  const currentProviderLabel = (mapCfg.provider === 'google' && mapCfg.googleApiKey) ? 'Google Maps' : 'OpenStreetMap';
 
   sheet.innerHTML = `
     <div class="delivery-modal-header">
@@ -1306,13 +2063,18 @@ function openDeliveryInfoModal() {
         >
       </div>
 
-      <!-- Detail Address -->
+      <!-- Detail Address with Actions (Lấy vị trí GPS & Mở bản đồ) -->
       <div class="delivery-input-group">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div class="delivery-address-head">
           <label class="delivery-input-label" style="margin-bottom:0;">Địa chỉ nhận hàng chi tiết (*):</label>
-          <button type="button" class="db-location-detect-btn" onclick="autoDetectDeliveryAddress()" title="Tự động lấy vị trí hiện tại từ GPS">
-            📍 Lấy vị trí hiện tại
-          </button>
+          <div class="delivery-loc-actions-group">
+            <button type="button" class="db-location-detect-btn" id="delivery-detect-gps-btn" onclick="autoDetectDeliveryAddress()" title="Tự động lấy vị trí hiện tại từ GPS">
+              📍 Lấy vị trí hiện tại
+            </button>
+            <button type="button" class="db-location-map-toggle-btn" id="delivery-toggle-map-btn" onclick="toggleDeliveryMapPicker()" title="Mở bản đồ chọn điểm nhận">
+              🗺️ Chọn trên bản đồ
+            </button>
+          </div>
         </div>
         <textarea 
           id="delivery-input-address" 
@@ -1320,6 +2082,36 @@ function openDeliveryInfoModal() {
           rows="2" 
           placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
         >${escapeHtml(userDeliveryInfo.address)}</textarea>
+      </div>
+
+      <!-- Interactive Map Picker (Mặc định ẩn - Chỉ hiện ra khi người dùng muốn chọn vị trí) -->
+      <div class="delivery-map-picker-card" id="delivery-map-picker-card" style="display: none;">
+        <div class="delivery-map-header">
+          <div class="delivery-map-title">
+            <span class="live-pulse-radar"></span>
+            <span id="delivery-map-provider-label">Bản đồ điểm nhận (${currentProviderLabel})</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="delivery-coords-badge" id="delivery-coords-badge">
+              ${userDeliveryInfo.lat ? `${userDeliveryInfo.lat.toFixed(4)}, ${userDeliveryInfo.lng.toFixed(4)}` : '20.9806, 105.7878'}
+            </span>
+            <button type="button" class="delivery-map-close-btn" onclick="toggleDeliveryMapPicker(false)" title="Thu gọn bản đồ">✕</button>
+          </div>
+        </div>
+        <div id="user-delivery-map" class="user-delivery-map-container"></div>
+        <div class="delivery-map-hint">
+          💡 Chạm hoặc kéo ghim trên bản đồ để chọn chính xác điểm giao hàng quanh Học viện PTIT
+        </div>
+        <div class="delivery-hotspots-section">
+          <div class="delivery-hotspots-label">Chọn nhanh điểm nhận tại PTIT:</div>
+          <div class="delivery-hotspots-scroll">
+            <button type="button" class="loc-hotspot-btn" onclick="selectDeliveryHotspot('ptit_a2')">🏫 Cổng A2 (Trần Phú)</button>
+            <button type="button" class="loc-hotspot-btn" onclick="selectDeliveryHotspot('ptit_ktx')">🏢 KTX PTIT</button>
+            <button type="button" class="loc-hotspot-btn" onclick="selectDeliveryHotspot('ptit_lib')">📚 Thư viện PTIT</button>
+            <button type="button" class="loc-hotspot-btn" onclick="selectDeliveryHotspot('an_ninh')">👮 Học viện An Ninh</button>
+            <button type="button" class="loc-hotspot-btn" onclick="selectDeliveryHotspot('hanu')">🎓 ĐH Hà Nội (HANU)</button>
+          </div>
+        </div>
       </div>
 
       <!-- Address Label Tags -->
@@ -1360,12 +2152,41 @@ function openDeliveryInfoModal() {
 
       <!-- Save Button -->
       <button class="btn-primary-large" onclick="saveDeliveryInfo()" style="margin-top: 6px;">
-        💾 Lưu Vĩnh Viễn & Áp Dụng Thông Tin
+        💾 Lưu & Áp Dụng Thông Tin
       </button>
     </div>
   `;
 
   overlay.classList.add('active');
+}
+
+function toggleDeliveryMapPicker(force) {
+  const card = document.getElementById('delivery-map-picker-card');
+  const btn = document.getElementById('delivery-toggle-map-btn');
+  if (!card) return;
+
+  const isHidden = card.style.display === 'none';
+  const shouldOpen = (force !== undefined) ? force : isHidden;
+
+  if (shouldOpen) {
+    card.style.display = 'flex';
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '▲ Thu gọn bản đồ';
+    }
+    setTimeout(() => {
+      initUserDeliveryMap();
+      if (typeof card.scrollIntoView === 'function') {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 60);
+  } else {
+    card.style.display = 'none';
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '🗺️ Chọn trên bản đồ';
+    }
+  }
 }
 
 function switchUserInDeliveryModal(userId) {
@@ -1401,6 +2222,158 @@ function selectAddressPreset(idx) {
   document.querySelectorAll('.delivery-tag-btn').forEach(b => {
     b.classList.toggle('active', b.textContent.includes(p.label));
   });
+  if (p.lat && p.lng) {
+    tempDeliveryCoords = { lat: p.lat, lng: p.lng };
+    if (userDeliveryMapInstance && userDeliveryMarker) {
+      userDeliveryMapInstance.setView([p.lat, p.lng], 16);
+      userDeliveryMarker.setLatLng([p.lat, p.lng]);
+    }
+  }
+}
+
+let userDeliveryMapInstance = null;
+let userDeliveryMarker = null;
+let tempDeliveryCoords = { lat: 20.9806, lng: 105.7878 };
+
+function selectDeliveryHotspot(id) {
+  const spots = {
+    ptit_a2: { lat: 20.9806, lng: 105.7878, name: 'Học viện CNBCVT (PTIT), Km10 Trần Phú, Hà Đông', label: 'PTIT Hà Đông' },
+    ptit_ktx: { lat: 20.9812, lng: 105.7872, name: 'Ký túc xá PTIT, Phường Mộ Lao, Hà Đông', label: 'KTX PTIT' },
+    ptit_lib: { lat: 20.9802, lng: 105.7882, name: 'Thư viện Trung tâm PTIT, Km10 Trần Phú', label: 'PTIT Hà Đông' },
+    an_ninh: { lat: 20.9840, lng: 105.7915, name: 'Học viện An Ninh Nhân Dân (C500), Đường Chiến Thắng, Hà Đông', label: 'Học viện An Ninh' },
+    hanu: { lat: 20.9870, lng: 105.7930, name: 'Trường Đại học Hà Nội (HANU), Km9 Đường Nguyễn Trãi', label: 'ĐH Hà Nội' }
+  };
+  const sp = spots[id];
+  if (!sp) return;
+  tempDeliveryCoords = { lat: sp.lat, lng: sp.lng };
+  const addrInput = document.getElementById('delivery-input-address');
+  if (addrInput) addrInput.value = sp.name;
+  const badge = document.getElementById('delivery-coords-badge');
+  if (badge) badge.textContent = `${sp.lat.toFixed(4)}, ${sp.lng.toFixed(4)}`;
+
+  tempDeliveryLabel = sp.label;
+  document.querySelectorAll('.delivery-tag-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(sp.label));
+  });
+
+  if (userDeliveryMapInstance && userDeliveryMarker) {
+    userDeliveryMapInstance.setView([sp.lat, sp.lng], 16);
+    userDeliveryMarker.setLatLng([sp.lat, sp.lng]);
+  }
+  showToast('locationRegular', `Đã chọn: ${sp.name}`);
+}
+
+function initUserDeliveryMap() {
+  const container = document.getElementById('user-delivery-map');
+  if (!container) return;
+
+  const lat = userDeliveryInfo.lat || 20.9806;
+  const lng = userDeliveryInfo.lng || 105.7878;
+  tempDeliveryCoords = { lat, lng };
+
+  if (typeof L !== 'undefined' && L.map) {
+    try {
+      if (userDeliveryMapInstance) {
+        userDeliveryMapInstance.remove();
+        userDeliveryMapInstance = null;
+      }
+      userDeliveryMapInstance = L.map('user-delivery-map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([lat, lng], 16);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(userDeliveryMapInstance);
+
+      const markerHtml = `
+        <div class="custom-map-pin">
+          <span class="custom-map-pin-badge">Điểm nhận</span>
+          <span class="custom-map-pin-icon">📍</span>
+        </div>
+      `;
+      const pinIcon = L.divIcon({
+        className: 'custom-user-marker-wrap',
+        html: markerHtml,
+        iconSize: [80, 50],
+        iconAnchor: [40, 48]
+      });
+
+      userDeliveryMarker = L.marker([lat, lng], { draggable: true, icon: pinIcon }).addTo(userDeliveryMapInstance);
+
+      userDeliveryMarker.on('dragend', function (e) {
+        const pos = e.target.getLatLng();
+        onUserMapLocationChanged(pos.lat, pos.lng);
+      });
+
+      userDeliveryMapInstance.on('click', function (e) {
+        if (userDeliveryMarker) userDeliveryMarker.setLatLng(e.latlng);
+        onUserMapLocationChanged(e.latlng.lat, e.latlng.lng);
+      });
+
+      setTimeout(() => {
+        if (userDeliveryMapInstance) userDeliveryMapInstance.invalidateSize();
+      }, 250);
+      return;
+    } catch (e) {
+      console.warn('Leaflet error, fallback to vector map:', e);
+    }
+  }
+
+  // Graceful Offline SVG fallback
+  renderVectorDeliveryMapFallback(container, lat, lng);
+}
+
+function onUserMapLocationChanged(lat, lng) {
+  tempDeliveryCoords = { lat, lng };
+  const badge = document.getElementById('delivery-coords-badge');
+  if (badge) badge.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+  const addrInput = document.getElementById('delivery-input-address');
+  if (!addrInput) return;
+
+  const distToPTIT = calculateHaversineKm(lat, lng, 20.9806, 105.7878);
+  if (distToPTIT < 0.25) {
+    addrInput.value = 'Khuôn viên Học viện CNBCVT (PTIT), Km10 Đường Trần Phú, Hà Đông';
+    return;
+  }
+
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+    headers: { 'Accept-Language': 'vi' }
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.display_name && addrInput) {
+        addrInput.value = data.display_name;
+      }
+    })
+    .catch(() => {
+      addrInput.value = `Tọa độ (${lat.toFixed(4)}, ${lng.toFixed(4)}) - Khu vực Hà Đông, Hà Nội (Gần Học viện PTIT)`;
+    });
+}
+
+function renderVectorDeliveryMapFallback(container, lat, lng) {
+  container.innerHTML = `
+    <div style="width:100%; height:100%; position:relative; background:#f1f5f9; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <svg width="100%" height="100%" viewBox="0 0 400 200" style="position:absolute; inset:0;">
+        <rect width="400" height="200" fill="#f8fafc"/>
+        <line x1="0" y1="100" x2="400" y2="100" stroke="#cbd5e1" stroke-width="12"/>
+        <text x="20" y="94" font-size="11" font-weight="bold" fill="#64748b">ĐƯỜNG TRẦN PHÚ (HÀ ĐÔNG)</text>
+        <line x1="200" y1="0" x2="200" y2="200" stroke="#cbd5e1" stroke-width="8"/>
+        <text x="210" y="30" font-size="10" font-weight="bold" fill="#64748b">PHỐ AO SEN</text>
+        <circle cx="200" cy="100" r="8" fill="#16a34a" opacity="0.3"/>
+        <rect x="70" y="115" width="120" height="60" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="80" y="145" font-size="11" font-weight="bold" fill="#334155">Học viện PTIT</text>
+        <text x="80" y="160" font-size="9" fill="#64748b">Km10 Trần Phú</text>
+      </svg>
+      <div style="position:absolute; z-index:2; display:flex; flex-direction:column; align-items:center; transform:translateY(-18px);">
+        <span style="background:#ffffff; border:1.5px solid #16a34a; padding:2px 8px; border-radius:9999px; font-size:10.5px; font-weight:800; color:#14532d; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+          Điểm nhận PTIT
+        </span>
+        <span style="font-size:26px; line-height:1; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));">📍</span>
+      </div>
+    </div>
+  `;
 }
 
 // ── Định vị GPS & Tự động lấy vị trí hiện tại ──
@@ -1530,8 +2503,12 @@ function saveDeliveryInfo() {
         email,
         address,
         addressLabel: tempDeliveryLabel || 'PTIT Hà Đông',
-        addressNote: note
+        addressNote: note,
+        lat: tempDeliveryCoords.lat || 20.9806,
+        lng: tempDeliveryCoords.lng || 105.7878
       });
+      userDeliveryInfo.lat = tempDeliveryCoords.lat || 20.9806;
+      userDeliveryInfo.lng = tempDeliveryCoords.lng || 105.7878;
     }
     if (typeof syncGlobalChromeUI === 'function') syncGlobalChromeUI();
   } else {
@@ -1542,12 +2519,14 @@ function saveDeliveryInfo() {
       address: address,
       shortAddress: address.length > 30 ? address.substring(0, 28) + '...' : address,
       label: tempDeliveryLabel || 'Văn phòng',
-      note: note
+      note: note,
+      lat: tempDeliveryCoords.lat || 20.9806,
+      lng: tempDeliveryCoords.lng || 105.7878
     };
   }
 
   closeModal();
-  showToast('locationRegular', `Đã lưu vĩnh viễn: ${name} (${phone}) • ${userDeliveryInfo.shortAddress}`);
+  showToast('locationRegular', `Đã lưu : ${name} (${phone}) • ${userDeliveryInfo.shortAddress}`);
 
   if (currentView === 'home') {
     renderHomeView();
@@ -2753,6 +3732,67 @@ function renderSingleOrderDetailView(o) {
             </div>
           ` : ''}
 
+          <!-- Live Simulated Order Tracking Map -->
+          ${isDelivering ? `
+            <div class="order-live-tracking-card" id="order-live-tracking-card">
+              <div class="live-tracking-header">
+                <div class="live-tracking-title">
+                  <span class="live-pulse-radar"></span>
+                  <div>
+                    <div class="tracking-title-main">BẢN ĐỒ THEO DÕI HỎA TỐC THỜI GIAN THỰC</div>
+                    <div class="tracking-title-sub">Giả lập vị trí tài xế từ quán đến cổng trường PTIT</div>
+                  </div>
+                </div>
+                <span class="tracking-service-badge">🛵 PTIT Express Siêu Tốc</span>
+              </div>
+
+              <!-- Map Container -->
+              <div class="live-tracking-map-wrap">
+                <div id="order-live-map" class="order-live-map-canvas"></div>
+              </div>
+
+              <!-- Live Simulation HUD & Status Board -->
+              <div class="tracking-hud-card">
+                <div class="tracking-hud-grid">
+                  <div class="tracking-hud-metric">
+                    <span class="tracking-hud-label">Quãng đường còn lại</span>
+                    <span class="tracking-hud-val highlighted" id="tracking-hud-dist">1.8 km</span>
+                  </div>
+                  <div class="tracking-hud-metric">
+                    <span class="tracking-hud-label">Dự kiến nhận món</span>
+                    <span class="tracking-hud-val" id="tracking-hud-eta">8 phút nữa</span>
+                  </div>
+                  <div class="tracking-hud-metric">
+                    <span class="tracking-hud-label">Vận tốc shipper</span>
+                    <span class="tracking-hud-val" id="tracking-hud-speed">28 km/h</span>
+                  </div>
+                  <div class="tracking-hud-metric">
+                    <span class="tracking-hud-label">Phương tiện giao</span>
+                    <span class="tracking-hud-val">${escapeHtml(o.driver ? o.driver.vehicle : 'Wave Alpha')}</span>
+                  </div>
+                </div>
+
+                <!-- Live Status Banner -->
+                <div class="tracking-hud-status-banner" id="tracking-hud-status">
+                  🛵 Tài xế ${escapeHtml(o.driver ? o.driver.name : 'Nguyễn Văn Tài')} đã nhận món và đang di chuyển về phía bạn...
+                </div>
+
+                <!-- Simulation Controls -->
+                <div class="tracking-sim-controls">
+                  <button type="button" class="tracking-ctrl-btn primary" id="tracking-btn-speed" onclick="toggleTrackingSpeed()">
+                    ⚡ Tăng tốc mô phỏng (x3)
+                  </button>
+                  <button type="button" class="tracking-ctrl-btn" id="tracking-btn-pause" onclick="toggleTrackingPause()">
+                    ⏸️ Tạm dừng
+                  </button>
+                  <button type="button" class="tracking-ctrl-btn" onclick="restartTrackingSimulation()">
+                    🔄 Chạy lại từ đầu
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
           <!-- 2. Theo dõi tình trạng giao hàng (Live Delivery Stepper) -->
           ${!isCancelled ? `
             <div class="delivery-stepper-card">
@@ -2885,8 +3925,8 @@ function renderSingleOrderDetailView(o) {
                 <div class="vqr-order-detail-bar ${o.qrPayment?.isPaid ? 'paid' : 'pending'} ${o.paymentMethod === 'momo' ? 'momo-bar' : ''}">
                   <div>
                     <strong>${o.qrPayment?.isPaid
-      ? `✅ Đã xác nhận thanh toán QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`
-      : `⏳ Đơn đang chờ quét mã QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`}</strong>
+        ? `✅ Đã xác nhận thanh toán QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`
+        : `⏳ Đơn đang chờ quét mã QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`}</strong>
                     <div style="font-size: 11.5px; opacity: 0.9;">
                       ${o.paymentMethod === 'momo' ? 'Ví MoMo • 0866072227' : 'VPBank • 0921030342'} ${o.qrPayment?.transferContent ? `• ND: ${escapeHtml(o.qrPayment.transferContent)}` : ''}
                     </div>
@@ -2897,8 +3937,8 @@ function renderSingleOrderDetailView(o) {
                     onclick="openExistingOrderVietQRModal('${o.orderId}')"
                   >
                     ${o.qrPayment?.isPaid
-      ? (o.paymentMethod === 'momo' ? '👛 Xem QR MoMo' : '📲 Xem mã QR')
-      : (o.paymentMethod === 'momo' ? '👛 Mở QR MoMo' : '📲 Mở QR thanh toán')}
+        ? (o.paymentMethod === 'momo' ? '👛 Xem QR MoMo' : '📲 Xem mã QR')
+        : (o.paymentMethod === 'momo' ? '👛 Mở QR MoMo' : '📲 Mở QR thanh toán')}
                   </button>
                 </div>
               ` : ''}
@@ -2916,12 +3956,12 @@ function renderSingleOrderDetailView(o) {
               </div>
               <div class="order-detail-items-list">
                 ${(o.items || []).map((it, itemIdx) => {
-                  const img = it.image || (typeof DB !== 'undefined' && DB.getItemById(it.dishId || it.id)?.image) || 'assets/images/pho_bo_1792459676492.jpg';
-                  const name = it.dishName || it.name || 'Món ăn';
-                  const sizeText = it.size && it.size.name && it.size.name !== 'Phần Tiêu Chuẩn' ? it.size.name : '';
-                  const toppingsText = Array.isArray(it.toppings) && it.toppings.length > 0 ? it.toppings.map(t => t.name).join(', ') : '';
-                  const subInfo = [sizeText, toppingsText].filter(Boolean).join(' • ');
-                  return `
+          const img = it.image || (typeof DB !== 'undefined' && DB.getItemById(it.dishId || it.id)?.image) || 'assets/images/pho_bo_1792459676492.jpg';
+          const name = it.dishName || it.name || 'Món ăn';
+          const sizeText = it.size && it.size.name && it.size.name !== 'Phần Tiêu Chuẩn' ? it.size.name : '';
+          const toppingsText = Array.isArray(it.toppings) && it.toppings.length > 0 ? it.toppings.map(t => t.name).join(', ') : '';
+          const subInfo = [sizeText, toppingsText].filter(Boolean).join(' • ');
+          return `
                     <div class="order-detail-item-row" onclick="openDishDetailFromOrderCode('${o.orderId}', ${itemIdx})" title="Chạm để xem thông tin chi tiết món ${escapeHtml(name)}">
                       <img class="order-detail-item-img" src="${escapeHtml(img)}" alt="${escapeHtml(name)}" onerror="this.src='assets/images/pho_bo_1792459676492.jpg'">
                       <div class="order-detail-item-body">
@@ -2938,7 +3978,7 @@ function renderSingleOrderDetailView(o) {
                       </div>
                     </div>
                   `;
-                }).join('')}
+        }).join('')}
               </div>
             </div>
           </div>
@@ -3080,6 +4120,322 @@ function renderSingleOrderDetailView(o) {
       <div style="height: 30px;"></div>
     </div>
   `;
+
+  if (isDelivering) {
+    setTimeout(() => initOrderLiveTracking(o), 80);
+  } else {
+    stopLiveTrackingSimulation();
+  }
+}
+
+
+// ==========================================================================
+// LIVE SIMULATED ORDER TRACKING ENGINE (MAP & DISTANCE DECREMENT)
+// ==========================================================================
+
+let liveTrackingMapInstance = null;
+let liveTrackingShipperMarker = null;
+let liveTrackingRouteLine = null;
+let liveTrackingTraversedLine = null;
+let trackingSimTimer = null;
+let trackingSimSpeed = 1;
+let trackingSimPaused = false;
+let trackingWaypoints = [];
+let trackingCurrentIdx = 0;
+let trackingActiveOrder = null;
+
+function stopLiveTrackingSimulation() {
+  if (trackingSimTimer) {
+    clearInterval(trackingSimTimer);
+    trackingSimTimer = null;
+  }
+  if (liveTrackingMapInstance) {
+    try {
+      liveTrackingMapInstance.remove();
+    } catch (_) { }
+    liveTrackingMapInstance = null;
+    liveTrackingShipperMarker = null;
+    liveTrackingRouteLine = null;
+    liveTrackingTraversedLine = null;
+  }
+}
+
+function initOrderLiveTracking(order) {
+  stopLiveTrackingSimulation();
+  trackingActiveOrder = order;
+  const container = document.getElementById('order-live-map');
+  if (!container) return;
+
+  // 1. Resolve shop coords
+  const matchedRes = restaurants.find(r => r.name === order.resName || (order.items && order.items[0] && Number(r.id) === Number(order.items[0].restaurantId)));
+  const shopLat = (matchedRes && matchedRes.lat) ? matchedRes.lat : 20.9822;
+  const shopLng = (matchedRes && matchedRes.lng) ? matchedRes.lng : 105.7888;
+
+  // 2. Resolve user destination coords
+  const userLat = userDeliveryInfo.lat || 20.9806;
+  const userLng = userDeliveryInfo.lng || 105.7878;
+
+  // 3. Generate realistic street waypoints between shop and user
+  trackingWaypoints = generateDeliveryRouteWaypoints(shopLat, shopLng, userLat, userLng);
+  trackingCurrentIdx = 0;
+  trackingSimPaused = false;
+
+  // 4. Try Leaflet rendering
+  if (typeof L !== 'undefined' && L.map) {
+    try {
+      liveTrackingMapInstance = L.map('order-live-map', {
+        zoomControl: false,
+        attributionControl: false
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(liveTrackingMapInstance);
+
+      // Shop Pin
+      const resShort = (order.resName || 'Quán ăn').split('-')[0].trim();
+      const shopIcon = L.divIcon({
+        className: 'custom-shop-pin-wrap',
+        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge" style="border-color:#e11d48; color:#be123c;">Quán: ${escapeHtml(resShort)}</span><span class="custom-map-pin-icon">🍜</span></div>`,
+        iconSize: [110, 50],
+        iconAnchor: [55, 48]
+      });
+      L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(liveTrackingMapInstance);
+
+      // User Destination Pin
+      const userIcon = L.divIcon({
+        className: 'custom-user-dest-wrap',
+        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge">Điểm nhận (PTIT)</span><span class="custom-map-pin-icon">📍</span></div>`,
+        iconSize: [95, 50],
+        iconAnchor: [47, 48]
+      });
+      L.marker([userLat, userLng], { icon: userIcon }).addTo(liveTrackingMapInstance);
+
+      // Moving Shipper Marker
+      const driverIcon = L.divIcon({
+        className: 'custom-driver-marker-wrap',
+        html: `<div class="custom-driver-pin" title="Tài xế ${escapeHtml(order.driver?.name || 'PTIT Express')}">🛵</div>`,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+      liveTrackingShipperMarker = L.marker([shopLat, shopLng], { icon: driverIcon }).addTo(liveTrackingMapInstance);
+
+      // Route lines
+      liveTrackingRouteLine = L.polyline(trackingWaypoints, {
+        color: '#16a34a',
+        weight: 4,
+        opacity: 0.45,
+        dashArray: '6, 8'
+      }).addTo(liveTrackingMapInstance);
+
+      liveTrackingTraversedLine = L.polyline([[shopLat, shopLng]], {
+        color: '#15803d',
+        weight: 5,
+        opacity: 0.95
+      }).addTo(liveTrackingMapInstance);
+
+      const bounds = L.latLngBounds([[shopLat, shopLng], [userLat, userLng]]);
+      liveTrackingMapInstance.fitBounds(bounds, { padding: [45, 45] });
+
+      setTimeout(() => {
+        if (liveTrackingMapInstance) liveTrackingMapInstance.invalidateSize();
+      }, 200);
+
+    } catch (e) {
+      console.warn('Leaflet tracking error, falling back to SVG:', e);
+      renderVectorTrackingFallback(container, shopLat, shopLng, userLat, userLng, order);
+    }
+  } else {
+    renderVectorTrackingFallback(container, shopLat, shopLng, userLat, userLng, order);
+  }
+
+  startTrackingSimulationLoop();
+}
+
+function generateDeliveryRouteWaypoints(sLat, sLng, uLat, uLng) {
+  const steps = 18;
+  const pts = [];
+  const midLat = (sLat + uLat) / 2 + 0.0003;
+  const midLng = (sLng + uLng) / 2 - 0.0004;
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const lat = Math.pow(1 - t, 2) * sLat + 2 * (1 - t) * t * midLat + Math.pow(t, 2) * uLat;
+    const lng = Math.pow(1 - t, 2) * sLng + 2 * (1 - t) * t * midLng + Math.pow(t, 2) * uLng;
+    pts.push([lat, lng]);
+  }
+  return pts;
+}
+
+function startTrackingSimulationLoop() {
+  if (trackingSimTimer) clearInterval(trackingSimTimer);
+
+  const intervalMs = Math.round(1400 / trackingSimSpeed);
+  trackingSimTimer = setInterval(() => {
+    if (trackingSimPaused) return;
+    if (trackingCurrentIdx < trackingWaypoints.length - 1) {
+      trackingCurrentIdx++;
+      updateLiveTrackingFrame();
+    } else {
+      onDriverArrivedAtDestination();
+    }
+  }, intervalMs);
+
+  updateLiveTrackingFrame();
+}
+
+function updateLiveTrackingFrame() {
+  if (!trackingWaypoints || trackingWaypoints.length === 0) return;
+  const currentPos = trackingWaypoints[trackingCurrentIdx];
+  const userPos = trackingWaypoints[trackingWaypoints.length - 1];
+
+  // Move Leaflet marker
+  if (liveTrackingShipperMarker && liveTrackingMapInstance) {
+    liveTrackingShipperMarker.setLatLng(currentPos);
+    const traversed = trackingWaypoints.slice(0, trackingCurrentIdx + 1);
+    if (liveTrackingTraversedLine) liveTrackingTraversedLine.setLatLngs(traversed);
+  }
+
+  // Move SVG marker if fallback active
+  updateVectorShipperPos(trackingCurrentIdx / (trackingWaypoints.length - 1));
+
+  // Compute remaining distance
+  const remainingDist = calculateHaversineKm(currentPos[0], currentPos[1], userPos[0], userPos[1]);
+  const progressRatio = trackingCurrentIdx / (trackingWaypoints.length - 1);
+
+  // Update HUD
+  const distEl = document.getElementById('tracking-hud-dist');
+  const etaEl = document.getElementById('tracking-hud-eta');
+  const speedEl = document.getElementById('tracking-hud-speed');
+  const statusEl = document.getElementById('tracking-hud-status');
+
+  if (distEl) {
+    if (remainingDist <= 0.08) {
+      distEl.textContent = '50 m (Đã tới nơi!)';
+      distEl.style.color = '#16a34a';
+    } else {
+      distEl.textContent = `${remainingDist.toFixed(1)} km`;
+    }
+  }
+
+  if (etaEl) {
+    if (remainingDist <= 0.08) {
+      etaEl.textContent = 'Đang gọi nhận món';
+    } else {
+      const etaMin = Math.max(1, Math.round(remainingDist * 4.2));
+      etaEl.textContent = `${etaMin} phút nữa`;
+    }
+  }
+
+  if (speedEl) {
+    const curSpeed = remainingDist <= 0.08 ? 0 : (28 + Math.floor((Math.random() - 0.5) * 6));
+    speedEl.textContent = `${curSpeed} km/h`;
+  }
+
+  if (statusEl) {
+    const driverName = trackingActiveOrder?.driver?.name || 'Nguyễn Văn Tài';
+    if (progressRatio <= 0.2) {
+      statusEl.innerHTML = `🛵 Tài xế <strong>${escapeHtml(driverName)}</strong> đã lấy món từ <strong>${escapeHtml(trackingActiveOrder?.resName || 'Quán')}</strong>, đang rẽ ra phố Ao Sen.`;
+    } else if (progressRatio <= 0.5) {
+      statusEl.innerHTML = `🛵 Tài xế <strong>${escapeHtml(driverName)}</strong> đang lưu thông trên trục đường Trần Phú, hướng về trường PTIT.`;
+    } else if (progressRatio <= 0.8) {
+      statusEl.innerHTML = `🛵 Tài xế đang qua nút giao trước cổng Học viện PTIT, giảm tốc độ chuẩn bị rẽ vào điểm hẹn.`;
+    } else if (progressRatio < 1) {
+      statusEl.innerHTML = `🛵 Tài xế đã tới cổng chính PTIT, đang tiến vào sảnh nhà A2...`;
+    } else {
+      statusEl.innerHTML = `🎉 <strong>Tài xế đã tới sảnh nhà A2 PTIT!</strong> Vui lòng chuẩn bị nhận món thơm ngon.`;
+    }
+  }
+}
+
+function onDriverArrivedAtDestination() {
+  if (trackingSimTimer) {
+    clearInterval(trackingSimTimer);
+    trackingSimTimer = null;
+  }
+  showToast('checkmarkFilled', '🎉 Shipper đã giao tới sảnh A2 PTIT! Chúc bạn ngon miệng.');
+}
+
+function toggleTrackingSpeed() {
+  trackingSimSpeed = trackingSimSpeed === 1 ? 3 : 1;
+  const btn = document.getElementById('tracking-btn-speed');
+  if (btn) {
+    btn.textContent = trackingSimSpeed === 3 ? '⚡ Tốc độ x3 (Đang bật)' : '⚡ Tăng tốc mô phỏng (x3)';
+  }
+  startTrackingSimulationLoop();
+}
+
+function toggleTrackingPause() {
+  trackingSimPaused = !trackingSimPaused;
+  const btn = document.getElementById('tracking-btn-pause');
+  if (btn) {
+    btn.textContent = trackingSimPaused ? '▶️ Tiếp tục' : '⏸️ Tạm dừng';
+  }
+}
+
+function restartTrackingSimulation() {
+  trackingCurrentIdx = 0;
+  trackingSimPaused = false;
+  const pauseBtn = document.getElementById('tracking-btn-pause');
+  if (pauseBtn) pauseBtn.textContent = '⏸️ Tạm dừng';
+  startTrackingSimulationLoop();
+  showToast('locationRegular', 'Đã bắt đầu lại mô phỏng hành trình giao hàng.');
+}
+
+function renderVectorTrackingFallback(container, sLat, sLng, uLat, uLng, order) {
+  container.innerHTML = `
+    <div style="width:100%; height:100%; position:relative; background:#f8fafc; overflow:hidden;">
+      <svg width="100%" height="100%" viewBox="0 0 500 280" style="position:absolute; inset:0;">
+        <rect width="500" height="280" fill="#f1f5f9"/>
+        <!-- Streets -->
+        <path d="M 0 140 Q 250 80 500 140" stroke="#cbd5e1" stroke-width="14" fill="none"/>
+        <text x="30" y="130" font-size="11" font-weight="bold" fill="#64748b">TRẦN PHÚ - HÀ ĐÔNG</text>
+        <line x1="250" y1="0" x2="250" y2="280" stroke="#cbd5e1" stroke-width="10"/>
+        <text x="260" y="40" font-size="10" font-weight="bold" fill="#64748b">PHỐ AO SEN</text>
+
+        <!-- Route Polyline -->
+        <path id="svg-route-bg" d="M 90 90 Q 250 110 410 180" stroke="#16a34a" stroke-width="4" stroke-dasharray="6,8" opacity="0.5" fill="none"/>
+        <path id="svg-route-active" d="M 90 90 Q 250 110 410 180" stroke="#15803d" stroke-width="5" fill="none" stroke-dasharray="400" stroke-dashoffset="400"/>
+
+        <!-- Shop Node -->
+        <circle cx="90" cy="90" r="14" fill="#fee2e2" stroke="#e11d48" stroke-width="2"/>
+        <text x="90" y="95" text-anchor="middle" font-size="14">🍜</text>
+        <text x="90" y="70" text-anchor="middle" font-size="10" font-weight="bold" fill="#9f1239">${escapeHtml(order.resName.split('-')[0].trim())}</text>
+
+        <!-- User Node -->
+        <circle cx="410" cy="180" r="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+        <text x="410" y="185" text-anchor="middle" font-size="14">📍</text>
+        <text x="410" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532d">Điểm nhận PTIT (A2)</text>
+      </svg>
+
+      <!-- Animated SVG Shipper Marker -->
+      <div id="svg-shipper-marker" style="position:absolute; left:90px; top:90px; transform:translate(-50%, -50%); z-index:3; transition:all 0.4s ease;">
+        <div class="custom-driver-pin">🛵</div>
+      </div>
+    </div>
+  `;
+}
+
+function updateVectorShipperPos(ratio) {
+  const marker = document.getElementById('svg-shipper-marker');
+  const routeActive = document.getElementById('svg-route-active');
+  if (!marker) return;
+
+  const startX = 90, startY = 90;
+  const midX = 250, midY = 110;
+  const endX = 410, endY = 180;
+
+  const t = Math.max(0, Math.min(1, ratio));
+  const x = Math.pow(1 - t, 2) * startX + 2 * (1 - t) * t * midX + Math.pow(t, 2) * endX;
+  const y = Math.pow(1 - t, 2) * startY + 2 * (1 - t) * t * midY + Math.pow(t, 2) * endY;
+
+  marker.style.left = x + 'px';
+  marker.style.top = y + 'px';
+
+  if (routeActive) {
+    const totalLen = 400;
+    routeActive.style.strokeDashoffset = (totalLen * (1 - t)).toString();
+  }
 }
 
 // ========================================
@@ -3173,6 +4529,14 @@ function onSearchInputChange(val) {
   if (desktopInput && desktopInput.value !== val) {
     desktopInput.value = val;
   }
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput && floatingInput.value !== val) {
+    floatingInput.value = val;
+  }
+  const floatingClear = document.getElementById('floating-search-clear-btn');
+  if (floatingClear) {
+    floatingClear.style.display = val ? 'flex' : 'none';
+  }
   updateSearchResultsOnly();
 }
 
@@ -3183,6 +4547,14 @@ function clearSearch() {
   if (inputEl) {
     inputEl.value = '';
     inputEl.focus();
+  }
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput) {
+    floatingInput.value = '';
+  }
+  const floatingClear = document.getElementById('floating-search-clear-btn');
+  if (floatingClear) {
+    floatingClear.style.display = 'none';
   }
   const desktopInput = document.getElementById('desktop-search-input');
   if (desktopInput) {
@@ -3243,6 +4615,13 @@ function resetAllFilters() {
     freeship: false,
     budget: false,
     voucher: false,
+    area: 'all',
+    promo: 'all',
+    shipping: 'all',
+    priceRange: 'all',
+    minPrice: null,
+    maxPrice: null,
+    ratingMin: 0
   };
   renderSearchView();
   showToast('optionsRegular', 'Đã đặt lại tất cả bộ lọc');

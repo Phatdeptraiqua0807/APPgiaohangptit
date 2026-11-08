@@ -1,6 +1,6 @@
 /* ==========================================================================
    ptitngon - Catalog & User Profile Management Views (js/catalog-profile.js)
-   - Hệ thống Quản lý Mặt hàng & Loại mặt hàng tùy chỉnh (lưu vĩnh viễn)
+   - Hệ thống Quản lý Mặt hàng & Loại mặt hàng tùy chỉnh (lưu )
    - Hệ thống Hồ sơ Người dùng: Ghi nhớ các người dùng đã tạo, SĐT, địa chỉ, đơn đã đặt
    - Đồng bộ trực tiếp với file database.json
    ========================================================================== */
@@ -116,7 +116,7 @@ function syncGlobalChromeUI() {
   }
 }
 
-// Tiện ích nén ảnh tải lên từ máy tính thành Base64 gọn nhẹ để lưu vĩnh viễn
+// Tiện ích nén ảnh tải lên từ máy tính thành Base64 gọn nhẹ để lưu 
 function readAndCompressImageFile(file, maxWidth = 480, quality = 0.78) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error('Không có file'));
@@ -203,7 +203,7 @@ function renderCatalogManagerView() {
     ? `🔗 Đang ghi trực tiếp: ${DB.linkedFileName}`
     : DB.fileSyncStatus === 'server-api'
       ? `🟢 Đang đồng bộ trực tiếp database.json`
-      : `💾 Đã lưu vĩnh viễn tự động`;
+      : `💾 Đã lưu  tự động`;
 
   app.innerHTML = `
     <div class="catalog-view-container fade-in">
@@ -224,7 +224,7 @@ function renderCatalogManagerView() {
           <div>
             <div class="db-hero-badge">${syncLabel}</div>
             <div class="db-hero-title">Hệ thống Cơ sở dữ liệu Mặt hàng (.json)</div>
-            <div class="db-hero-sub">Thêm loại mặt hàng tùy chỉnh, thêm sản phẩm mới và đồng bộ vĩnh viễn</div>
+            <div class="db-hero-sub">Thêm loại mặt hàng tùy chỉnh, thêm sản phẩm mới và đồng bộ </div>
           </div>
           <div class="db-hero-actions">
             <button class="db-btn-white" onclick="openCategoryEditorModal()">
@@ -355,10 +355,10 @@ function renderCatalogItemsGridHtml(itemsList) {
     </div>
     <div class="db-items-grid">
       ${itemsList.map(item => {
-        const catObj = DB.getCategoryById(item.categoryId);
-        const catIcon = catObj ? catObj.icon : '🍽️';
-        const isOut = item.inStock === false;
-        return `
+    const catObj = DB.getCategoryById(item.categoryId);
+    const catIcon = catObj ? catObj.icon : '🍽️';
+    const isOut = item.inStock === false;
+    return `
           <div class="db-item-card ${isOut ? 'out-of-stock' : ''}">
             <div class="db-item-img-wrap">
               <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
@@ -404,7 +404,7 @@ function renderCatalogItemsGridHtml(itemsList) {
             </div>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
@@ -443,10 +443,10 @@ function handleToggleItemStock(itemId) {
 function handleDeleteItem(itemId) {
   const item = DB.getItemById(itemId);
   if (!item) return;
-  if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn mặt hàng "${item.name}" khỏi Database không?`)) return;
+  if (!confirm(`Bạn có chắc muốn xóa  mặt hàng "${item.name}" khỏi Database không?`)) return;
   const res = DB.deleteItem(itemId);
   if (res.ok) {
-    showToast('deleteRegular', `Đã xóa vĩnh viễn mặt hàng "${item.name}"`);
+    showToast('deleteRegular', `Đã xóa  mặt hàng "${item.name}"`);
     renderCatalogManagerView();
   }
 }
@@ -456,7 +456,7 @@ function renderCatalogCategoriesTab(allCats, allItems) {
     <div class="db-section-toolbar">
       <div>
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Danh sách Loại Mặt Hàng (${allCats.length})</div>
-        <div style="font-size:12px; color:var(--gray-500);">Loại mặt hàng tùy chỉnh bạn thêm sẽ xuất hiện trên toàn ứng dụng và lưu vĩnh viễn.</div>
+        <div style="font-size:12px; color:var(--gray-500);">Loại mặt hàng tùy chỉnh bạn thêm sẽ xuất hiện trên toàn ứng dụng và lưu .</div>
       </div>
       <button class="db-primary-btn" onclick="openCategoryEditorModal()">
         ➕ Tạo loại mặt hàng tùy chỉnh
@@ -465,8 +465,8 @@ function renderCatalogCategoriesTab(allCats, allItems) {
 
     <div class="db-categories-grid">
       ${allCats.map(cat => {
-        const count = allItems.filter(it => it.categoryId === cat.id || it.category === cat.name).length;
-        return `
+    const count = allItems.filter(it => it.categoryId === cat.id || it.category === cat.name).length;
+    return `
           <div class="db-category-card ${cat.isCustom ? 'is-custom' : ''}">
             <div class="db-cat-card-top">
               <div class="db-cat-card-icon">${cat.icon}</div>
@@ -495,7 +495,7 @@ function renderCatalogCategoriesTab(allCats, allItems) {
             </div>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
@@ -506,7 +506,7 @@ function handleDeleteCategory(catId) {
   const count = DB.getItems().filter(it => it.categoryId === cat.id || it.category === cat.name).length;
   const msg = count > 0
     ? `Loại mặt hàng "${cat.name}" đang có ${count} mặt hàng. Nếu xóa, các mặt hàng này sẽ chuyển sang danh mục đầu tiên. Bạn chắc chắn muốn xóa?`
-    : `Xóa vĩnh viễn loại mặt hàng "${cat.name}" khỏi Database?`;
+    : `Xóa  loại mặt hàng "${cat.name}" khỏi Database?`;
   if (!confirm(msg)) return;
 
   const res = DB.deleteCategory(catId);
@@ -535,15 +535,15 @@ function renderCatalogDatabaseTab() {
 
       <div class="db-status-alert ${DB.fileSyncStatus === 'file-linked' || DB.fileSyncStatus === 'server-api' ? 'linked' : ''}">
         <div>
-          <strong>Trạng thái Lưu Vĩnh Viễn:</strong>
+          <strong>Trạng thái Lưu :</strong>
           ${DB.fileSyncStatus === 'file-linked'
-            ? `Đang kết nối trực tiếp tới file <code>${escapeHtml(DB.linkedFileName)}</code> trên ổ cứng. Mọi thay đổi đều tự động ghi thẳng vào file .json và LocalStorage!`
-            : DB.fileSyncStatus === 'permission-needed'
-              ? `Đã nhớ file <code>${escapeHtml(DB.linkedFileName)}</code> từ phiên trước. Bấm <strong>"Cấp quyền ghi lại vào database.json"</strong> bên dưới để tiếp tục tự động ghi đè lên ổ cứng!`
-              : DB.fileSyncStatus === 'server-api'
-                ? `Đang chạy qua Server nội bộ: Mọi thao tác tự động ghi trực tiếp vào file <code>database.json</code> trong thư mục dự án!`
-                : `Mọi thay đổi (loại mặt hàng mới, mặt hàng mới, người dùng, SĐT, địa chỉ, đơn hàng) đang được <strong>lưu vĩnh viễn tự động</strong> trên trình duyệt. Bạn cũng có thể bấm <strong>"Liên kết trực tiếp file database.json"</strong> để trình duyệt tự động ghi thẳng vào file <code>database.json</code> trên máy tính!`
-          }
+      ? `Đang kết nối trực tiếp tới file <code>${escapeHtml(DB.linkedFileName)}</code> trên ổ cứng. Mọi thay đổi đều tự động ghi thẳng vào file .json và LocalStorage!`
+      : DB.fileSyncStatus === 'permission-needed'
+        ? `Đã nhớ file <code>${escapeHtml(DB.linkedFileName)}</code> từ phiên trước. Bấm <strong>"Cấp quyền ghi lại vào database.json"</strong> bên dưới để tiếp tục tự động ghi đè lên ổ cứng!`
+        : DB.fileSyncStatus === 'server-api'
+          ? `Đang chạy qua Server nội bộ: Mọi thao tác tự động ghi trực tiếp vào file <code>database.json</code> trong thư mục dự án!`
+          : `Mọi thay đổi (loại mặt hàng mới, mặt hàng mới, người dùng, SĐT, địa chỉ, đơn hàng) đang được <strong>lưu  tự động</strong> trên trình duyệt. Bạn cũng có thể bấm <strong>"Liên kết trực tiếp file database.json"</strong> để trình duyệt tự động ghi thẳng vào file <code>database.json</code> trên máy tính!`
+    }
         </div>
       </div>
 
@@ -566,7 +566,7 @@ function renderCatalogDatabaseTab() {
           <input type="file" accept=".json,application/json" style="display:none;" onchange="handleImportDatabaseJson(this)">
           <span class="db-sync-card-emoji">⬆️</span>
           <span class="db-sync-card-title">Nhập dữ liệu từ file .json</span>
-          <span class="db-sync-card-desc">Nạp file database.json có sẵn từ máy tính và lưu vĩnh viễn vào hệ thống</span>
+          <span class="db-sync-card-desc">Nạp file database.json có sẵn từ máy tính và lưu  vào hệ thống</span>
         </label>
 
         <button class="db-sync-action-card danger" onclick="handleResetDatabase()">
@@ -612,13 +612,13 @@ function renderCatalogDatabaseTab() {
             <button onclick="copyDatabaseJsonToClipboard()">📋 Sao chép JSON</button>
           </div>
           <pre>${escapeHtml(JSON.stringify({
-            meta: DB.data.meta,
-            currentUserId: DB.data.currentUserId,
-            users: DB.data.users,
-            categories: DB.data.categories,
-            itemsCount: DB.data.items.length,
-            sampleNewestItems: DB.data.items.slice(0, 5)
-          }, null, 2))}</pre>
+      meta: DB.data.meta,
+      currentUserId: DB.data.currentUserId,
+      users: DB.data.users,
+      categories: DB.data.categories,
+      itemsCount: DB.data.items.length,
+      sampleNewestItems: DB.data.items.slice(0, 5)
+    }, null, 2))}</pre>
         </div>
       ` : ''}
     </div>
@@ -783,7 +783,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
           </button>
         ` : ''}
         <button type="button" class="btn-primary-large" style="flex:1;" onclick="submitCategoryEditor('${editingCat ? escapeHtml(editingCat.id) : ''}')">
-          💾 ${editingCat ? 'Lưu Cập Nhật Vĩnh Viễn' : 'Tạo & Lưu Vĩnh Viễn Loại Mặt Hàng'}
+          💾 ${editingCat ? 'Lưu Cập Nhật ' : 'Tạo & Lưu  Loại Mặt Hàng'}
         </button>
       </div>
     </div>
@@ -853,7 +853,7 @@ function submitCategoryEditor(editCatId) {
   }
 
   syncGlobalChromeUI();
-  showToast('checkmarkFilled', `Đã lưu vĩnh viễn loại mặt hàng "${res.category.icon} ${res.category.name}"!`);
+  showToast('checkmarkFilled', `Đã lưu  loại mặt hàng "${res.category.icon} ${res.category.name}"!`);
 
   // Nếu người dùng mở tạo loại mới từ trong form Thêm Mặt Hàng, quay lại form Thêm Mặt Hàng với loại vừa tạo được chọn sẵn!
   if (pendingReturnToItemModal) {
@@ -1053,7 +1053,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
       </label>
 
       <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitItemEditor('${editingItem ? escapeHtml(editingItem.id) : ''}')">
-        💾 ${editingItem ? 'Cập Nhật & Lưu Vĩnh Viễn Mặt Hàng' : 'Thêm & Lưu Vĩnh Viễn Mặt Hàng'}
+        💾 ${editingItem ? 'Cập Nhật & Lưu  Mặt Hàng' : 'Thêm & Lưu  Mặt Hàng'}
       </button>
     </div>
   `;
@@ -1189,7 +1189,7 @@ function submitItemEditor(editItemId) {
   }
 
   closeModal();
-  showToast('checkmarkFilled', `Đã lưu vĩnh viễn mặt hàng "${res.item.name}" (${res.item.priceFormatted})!`);
+  showToast('checkmarkFilled', `Đã lưu  mặt hàng "${res.item.name}" (${res.item.priceFormatted})!`);
   render();
 }
 
@@ -1222,6 +1222,42 @@ function toggleHiddenDbDrawer() {
   renderProfileView();
 }
 
+let isProfileHeroExpanded = false;
+function toggleProfileHeroExpand() {
+  isProfileHeroExpanded = !isProfileHeroExpanded;
+  const card = document.getElementById('profile-hero-card');
+  const details = document.getElementById('profile-hero-details');
+  const btn = document.getElementById('profile-hero-toggle-btn');
+  const main = document.querySelector('.profile-hero-main');
+  if (card && btn) {
+    if (isProfileHeroExpanded) {
+      card.classList.remove('collapsed');
+      card.classList.add('expanded');
+      if (details) {
+        details.classList.remove('collapsed');
+        details.classList.add('expanded');
+      }
+      btn.classList.add('expanded');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('title', 'Thu gọn thông tin & chức năng');
+      if (main) main.classList.add('is-expanded');
+    } else {
+      card.classList.remove('expanded');
+      card.classList.add('collapsed');
+      if (details) {
+        details.classList.remove('expanded');
+        details.classList.add('collapsed');
+      }
+      btn.classList.remove('expanded');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('title', 'Mở rộng thông tin & chức năng');
+      if (main) main.classList.remove('is-expanded');
+    }
+  } else {
+    renderProfileView();
+  }
+}
+
 function renderProfileView() {
   const activeUser = DB.getCurrentUser();
   const allUsers = DB.getUsers();
@@ -1243,9 +1279,9 @@ function renderProfileView() {
         <div style="width: 36px;"></div>
       </div>
 
-      <!-- Active User Profile Hero Card -->
-      <div class="profile-hero-card">
-        <div class="profile-hero-main">
+      <!-- Active User Profile Hero Card (Mặc định thu gọn, bấm nút để mở rộng) -->
+      <div class="profile-hero-card ${isProfileHeroExpanded ? 'expanded' : 'collapsed'}" id="profile-hero-card">
+        <div class="profile-hero-main ${isProfileHeroExpanded ? 'is-expanded' : ''}">
           <div class="profile-avatar-circle" onclick="openUserProfileModal('${escapeHtml(activeUser.id)}')" title="Bấm để đổi avatar & thông tin">
             ${activeUser.avatar || '👨‍🎓'}
           </div>
@@ -1254,14 +1290,27 @@ function renderProfileView() {
               <span class="profile-hero-name">${escapeHtml(activeUser.name)}</span>
               <span class="profile-tier-badge">${escapeHtml(activeUser.memberTier || 'Thành viên')}</span>
             </div>
-            <div class="profile-contact-line">
-              <span>📞 <strong>${escapeHtml(activeUser.phone)}</strong></span>
-              ${activeUser.email ? `<span>• ✉️ ${escapeHtml(activeUser.email)}</span>` : ''}
-            </div>
-            <div class="profile-address-line">
-              <span>📍 <strong>${escapeHtml(activeUser.addressLabel || 'Địa chỉ')}:</strong> ${escapeHtml(activeUser.address)}</span>
+            <!-- Mỗi thông tin sđt, email, địa chỉ hiển thị trên đúng 1 dòng - mặc định thu gọn -->
+            <div class="profile-hero-details ${isProfileHeroExpanded ? 'expanded' : 'collapsed'}" id="profile-hero-details">
+              <div class="profile-detail-line" title="Số điện thoại: ${escapeHtml(activeUser.phone)}">
+                <span class="profile-detail-icon">📞</span>
+                <span class="profile-detail-text"><strong>${escapeHtml(activeUser.phone)}</strong></span>
+              </div>
+              ${activeUser.email ? `
+                <div class="profile-detail-line" title="Email: ${escapeHtml(activeUser.email)}">
+                  <span class="profile-detail-icon">✉️</span>
+                  <span class="profile-detail-text">${escapeHtml(activeUser.email)}</span>
+                </div>
+              ` : ''}
+              <div class="profile-detail-line" title="Địa chỉ: ${escapeHtml(activeUser.address)}">
+                <span class="profile-detail-icon">📍</span>
+                <span class="profile-detail-text"><strong>${escapeHtml(activeUser.addressLabel || 'Địa chỉ')}:</strong> ${escapeHtml(activeUser.address)}</span>
+              </div>
             </div>
           </div>
+          <button type="button" class="profile-hero-toggle-btn ${isProfileHeroExpanded ? 'expanded' : ''}" id="profile-hero-toggle-btn" onclick="toggleProfileHeroExpand()" aria-expanded="${isProfileHeroExpanded}" title="${isProfileHeroExpanded ? 'Thu gọn thông tin chi tiết' : 'Mở rộng thông tin chi tiết'}">
+            ${FluentIcons.chevronDown}
+          </button>
         </div>
 
         <!-- Tóm tắt Chế độ Người dùng, Cân nặng & Kcal Hàng ngày -->
@@ -1389,7 +1438,7 @@ function renderRememberedUsersTab(allUsers, activeUser) {
       <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
         <div>
           <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Danh bạ Người Dùng Đã Tạo & Ghi Nhớ</div>
-          <div style="font-size:12px; color:var(--gray-500);">Hệ thống lưu vĩnh viễn SĐT, địa chỉ nhận hàng và toàn bộ lịch sử đơn đặt của từng người dùng.</div>
+          <div style="font-size:12px; color:var(--gray-500);">Hệ thống lưu  SĐT, địa chỉ nhận hàng và toàn bộ lịch sử đơn đặt của từng người dùng.</div>
         </div>
         <button class="db-primary-btn" onclick="openUserProfileModal(null)">
           ➕ Tạo hồ sơ mới
@@ -1431,17 +1480,17 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
   return `
     <div class="remembered-users-grid">
       ${usersList.map(u => {
-        const isCurrent = u.id === activeUser.id;
-        const ordersCount = (u.orders || []).length;
-        const addrCount = (u.savedAddresses || []).length;
-        const spent = (u.orders || [])
-          .filter(o => o.categoryStatus !== 'cancelled')
-          .reduce((s, o) => s + (Number(o.totalAmount) || 0), 0);
-        const latestOrder = (u.orders && u.orders.length > 0) ? u.orders[0] : null;
-        const uHp = typeof getNormalizedUserHealthProfile === 'function' ? getNormalizedUserHealthProfile(u) : null;
-        const uPersona = (uHp && typeof getPersonaMeta === 'function') ? getPersonaMeta(uHp.personaType) : null;
+    const isCurrent = u.id === activeUser.id;
+    const ordersCount = (u.orders || []).length;
+    const addrCount = (u.savedAddresses || []).length;
+    const spent = (u.orders || [])
+      .filter(o => o.categoryStatus !== 'cancelled')
+      .reduce((s, o) => s + (Number(o.totalAmount) || 0), 0);
+    const latestOrder = (u.orders && u.orders.length > 0) ? u.orders[0] : null;
+    const uHp = typeof getNormalizedUserHealthProfile === 'function' ? getNormalizedUserHealthProfile(u) : null;
+    const uPersona = (uHp && typeof getPersonaMeta === 'function') ? getPersonaMeta(uHp.personaType) : null;
 
-        return `
+    return `
           <div class="user-record-card ${isCurrent ? 'active-user' : ''}">
             <div class="user-record-head">
               <div class="user-record-left">
@@ -1507,7 +1556,7 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
             </div>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
@@ -1569,7 +1618,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
       <div class="search-empty-state" style="padding: 48px 20px;">
         <div class="search-empty-icon">🧾</div>
         <div class="search-empty-title">${escapeHtml(activeUser.name)} chưa có đơn hàng nào</div>
-        <div class="search-empty-sub">Mọi đơn hàng bạn đặt sẽ được ghi nhớ vĩnh viễn trong hồ sơ của ${escapeHtml(activeUser.name)} (${escapeHtml(activeUser.phone)}).</div>
+        <div class="search-empty-sub">Mọi đơn hàng bạn đặt sẽ được ghi nhớ  trong hồ sơ của ${escapeHtml(activeUser.name)} (${escapeHtml(activeUser.phone)}).</div>
         <button class="db-primary-btn" style="margin-top:14px;" onclick="openSearchView()">
           🍜 Đặt món đầu tiên ngay
         </button>
@@ -1590,15 +1639,15 @@ function renderProfileOrdersTab(activeUser, userOrders) {
 
     <div class="past-orders-list">
       ${userOrders.map(order => {
-        const isDelivering = order.categoryStatus === 'delivering';
-        const isCompleted = order.categoryStatus === 'completed';
-        const badgeClass = isDelivering ? 'delivering' : (isCompleted ? 'completed' : 'cancelled');
-        const badgeText = isDelivering
-          ? `<span class="pulse-dot"></span> Đang giao`
-          : (isCompleted ? `Giao thành công` : `Đã hủy đơn`);
-        const itemsSummary = (order.items || []).map(it => `${it.quantity}x ${it.dishName || it.name}`).join(' • ');
+    const isDelivering = order.categoryStatus === 'delivering';
+    const isCompleted = order.categoryStatus === 'completed';
+    const badgeClass = isDelivering ? 'delivering' : (isCompleted ? 'completed' : 'cancelled');
+    const badgeText = isDelivering
+      ? `<span class="pulse-dot"></span> Đang giao`
+      : (isCompleted ? `Giao thành công` : `Đã hủy đơn`);
+    const itemsSummary = (order.items || []).map(it => `${it.quantity}x ${it.dishName || it.name}`).join(' • ');
 
-        return `
+    return `
           <div class="past-order-card" onclick="viewOrderDetail('${escapeHtml(order.orderId)}'); openActivityView();" style="cursor:pointer;">
             <div class="past-order-head">
               <div>
@@ -1633,7 +1682,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
             </div>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
@@ -1654,8 +1703,8 @@ function renderProfileAddressesTab(activeUser) {
 
     <div class="saved-addresses-grid">
       ${addrs.map(addr => {
-        const isCurrent = activeUser.address === addr.address;
-        return `
+    const isCurrent = activeUser.address === addr.address;
+    return `
           <div class="saved-addr-card ${isCurrent ? 'active' : ''}">
             <div class="saved-addr-top">
               <div class="saved-addr-label">
@@ -1682,7 +1731,7 @@ function renderProfileAddressesTab(activeUser) {
             ` : ''}
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
@@ -1740,8 +1789,8 @@ function openAccountSwitcherModal() {
         </div>
         <div class="acc-switch-list">
           ${users.map(u => {
-            const isCurrent = u.id === activeUser.id;
-            return `
+    const isCurrent = u.id === activeUser.id;
+    return `
               <div class="acc-switch-row ${isCurrent ? 'active' : ''}" onclick="${isCurrent ? '' : `switchAccountFromSwitcher('${escapeHtml(u.id)}')`}">
                 <div class="acc-switch-avatar">${u.avatar || '🧑‍🎓'}</div>
                 <div class="acc-switch-info">
@@ -1754,7 +1803,7 @@ function openAccountSwitcherModal() {
                 ` : ''}
               </div>
             `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
 
@@ -1766,8 +1815,8 @@ function openAccountSwitcherModal() {
         <div class="acc-switch-list">
           ${addrs.length === 0 ? `<div class="acc-switch-sub" style="padding:8px 2px;">Chưa có địa chỉ nào được lưu.</div>` : ''}
           ${addrs.map(a => {
-            const isCurrent = activeUser.address === a.address;
-            return `
+    const isCurrent = activeUser.address === a.address;
+    return `
               <div class="acc-switch-row ${isCurrent ? 'active' : ''}" onclick="${isCurrent ? '' : `selectAddressFromSwitcher('${escapeHtml(a.id)}')`}">
                 <div class="acc-switch-avatar">${a.icon || '📍'}</div>
                 <div class="acc-switch-info">
@@ -1782,7 +1831,7 @@ function openAccountSwitcherModal() {
                 ` : ''}
               </div>
             `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
     </div>
@@ -2122,7 +2171,7 @@ function openSavedAddressModal(editAddrId = null) {
       </label>
 
       <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitSavedAddressModal('${editing ? escapeHtml(editing.id) : ''}')">
-        💾 Lưu Địa Chỉ Vĩnh Viễn
+        💾 Lưu Địa Chỉ 
       </button>
     </div>
   `;
