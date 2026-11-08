@@ -1453,10 +1453,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
             `).join('')}
             ${dishAIIsThinking ? `
               <div class="sn-ai-msg assistant">
-                <div class="sn-ai-msg-badge" style="display:flex;align-items:center;justify-content:space-between;">
-                  <span>🤖 AI đang phân tích thành phần món ăn...</span>
-                  <button type="button" class="ai-inline-stop-btn" onclick="stopDishAIGeneration()" title="Dừng tạo câu trả lời">⏹ Dừng</button>
-                </div>
+                <div class="sn-ai-msg-badge">🤖 AI đang phân tích thành phần món ăn...</div>
                 <div class="ai-typing-indicator" style="margin-top:4px;"><span></span><span></span><span></span></div>
               </div>
             ` : ''}
@@ -1657,7 +1654,7 @@ function stopDishAIGeneration() {
   if (!dishAIIsThinking) return;
   dishAIIsThinking = false;
   if (typeof aiCurrentAbortController !== 'undefined' && aiCurrentAbortController) {
-    try { aiCurrentAbortController.abort(); } catch (_) {}
+    try { aiCurrentAbortController.abort(); } catch (_) { }
   }
   if (modalDish && Array.isArray(dishAIChatLogs[modalDish.id])) {
     const logs = dishAIChatLogs[modalDish.id];

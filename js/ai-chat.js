@@ -913,12 +913,7 @@ function renderAIChatView() {
               <div class="ai-reasoning" id="ai-reasoning">
                 <div class="ai-reasoning-list" id="ai-reasoning-list">
                   ${aiLiveStageLogs.map(l => `<div class="ai-reason-step done">${escapeHtml(l)}</div>`).join('')}
-                  <div class="ai-reason-step active">
-                    <span>${escapeHtml(aiLiveProgressText || 'Đang phân tích yêu cầu của bạn')}</span>
-                    <button type="button" class="ai-inline-stop-btn" onclick="stopAIChatGeneration()" title="Dừng tạo câu trả lời (Esc)">
-                      ⏹ Dừng
-                    </button>
-                  </div>
+                  <div class="ai-reason-step active">${escapeHtml(aiLiveProgressText || 'Đang phân tích yêu cầu của bạn')}</div>
                 </div>
               </div>
             </div>

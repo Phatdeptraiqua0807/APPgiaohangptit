@@ -2,9 +2,9 @@
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-08T03:22:50.004Z",
+    "updatedAt": "2026-11-08T05:56:22.872Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
-    "lastAction": "add_library_image"
+    "lastAction": "update_cart"
   },
   "categories": [
     {
@@ -12730,6 +12730,22 @@
           "quantity": 1,
           "unitPrice": 35000,
           "totalPrice": 35000
+        },
+        {
+          "id": "1794117382872589x",
+          "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
+          "restaurantName": "Bánh Mì Huỳnh Hoa - Đặc Sản Sài Gòn",
+          "restaurantId": 2,
+          "image": "assets/images/banh_mi_1792459688980.jpg",
+          "size": {
+            "name": "Ly Khổng Lồ 1 Lít",
+            "extraPrice": 0
+          },
+          "toppings": [],
+          "note": "",
+          "quantity": 1,
+          "unitPrice": 20000,
+          "totalPrice": 20000
         }
       ],
       "orders": [
