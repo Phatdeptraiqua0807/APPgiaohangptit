@@ -178,10 +178,13 @@ function updateFloatingTopBar() {
     else inPageHeader.classList.remove('is-scrolled');
   }
 
-  // Ở điện thoại (< 768px), page-nav-header gốc đã hiển thị tốt nên không dùng floating-topbar-inner
-  if (window.innerWidth < 768) {
+  const isActivityTab = (currentView === 'activity' && !viewingOrderDetailId);
+
+  // Ở điện thoại (< 768px), page-nav-header gốc đã hiển thị tốt nên không dùng floating-topbar-inner, trừ tab hoạt động có activity-tabs-bar
+  if (window.innerWidth < 768 && !isActivityTab) {
     if (floatingBar) {
       floatingBar.classList.remove('visible');
+      floatingBar.classList.remove('has-activity-tabs');
       floatingBar.setAttribute('aria-hidden', 'true');
     }
     return;
@@ -192,6 +195,7 @@ function updateFloatingTopBar() {
   if (activeBulkBar) {
     if (floatingBar) {
       floatingBar.classList.remove('visible');
+      floatingBar.classList.remove('has-activity-tabs');
       floatingBar.setAttribute('aria-hidden', 'true');
     }
     return;
@@ -201,6 +205,7 @@ function updateFloatingTopBar() {
   if (!inPageHeader || scrollY <= 45) {
     if (floatingBar) {
       floatingBar.classList.remove('visible');
+      floatingBar.classList.remove('has-activity-tabs');
       floatingBar.setAttribute('aria-hidden', 'true');
     }
     return;
@@ -208,7 +213,23 @@ function updateFloatingTopBar() {
 
   // Khi cuộn qua header (> 45px): Hiển thị floating top bar cố định ở đỉnh màn hình trong vùng thấy được
   if (floatingBar && inner) {
-    const currentHtml = inPageHeader.innerHTML;
+    let currentHtml = '';
+    if (isActivityTab && typeof renderActivityTabsBarHtml === 'function') {
+      floatingBar.classList.add('has-activity-tabs');
+      currentHtml = `
+        <div class="floating-activity-header-group">
+          <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+            ${FluentIcons.arrowLeft}
+          </button>
+          <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
+        </div>
+        ${renderActivityTabsBarHtml(true)}
+      `;
+    } else {
+      floatingBar.classList.remove('has-activity-tabs');
+      currentHtml = inPageHeader.innerHTML;
+    }
+
     if (currentHtml !== lastSyncedTopBarHtml) {
       lastSyncedTopBarHtml = currentHtml;
       inner.innerHTML = currentHtml;
@@ -1290,6 +1311,10 @@ function renderSearchEmptyStateHtml() {
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function renderSearchView() {
@@ -1565,6 +1590,10 @@ function renderRestaurantDetailCard(r) {
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function updateSearchResultsOnly() {
@@ -2570,6 +2599,10 @@ function renderVectorDeliveryMapFallback(container, lat, lng) {
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 // ── Định vị GPS & Hoàn chỉnh chức năng Lấy Vị Trí Hiện Tại ──
@@ -3451,6 +3484,10 @@ function renderCheckoutView() {
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function handleApplyCheckoutVoucher() {
@@ -3597,6 +3634,9 @@ function switchActivityFilter(filter) {
   activityFilter = filter;
   viewingOrderDetailId = null;
   renderActivityView();
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function viewOrderDetail(orderId) {
@@ -3803,6 +3843,55 @@ function editUserReview(orderId) {
   }
 }
 
+function renderActivityTabsBarHtml(isFloating = false) {
+  const counts = {
+    all: ordersList.length,
+    delivering: ordersList.filter(o => o.categoryStatus === 'delivering').length,
+    completed: ordersList.filter(o => o.categoryStatus === 'completed').length,
+    cancelled: ordersList.filter(o => o.categoryStatus === 'cancelled').length
+  };
+
+  const idAttr = isFloating ? 'id="floating-activity-tabs-bar"' : 'id="activity-tabs-bar"';
+  const extraClass = isFloating ? 'floating-activity-tabs-bar' : '';
+
+  return `
+    <div class="activity-tabs-bar ${extraClass}" ${idAttr}>
+      <button 
+        type="button"
+        class="activity-tab-btn ${activityFilter === 'all' ? 'active' : ''}" 
+        onclick="switchActivityFilter('all')"
+      >
+        <span>Tất cả</span>
+        <span class="activity-tab-badge">${counts.all}</span>
+      </button>
+      <button 
+        type="button"
+        class="activity-tab-btn ${activityFilter === 'delivering' ? 'active' : ''}" 
+        onclick="switchActivityFilter('delivering')"
+      >
+        <span>Đang giao</span>
+        <span class="activity-tab-badge">${counts.delivering}</span>
+      </button>
+      <button 
+        type="button"
+        class="activity-tab-btn ${activityFilter === 'completed' ? 'active' : ''}" 
+        onclick="switchActivityFilter('completed')"
+      >
+        <span>Đã giao</span>
+        <span class="activity-tab-badge">${counts.completed}</span>
+      </button>
+      <button 
+        type="button"
+        class="activity-tab-btn ${activityFilter === 'cancelled' ? 'active' : ''}" 
+        onclick="switchActivityFilter('cancelled')"
+      >
+        <span>Đã hủy</span>
+        <span class="activity-tab-badge">${counts.cancelled}</span>
+      </button>
+    </div>
+  `;
+}
+
 function renderActivityView() {
   if (viewingOrderDetailId) {
     const order = ordersList.find(x => x.orderId === viewingOrderDetailId);
@@ -3833,48 +3922,13 @@ function renderActivityView() {
         <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
-        <div class="page-nav-title">Hoạt Động & Đơn Hàng</div>
+        <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
         <div style="width: 36px;"></div>
       </div>
 
       <!-- 4 Filter Tabs Bar: Tất cả, Đơn đang giao, Đơn đã giao, Đã hủy -->
       <div class="activity-tabs-wrapper">
-        <button class="scroll-arrow-btn small" onclick="scrollHorizontally('activity-tabs-bar', -160)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
-          ${FluentIcons.chevronLeft}
-        </button>
-        <div class="activity-tabs-bar" id="activity-tabs-bar">
-          <button 
-            class="activity-tab-btn ${activityFilter === 'all' ? 'active' : ''}" 
-            onclick="switchActivityFilter('all')"
-          >
-            <span>Tất cả</span>
-            <span class="activity-tab-badge">${counts.all}</span>
-          </button>
-          <button 
-            class="activity-tab-btn ${activityFilter === 'delivering' ? 'active' : ''}" 
-            onclick="switchActivityFilter('delivering')"
-          >
-            <span>Đang giao</span>
-            <span class="activity-tab-badge">${counts.delivering}</span>
-          </button>
-          <button 
-            class="activity-tab-btn ${activityFilter === 'completed' ? 'active' : ''}" 
-            onclick="switchActivityFilter('completed')"
-          >
-            <span>Đã giao</span>
-            <span class="activity-tab-badge">${counts.completed}</span>
-          </button>
-          <button 
-            class="activity-tab-btn ${activityFilter === 'cancelled' ? 'active' : ''}" 
-            onclick="switchActivityFilter('cancelled')"
-          >
-            <span>Đã hủy</span>
-            <span class="activity-tab-badge">${counts.cancelled}</span>
-          </button>
-        </div>
-        <button class="scroll-arrow-btn small" onclick="scrollHorizontally('activity-tabs-bar', 160)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
-          ${FluentIcons.chevronRight}
-        </button>
+        ${renderActivityTabsBarHtml(false)}
       </div>
 
       <!-- Orders List Content -->
@@ -3964,6 +4018,10 @@ function renderActivityView() {
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function renderSingleOrderDetailView(o) {
@@ -4699,6 +4757,10 @@ function renderVectorTrackingFallback(container, sLat, sLng, uLat, uLng, order) 
       </div>
     </div>
   `;
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
 }
 
 function updateVectorShipperPos(ratio) {

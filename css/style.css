@@ -3169,6 +3169,125 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   font-weight: 700 !important;
 }
 
+/* ── Floating Activity Tabs Bar trong Floating Page Top Bar (Tab Hoạt Động) ── */
+.floating-page-topbar.has-activity-tabs {
+  max-width: calc(var(--app-max-width, 1240px) - 48px) !important;
+}
+
+.floating-page-topbar.has-activity-tabs .floating-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 6px 12px 6px 8px !important;
+}
+
+.floating-activity-header-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.floating-activity-header-group .page-nav-title {
+  text-align: left !important;
+  flex: none !important;
+  padding: 0 4px !important;
+  font-size: 15.5px !important;
+  font-weight: 800 !important;
+  color: var(--gray-900) !important;
+  white-space: nowrap !important;
+}
+
+.floating-activity-tabs-bar {
+  position: static !important;
+  top: auto !important;
+  margin: 0 !important;
+  background: rgba(241, 245, 249, 0.92) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  padding: 3px !important;
+  border-radius: 9999px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  flex-shrink: 0 !important;
+}
+
+.floating-activity-tabs-bar .activity-tab-btn {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  padding: 6px 12px !important;
+  font-size: 12.5px !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  color: var(--gray-600) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+}
+
+.floating-activity-tabs-bar .activity-tab-btn:hover {
+  color: var(--gray-900) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+.floating-activity-tabs-bar .activity-tab-btn.active {
+  background: #ffffff !important;
+  color: #059669 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+.floating-activity-tabs-bar .activity-tab-badge {
+  font-size: 11px !important;
+  padding: 1px 6px !important;
+  border-radius: 9999px !important;
+  margin-left: 4px !important;
+  background: rgba(148, 163, 184, 0.2) !important;
+}
+
+.floating-activity-tabs-bar .activity-tab-btn.active .activity-tab-badge {
+  background: rgba(5, 150, 105, 0.12) !important;
+  color: #059669 !important;
+}
+
+@media (max-width: 767px) {
+  .floating-page-topbar.has-activity-tabs {
+    display: block !important;
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(var(--app-max-width, 480px) - 16px) !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
+  }
+
+  .floating-page-topbar.has-activity-tabs .floating-topbar-inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+  }
+
+  .floating-page-topbar.has-activity-tabs .floating-activity-header-group {
+    justify-content: flex-start !important;
+  }
+
+  .floating-page-topbar.has-activity-tabs .floating-activity-tabs-bar {
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+}
+
 /* Restaurant Header Card in Cart */
 .cart-res-summary-card {
   margin: 14px var(--safe-padding) 10px;
@@ -4517,10 +4636,11 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 }
 
 .activity-tab-btn {
-  flex: 1;
-  min-width: 82px;
+  flex: 0 0 auto;
+  min-width: 0;
+  width: auto;
   white-space: nowrap;
-  padding: 8px 12px;
+  padding: 7px 12px;
   text-align: center;
   font-size: 13px;
   font-weight: 700;
@@ -4533,7 +4653,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .activity-tab-btn:hover {
@@ -5677,7 +5797,6 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     top: 0 !important;
     padding: 6px !important;
     border-radius: 9999px !important;
-    margin-bottom: 24px !important;
     background: #f1f5f9 !important;
     border: 1px solid #e2e8f0 !important;
   }
