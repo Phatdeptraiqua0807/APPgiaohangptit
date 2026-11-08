@@ -893,7 +893,7 @@ function renderAIChatView() {
               onclick="retryAIChatMessage()"
               title="Hỏi lại câu hỏi gần nhất"
             >
-              🔄 Hỏi lại câu trước
+              🔄
             </button>
           ` : ''}
           ${AI_QUICK_BAR_PROMPTS.map((qp, idx) => `
@@ -1426,13 +1426,13 @@ function stopAIChatGeneration() {
   if (aiCurrentAbortController) {
     try {
       aiCurrentAbortController.abort();
-    } catch (_) {}
+    } catch (_) { }
     aiCurrentAbortController = null;
   }
   if (activeLiveWS) {
     try {
       activeLiveWS.close();
-    } catch (_) {}
+    } catch (_) { }
     activeLiveWS = null;
   }
 
@@ -1530,7 +1530,7 @@ function copyAIMessageText(msgIdx) {
     try {
       document.execCommand('copy');
       if (typeof showToast === 'function') showToast('checkCircleRegular', 'Đã sao chép nội dung!');
-    } catch (_) {}
+    } catch (_) { }
     document.body.removeChild(ta);
   }
 }
@@ -2862,7 +2862,7 @@ async function invokeGeminiLiveWebSocket(systemPrompt, conversationTurns, option
         if (ws && (ws.readyState === WS.OPEN || ws.readyState === WS.CONNECTING)) {
           ws.close();
         }
-      } catch (_) {}
+      } catch (_) { }
     };
 
     const triggerFallback = async (reasonMsg) => {
@@ -3032,7 +3032,7 @@ if (typeof window !== 'undefined') {
       set: (v) => { aiIsGenerating = v; },
       configurable: true
     });
-  } catch (_) {}
+  } catch (_) { }
 }
 
 // ── Gọi 1 lượt LLM duy nhất (Dùng chung cho mọi Giai đoạn & Tư vấn Dinh dưỡng) ──
@@ -4368,7 +4368,7 @@ function parseProviderModelsPayload(json, provider, presetModels = []) {
     // Lọc bỏ các model thuần embedding / kiểm duyệt của Gemini để chỉ giữ model sinh văn bản Chat & Live API
     if (isGeminiShape && Array.isArray(item.supportedGenerationMethods)) {
       const canGenerate = item.supportedGenerationMethods.includes('generateContent') ||
-                          item.supportedGenerationMethods.includes('bidiGenerateContent');
+        item.supportedGenerationMethods.includes('bidiGenerateContent');
       if (!canGenerate) {
         continue;
       }

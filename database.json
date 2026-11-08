@@ -2,9 +2,9 @@
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-07T17:51:18.246Z",
+    "updatedAt": "2026-11-08T03:22:50.004Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
-    "lastAction": "update_cart"
+    "lastAction": "add_library_image"
   },
   "categories": [
     {
@@ -13383,6 +13383,66 @@
     }
   ],
   "imageLibrary": [
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_8cxr",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108169990_75lf.jpg",
+      "createdAt": "2026-11-08T03:22:50.004Z"
+    },
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_d0ro",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108166432_y2nb.png",
+      "createdAt": "2026-11-08T03:22:46.451Z"
+    },
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_odw1",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108139913_sia9.png",
+      "createdAt": "2026-11-08T03:22:19.927Z"
+    },
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_v21s",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108136351_s3x7.jpg",
+      "createdAt": "2026-11-08T03:22:16.362Z"
+    },
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_lu3j",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108131167_9dc4.png",
+      "createdAt": "2026-11-08T03:22:11.181Z"
+    },
+    {
+      "id": "img_nuoc_ep_coc_oi_tuoi_u1qc",
+      "name": "Nước Ép Cóc Ổi Tươi",
+      "src": "assets/images/uploads/nuoc_ep_coc_oi_tuoi_1794108113653_tnve.jpg",
+      "createdAt": "2026-11-08T03:21:53.667Z"
+    },
+    {
+      "id": "img_cacao_dua_non_da_xay_ribs",
+      "name": "Cacao Dừa Non Đá Xay",
+      "src": "assets/images/uploads/cacao_dua_non_da_xay_1794108112101_5i2w.jpg",
+      "createdAt": "2026-11-08T03:21:52.113Z"
+    },
+    {
+      "id": "img_tra_thanh_long_do_hat_chia_u6vf",
+      "name": "Trà Thanh Long Đỏ Hạt Chia",
+      "src": "assets/images/uploads/tra_thanh_long_do_hat_chia_1794108109356_pimk.jpg",
+      "createdAt": "2026-11-08T03:21:49.390Z"
+    },
+    {
+      "id": "img_soda_blue_ocean_thanh_mat_l9be",
+      "name": "Soda Blue Ocean Thanh Mát",
+      "src": "assets/images/uploads/soda_blue_ocean_thanh_mat_1794108106910_zdh7.webp",
+      "createdAt": "2026-11-08T03:21:46.917Z"
+    },
+    {
+      "id": "img_tra_chanh_dao_tien_kem_cheese_767o",
+      "name": "Trà Chanh Đào Tiên Kem Cheese",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108105122_oj3z.png",
+      "createdAt": "2026-11-08T03:21:45.147Z"
+    },
     {
       "id": "img_mi_ong_spaghetti_hai_san_sot_cay_2gsk",
       "name": "Mì Ống Spaghetti Hải Sản Sốt Cay",
