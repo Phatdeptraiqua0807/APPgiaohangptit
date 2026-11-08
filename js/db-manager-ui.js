@@ -504,6 +504,7 @@ function renderCatalogItemsGridHtml(itemsList) {
 function updateCatalogItemsListDOM() {
   const container = document.getElementById('catalog-items-list-container');
   if (container) container.innerHTML = renderCatalogItemsGridHtml(getFilteredCatalogItems());
+  if (typeof updateFloatingTopBar === 'function') updateFloatingTopBar();
 }
 
 function dbmToggleSelect(id, checked) {

@@ -84,7 +84,7 @@ body {
   color: var(--gray-800);
   line-height: 1.5;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -243,6 +243,133 @@ textarea {
   background: var(--red);
   border-radius: var(--r-full);
   border: 2px solid var(--white);
+}
+
+/* ── Full-bleed Premium Food Hero Backdrop (Tràn viền Header + Gradient chuyển dần sang nền trắng) ── */
+.home-header {
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+}
+
+.home-hero-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 260px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 48%,
+      rgba(0, 0, 0, 0.85) 68%,
+      rgba(0, 0, 0, 0.3) 88%,
+      transparent 100%);
+  mask-image: linear-gradient(to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 48%,
+      rgba(0, 0, 0, 0.85) 68%,
+      rgba(0, 0, 0, 0.3) 88%,
+      transparent 100%);
+}
+
+.home-hero-backdrop-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 26%;
+  transform: scale(1.02);
+  /* Làm tối dịu tông nền để tạo chiều sâu ẩm thực đậm đà, chữ greeting nổi bật rực rỡ */
+  filter: saturate(1.2) contrast(1.1) brightness(0.80);
+  display: block;
+}
+
+/* Lớp vignette dịu ở góc trên để Location bar luôn tương phản sắc nét */
+.home-hero-top-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 95px;
+  background: linear-gradient(180deg,
+      rgba(15, 23, 42, 0.35) 0%,
+      rgba(15, 23, 42, 0.14) 50%,
+      transparent 100%);
+  pointer-events: none;
+}
+
+/* Lớp gradient chuyển mượt mà xuống nền trắng vốn có (Eased multi-stop gradient) */
+.home-hero-backdrop-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+      transparent 0%,
+      transparent 28%,
+      rgba(255, 255, 255, 0.04) 42%,
+      rgba(255, 255, 255, 0.18) 55%,
+      rgba(255, 255, 255, 0.46) 68%,
+      rgba(255, 255, 255, 0.82) 84%,
+      rgba(255, 255, 255, 0.96) 94%,
+      #ffffff 100%);
+  pointer-events: none;
+}
+
+/* Vùng nội dung trong Home Header nổi trên backdrop */
+.home-header .location-row,
+.home-header .home-hero-spacer,
+.home-header .greeting,
+.home-header .search-bar,
+.home-header .search-tags {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hiệu ứng Glassmorphism tinh tế cho Location Pill và Header Buttons */
+.home-header .location-left {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 4px 14px 4px 5px;
+  border-radius: var(--r-full);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-header .location-left:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.home-header .location-address {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.home-header .location-label {
+  color: #475569;
+  font-weight: 600;
+}
+
+.home-header .header-btn {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  color: #1e293b;
+}
+
+.home-header .header-btn:hover {
+  background: rgba(255, 255, 255, 0.98);
+  transform: translateY(-1px);
+}
+
+/* ── Khoảng trống thoáng đãng thay thế top-banner-card (rộng rãi như cũ) ── */
+.home-hero-spacer {
+  height: 75px;
 }
 
 /* ── Top Cushion Banner (~30% screen cushion) ── */
@@ -411,25 +538,40 @@ textarea {
   background: var(--green-500);
 }
 
-/* ── Greeting ── */
+/* ── Greeting (Chữ nổi, hào quang bóng sáng xung quanh, siêu sắc nét & dễ nhìn) ── */
 .greeting {
-  padding: 6px 0 16px;
+  position: relative;
+  z-index: 1;
+  padding: 6px 0 18px;
 }
 
 .greeting-hello {
-  font-size: 15px;
-  color: var(--gray-500);
-  font-weight: 500;
-  margin-bottom: 4px;
-  letter-spacing: -0.1px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 15.5px;
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+  text-shadow:
+    0 0 14px rgba(255, 255, 255, 1),
+    0 0 24px rgba(255, 255, 255, 0.95),
+    0 1px 3px rgba(255, 255, 255, 1);
 }
 
 .greeting-question {
-  font-size: 30px;
-  font-weight: 800;
-  color: var(--gray-900);
-  line-height: 1.22;
-  letter-spacing: -0.5px;
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 34px;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+  /* Hiệu ứng chữ nổi 3D + hào quang bóng sáng xung quanh giúp chữ bừng sáng và siêu dễ đọc */
+  text-shadow:
+    0 0 16px rgba(255, 255, 255, 1),
+    0 0 30px rgba(255, 255, 255, 0.95),
+    0 2px 6px rgba(255, 255, 255, 1),
+    0 1px 2px rgba(15, 23, 42, 0.22);
 }
 
 .greeting-question .wave {
@@ -2621,19 +2763,152 @@ textarea {
 .page-nav-header {
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 500;
   background: var(--white);
-  padding: 14px var(--safe-padding);
+  padding: 13px var(--safe-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-nav-header.is-scrolled {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.85) !important;
+  padding: 10px var(--safe-padding) !important;
 }
 
 .page-nav-title {
   font-size: 16px;
   font-weight: 800;
   color: var(--gray-900);
+  transition: font-size 0.2s ease;
+}
+
+/* ── Floating Page Top Bar (Thanh nổi dạng viên thuốc bo tròn - Floating Pill Island) ── */
+.floating-page-topbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  width: calc(100% - 24px);
+  max-width: calc(var(--app-max-width, 480px) - 24px);
+  margin: 0 auto;
+  z-index: 1040;
+  border-radius: 9999px;
+  transform: translateY(-90px) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.88) 100%);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow:
+    0 -8px 24px -2px rgba(15, 23, 42, 0.05),
+    0 -2px 6px rgba(15, 23, 42, 0.03),
+    0 12px 36px rgba(15, 23, 42, 0.08),
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 8px 16px -8px rgba(0, 0, 0, 0.025);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.32s ease;
+  box-sizing: border-box;
+}
+
+/* Vệt bóng mờ gradient ở phần phía trên cùng của top bar */
+.floating-page-topbar::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  right: 24px;
+  height: 16px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.055) 100%);
+  border-radius: 9999px 9999px 0 0;
+  filter: blur(4px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.floating-page-topbar.visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.floating-page-topbar.visible::before {
+  opacity: 1;
+}
+
+.floating-topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 10px;
+}
+
+.floating-topbar-inner .page-nav-title {
+  font-family: var(--font-display, inherit);
+  font-size: 15.5px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.2px !important;
+  text-align: center;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+
+.floating-topbar-inner .page-back-icon-btn,
+.floating-topbar-inner .search-back-btn,
+.floating-topbar-inner .ai-back-icon-btn {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  background: rgba(226, 228, 229, 0.85) !important;
+  color: #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.floating-topbar-inner .page-back-icon-btn:hover,
+.floating-topbar-inner .search-back-btn:hover,
+.floating-topbar-inner .ai-back-icon-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  transform: scale(1.06) !important;
+}
+
+.floating-topbar-inner .page-back-icon-btn:active,
+.floating-topbar-inner .search-back-btn:active,
+.floating-topbar-inner .ai-back-icon-btn:active {
+  transform: scale(0.94) !important;
+}
+
+.floating-topbar-inner .db-quick-export-btn {
+  border-radius: 9999px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
 }
 
 /* Restaurant Header Card in Cart */
@@ -3324,8 +3599,10 @@ textarea {
 .pulse-dot {
   width: 7px;
   height: 7px;
+  min-width: 7px;
   background: #10b981;
   border-radius: 50%;
+  flex-shrink: 0;
   animation: pulse-ring 1.5s infinite;
 }
 
@@ -3905,15 +4182,24 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 10px;
   padding-bottom: 8px;
   border-bottom: 1px dashed var(--gray-200);
+}
+
+.past-order-head > div:first-child {
+  min-width: 0;
+  flex: 1;
 }
 
 .past-order-res {
   font-size: 15px;
   font-weight: 800;
   color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .past-order-status-badge {
@@ -3921,11 +4207,16 @@ textarea {
   font-weight: 700;
   color: #15803d;
   background: #dcfce7;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--r-full);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  word-break: keep-all !important;
+  line-height: 1.25;
 }
 
 .past-order-status-badge.delivering {
@@ -4261,7 +4552,7 @@ textarea {
     padding-left: var(--sidebar-width);
   }
 
-  /* ── Desktop Left Sidebar Navigation ── */
+  /* ── Desktop Left Sidebar Navigation (Premium, Clean & Đồng bộ với Bottom Nav) ── */
   .desktop-sidebar {
     display: flex !important;
     flex-direction: column;
@@ -4272,92 +4563,95 @@ textarea {
     width: var(--sidebar-width);
     height: 100vh;
     background: #ffffff;
-    border-right: 2px solid var(--gray-200);
+    border-right: 1px solid #eef2f6;
     z-index: 1050;
-    padding: 24px 18px 20px;
+    padding: 20px 14px 16px;
     overflow-y: auto;
     overflow-x: hidden;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.02);
   }
 
   /* Brand in Sidebar */
   .sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     user-select: none;
-    padding: 0 4px 20px;
-    margin-bottom: 16px;
-    border-bottom: 1.5px solid var(--gray-200);
+    padding: 4px 6px 16px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .sidebar-brand:hover {
-    transform: scale(1.02);
+    transform: translateY(-1px);
   }
 
-  .sidebar-brand-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+  .sidebar-brand-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00B14F 0%, #059c46 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 177, 79, 0.25);
+    flex-shrink: 0;
   }
 
   .sidebar-brand-text {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   .sidebar-brand-name {
     font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: 900;
-    color: #111827;
+    font-size: 20px;
+    font-weight: 850;
+    color: #0f172a;
     letter-spacing: -0.6px;
     line-height: 1.1;
   }
 
   .sidebar-brand-tag {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--green-700);
-    background: var(--green-50);
-    border: 1px solid var(--green-200);
-    border-radius: 4px;
-    padding: 1px 6px;
-    width: fit-content;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 1px;
+    letter-spacing: -0.1px;
   }
 
-  /* Location Card in Sidebar */
+  /* Location Card in Sidebar (Tinh tế, đồng bộ với Header) */
   .sidebar-loc-card {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
-    background: var(--gray-50);
-    border: 1.5px solid var(--gray-200);
-    border-radius: 18px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
   }
 
   .sidebar-loc-card:hover {
-    border-color: var(--green-500);
-    background: var(--white);
-    box-shadow: 0 4px 14px rgba(0, 177, 79, 0.12);
+    border-color: #00B14F;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 177, 79, 0.08);
     transform: translateY(-1px);
   }
 
   .sidebar-loc-icon-wrap {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: var(--green-100);
-    color: var(--green-600);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #ecfdf5;
+    color: #00B14F;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4371,61 +4665,65 @@ textarea {
 
   .sidebar-loc-label {
     font-size: 10px;
-    font-weight: 800;
-    color: var(--gray-400);
+    font-weight: 600;
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
   }
 
   .sidebar-loc-address {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
-    color: var(--gray-900);
+    color: #0f172a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.3;
   }
 
-  .sidebar-loc-badge {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--green-700);
-    background: var(--green-50);
-    border: 1px solid var(--green-300);
-    border-radius: 9999px;
-    padding: 2px 7px;
+  .sidebar-loc-chevron {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
     flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .sidebar-loc-card:hover .sidebar-loc-chevron {
+    color: #00B14F;
+    transform: translateX(2px);
   }
 
   /* Vertical Navigation Tab List */
   .sidebar-nav-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
   }
 
   .sidebar-section-title {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--gray-400);
-    letter-spacing: 0.8px;
-    margin-bottom: 4px;
-    padding-left: 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    padding-left: 10px;
   }
 
   .sidebar-tab-btn {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
-    border-radius: 16px;
+    padding: 10px 14px;
+    border-radius: 12px;
     font-size: 14px;
-    font-weight: 700;
-    color: var(--gray-600);
+    font-weight: 600;
+    color: #475569;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1.5px solid transparent;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid transparent;
     background: transparent;
     position: relative;
     user-select: none;
@@ -4434,38 +4732,59 @@ textarea {
   }
 
   .sidebar-tab-btn:hover {
-    background: var(--gray-100);
-    color: var(--green-600);
-    border-color: var(--gray-200);
+    background: #f8fafc;
+    color: #0f172a;
     transform: translateX(2px);
   }
 
   .sidebar-tab-btn.active {
-    background: linear-gradient(135deg, var(--green-50) 0%, #e6f9ee 100%);
-    color: var(--green-700);
-    border-color: var(--green-300);
-    font-weight: 800;
-    box-shadow: 0 4px 12px rgba(0, 177, 79, 0.08);
+    background: #f0fdf4;
+    color: #15803d;
+    font-weight: 700;
+    border-color: rgba(0, 177, 79, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 177, 79, 0.06);
+  }
+
+  .sidebar-tab-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3.5px;
+    border-radius: 0 4px 4px 0;
+    background: #00B14F;
   }
 
   .sidebar-tab-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: inherit;
+    color: #64748b;
     width: 22px;
     height: 22px;
     flex-shrink: 0;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .sidebar-tab-btn:hover .sidebar-tab-icon {
+    color: #0f172a;
+  }
+
+  .sidebar-tab-btn.active .sidebar-tab-icon {
+    color: #00B14F;
+    transform: scale(1.08);
   }
 
   .sidebar-tab-label {
     flex: 1;
-    font-size: 14px;
+    font-size: 13.5px;
+    letter-spacing: -0.1px;
   }
 
   .sidebar-tab-pill-badge {
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     background: #ecfdf5;
     color: #047857;
     border: 1px solid #a7f3d0;
@@ -4474,75 +4793,40 @@ textarea {
   }
 
   .sidebar-tab-badge {
-    font-size: 10px;
-    font-weight: 900;
-    background: var(--red);
-    color: white;
+    font-size: 10.5px;
+    font-weight: 800;
+    background: #ef4444;
+    color: #ffffff;
     padding: 2px 7px;
     border-radius: 9999px;
     min-width: 18px;
     text-align: center;
+    line-height: 1.2;
   }
 
-  /* Sidebar Promo Widget */
-  .sidebar-promo-widget {
-    background: linear-gradient(135deg, #059c46 0%, #0077BC 100%);
-    color: white;
-    border-radius: 18px;
-    padding: 12px 14px;
-    margin: 18px 0;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 6px 18px rgba(0, 119, 188, 0.18);
-  }
-
-  .sidebar-promo-widget:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0, 119, 188, 0.25);
-  }
-
-  .sidebar-promo-tag {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    opacity: 0.9;
-    letter-spacing: 0.6px;
-  }
-
-  .sidebar-promo-name {
-    font-size: 13px;
-    font-weight: 800;
-    margin: 2px 0 4px;
-  }
-
-  .sidebar-promo-code {
-    font-size: 11px;
-    opacity: 0.95;
-  }
-
-  /* Student Footer Card */
+  /* Student / User Footer Card */
   .sidebar-student-card {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 12px;
-    background: var(--gray-50);
-    border: 1.5px solid var(--gray-200);
-    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-top: auto;
   }
 
   .sidebar-student-card:hover {
-    border-color: var(--green-500);
-    background: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e1;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
   }
 
   .sidebar-student-avatar {
-    font-size: 22px;
+    font-size: 20px;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -4551,30 +4835,47 @@ textarea {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   }
 
   .sidebar-student-info {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex: 1;
+    min-width: 0;
   }
 
   .sidebar-student-name {
     font-size: 13px;
-    font-weight: 800;
-    color: var(--gray-900);
+    font-weight: 700;
+    color: #0f172a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .sidebar-student-sub {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--gray-500);
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .sidebar-student-chevron {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .sidebar-student-card:hover .sidebar-student-chevron {
+    color: #0f172a;
+    transform: translateX(2px);
   }
 
   /* ── Desktop Top Header (Hidden - Redundant with in-page search) ── */
@@ -4806,25 +5107,50 @@ textarea {
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.25)) !important;
   }
 
-  /* Greeting */
+  .home-hero-backdrop {
+    height: 260px !important;
+  }
+
+  .home-hero-backdrop-img {
+    object-position: center 50% !important;
+  }
+
+  .home-hero-top-vignette {
+    height: 120px !important;
+  }
+
+  .home-hero-spacer {
+    height: 170px !important;
+  }
+
+  /* Greeting (Desktop: Bề thế, ấn tượng và thu hút) */
   .greeting {
     margin-bottom: 24px !important;
+    padding: 8px 0 16px !important;
   }
 
   .greeting-hello {
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    color: var(--gray-500) !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    color: #1e293b !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: 0.8px !important;
+    margin-bottom: 8px !important;
+    text-shadow: 0 0 16px rgba(255, 255, 255, 1), 0 1px 3px rgba(255, 255, 255, 1) !important;
   }
 
   .greeting-question {
     font-family: var(--font-display) !important;
-    font-size: 30px !important;
+    font-size: 42px !important;
     font-weight: 900 !important;
-    color: #111827 !important;
-    letter-spacing: -0.6px !important;
+    color: #0f172a !important;
+    line-height: 1.18 !important;
+    letter-spacing: -1.2px !important;
+    text-shadow:
+      0 0 24px rgba(255, 255, 255, 1),
+      0 0 40px rgba(255, 255, 255, 0.95),
+      0 3px 8px rgba(255, 255, 255, 1),
+      0 2px 4px rgba(15, 23, 42, 0.25) !important;
   }
 
   /* Search Bar on Home */
@@ -4872,23 +5198,27 @@ textarea {
     padding: 0 var(--safe-padding) 28px !important;
   }
 
-  /* Promo Section */
-  .promo-section {
-    padding: 0 var(--safe-padding) 28px !important;
-  }
-
   .quick-options-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 20px !important;
+    grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+    gap: 12px !important;
   }
 
   .quick-option {
     border: 1.5px solid var(--gray-200) !important;
-    border-radius: 20px !important;
-    padding: 18px !important;
+    border-radius: 16px !important;
+    padding: 14px 6px !important;
     background: var(--gray-50) !important;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .quick-option-label {
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
   }
 
   .quick-option:hover {
@@ -5022,7 +5352,7 @@ textarea {
 
   /* Cart View 2-Column Desktop Grid */
   .cart-view-container {
-    padding: 28px 36px 60px !important;
+    padding: 24px 36px 60px !important;
   }
 
   .cart-layout-grid {
@@ -5061,7 +5391,7 @@ textarea {
 
   /* Checkout View 2-Column Desktop Grid */
   .checkout-view-container {
-    padding: 28px 36px 60px !important;
+    padding: 24px 36px 60px !important;
   }
 
   .checkout-layout-grid {
@@ -5081,7 +5411,7 @@ textarea {
 
   /* Activity View on Desktop */
   .activity-view-container {
-    padding: 28px 36px 60px !important;
+    padding: 24px 36px 60px !important;
   }
 
   .activity-tabs-bar {
@@ -5236,14 +5566,60 @@ textarea {
     transform: translateY(0) !important;
   }
 
-  /* Bold Page Navigation Headers on Desktop */
+  /* Floating Page Top Bar on Desktop (Dạng viên thuốc dài nổi sang trọng) */
+  .floating-page-topbar {
+    top: 16px !important;
+    left: calc(var(--sidebar-width, 270px) + 24px) !important;
+    right: 24px !important;
+    width: auto !important;
+    max-width: calc(var(--app-max-width, 1240px) - 48px) !important;
+    margin: 0 auto !important;
+    border-radius: 9999px !important;
+    box-shadow:
+      0 -10px 28px -2px rgba(15, 23, 42, 0.06),
+      0 -2px 8px rgba(15, 23, 42, 0.035),
+      0 14px 38px rgba(15, 23, 42, 0.09),
+      0 2px 10px rgba(15, 23, 42, 0.04),
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.98),
+      inset 0 8px 16px -8px rgba(0, 0, 0, 0.025) !important;
+  }
+
+  .floating-page-topbar::before {
+    top: -16px !important;
+    height: 20px !important;
+    left: 36px !important;
+    right: 36px !important;
+  }
+
+  .floating-topbar-inner {
+    padding: 8px 20px 8px 8px !important;
+    gap: 14px !important;
+  }
+
+  .floating-topbar-inner .page-nav-title {
+    font-size: 16.5px !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  .floating-topbar-inner .page-back-icon-btn,
+  .floating-topbar-inner .search-back-btn,
+  .floating-topbar-inner .ai-back-icon-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+
+  /* Page Navigation Headers on Desktop (Tự nhiên trong luồng trang) */
   .page-nav-header {
-    position: static !important;
-    top: auto !important;
     background: transparent !important;
     box-shadow: none !important;
-    padding: 0 0 24px 0 !important;
+    border-bottom: 1px solid transparent !important;
+    padding: 0 0 20px 0 !important;
     margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 
   .page-nav-title {
@@ -6793,12 +7169,12 @@ textarea {
 /* Responsive Desktop Enhancements (>= 768px) */
 @media (min-width: 768px) {
   .catalog-view-container {
-    padding: 28px 36px 68px !important;
+    padding: 24px 36px 68px !important;
   }
 
   .profile-view-container,
   .profile-view-container.fade-in {
-    padding: 28px 36px 60px !important;
+    padding: 24px 36px 60px !important;
     background: transparent;
     min-height: 0;
   }
@@ -8494,7 +8870,7 @@ body.view-ai-active .ai-composer-dock {
 .product-detail-topbar {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 500;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(12px);
 }
@@ -10295,7 +10671,7 @@ body.view-ai-active .ai-composer-dock {
 
 @media (min-width: 768px) {
   .product-detail-page {
-    padding: 20px 28px 40px;
+    padding: 20px 28px 40px !important;
   }
 
   .pdp-mobile-sticky-bar {
@@ -10361,6 +10737,7 @@ body.view-ai-active .ai-composer-dock {
 /* ── 1. Hero Health Summary Strip in Profile Hero Card ── */
 .profile-health-strip {
   margin-top: 14px;
+  margin-bottom: 10px;
   padding: 12px 14px;
   border-radius: 16px;
   border: 1.5px solid #bae6fd;
@@ -12568,19 +12945,37 @@ body.view-ai-active .ai-composer-dock {
     font-size: 11.5px;
   }
 
+  .home-hero-backdrop {
+    height: 280px;
+  }
+
+  .home-hero-spacer {
+    height: 110px;
+  }
+
   .greeting {
-    padding: 2px 0 10px;
+    padding: 4px 0 14px;
   }
 
   .greeting-hello {
-    font-size: 13.5px;
-    margin-bottom: 2px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 1), 0 1px 2px rgba(255, 255, 255, 1);
   }
 
   .greeting-question {
-    font-size: 21px;
-    line-height: 1.25;
-    letter-spacing: -0.3px;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+    text-shadow:
+      0 0 16px rgba(255, 255, 255, 1),
+      0 0 28px rgba(255, 255, 255, 0.9),
+      0 2px 4px rgba(255, 255, 255, 1),
+      0 1px 2px rgba(15, 23, 42, 0.2);
   }
 
   .search-bar {

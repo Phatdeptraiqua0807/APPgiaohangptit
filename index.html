@@ -10,26 +10,26 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=4.2">
-  <link rel="stylesheet" href="css/db-manager.css?v=3.9">
+  <link rel="stylesheet" href="css/style.css?v=5.5">
+  <link rel="stylesheet" href="css/db-manager.css?v=4.3">
 </head>
 <body>
 
   <!-- Desktop Left Sidebar Navigation (Screen >= 768px) -->
   <aside class="desktop-sidebar" id="desktop-sidebar">
     <!-- Brand -->
-    <div class="sidebar-brand" onclick="switchNavTab(null, 'home')">
-      <span class="sidebar-brand-icon">🍜</span>
+    <div class="sidebar-brand" onclick="switchNavTab(null, 'home')" title="Trang chủ ptitngon">
+      <div class="sidebar-brand-badge">🍜</div>
       <div class="sidebar-brand-text">
         <span class="sidebar-brand-name">ptitngon</span>
-        <span class="sidebar-brand-tag">CAMPUS DELIVERY</span>
+        <span class="sidebar-brand-tag">Ẩm thực PTIT</span>
       </div>
     </div>
 
-    <!-- Location Card in Sidebar -->
+    <!-- Location Card in Sidebar (Đồng bộ với Header & Profile) -->
     <div class="sidebar-loc-card" onclick="openDeliveryInfoModal()" title="Bấm để thay đổi địa chỉ nhận món">
       <div class="sidebar-loc-icon-wrap">
-        <svg class="fluent-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="fluent-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M5.84324 4.56908C9.24363 1.16873 14.7563 1.1687 18.1566 4.56908C21.5568 7.96947 21.5569 13.4822 18.1566 16.8825L16.9701 18.0563C16.0953 18.915 14.9596 20.0193 13.5639 21.3688C12.6918 22.2118 11.308 22.2118 10.436 21.3688L6.94479 17.9723C6.50618 17.5416 6.13901 17.1783 5.84324 16.8825C2.44289 13.4821 2.44299 7.96948 5.84324 4.56908ZM11.9994 8.0007C10.3426 8.00073 8.99946 9.34385 8.99946 11.0007C8.99962 12.6574 10.3427 14.0006 11.9994 14.0007C13.6562 14.0007 14.9993 12.6574 14.9994 11.0007C14.9994 9.34383 13.6563 8.0007 11.9994 8.0007Z"/>
         </svg>
       </div>
@@ -37,13 +37,18 @@
         <div class="sidebar-loc-label">Giao đến</div>
         <div class="sidebar-loc-address" id="sidebar-loc-address">PTIT Hà Đông</div>
       </div>
-      <span class="sidebar-loc-badge">Đổi</span>
+      <span class="sidebar-loc-chevron">
+        <svg class="fluent-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M7.3 4.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L11.58 10 7.3 5.7a1 1 0 0 1 0-1.4Z"/>
+        </svg>
+      </span>
     </div>
 
-    <!-- Navigation Tab Links on the Left -->
+    <!-- Navigation Tab Links on the Left (Đồng bộ thứ tự 1:1 với Bottom Nav Mobile) -->
     <nav class="sidebar-nav-list">
-      <div class="sidebar-section-title">MENU CHÍNH</div>
+      <div class="sidebar-section-title">ĐIỀU HƯỚNG</div>
 
+      <!-- 1. Trang chủ -->
       <button class="sidebar-tab-btn active" data-tab="home" onclick="switchNavTab(this, 'home')">
         <span class="sidebar-tab-icon">
           <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -53,6 +58,7 @@
         <span class="sidebar-tab-label">Trang chủ</span>
       </button>
 
+      <!-- 2. Hoạt động -->
       <button class="sidebar-tab-btn" data-tab="activity" onclick="switchNavTab(this, 'activity')">
         <span class="sidebar-tab-icon">
           <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -60,9 +66,21 @@
           </svg>
         </span>
         <span class="sidebar-tab-label">Hoạt động</span>
-        <span class="sidebar-tab-pill-badge" id="sidebar-activity-badge">Đang giao</span>
+        <span class="sidebar-tab-pill-badge" id="sidebar-activity-badge" style="display:none;">Đang giao</span>
       </button>
 
+      <!-- 3. Chat AI (Khớp 1:1 vị trí thứ 3 như trên Mobile) -->
+      <button class="sidebar-tab-btn" data-tab="ai" onclick="switchNavTab(this, 'ai')">
+        <span class="sidebar-tab-icon">
+          <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10.822 2.502a.75.75 0 0 1 1.356 0l1.96 4.185a2.25 2.25 0 0 0 1.085 1.085l4.185 1.96a.75.75 0 0 1 0 1.356l-4.185 1.96a2.25 2.25 0 0 0-1.085 1.085l-1.96 4.185a.75.75 0 0 1-1.356 0l-1.96-4.185a2.25 2.25 0 0 0-1.085-1.085l-4.185-1.96a.75.75 0 0 1 0-1.356l4.185-1.96a2.25 2.25 0 0 0 1.085-1.085l1.96-4.185ZM18.372 15.32a.5.5 0 0 1 .906 0l.698 1.49a.75.75 0 0 0 .362.362l1.49.698a.5.5 0 0 1 0 .906l-1.49.698a.75.75 0 0 0-.362.362l-.698 1.49a.5.5 0 0 1-.906 0l-.698-1.49a.75.75 0 0 0-.362-.362l-1.49-.698a.5.5 0 0 1 0-.906l1.49-.698a.75.75 0 0 0 .362-.362l.698-1.49Z"/>
+          </svg>
+        </span>
+        <span class="sidebar-tab-label">Chat AI</span>
+        <span class="sidebar-tab-pill-badge ai-nav-pill">Mới</span>
+      </button>
+
+      <!-- 4. Giỏ hàng (Khớp 1:1 vị trí thứ 4 như trên Mobile) -->
       <button class="sidebar-tab-btn" data-tab="cart" onclick="switchNavTab(this, 'cart')">
         <span class="sidebar-tab-icon">
           <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -73,16 +91,7 @@
         <span class="sidebar-tab-badge" id="sidebar-cart-badge" style="display:none;">0</span>
       </button>
 
-      <button class="sidebar-tab-btn" data-tab="ai" onclick="switchNavTab(this, 'ai')">
-        <span class="sidebar-tab-icon">
-          <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10.822 2.502a.75.75 0 0 1 1.356 0l1.96 4.185a2.25 2.25 0 0 0 1.085 1.085l4.185 1.96a.75.75 0 0 1 0 1.356l-4.185 1.96a2.25 2.25 0 0 0-1.085 1.085l-1.96 4.185a.75.75 0 0 1-1.356 0l-1.96-4.185a2.25 2.25 0 0 0-1.085-1.085l-4.185-1.96a.75.75 0 0 1 0-1.356l4.185-1.96a2.25 2.25 0 0 0 1.085-1.085l1.96-4.185ZM18.372 15.32a.5.5 0 0 1 .906 0l.698 1.49a.75.75 0 0 0 .362.362l1.49.698a.5.5 0 0 1 0 .906l-1.49.698a.75.75 0 0 0-.362.362l-.698 1.49a.5.5 0 0 1-.906 0l-.698-1.49a.75.75 0 0 0-.362-.362l-1.49-.698a.5.5 0 0 1 0-.906l1.49-.698a.75.75 0 0 0 .362-.362l.698-1.49Z"/>
-          </svg>
-        </span>
-        <span class="sidebar-tab-label">Trợ lý AI</span>
-        <span class="sidebar-tab-pill-badge ai-nav-pill">Mới</span>
-      </button>
-
+      <!-- 5. Tài khoản -->
       <button class="sidebar-tab-btn" data-tab="profile" onclick="switchNavTab(this, 'profile')">
         <span class="sidebar-tab-icon">
           <svg class="fluent-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -93,20 +102,18 @@
       </button>
     </nav>
 
-    <!-- Sidebar Promo Widget -->
-    <div class="sidebar-promo-widget" onclick="applyPromoCode('PTITNGON50')">
-      <div class="sidebar-promo-tag">Đặc quyền PTIT</div>
-      <div class="sidebar-promo-name">Giảm 50% Tối đa 50K</div>
-      <div class="sidebar-promo-code">Mã: <strong>PTITNGON50</strong></div>
-    </div>
-
-    <!-- Student Footer -->
-    <div class="sidebar-student-card" onclick="switchNavTab(null, 'profile')" title="Xem Hồ sơ & Danh bạ người dùng đã lưu">
+    <!-- Student / User Footer Card (Tự động đồng bộ với hồ sơ người dùng) -->
+    <div class="sidebar-student-card" onclick="switchNavTab(null, 'profile')" title="Xem Hồ sơ & Thông tin tài khoản">
       <div class="sidebar-student-avatar">👨‍🎓</div>
       <div class="sidebar-student-info">
-        <div class="sidebar-student-name">Nguyễn Văn A</div>
-        <div class="sidebar-student-sub">PTITer VIP • 0901 234 567</div>
+        <div class="sidebar-student-name">Sinh viên PTIT</div>
+        <div class="sidebar-student-sub">PTITer VIP</div>
       </div>
+      <span class="sidebar-student-chevron">
+        <svg class="fluent-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M7.3 4.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L11.58 10 7.3 5.7a1 1 0 0 1 0-1.4Z"/>
+        </svg>
+      </span>
     </div>
   </aside>
 
@@ -204,6 +211,11 @@
     </div>
   </nav>
 
+  <!-- Floating Page Top Bar (Hiện ở đỉnh màn hình khi lướt qua page-nav-header) -->
+  <div class="floating-page-topbar" id="floating-page-topbar" aria-hidden="true">
+    <div class="floating-topbar-inner" id="floating-topbar-inner"></div>
+  </div>
+
   <!-- Floating Cart Bar (Hiện khi giỏ có món) -->
   <div class="floating-cart-bar" id="floating-cart-bar" style="display: none;" onclick="openCartView()">
     <div class="floating-cart-left">
@@ -240,17 +252,17 @@
   <script src="js/fluent-icons.js"></script>
   <script src="js/food-data.js"></script>
   <script src="js/database.js"></script>
-  <script src="js/app.js?v=3.9"></script>
+  <script src="js/app.js?v=5.2"></script>
   <script src="js/catalog-profile.js"></script>
   <script src="js/ai-chat.js?v=4.2"></script>
   <script src="js/dish-detail.js?v=4.2"></script>
   <script src="js/user-nutrition.js"></script>
   <script src="js/qr-payment.js"></script>
-  <script src="js/db-manager-core.js?v=3.9"></script>
-  <script src="js/db-manager-ui.js?v=3.9"></script>
-  <script src="js/db-manager-editors.js?v=3.9"></script>
-  <script src="js/db-manager-ai.js?v=3.9"></script>
-  <script src="js/db-manager-audit.js?v=3.9"></script>
+  <script src="js/db-manager-core.js?v=4.0"></script>
+  <script src="js/db-manager-ui.js?v=4.0"></script>
+  <script src="js/db-manager-editors.js?v=4.0"></script>
+  <script src="js/db-manager-ai.js?v=4.0"></script>
+  <script src="js/db-manager-audit.js?v=4.0"></script>
 
 </body>
 </html>

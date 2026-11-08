@@ -3,7 +3,7 @@ window.__DATABASE_SEED__ = {
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-08T05:56:22.872Z",
+    "updatedAt": "2026-11-08T06:06:46.446Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
     "lastAction": "update_cart"
   },
@@ -560,7 +560,16 @@ window.__DATABASE_SEED__ = {
       "phone": "0988123456",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T17:07:56.511Z"
+      "createdAt": "2026-11-07T17:07:56.511Z",
+      "lat": 20.9798,
+      "lng": 105.7862,
+      "area": "tran_phu",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 1005,
@@ -585,7 +594,17 @@ window.__DATABASE_SEED__ = {
       "phone": "0983 456 789",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T17:06:40.397Z"
+      "createdAt": "2026-11-07T17:06:40.397Z",
+      "lat": 20.9795,
+      "lng": 105.7868,
+      "area": "tran_phu",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": false,
+      "hasFlashSale": true
     },
     {
       "id": 1004,
@@ -610,7 +629,16 @@ window.__DATABASE_SEED__ = {
       "phone": "0988123456",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T16:47:19.400Z"
+      "createdAt": "2026-11-07T16:47:19.400Z",
+      "lat": 20.9804,
+      "lng": 105.7874,
+      "area": "near_ptit",
+      "shippingProviders": [
+        "ptit_express",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 1003,
@@ -635,7 +663,17 @@ window.__DATABASE_SEED__ = {
       "phone": "0982 345 678",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T16:07:43.246Z"
+      "createdAt": "2026-11-07T16:07:43.246Z",
+      "lat": 20.9822,
+      "lng": 105.7915,
+      "area": "van_quan",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 1002,
@@ -660,7 +698,16 @@ window.__DATABASE_SEED__ = {
       "phone": "0962 345 678",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T15:27:33.677Z"
+      "createdAt": "2026-11-07T15:27:33.677Z",
+      "lat": 20.9792,
+      "lng": 105.786,
+      "area": "tran_phu",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": true
     },
     {
       "id": 1001,
@@ -685,7 +732,16 @@ window.__DATABASE_SEED__ = {
       "phone": "0982 134 567",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T15:20:10.995Z"
+      "createdAt": "2026-11-07T15:20:10.995Z",
+      "lat": 20.9801,
+      "lng": 105.7869,
+      "area": "tran_phu",
+      "shippingProviders": [
+        "ptit_express",
+        "shopeefood"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 999,
@@ -712,7 +768,18 @@ window.__DATABASE_SEED__ = {
       "badge": "Độc quyền 🔥",
       "address": "Số 01 Ngõ Ao Sen (Đối diện cổng chính PTIT), P. Mộ Lao, Hà Đông",
       "phone": "0983 468 63",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9818,
+      "lng": 105.7885,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 1,
@@ -739,7 +806,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "18 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 101 37",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9822,
+      "lng": 105.7888,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 2,
@@ -766,7 +843,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "42 Nguyễn Văn Trỗi, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 102 74",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9827,
+      "lng": 105.7866,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 3,
@@ -792,7 +879,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Quán quen",
       "address": "105 Phố Nguyễn Văn Lộc, Làng Việt Kiều Châu Âu, Hà Đông",
       "phone": "0982 104 11",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9782,
+      "lng": 105.7832,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "shopeefood",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": true
     },
     {
       "id": 4,
@@ -818,7 +915,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Yêu thích",
       "address": "26 Ngõ 3 Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 105 48",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9825,
+      "lng": 105.7891,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 5,
@@ -844,7 +950,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "68 Đường Chiến Thắng, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 106 85",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9852,
+      "lng": 105.7932,
+      "area": "van_quan",
+      "shippingProviders": [
+        "ptit_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 6,
@@ -870,7 +986,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "14 Vũ Trọng Khánh, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 108 22",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9768,
+      "lng": 105.7818,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 7,
@@ -896,7 +1021,18 @@ window.__DATABASE_SEED__ = {
       "badge": "Bán chạy",
       "address": "131 Trần Phú (Cạnh Học viện PTIT), Q. Hà Đông, Hà Nội",
       "phone": "0982 109 59",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9803,
+      "lng": 105.7876,
+      "area": "near_ptit",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 8,
@@ -922,7 +1058,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "LK6A Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 110 96",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9778,
+      "lng": 105.7828,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 9,
@@ -948,7 +1094,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Yêu thích",
       "address": "52 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 112 33",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9788,
+      "lng": 105.7838,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 10,
@@ -974,7 +1129,18 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "129 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 113 70",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9805,
+      "lng": 105.7877,
+      "area": "near_ptit",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 11,
@@ -1000,7 +1166,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "08 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 115 07",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9816,
+      "lng": 105.7883,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 12,
@@ -1026,7 +1202,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Nổi bật",
       "address": "35 Ngõ 6 Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 116 44",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9829,
+      "lng": 105.7895,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "be_delivery"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 13,
@@ -1052,7 +1237,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Bán chạy",
       "address": "22 Nguyễn Khuyến, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 117 81",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9765,
+      "lng": 105.7918,
+      "area": "van_quan",
+      "shippingProviders": [
+        "ptit_express",
+        "shopeefood",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": true
     },
     {
       "id": 14,
@@ -1078,7 +1273,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "47 Đường 19/5, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 119 18",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.978,
+      "lng": 105.7935,
+      "area": "van_quan",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 15,
@@ -1104,7 +1308,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "88 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 120 55",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9784,
+      "lng": 105.7834,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": true,
+      "hasFlashSale": false
     },
     {
       "id": 16,
@@ -1130,7 +1344,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "19 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 121 92",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9821,
+      "lng": 105.7887,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 17,
@@ -1156,7 +1379,18 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "135 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 123 29",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9802,
+      "lng": 105.7875,
+      "area": "near_ptit",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 18,
@@ -1182,7 +1416,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "11 Ngõ 4 Nguyễn Văn Trỗi, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 124 66",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9824,
+      "lng": 105.7863,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "be_delivery"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 19,
@@ -1208,7 +1451,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Quán quen",
       "address": "60 Vũ Trọng Khánh, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 126 03",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9758,
+      "lng": 105.7812,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 20,
@@ -1234,7 +1486,17 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "74 Đường Chiến Thắng, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 127 40",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9856,
+      "lng": 105.7936,
+      "area": "van_quan",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 21,
@@ -1260,7 +1522,18 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "31 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 128 77",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9823,
+      "lng": 105.789,
+      "area": "ao_sen",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express",
+        "shopeefood",
+        "be_delivery"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     },
     {
       "id": 22,
@@ -1286,7 +1559,16 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "95 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 130 14",
-      "isCustom": false
+      "isCustom": false,
+      "lat": 20.9783,
+      "lng": 105.7833,
+      "area": "nguyen_van_loc",
+      "shippingProviders": [
+        "ptit_express",
+        "grab_express"
+      ],
+      "isPartner": false,
+      "hasFlashSale": false
     },
     {
       "id": 1000,
@@ -1312,7 +1594,15 @@ window.__DATABASE_SEED__ = {
       "badge": "Tùy chỉnh ✨",
       "address": "Khuôn viên Học viện CNBCVT (PTIT)",
       "phone": "0983 470 00",
-      "isCustom": true
+      "isCustom": true,
+      "lat": 20.9806,
+      "lng": 105.7878,
+      "area": "near_ptit",
+      "shippingProviders": [
+        "ptit_express"
+      ],
+      "isPartner": true,
+      "hasFlashSale": true
     }
   ],
   "items": [
@@ -12669,7 +12959,7 @@ window.__DATABASE_SEED__ = {
       "avatar": "👨‍🎓",
       "memberTier": "PTITer VIP",
       "createdAt": "2026-09-01T08:00:00.000Z",
-      "updatedAt": "2026-11-07T17:38:03.014Z",
+      "updatedAt": "2026-11-08T06:06:46.430Z",
       "address": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "shortAddress": "PTIT Km10 Trần Phú, Hà Đông",
       "addressLabel": "PTIT Hà Đông",
@@ -12715,41 +13005,104 @@ window.__DATABASE_SEED__ = {
         10,
         18
       ],
-      "cart": [
-        {
-          "id": "179407387824624bu",
-          "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
-          "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
-          "restaurantId": 1001,
-          "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
-          "size": {
-            "name": "Suất Vừa",
-            "extraPrice": 0
-          },
-          "toppings": [],
-          "note": "",
-          "quantity": 1,
-          "unitPrice": 35000,
-          "totalPrice": 35000
-        },
-        {
-          "id": "1794117382872589x",
-          "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
-          "restaurantName": "Bánh Mì Huỳnh Hoa - Đặc Sản Sài Gòn",
-          "restaurantId": 2,
-          "image": "assets/images/banh_mi_1792459688980.jpg",
-          "size": {
-            "name": "Ly Khổng Lồ 1 Lít",
-            "extraPrice": 0
-          },
-          "toppings": [],
-          "note": "",
-          "quantity": 1,
-          "unitPrice": 20000,
-          "totalPrice": 20000
-        }
-      ],
+      "cart": [],
       "orders": [
+        {
+          "orderId": "PTIT-20261108-6750",
+          "categoryStatus": "delivering",
+          "statusText": "Đang chuẩn bị món (Dự kiến 15-20 phút)",
+          "currentStep": 2,
+          "orderTime": "8/11/2026, 13:06",
+          "estimatedTime": "Khoảng 15 - 20 phút nữa",
+          "resName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
+          "resAddress": "Khu ẩm thực quanh Học viện PTIT",
+          "resPhone": "0901 234 567",
+          "deliveryAddress": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "recipientName": "Nguyễn Văn A",
+          "recipientPhone": "0901 234 567",
+          "driverNote": "Giao sảnh nhà A2 hoặc Cổng trường",
+          "items": [
+            {
+              "id": "179407387824624bu",
+              "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
+              "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
+              "restaurantId": 1001,
+              "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+              "size": {
+                "name": "Suất Vừa",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 35000,
+              "totalPrice": 35000
+            },
+            {
+              "id": "1794117382872589x",
+              "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
+              "restaurantName": "Bánh Mì Huỳnh Hoa - Đặc Sản Sài Gòn",
+              "restaurantId": 2,
+              "image": "assets/images/banh_mi_1792459688980.jpg",
+              "size": {
+                "name": "Ly Khổng Lồ 1 Lít",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 20000,
+              "totalPrice": 20000
+            },
+            {
+              "id": "1794117985274alv1",
+              "dishName": "Phần 4 Gỏi Cuốn Tôm Thịt Tươi Chấm Tương",
+              "restaurantName": "Gỏi Cuốn & Bánh Tráng Hoàng Ty",
+              "restaurantId": 14,
+              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "size": {
+                "name": "Phần 4 Cuốn",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 36000,
+              "totalPrice": 36000
+            },
+            {
+              "id": "1794117985974nfvp",
+              "dishName": "Bì Cuốn Thịt Heo Chấm Mắm Chua Ngọt",
+              "restaurantName": "Gỏi Cuốn & Bánh Tráng Hoàng Ty",
+              "restaurantId": 14,
+              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "size": {
+                "name": "Phần 4 Cuốn",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 32000,
+              "totalPrice": 32000
+            }
+          ],
+          "paymentMethod": "cod",
+          "paymentMethodName": "Tiền mặt khi nhận",
+          "subtotal": 123000,
+          "shippingFee": 15000,
+          "discountAmount": 0,
+          "totalAmount": 138000,
+          "driver": {
+            "name": "Nguyễn Văn Tài",
+            "phone": "0909 123 456",
+            "vehicle": "29-P1 889.24 • Honda Wave Alpha",
+            "rating": 4.9,
+            "avatar": "🛵"
+          },
+          "userId": "user_ptit_01",
+          "createdAt": "2026-11-08T06:06:46.430Z"
+        },
         {
           "orderId": "PTIT-20261107-5264",
           "categoryStatus": "cancelled",
@@ -13165,6 +13518,62 @@ window.__DATABASE_SEED__ = {
         "2026-11-08": {
           "waterCups": 0,
           "entries": [
+            {
+              "id": "nutri_1794118006431_qhtn",
+              "time": "13:06",
+              "mealType": "Bữa trưa",
+              "dishId": "item_14_4",
+              "dishName": "Bì Cuốn Thịt Heo Chấm Mắm Chua Ngọt",
+              "quantity": 1,
+              "calories": 319,
+              "protein": 22,
+              "carbs": 39,
+              "fat": 8,
+              "orderId": "PTIT-20261108-6750",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794118006431_gx2g",
+              "time": "13:06",
+              "mealType": "Bữa trưa",
+              "dishId": "item_14_1",
+              "dishName": "Phần 4 Gỏi Cuốn Tôm Thịt Tươi Chấm Tương",
+              "quantity": 1,
+              "calories": 271,
+              "protein": 18,
+              "carbs": 36,
+              "fat": 4,
+              "orderId": "PTIT-20261108-6750",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794118006431_33hc",
+              "time": "13:06",
+              "mealType": "Bữa trưa",
+              "dishId": "item_2_5",
+              "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
+              "quantity": 1,
+              "calories": 466,
+              "protein": 20,
+              "carbs": 56,
+              "fat": 17,
+              "orderId": "PTIT-20261108-6750",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794118006431_2gg9",
+              "time": "13:06",
+              "mealType": "Bữa trưa",
+              "dishId": "item_custom_men_men_ngo_vang_canh_chua_ot_gio_zjli",
+              "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
+              "quantity": 1,
+              "calories": 380,
+              "protein": 9,
+              "carbs": 72,
+              "fat": 5,
+              "orderId": "PTIT-20261108-6750",
+              "source": "order"
+            },
             {
               "id": "nutri_1794072567991_z5jn",
               "time": "00:29",

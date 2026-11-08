@@ -99,7 +99,64 @@ function restoreViewScroll(targetView, fallbackY = 0) {
   window.scrollTo({ top: savedY, behavior: 'instant' });
   requestAnimationFrame(() => {
     window.scrollTo({ top: savedY, behavior: 'instant' });
+    if (typeof updateHeaderScrolledState === 'function') updateHeaderScrolledState();
   });
+}
+
+// ── Đồng bộ hiệu ứng Floating Top Bar cho các trang có .page-nav-header khi lướt qua ──
+let lastSyncedTopBarHtml = '';
+function updateFloatingTopBar() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  const floatingBar = document.getElementById('floating-page-topbar');
+  const inner = document.getElementById('floating-topbar-inner');
+  const inPageHeader = document.querySelector('.page-nav-header');
+
+  const scrollY = window.scrollY || window.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || 0;
+
+  // Cập nhật cả class is-scrolled trên in-page header nếu có
+  if (inPageHeader && inPageHeader.classList) {
+    if (scrollY > 20) inPageHeader.classList.add('is-scrolled');
+    else inPageHeader.classList.remove('is-scrolled');
+  }
+
+  // Đổi chỗ mượt mà với dbm-bulk-bar khi được active trong cơ sở dữ liệu
+  const activeBulkBar = document.querySelector('.dbm-bulk-bar.active');
+  if (activeBulkBar) {
+    if (floatingBar) {
+      floatingBar.classList.remove('visible');
+      floatingBar.setAttribute('aria-hidden', 'true');
+    }
+    return;
+  }
+
+  // Nếu không có header trên trang (ví dụ trang chủ) hoặc chưa cuộn qua header (<= 45px)
+  if (!inPageHeader || scrollY <= 45) {
+    if (floatingBar) {
+      floatingBar.classList.remove('visible');
+      floatingBar.setAttribute('aria-hidden', 'true');
+    }
+    return;
+  }
+
+  // Khi cuộn qua header (> 45px): Hiển thị floating top bar cố định ở đỉnh màn hình trong vùng thấy được
+  if (floatingBar && inner) {
+    const currentHtml = inPageHeader.innerHTML;
+    if (currentHtml !== lastSyncedTopBarHtml) {
+      lastSyncedTopBarHtml = currentHtml;
+      inner.innerHTML = currentHtml;
+    }
+    floatingBar.classList.add('visible');
+    floatingBar.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function updateHeaderScrolledState() {
+  updateFloatingTopBar();
+}
+
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('scroll', updateFloatingTopBar, { passive: true });
 }
 
 // ── User Delivery & Recipient Info (Đồng bộ trực tiếp với DB Hồ sơ người dùng) ──
@@ -213,6 +270,13 @@ function render() {
   } else if (currentView === 'order-success') {
     renderOrderSuccessView();
   }
+
+  // Cập nhật trạng thái scrolled cho header sau khi view mới được kết xuất
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(updateHeaderScrolledState);
+  } else if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 // ========================================
@@ -267,7 +331,20 @@ function renderHomeView() {
 
   app.innerHTML = `
     <!-- Header -->
-    <div class="header">
+    <div class="header home-header">
+      <!-- Full-bleed Premium Vietnamese Food Hero Backdrop -->
+      <div class="home-hero-backdrop" aria-hidden="true">
+        <img
+          class="home-hero-backdrop-img"
+          src="https://static.vinwonders.com/production/vietnamese-food-top-banner.jpg"
+          onerror="this.onerror=null; this.src='assets/images/vietnamese-food-top-banner.jpg';"
+          alt=""
+          loading="eager"
+        />
+        <div class="home-hero-top-vignette"></div>
+        <div class="home-hero-backdrop-fade"></div>
+      </div>
+
       <!-- Location -->
       <div class="location-row fade-in">
         <div class="location-left" onclick="openDeliveryInfoModal()">
@@ -290,12 +367,10 @@ function renderHomeView() {
         </div>
       </div>
 
-      <!-- Top Cushion Banner (~30% screen buffer) -->
-      <div class="top-banner-cushion fade-in">
-        ${renderBannerHtml(currentBanner, currentBannerIndex)}
-      </div>
+      <!-- Khoảng trống thoáng đãng thay thế top-banner-card -->
+      <div class="home-hero-spacer"></div>
 
-      <!-- Greeting (Bigger font, grand & warm) -->
+      <!-- Greeting (To hơn, nổi bật hơn làm tâm điểm) -->
       <div class="greeting fade-in fade-in-delay-1">
         <div class="greeting-hello">Xin chào, ${escapeHtml(userDeliveryInfo.name || 'Bạn')}! 👋</div>
         <div class="greeting-question">Hôm nay bạn muốn ăn gì? <span class="wave">🍽️</span></div>
@@ -339,20 +414,8 @@ function renderHomeView() {
       </div>
     </div>
 
-    <!-- Promo Banner -->
-    <div class="promo-section fade-in fade-in-delay-4">
-      <div class="promo-card" onclick="applyPromoCode('PTITNGON50')">
-        <div class="promo-card-content">
-          <div class="promo-card-tag">Ưu đãi sinh viên</div>
-          <div class="promo-card-title">Giảm 50% cho PTITer</div>
-          <div class="promo-card-sub">Tối đa 50K • Chạm để lưu mã PTITNGON50</div>
-        </div>
-        <div class="promo-card-emoji">🎉</div>
-      </div>
-    </div>
-
     <!-- Categories Filter Chips -->
-    <div class="categories-section fade-in fade-in-delay-5">
+    <div class="categories-section fade-in fade-in-delay-4">
       <div class="section-head">
         <div class="section-title">Khám phá nhanh</div>
         <div class="scroll-arrow-controls">

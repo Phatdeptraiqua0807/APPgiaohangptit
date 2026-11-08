@@ -1007,6 +1007,7 @@ function renderDbmCategoriesTab() {
 function updateCatalogCategoriesListDOM() {
   const el = document.getElementById('catalog-categories-list-container');
   if (el) el.innerHTML = renderDbmCategoriesGridHtml(getFilteredDbmCategories());
+  if (typeof updateFloatingTopBar === 'function') updateFloatingTopBar();
 }
 
 function dbmToggleCategorySelect(id, checked) {
@@ -1352,6 +1353,7 @@ function renderDbmStoresTab() {
 function updateCatalogStoresListDOM() {
   const el = document.getElementById('catalog-stores-list-container');
   if (el) el.innerHTML = renderDbmStoresGridHtml(getFilteredDbmStores());
+  if (typeof updateFloatingTopBar === 'function') updateFloatingTopBar();
 }
 
 function dbmToggleStoreSelect(id, checked) {
