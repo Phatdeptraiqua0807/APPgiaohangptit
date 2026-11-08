@@ -896,8 +896,22 @@ function closeSearchFilterModal() {
 }
 
 function closeSearchFilterModalOnBackdrop(e) {
-  if (e && e.target && e.target.id === 'search-filter-overlay') {
-    closeSearchFilterModal();
+  // Khi search-filter-overlay active, chạm/click ra vùng ngoài modal không bị thoát ra ngoài
+  if (e && (e.target === e.currentTarget || (e.target && e.target.id === 'search-filter-overlay'))) {
+    const sheet = document.getElementById('search-filter-bottom-sheet');
+    if (sheet) {
+      sheet.classList.remove('modal-shake-prompt');
+      void sheet.offsetWidth;
+      sheet.classList.add('modal-shake-prompt');
+      setTimeout(() => sheet.classList.remove('modal-shake-prompt'), 400);
+    }
+    const closeBtn = sheet ? sheet.querySelector('.filter-sheet-close-btn') : null;
+    if (closeBtn) {
+      closeBtn.classList.remove('close-btn-nudge');
+      void closeBtn.offsetWidth;
+      closeBtn.classList.add('close-btn-nudge');
+      setTimeout(() => closeBtn.classList.remove('close-btn-nudge'), 600);
+    }
   }
 }
 
@@ -1572,8 +1586,23 @@ function closeModal() {
 }
 
 function closeModalOnBackdrop(event) {
-  if (event.target.id === 'modal-overlay') {
-    closeModal();
+  // Khi modal-overlay active, chạm/click ra vùng ngoài bảng/modal không bị thoát ra ngoài (static backdrop)
+  if (event && (event.target === event.currentTarget || (event.target && event.target.id === 'modal-overlay'))) {
+    const sheet = document.getElementById('modal-bottom-sheet');
+    if (sheet) {
+      sheet.classList.remove('modal-shake-prompt');
+      void sheet.offsetWidth; // Force reflow để trigger animation
+      sheet.classList.add('modal-shake-prompt');
+      setTimeout(() => sheet.classList.remove('modal-shake-prompt'), 400);
+    }
+    // Gợi ý người dùng đóng modal bằng nút đóng (✕) hoặc nút thao tác
+    const closeBtn = sheet ? sheet.querySelector('.dish-modal-close-btn, .close-btn, .dbm-close-btn') : null;
+    if (closeBtn) {
+      closeBtn.classList.remove('close-btn-nudge');
+      void closeBtn.offsetWidth;
+      closeBtn.classList.add('close-btn-nudge');
+      setTimeout(() => closeBtn.classList.remove('close-btn-nudge'), 600);
+    }
   }
 }
 
@@ -2224,15 +2253,24 @@ function selectAddressPreset(idx) {
   });
   if (p.lat && p.lng) {
     tempDeliveryCoords = { lat: p.lat, lng: p.lng };
+    const badge = document.getElementById('delivery-coords-badge');
+    if (badge) badge.textContent = `${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;
+
     if (userDeliveryMapInstance && userDeliveryMarker) {
       userDeliveryMapInstance.setView([p.lat, p.lng], 16);
       userDeliveryMarker.setLatLng([p.lat, p.lng]);
+    }
+    if (userDeliveryGoogleMap && userDeliveryGoogleMarker) {
+      userDeliveryGoogleMap.setCenter({ lat: p.lat, lng: p.lng });
+      userDeliveryGoogleMarker.setPosition({ lat: p.lat, lng: p.lng });
     }
   }
 }
 
 let userDeliveryMapInstance = null;
 let userDeliveryMarker = null;
+let userDeliveryGoogleMap = null;
+let userDeliveryGoogleMarker = null;
 let tempDeliveryCoords = { lat: 20.9806, lng: 105.7878 };
 
 function selectDeliveryHotspot(id) {
@@ -2256,9 +2294,15 @@ function selectDeliveryHotspot(id) {
     b.classList.toggle('active', b.textContent.includes(sp.label));
   });
 
+  // Cập nhật ghim trên Leaflet
   if (userDeliveryMapInstance && userDeliveryMarker) {
     userDeliveryMapInstance.setView([sp.lat, sp.lng], 16);
     userDeliveryMarker.setLatLng([sp.lat, sp.lng]);
+  }
+  // Cập nhật ghim trên Google Maps
+  if (userDeliveryGoogleMap && userDeliveryGoogleMarker) {
+    userDeliveryGoogleMap.setCenter({ lat: sp.lat, lng: sp.lng });
+    userDeliveryGoogleMarker.setPosition({ lat: sp.lat, lng: sp.lng });
   }
   showToast('locationRegular', `Đã chọn: ${sp.name}`);
 }
@@ -2267,18 +2311,108 @@ function initUserDeliveryMap() {
   const container = document.getElementById('user-delivery-map');
   if (!container) return;
 
-  const lat = userDeliveryInfo.lat || 20.9806;
-  const lng = userDeliveryInfo.lng || 105.7878;
+  const lat = tempDeliveryCoords.lat || userDeliveryInfo.lat || 20.9806;
+  const lng = tempDeliveryCoords.lng || userDeliveryInfo.lng || 105.7878;
   tempDeliveryCoords = { lat, lng };
+
+  const badge = document.getElementById('delivery-coords-badge');
+  if (badge) badge.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+  const cfg = MapService.getConfig();
+  const labelEl = document.getElementById('delivery-map-provider-label');
+
+  if (cfg.provider === 'google' && cfg.googleApiKey) {
+    if (labelEl) labelEl.textContent = 'Bản đồ điểm nhận (Google Maps API)';
+    if (userDeliveryMapInstance) {
+      try { userDeliveryMapInstance.remove(); } catch (_) { }
+      userDeliveryMapInstance = null;
+      userDeliveryMarker = null;
+    }
+    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#475569;font-size:12px;font-weight:600;"><span class="live-pulse-radar" style="margin-right:8px;"></span>Đang nạp Google Maps...</div>';
+
+    MapService.loadGoogleMaps(cfg.googleApiKey, (success, err) => {
+      if (success && window.google && window.google.maps) {
+        renderGoogleDeliveryMap(container, lat, lng, cfg);
+      } else {
+        if (typeof showToast === 'function') {
+          showToast('alertRegular', 'Không thể nạp Google Maps (vui lòng kiểm tra lại API Key). Đang chuyển sang OpenStreetMap.');
+        }
+        if (labelEl) labelEl.textContent = 'Bản đồ điểm nhận (OpenStreetMap)';
+        renderLeafletDeliveryMap(container, lat, lng);
+      }
+    });
+  } else {
+    if (labelEl) labelEl.textContent = 'Bản đồ điểm nhận (OpenStreetMap)';
+    renderLeafletDeliveryMap(container, lat, lng);
+  }
+}
+
+function renderGoogleDeliveryMap(container, lat, lng, cfg) {
+  container.innerHTML = '';
+  try {
+    userDeliveryGoogleMap = new google.maps.Map(container, {
+      center: { lat, lng },
+      zoom: 16,
+      mapTypeId: cfg.mapType || 'roadmap',
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: true,
+      scaleControl: true,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: true,
+      gestureHandling: 'greedy'
+    });
+
+    if (cfg.enableTraffic) {
+      const trafficLayer = new google.maps.TrafficLayer();
+      trafficLayer.setMap(userDeliveryGoogleMap);
+    }
+
+    userDeliveryGoogleMarker = new google.maps.Marker({
+      position: { lat, lng },
+      map: userDeliveryGoogleMap,
+      draggable: true,
+      title: 'Kéo để chọn vị trí giao nhận PTIT',
+      animation: google.maps.Animation.DROP
+    });
+
+    userDeliveryGoogleMarker.addListener('dragend', (e) => {
+      const p = e.latLng;
+      onUserMapLocationChanged(p.lat(), p.lng());
+    });
+
+    userDeliveryGoogleMap.addListener('click', (e) => {
+      if (userDeliveryGoogleMarker) userDeliveryGoogleMarker.setPosition(e.latLng);
+      onUserMapLocationChanged(e.latLng.lat(), e.latLng.lng());
+    });
+
+    setTimeout(() => {
+      if (window.google && google.maps && google.maps.event) {
+        google.maps.event.trigger(userDeliveryGoogleMap, 'resize');
+        userDeliveryGoogleMap.setCenter({ lat, lng });
+      }
+    }, 200);
+  } catch (e) {
+    console.warn('Lỗi khởi tạo Google Maps, fallback Leaflet:', e);
+    renderLeafletDeliveryMap(container, lat, lng);
+  }
+}
+
+function renderLeafletDeliveryMap(container, lat, lng) {
+  userDeliveryGoogleMap = null;
+  userDeliveryGoogleMarker = null;
 
   if (typeof L !== 'undefined' && L.map) {
     try {
       if (userDeliveryMapInstance) {
         userDeliveryMapInstance.remove();
         userDeliveryMapInstance = null;
+        userDeliveryMarker = null;
       }
-      userDeliveryMapInstance = L.map('user-delivery-map', {
-        zoomControl: false,
+      container.innerHTML = '';
+      userDeliveryMapInstance = L.map(container, {
+        zoomControl: true,
         attributionControl: false
       }).setView([lat, lng], 16);
 
@@ -2313,14 +2447,13 @@ function initUserDeliveryMap() {
 
       setTimeout(() => {
         if (userDeliveryMapInstance) userDeliveryMapInstance.invalidateSize();
-      }, 250);
+      }, 200);
       return;
     } catch (e) {
-      console.warn('Leaflet error, fallback to vector map:', e);
+      console.warn('Leaflet error, fallback vector:', e);
     }
   }
 
-  // Graceful Offline SVG fallback
   renderVectorDeliveryMapFallback(container, lat, lng);
 }
 
@@ -2334,10 +2467,24 @@ function onUserMapLocationChanged(lat, lng) {
 
   const distToPTIT = calculateHaversineKm(lat, lng, 20.9806, 105.7878);
   if (distToPTIT < 0.25) {
-    addrInput.value = 'Khuôn viên Học viện CNBCVT (PTIT), Km10 Đường Trần Phú, Hà Đông';
+    addrInput.value = 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội';
     return;
   }
 
+  const cfg = MapService.getConfig();
+
+  // 1. Thử dùng Google Geocoder nếu đang bật Google Maps
+  if (cfg.provider === 'google' && window.google && window.google.maps && window.google.maps.Geocoder) {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === 'OK' && results && results[0] && addrInput) {
+        addrInput.value = results[0].formatted_address;
+      }
+    });
+    return;
+  }
+
+  // 2. Thử OpenStreetMap Nominatim reverse geocoding
   fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
     headers: { 'Accept-Language': 'vi' }
   })
@@ -2376,76 +2523,165 @@ function renderVectorDeliveryMapFallback(container, lat, lng) {
   `;
 }
 
-// ── Định vị GPS & Tự động lấy vị trí hiện tại ──
+// ── Định vị GPS & Hoàn chỉnh chức năng Lấy Vị Trí Hiện Tại ──
 function detectCurrentLocation(callback) {
-  if (!navigator.geolocation) {
+  if (typeof navigator === 'undefined' || !navigator.geolocation) {
     if (typeof showToast === 'function') {
-      showToast('dismissCircleRegular', 'Trình duyệt không hỗ trợ định vị GPS!');
+      showToast('dismissCircleRegular', 'Trình duyệt không hỗ trợ định vị GPS trực tiếp.');
+    }
+    if (typeof callback === 'function') {
+      callback({
+        latitude: 20.9806,
+        longitude: 105.7878,
+        address: 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội',
+        isFallback: true
+      });
     }
     return;
   }
 
   if (typeof showToast === 'function') {
-    showToast('locationRegular', 'Đang xác định tọa độ GPS vị trí hiện tại...');
+    showToast('locationRegular', 'Đang kết nối GPS định vị tọa độ hiện tại...');
   }
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
-      const { latitude, longitude } = position.coords;
+      const { latitude, longitude, accuracy } = position.coords;
       let detectedAddress = '';
 
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3500);
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
-          signal: controller.signal,
-          headers: { 'Accept-Language': 'vi' }
-        });
-        clearTimeout(timeout);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.display_name) {
-            detectedAddress = data.display_name;
-          }
+      const distToPTIT = calculateHaversineKm(latitude, longitude, 20.9806, 105.7878);
+      if (distToPTIT < 0.35) {
+        detectedAddress = 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội';
+      }
+
+      // Reverse geocoding
+      if (!detectedAddress) {
+        const cfg = MapService.getConfig();
+        // 1. Dùng Google Geocoding REST API nếu Google Maps đang cấu hình
+        if (cfg.provider === 'google' && cfg.googleApiKey) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 4000);
+            const gRes = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${encodeURIComponent(cfg.googleApiKey)}&language=vi`, {
+              signal: controller.signal
+            });
+            clearTimeout(timeout);
+            if (gRes.ok) {
+              const gData = await gRes.json();
+              if (gData.results && gData.results[0]) {
+                detectedAddress = gData.results[0].formatted_address;
+              }
+            }
+          } catch (_) { }
         }
-      } catch (_) { }
+
+        // 2. Dùng OpenStreetMap Nominatim
+        if (!detectedAddress) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 3500);
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+              signal: controller.signal,
+              headers: { 'Accept-Language': 'vi' }
+            });
+            clearTimeout(timeout);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.display_name) {
+                detectedAddress = data.display_name;
+              }
+            }
+          } catch (_) { }
+        }
+      }
 
       if (!detectedAddress) {
-        detectedAddress = `Tọa độ (${latitude.toFixed(4)}, ${longitude.toFixed(4)}) - Khuôn viên Học viện CNBCVT (PTIT), Km10 Trần Phú, Hà Đông, Hà Nội`;
+        detectedAddress = `Tọa độ GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)}) - Khu vực Hà Đông, Hà Nội (Gần Học viện PTIT)`;
       }
 
       if (typeof showToast === 'function') {
-        showToast('checkmarkFilled', 'Đã lấy vị trí hiện tại thành công!');
+        const accText = accuracy ? ` (độ chính xác ±${Math.round(accuracy)}m)` : '';
+        showToast('checkmarkFilled', `Đã lấy vị trí hiện tại thành công!${accText}`);
       }
 
       if (typeof callback === 'function') {
-        callback({ latitude, longitude, address: detectedAddress });
+        callback({
+          latitude,
+          longitude,
+          address: detectedAddress,
+          accuracy,
+          isFallback: false
+        });
       }
     },
     (err) => {
       console.warn('Geolocation error / permission denied:', err);
+      let errMsg = 'Không thể lấy GPS (chưa cấp quyền hoặc mạng yếu). Đã đặt tại PTIT Hà Đông.';
+      if (err.code === 1) {
+        errMsg = 'Quyền truy cập vị trí đã bị từ chối. Đã đặt vị trí Học viện PTIT.';
+      } else if (err.code === 3) {
+        errMsg = 'Quá thời gian chờ phản hồi GPS. Đã đặt vị trí Học viện PTIT.';
+      }
+
+      if (typeof showToast === 'function') {
+        showToast('locationRegular', errMsg);
+      }
+
       const fallbackLoc = {
         latitude: 20.9806,
-        longitude: 105.7876,
-        address: 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội'
+        longitude: 105.7878,
+        address: 'Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội',
+        isFallback: true
       };
-      if (typeof showToast === 'function') {
-        showToast('locationRegular', 'Đã lấy vị trí hiện tại tại Học viện PTIT Hà Đông');
-      }
+
       if (typeof callback === 'function') {
         callback(fallbackLoc);
       }
     },
-    { enableHighAccuracy: true, timeout: 6000, maximumAge: 30000 }
+    { enableHighAccuracy: true, timeout: 7000, maximumAge: 10000 }
   );
 }
 
 function autoDetectDeliveryAddress() {
+  const btn = document.getElementById('delivery-detect-gps-btn');
+  let originalHtml = '';
+  if (btn) {
+    originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.classList.add('is-loading');
+    btn.innerHTML = '⏳ Đang định vị GPS...';
+  }
+
   detectCurrentLocation((loc) => {
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('is-loading');
+      btn.innerHTML = originalHtml;
+    }
+
     const input = document.getElementById('delivery-input-address');
     if (input) {
       input.value = loc.address;
       input.focus();
+    }
+
+    tempDeliveryCoords = { lat: loc.latitude, lng: loc.longitude };
+    const badge = document.getElementById('delivery-coords-badge');
+    if (badge) badge.textContent = `${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}`;
+
+    // Cập nhật ghim trên bản đồ nếu bản đồ đang mở
+    const mapCard = document.getElementById('delivery-map-picker-card');
+    const isMapOpen = mapCard && mapCard.style.display !== 'none';
+
+    if (isMapOpen) {
+      if (userDeliveryMapInstance && userDeliveryMarker) {
+        userDeliveryMapInstance.setView([loc.latitude, loc.longitude], 17);
+        userDeliveryMarker.setLatLng([loc.latitude, loc.longitude]);
+      }
+      if (userDeliveryGoogleMap && userDeliveryGoogleMarker) {
+        userDeliveryGoogleMap.setCenter({ lat: loc.latitude, lng: loc.longitude });
+        userDeliveryGoogleMarker.setPosition({ lat: loc.latitude, lng: loc.longitude });
+      }
     }
   });
 }

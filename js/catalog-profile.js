@@ -1414,9 +1414,338 @@ function renderProfileView() {
         ` : ''}
       </div>
 
+      <!-- Cấu hình Nhà cung cấp Bản đồ & Định vị (Google Maps / OpenStreetMap) -->
+      ${typeof renderProfileMapSettingsCard === 'function' ? renderProfileMapSettingsCard() : ''}
+
       <div class="bottom-spacer"></div>
     </div>
   `;
+}
+
+// ── Cấu hình Bản đồ & Định vị Google Maps / OpenStreetMap trong Hồ Sơ Tài Khoản ──
+function renderProfileMapSettingsCard() {
+  const cfg = (typeof MapService !== 'undefined') ? MapService.getConfig() : {
+    provider: 'osm',
+    googleApiKey: '',
+    mapType: 'roadmap',
+    autoReverseGeocode: true,
+    enableTraffic: false
+  };
+
+  const isGoogle = cfg.provider === 'google';
+  const hasKey = Boolean(cfg.googleApiKey && cfg.googleApiKey.trim());
+
+  return `
+    <div class="profile-map-settings-card" id="profile-map-settings-card">
+      <div class="profile-map-header">
+        <div class="profile-map-title-wrap">
+          <span class="profile-map-icon">🗺️</span>
+          <div>
+            <div class="profile-map-title">Cấu hình Bản đồ &amp; Định vị (Map API)</div>
+            <div class="profile-map-sub">Tùy chỉnh nhà cung cấp bản đồ số, chuyển đổi Google Maps API để định vị &amp; theo dõi đơn hàng</div>
+          </div>
+        </div>
+        <span class="profile-map-badge ${isGoogle && hasKey ? 'google' : 'osm'}" id="profile-map-status-badge">
+          ${isGoogle && hasKey ? '🗺️ Google Maps API' : '🌐 OpenStreetMap (Leaflet)'}
+        </span>
+      </div>
+
+      <!-- Lựa chọn Nhà cung cấp Bản đồ -->
+      <div class="map-provider-grid">
+        <div 
+          class="map-provider-card ${!isGoogle ? 'active' : ''}" 
+          id="provider-card-osm"
+          onclick="selectProfileMapProvider('osm')"
+        >
+          <div class="map-provider-radio">
+            <span class="radio-dot ${!isGoogle ? 'checked' : ''}"></span>
+          </div>
+          <div class="map-provider-content">
+            <div class="map-provider-name">
+              <span>🌐 OpenStreetMap (Mặc định)</span>
+              <span class="provider-tag free">Miễn phí 100%</span>
+            </div>
+            <div class="map-provider-desc">
+              Sử dụng Leaflet mã nguồn mở. Không cần API Key, không giới hạn lượt dùng, hoạt động ổn định và tức thì quanh khu vực PTIT.
+            </div>
+          </div>
+        </div>
+
+        <div 
+          class="map-provider-card ${isGoogle ? 'active google-selected' : ''}" 
+          id="provider-card-google"
+          onclick="selectProfileMapProvider('google')"
+        >
+          <div class="map-provider-radio">
+            <span class="radio-dot ${isGoogle ? 'checked' : ''}"></span>
+          </div>
+          <div class="map-provider-content">
+            <div class="map-provider-name">
+              <span>🗺️ Google Maps JavaScript API</span>
+              <span class="provider-tag google">Độ chính xác cao</span>
+            </div>
+            <div class="map-provider-desc">
+              Bản đồ Google Maps chính hãng với ảnh vệ tinh độ nét cao, định vị Geocoding chi tiết đến từng số nhà, ngõ ngách tại Việt Nam.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khu vực Cấu hình Google Maps (Hiển thị khi chọn Google Maps hoặc tuỳ chỉnh) -->
+      <div class="google-maps-config-box ${isGoogle ? 'open' : ''}" id="google-maps-config-box">
+        <div class="google-config-title">
+          <span>🔑 Cài đặt Google Maps API Key</span>
+        </div>
+
+        <div class="google-input-group">
+          <label class="google-input-label" for="profile-google-api-key">
+            Google Maps API Key (*):
+          </label>
+          <div class="google-api-key-wrap">
+            <input 
+              type="password" 
+              id="profile-google-api-key" 
+              class="google-api-key-input" 
+              placeholder="Dán API Key (bắt đầu bằng AIzaSy...)"
+              value="${escapeHtml(cfg.googleApiKey || '')}"
+              autocomplete="off"
+            >
+            <button type="button" class="btn-toggle-key-eye" onclick="toggleProfileApiKeyVisibility()" title="Hiện/Ẩn API Key" aria-label="Hiện/Ẩn API Key">
+              👁️
+            </button>
+          </div>
+          <div class="google-input-hint">
+            💡 Khóa API cần kích hoạt <strong>Maps JavaScript API</strong> và <strong>Geocoding API</strong> trên Google Cloud Console.
+          </div>
+        </div>
+
+        <div class="google-options-grid">
+          <div class="google-option-item">
+            <label class="google-input-label" for="profile-google-map-type">Chế độ hiển thị bản đồ mặc định:</label>
+            <select id="profile-google-map-type" class="google-select-field">
+              <option value="roadmap" ${cfg.mapType === 'roadmap' ? 'selected' : ''}>Đường phố (Roadmap)</option>
+              <option value="hybrid" ${cfg.mapType === 'hybrid' ? 'selected' : ''}>Vệ tinh có chú thích (Hybrid)</option>
+              <option value="satellite" ${cfg.mapType === 'satellite' ? 'selected' : ''}>Vệ tinh thuần (Satellite)</option>
+              <option value="terrain" ${cfg.mapType === 'terrain' ? 'selected' : ''}>Địa hình (Terrain)</option>
+            </select>
+          </div>
+
+          <div class="google-option-item" style="display:flex; flex-direction:column; justify-content:flex-end;">
+            <label class="db-checkbox-row" style="margin-bottom:0;">
+              <input type="checkbox" id="profile-google-traffic" ${cfg.enableTraffic ? 'checked' : ''}>
+              <span>Hiển thị lớp giao thông thời gian thực (Traffic Layer)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Hộp thông báo kết quả kiểm tra API -->
+        <div class="google-test-result" id="google-test-result" style="display:none;"></div>
+
+        <!-- Các nút thao tác kiểm tra & lưu -->
+        <div class="google-config-actions">
+          <button type="button" class="btn-test-api" id="btn-test-google-api" onclick="testProfileGoogleMapsKey()">
+            🧪 Kiểm tra kết nối API
+          </button>
+          <button type="button" class="btn-save-map-cfg" onclick="saveProfileMapSettings()">
+            💾 Lưu cấu hình
+          </button>
+          <button type="button" class="btn-reset-map-cfg" onclick="resetProfileMapSettings()">
+            🔄 Đặt lại OpenStreetMap
+          </button>
+        </div>
+
+        <!-- Hướng dẫn cách lấy API Key miễn phí -->
+        <details class="google-help-accordion">
+          <summary>📖 Hướng dẫn lấy Google Maps API Key miễn phí (Google tặng $200 tín dụng/tháng)</summary>
+          <ol style="margin: 8px 0 0 18px; padding: 0; font-size: 11.5px; color: var(--gray-600); line-height: 1.6;">
+            <li>Truy cập <a href="https://console.cloud.google.com/" target="_blank" rel="noopener" style="color:var(--primary-blue); font-weight:700;">Google Cloud Console</a> và tạo 1 Project mới.</li>
+            <li>Vào mục <strong>APIs &amp; Services &gt; Library</strong>, tìm và bấm <strong>Enable</strong> cho:
+              <ul style="margin: 2px 0 2px 14px;">
+                <li><code>Maps JavaScript API</code> (hiển thị bản đồ giao diện web)</li>
+                <li><code>Geocoding API</code> (dịch tọa độ GPS ra tên đường, số nhà Việt Nam)</li>
+              </ul>
+            </li>
+            <li>Vào mục <strong>Credentials &gt; Create Credentials &gt; API Key</strong>.</li>
+            <li>Copy chuỗi khóa API vừa tạo dán vào ô trên, bấm <strong>Kiểm tra kết nối API</strong> rồi bấm <strong>Lưu cấu hình</strong>.</li>
+          </ol>
+        </details>
+      </div>
+    </div>
+  `;
+}
+
+function selectProfileMapProvider(provider) {
+  const osmCard = document.getElementById('provider-card-osm');
+  const googleCard = document.getElementById('provider-card-google');
+  const configBox = document.getElementById('google-maps-config-box');
+  const badge = document.getElementById('profile-map-status-badge');
+
+  if (provider === 'osm') {
+    if (osmCard) osmCard.classList.add('active');
+    if (googleCard) {
+      googleCard.classList.remove('active');
+      googleCard.classList.remove('google-selected');
+    }
+    const osmDot = osmCard?.querySelector('.radio-dot');
+    const googleDot = googleCard?.querySelector('.radio-dot');
+    if (osmDot) osmDot.classList.add('checked');
+    if (googleDot) googleDot.classList.remove('checked');
+
+    if (configBox) configBox.classList.remove('open');
+    if (badge) {
+      badge.className = 'profile-map-badge osm';
+      badge.textContent = '🌐 OpenStreetMap (Leaflet)';
+    }
+
+    if (typeof MapService !== 'undefined') {
+      MapService.saveConfig({ provider: 'osm' });
+    }
+    if (typeof showToast === 'function') {
+      showToast('checkmarkFilled', 'Đã chuyển sang sử dụng OpenStreetMap (Leaflet)!');
+    }
+  } else if (provider === 'google') {
+    if (osmCard) osmCard.classList.remove('active');
+    if (googleCard) {
+      googleCard.classList.add('active');
+      googleCard.classList.add('google-selected');
+    }
+    const osmDot = osmCard?.querySelector('.radio-dot');
+    const googleDot = googleCard?.querySelector('.radio-dot');
+    if (osmDot) osmDot.classList.remove('checked');
+    if (googleDot) googleDot.classList.add('checked');
+
+    if (configBox) configBox.classList.add('open');
+
+    const keyInput = document.getElementById('profile-google-api-key');
+    if (badge) {
+      const hasKey = keyInput && keyInput.value.trim();
+      badge.className = `profile-map-badge ${hasKey ? 'google' : 'osm'}`;
+      badge.textContent = hasKey ? '🗺️ Google Maps API' : '🗺️ Google Maps (Chờ nhập Key)';
+    }
+
+    if (keyInput && !keyInput.value) {
+      keyInput.focus();
+    }
+  }
+}
+
+function toggleProfileApiKeyVisibility() {
+  const input = document.getElementById('profile-google-api-key');
+  if (!input) return;
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+async function testProfileGoogleMapsKey() {
+  const keyInput = document.getElementById('profile-google-api-key');
+  const resultBox = document.getElementById('google-test-result');
+  const testBtn = document.getElementById('btn-test-google-api');
+  if (!keyInput || !resultBox) return;
+
+  const key = keyInput.value.trim();
+  if (!key) {
+    resultBox.style.display = 'block';
+    resultBox.className = 'google-test-result error';
+    resultBox.innerHTML = '⚠️ Vui lòng nhập API Key Google Maps trước khi kiểm tra!';
+    keyInput.focus();
+    return;
+  }
+
+  if (testBtn) {
+    testBtn.disabled = true;
+    testBtn.innerHTML = '⏳ Đang kiểm tra kết nối...';
+  }
+
+  resultBox.style.display = 'block';
+  resultBox.className = 'google-test-result';
+  resultBox.style.background = '#f1f5f9';
+  resultBox.style.color = '#334155';
+  resultBox.innerHTML = '🔄 Đang gửi request kiểm tra API Key với máy chủ Google Maps...';
+
+  try {
+    const res = await MapService.testGoogleApiKey(key);
+    if (res.ok) {
+      resultBox.className = 'google-test-result success';
+      resultBox.innerHTML = `✅ <strong>${escapeHtml(res.message)}</strong>`;
+      if (typeof showToast === 'function') {
+        showToast('checkmarkFilled', 'Khóa Google Maps API hợp lệ!');
+      }
+    } else {
+      resultBox.className = 'google-test-result error';
+      resultBox.innerHTML = `❌ <strong>Kiểm tra thất bại:</strong> ${escapeHtml(res.message)}`;
+      if (typeof showToast === 'function') {
+        showToast('dismissCircleRegular', 'API Key không hợp lệ hoặc bị chặn!');
+      }
+    }
+  } catch (e) {
+    resultBox.className = 'google-test-result error';
+    resultBox.innerHTML = `❌ <strong>Lỗi:</strong> ${escapeHtml(e.message || 'Không thể liên lạc Google Maps')}`;
+  } finally {
+    if (testBtn) {
+      testBtn.disabled = false;
+      testBtn.innerHTML = '🧪 Kiểm tra kết nối API';
+    }
+  }
+}
+
+function saveProfileMapSettings() {
+  const googleCard = document.getElementById('provider-card-google');
+  const isGoogle = googleCard && googleCard.classList.contains('active');
+  const keyInput = document.getElementById('profile-google-api-key');
+  const mapTypeSelect = document.getElementById('profile-google-map-type');
+  const trafficCheck = document.getElementById('profile-google-traffic');
+
+  const googleApiKey = keyInput ? keyInput.value.trim() : '';
+  const mapType = mapTypeSelect ? mapTypeSelect.value : 'roadmap';
+  const enableTraffic = trafficCheck ? trafficCheck.checked : false;
+
+  if (isGoogle && !googleApiKey) {
+    if (typeof showToast === 'function') {
+      showToast('alertRegular', 'Vui lòng nhập Google Maps API Key để kích hoạt!');
+    }
+    if (keyInput) keyInput.focus();
+    return;
+  }
+
+  const newConfig = {
+    provider: isGoogle ? 'google' : 'osm',
+    googleApiKey,
+    mapType,
+    enableTraffic
+  };
+
+  MapService.saveConfig(newConfig);
+
+  // Nếu chuyển sang Google Maps và có key, nạp sẵn SDK
+  if (isGoogle && googleApiKey) {
+    MapService.loadGoogleMaps(googleApiKey);
+  }
+
+  const badge = document.getElementById('profile-map-status-badge');
+  if (badge) {
+    badge.className = `profile-map-badge ${isGoogle && googleApiKey ? 'google' : 'osm'}`;
+    badge.textContent = isGoogle && googleApiKey ? '🗺️ Google Maps API' : '🌐 OpenStreetMap (Leaflet)';
+  }
+
+  if (typeof showToast === 'function') {
+    showToast('checkmarkFilled', `Đã lưu cấu hình Bản đồ thành công (${newConfig.provider === 'google' ? 'Google Maps' : 'OpenStreetMap'})!`);
+  }
+}
+
+function resetProfileMapSettings() {
+  if (typeof MapService !== 'undefined') {
+    MapService.saveConfig({
+      provider: 'osm',
+      googleApiKey: '',
+      mapType: 'roadmap',
+      enableTraffic: false
+    });
+  }
+  if (typeof renderProfileView === 'function') {
+    renderProfileView();
+  }
+  if (typeof showToast === 'function') {
+    showToast('checkmarkFilled', 'Đã đặt lại cấu hình Bản đồ về OpenStreetMap mặc định!');
+  }
 }
 
 function renderRememberedUsersTab(allUsers, activeUser) {
