@@ -84,6 +84,22 @@ const AI_PROVIDER_PRESETS = {
     keyPlaceholder: 'gsk_... (Nhập Groq API Key)',
     helpText: 'Tốc độ phản hồi cực nhanh, có gói miễn phí tại console.groq.com'
   },
+  nvidia: {
+    name: 'NVIDIA NIM (integrate.api.nvidia.com)',
+    badge: 'NVIDIA',
+    defaultModel: 'meta/llama-3.3-70b-instruct',
+    models: [
+      'meta/llama-3.3-70b-instruct',
+      'deepseek-ai/deepseek-r1',
+      'deepseek-ai/deepseek-v3',
+      'meta/llama-3.1-405b-instruct',
+      'mistralai/mistral-large-2-instruct',
+      'nvidia/llama-3.1-nemotron-70b-instruct'
+    ],
+    endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions',
+    keyPlaceholder: 'nvapi-... (Nhập NVIDIA API Key từ build.nvidia.com)',
+    helpText: '⚡ Chạy kèm start-server.bat để vượt tường lửa CORS của NVIDIA (bảo mật tối đa)'
+  },
   custom: {
     name: 'Custom API / Local LLM (Ollama, LM Studio, vLLM...)',
     badge: 'Custom API',
@@ -300,11 +316,17 @@ function normalizeOpenAICompatibleEndpoint(rawUrl, provider = '') {
 
 function getCandidateProxyOrigins() {
   const origins = [];
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+  if (typeof DB !== 'undefined' && DB.apiBaseUrl) {
+    origins.push(DB.apiBaseUrl);
+  }
+  if (typeof window !== 'undefined' && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
     origins.push(window.location.origin);
   }
   if (!origins.includes(LOCAL_PROXY_DEFAULT_ORIGIN)) {
     origins.push(LOCAL_PROXY_DEFAULT_ORIGIN);
+  }
+  if (!origins.includes('http://127.0.0.1:3000')) {
+    origins.push('http://127.0.0.1:3000');
   }
   return origins;
 }
@@ -369,38 +391,46 @@ async function fetchViaLocalProxyOrDirect(targetUrl, provider, headers, bodyObj,
     : (aiConfig.useLocalProxy !== false);
 
   const abortSignal = aiCurrentAbortController ? aiCurrentAbortController.signal : undefined;
+  const isCorsRestricted = /nvidia\.com|deepseek\.com|openai\.com|anthropic\.com/i.test(targetUrl);
 
-  // 1. Nếu Local Proxy Server đang chạy sẵn (hoặc cùng host origin), ưu tiên dùng
-  if (shouldUseProxy && localProxyStatus.online) {
-    const originsToTry = [localProxyStatus.baseUrl, ...getCandidateProxyOrigins().filter(o => o !== localProxyStatus.baseUrl)];
-    for (const origin of originsToTry) {
-      try {
-        const proxyRes = await fetch(`${origin}/api/ai-proxy`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: abortSignal,
-          body: JSON.stringify({
-            targetUrl,
-            provider,
-            stage: stageLabel,
-            method,
-            headers,
-            body: method === 'GET' ? undefined : bodyObj
-          })
-        });
-        const normalizedHeader = proxyRes.headers.get('X-Proxy-Normalized-Url');
-        if (!normalizedHeader && (proxyRes.status === 404 || proxyRes.status === 405)) {
+  // 1. Kiểm tra và ưu tiên dùng Local Proxy Server (/api/ai-proxy) để tránh bị chặn CORS
+  if (shouldUseProxy) {
+    // Nếu chưa kiểm tra hoặc endpoint bị chặn CORS thì chủ động thăm dò server
+    if (!localProxyStatus.checked || (isCorsRestricted && !localProxyStatus.online)) {
+      await checkLocalProxyHealth();
+    }
+
+    if (localProxyStatus.online) {
+      const originsToTry = [localProxyStatus.baseUrl, ...getCandidateProxyOrigins().filter(o => o !== localProxyStatus.baseUrl)];
+      for (const origin of originsToTry) {
+        try {
+          const proxyRes = await fetch(`${origin}/api/ai-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: abortSignal,
+            body: JSON.stringify({
+              targetUrl,
+              provider,
+              stage: stageLabel,
+              method,
+              headers,
+              body: method === 'GET' ? undefined : bodyObj
+            })
+          });
+          const normalizedHeader = proxyRes.headers.get('X-Proxy-Normalized-Url');
+          if (!normalizedHeader && (proxyRes.status === 404 || proxyRes.status === 405)) {
+            continue;
+          }
+          localProxyStatus = { checked: true, online: true, baseUrl: origin };
+          return { res: proxyRes, viaProxy: true, proxyType: 'local' };
+        } catch (_) {
           continue;
         }
-        localProxyStatus = { checked: true, online: true, baseUrl: origin };
-        return { res: proxyRes, viaProxy: true, proxyType: 'local' };
-      } catch (_) {
-        continue;
       }
     }
   }
 
-  // 2. Thử gọi trực tiếp từ trình duyệt (Google Gemini, OpenRouter, Custom API hoạt động 100% không bị CORS)
+  // 2. Thử gọi trực tiếp từ trình duyệt (Google Gemini, OpenRouter, Custom API nội bộ hoạt động 100% không bị CORS)
   try {
     const directRes = await fetch(targetUrl, {
       method,
@@ -413,8 +443,9 @@ async function fetchViaLocalProxyOrDirect(targetUrl, provider, headers, bodyObj,
     if (directErr.name === 'AbortError' || abortSignal?.aborted) {
       throw directErr;
     }
-    // 3. Nếu trình duyệt chặn CORS (như khi gọi thẳng api.deepseek.com mà không chạy local server):
-    // Tự động chuyển tiếp qua Cloud CORS Gateway công khai (người dùng hoàn toàn không cần bật server thủ công!)
+
+    // 3. Nếu trình duyệt chặn CORS (như khi gọi thẳng api.deepseek.com hoặc nvidia.com mà chưa chạy local server):
+    // Thử chuyển tiếp qua Cloud CORS Gateway công khai
     try {
       const cloudProxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
       const cloudRes = await fetch(cloudProxyUrl, {
@@ -423,16 +454,31 @@ async function fetchViaLocalProxyOrDirect(targetUrl, provider, headers, bodyObj,
         signal: abortSignal,
         body: method === 'GET' ? undefined : JSON.stringify(bodyObj)
       });
-      return { res: cloudRes, viaProxy: true, proxyType: 'cloud' };
-    } catch (cloudErr) {
-      let hostLabel = targetUrl;
-      try {
-        hostLabel = new URL(targetUrl).hostname;
-      } catch (_) { }
+      if (cloudRes.ok) {
+        return { res: cloudRes, viaProxy: true, proxyType: 'cloud' };
+      }
+    } catch (_) { }
+
+    let hostLabel = targetUrl;
+    try {
+      hostLabel = new URL(targetUrl).hostname;
+    } catch (_) { }
+
+    if (/nvidia\.com/i.test(targetUrl)) {
       throw new Error(
-        `Không thể kết nối tới "${hostLabel}" (${directErr.message}). Mẹo tiện nhất: Hãy dùng Google Gemini hoặc OpenRouter (chạy trực tiếp 100% trên trình duyệt mà không cần cài đặt hay chạy server)!`
+        `NVIDIA NIM (${hostLabel}) chặn gọi trực tiếp từ trình duyệt web (CORS Policy). Để kết nối NVIDIA thành công, bạn chỉ cần mở file "start-server.bat" (cổng 3000) để máy chủ tự động chuyển tiếp an toàn!`
       );
     }
+
+    if (/deepseek\.com/i.test(targetUrl)) {
+      throw new Error(
+        `DeepSeek API (${hostLabel}) chặn gọi trực tiếp từ trình duyệt (CORS). Bạn hãy chạy "start-server.bat" hoặc dùng OpenRouter để gọi DeepSeek V3/R1 trực tiếp 100% không cần server!`
+      );
+    }
+
+    throw new Error(
+      `Không thể kết nối tới "${hostLabel}" (${directErr.message}). Mẹo tiện nhất: Hãy dùng Google Gemini hoặc OpenRouter (chạy trực tiếp 100% trên trình duyệt mà không cần cài đặt hay chạy server)!`
+    );
   }
 }
 
@@ -4422,7 +4468,7 @@ function parseProviderModelsPayload(json, provider, presetModels = []) {
 async function fetchAvailableModelsFromAPI(draft, forceRefresh = false) {
   const prov = draft.provider || 'gemini';
   const preset = AI_PROVIDER_PRESETS[prov] || AI_PROVIDER_PRESETS.gemini;
-  const requiresKey = prov === 'gemini' || prov === 'deepseek' || prov === 'openai' || prov === 'groq';
+  const requiresKey = prov === 'gemini' || prov === 'deepseek' || prov === 'openai' || prov === 'groq' || prov === 'nvidia';
 
   if (requiresKey && (!draft.apiKey || draft.apiKey.trim().length < 5)) {
     throw new Error(`Vui lòng nhập API Key (${preset.badge}) ở mục 2 trước để truy vấn danh sách tất cả Model từ tài khoản API của bạn.`);
