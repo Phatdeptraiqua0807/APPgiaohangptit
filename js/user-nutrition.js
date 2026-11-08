@@ -9,6 +9,7 @@
    ========================================================================== */
 
 let nutritionRecFilter = 'best'; // 'best' | 'low_cal' | 'high_protein' | 'keep_fit' | 'meal'
+let isNutritionSurveyModalOpen = false;
 let showInlineHealthSurvey = false;
 
 const USER_PERSONA_OPTIONS = [
@@ -480,7 +481,7 @@ function renderProfileHealthSummaryStrip(activeUser) {
           </div>
         </div>
       </div>
-      <button type="button" class="phs-edit-btn" onclick="showInlineHealthSurvey = !showInlineHealthSurvey; renderProfileView();">
+      <button type="button" class="phs-edit-btn" onclick="openUserNutritionSurveyModal('${escapeHtml(activeUser.id)}')">
         🎯 Cá nhân hoá mục tiêu sức khoẻ
       </button>
     </div>
@@ -503,161 +504,9 @@ function renderProfileNutritionManagerTab(activeUser) {
   const carbPct = Math.min(100, Math.round((summary.consumed.carbs / Math.max(1, hp.macroGoals.carbs)) * 100));
   const fatPct = Math.min(100, Math.round((summary.consumed.fat / Math.max(1, hp.macroGoals.fat)) * 100));
 
-  const shouldExpandSurvey = Boolean(showInlineHealthSurvey);
-
   return `
     <div class="un-dashboard-wrap">
-      <!-- KHỐI 1: KHẢO SÁT & THIẾT LẬP PHÂN LOẠI NGƯỜI DÙNG (MUA SẮM / GYM / GIỮ DÁNG / CÂN NẶNG) -->
-      <div class="un-card un-survey-card" style="${shouldExpandSurvey ? '' : 'display:none;'}">
-        <div class="un-card-head">
-          <div>
-            <div class="un-card-title">
-              🎯 Phân loại Người dùng & Thể trạng của ${escapeHtml(activeUser.name)}
-            </div>
-            <div class="un-card-sub">
-              Cho hệ thống biết mục tiêu, chế độ ăn & cân nặng hiện tại của bạn để quản lý Kcal và gợi ý món chuẩn xác nhất
-            </div>
-          </div>
-          <button
-            type="button"
-            class="db-secondary-btn"
-            onclick="showInlineHealthSurvey = !showInlineHealthSurvey; renderProfileView();"
-          >
-            Thu gọn ▲
-          </button>
-        </div>
-
-        <!-- 4 Thẻ chọn nhanh Nhóm người dùng 1 chạm -->
-        <div class="un-persona-grid">
-          ${USER_PERSONA_OPTIONS.map(opt => {
-    const isSelected = hp.personaType === opt.id;
-    return `
-              <div
-                class="un-persona-card ${isSelected ? 'active' : ''}"
-                style="${isSelected ? `border-color:${opt.color}; background:${opt.bg};` : ''}"
-                onclick="quickSelectUserPersona('${opt.id}')"
-              >
-                <div class="un-persona-top">
-                  <span class="un-persona-emoji">${opt.icon}</span>
-                  <span class="un-persona-check">${isSelected ? '✓ Đang chọn' : 'Chọn'}</span>
-                </div>
-                <div class="un-persona-name">${escapeHtml(opt.title)}</div>
-                <div class="un-persona-desc">${escapeHtml(opt.desc)}</div>
-              </div>
-            `;
-  }).join('')}
-        </div>
-
-        <!-- Thanh câu hỏi nhanh: Muốn giữ dáng không? + Cân nặng hiện tại thế nào? -->
-        <div class="un-quick-questions-bar">
-          <!-- Câu hỏi 1: Muốn giữ dáng hay không -->
-          <div class="un-qq-box">
-            <div class="un-qq-label">🪞 Bạn có muốn giữ dáng / kiểm soát dầu mỡ không?</div>
-            <div class="un-keepfit-toggle-row">
-              <button
-                type="button"
-                class="un-toggle-pill ${hp.wantKeepFit ? 'active' : ''}"
-                onclick="quickToggleKeepFit(true)"
-              >
-                🥗 Có, muốn giữ dáng
-              </button>
-              <button
-                type="button"
-                class="un-toggle-pill ${!hp.wantKeepFit ? 'active' : ''}"
-                onclick="quickToggleKeepFit(false)"
-              >
-                🍽️ Không, ăn thoải mái
-              </button>
-            </div>
-          </div>
-
-          <!-- Câu hỏi 2: Cân nặng hiện tại thế nào -->
-          <div class="un-qq-box">
-            <div class="un-qq-label">⚖️ Cân nặng & Chiều cao hiện tại của bạn:</div>
-            <div class="un-weight-inline-controls">
-              <div class="un-stepper-field">
-                <button type="button" onclick="quickAdjustUserWeight(-1)" title="Giảm 1kg">−</button>
-                <input
-                  type="number"
-                  min="32"
-                  max="180"
-                  step="0.5"
-                  value="${hp.weightKg}"
-                  onchange="quickSetUserWeight(this.value)"
-                  aria-label="Cân nặng hiện tại (kg)"
-                >
-                <span>kg</span>
-                <button type="button" onclick="quickAdjustUserWeight(1)" title="Tăng 1kg">+</button>
-              </div>
-
-              <div class="un-height-mini">
-                <span>Cao:</span>
-                <input
-                  type="number"
-                  min="130"
-                  max="220"
-                  value="${hp.heightCm}"
-                  onchange="quickSetUserHeight(this.value)"
-                  aria-label="Chiều cao (cm)"
-                >
-                <span>cm</span>
-              </div>
-
-              <span class="un-bmi-chip" style="color:${hp.bmiInfo.color}; background:${hp.bmiInfo.color}14; border-color:${hp.bmiInfo.color}40;">
-                BMI ${hp.bmiInfo.bmi} • ${escapeHtml(hp.bmiInfo.status)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        ${shouldExpandSurvey ? `
-          <div class="un-expanded-settings">
-            <div class="un-expanded-row">
-              <div>
-                <div class="un-qq-label" style="margin-bottom:6px;">🏃 Mức độ vận động hàng tuần:</div>
-                <div class="un-act-pills">
-                  ${ACTIVITY_LEVEL_OPTIONS.map(act => `
-                    <button
-                      type="button"
-                      class="un-act-pill ${hp.activityLevel === act.id ? 'active' : ''}"
-                      onclick="quickSelectActivityLevel('${act.id}')"
-                    >
-                      ${escapeHtml(act.label)}
-                    </button>
-                  `).join('')}
-                </div>
-              </div>
-
-              <div>
-                <div class="un-qq-label" style="margin-bottom:6px;">🏷️ Ưu tiên dinh dưỡng cá nhân (chạm để bật/tắt):</div>
-                <div class="un-act-pills">
-                  ${DIETARY_NOTE_TAGS.map(tag => {
-    const hasTag = hp.dietaryNotes.includes(tag);
-    return `
-                      <button
-                        type="button"
-                        class="un-act-pill ${hasTag ? 'active' : ''}"
-                        onclick="quickToggleDietaryNote('${escapeHtml(tag)}')"
-                      >
-                        ${hasTag ? '✓ ' : '+ '}${escapeHtml(tag)}
-                      </button>
-                    `;
-  }).join('')}
-                </div>
-              </div>
-            </div>
-
-            <div class="un-expanded-footer">
-              <span>💡 Dựa trên cân nặng <strong>${hp.weightKg}kg</strong> & mục tiêu <strong>${escapeHtml(persona.shortLabel)}</strong>, mức năng lượng khuyến nghị của bạn là <strong>${hp.recommendedCalories} kcal/ngày</strong>.</span>
-              <button type="button" class="db-primary-btn" onclick="openHealthProfileSetupModal('${escapeHtml(activeUser.id)}')">
-                📋 Mở bảng thông số chi tiết (Tuổi, Giới tính, Mục tiêu cân nặng)
-              </button>
-            </div>
-          </div>
-        ` : ''}
-      </div>
-
-      <!-- KHỐI 2: BẢNG QUẢN LÝ LƯỢNG KCAL & DINH DƯỠNG TIÊU THỤ HÀNG NGÀY -->
+      <!-- BẢNG QUẢN LÝ LƯỢNG KCAL & DINH DƯỠNG TIÊU THỤ HÀNG NGÀY -->
       <div class="un-card un-tracker-card">
         <div class="un-card-head">
           <div>
@@ -887,6 +736,197 @@ function renderProfileNutritionManagerTab(activeUser) {
 }
 
 // =========================================================================
+// 4B. KHẢO SÁT THỂ TRẠNG DẠNG MODAL OVERLAY (UN-CARD UN-SURVEY-CARD MODAL)
+// =========================================================================
+
+function openUserNutritionSurveyModal(targetUserId = null) {
+  const user = targetUserId
+    ? DB.getUsers().find(u => u.id === targetUserId)
+    : DB.getCurrentUser();
+  if (!user) return;
+
+  const overlay = document.getElementById('modal-overlay');
+  const sheet = document.getElementById('modal-bottom-sheet');
+  if (!overlay || !sheet) return;
+
+  isNutritionSurveyModalOpen = true;
+  renderUserNutritionSurveyModalContent(user);
+  overlay.classList.add('active');
+}
+
+function renderUserNutritionSurveyModalContent(targetUser = null) {
+  const activeUser = targetUser || DB.getCurrentUser();
+  if (!activeUser) return;
+
+  const sheet = document.getElementById('modal-bottom-sheet');
+  if (!sheet) return;
+
+  const summary = getTodayNutritionSummary(activeUser);
+  const hp = summary.hp;
+  const persona = getPersonaMeta(hp.personaType);
+
+  sheet.innerHTML = `
+    <div class="delivery-modal-header un-survey-modal-header">
+      <div class="delivery-modal-title">
+        <span>🎯</span>
+        <span>Phân loại Người dùng &amp; Thể trạng</span>
+      </div>
+      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+        ${FluentIcons.dismiss}
+      </button>
+    </div>
+
+    <div class="delivery-modal-body un-survey-modal-body">
+      <div class="un-card un-survey-card un-survey-card-modal">
+        <div class="un-card-head" style="margin-bottom: 12px;">
+          <div>
+            <div class="un-card-title">
+              <span>🎯 Phân loại &amp; Thể trạng của <strong>${escapeHtml(activeUser.name)}</strong></span>
+            </div>
+            <div class="un-card-sub">
+              Cho hệ thống biết mục tiêu, chế độ ăn &amp; cân nặng hiện tại để quản lý Kcal và gợi ý món chuẩn xác nhất
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Thẻ chọn nhanh Nhóm người dùng 1 chạm -->
+        <div class="un-persona-grid">
+          ${USER_PERSONA_OPTIONS.map(opt => {
+            const isSelected = hp.personaType === opt.id;
+            return `
+              <div
+                class="un-persona-card ${isSelected ? 'active' : ''}"
+                style="${isSelected ? `border-color:${opt.color}; background:${opt.bg};` : ''}"
+                onclick="quickSelectUserPersona('${opt.id}')"
+              >
+                <div class="un-persona-top">
+                  <span class="un-persona-emoji">${opt.icon}</span>
+                  <span class="un-persona-check">${isSelected ? '✓ Đang chọn' : 'Chọn'}</span>
+                </div>
+                <div class="un-persona-name">${escapeHtml(opt.title)}</div>
+                <div class="un-persona-desc">${escapeHtml(opt.desc)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Thanh câu hỏi nhanh: Muốn giữ dáng không? + Cân nặng, Chiều cao hiện tại thế nào? -->
+        <div class="un-quick-questions-bar">
+          <!-- Câu hỏi 1: Muốn giữ dáng hay không -->
+          <div class="un-qq-box">
+            <div class="un-qq-label">🪞 Bạn có muốn giữ dáng / kiểm soát dầu mỡ không?</div>
+            <div class="un-keepfit-toggle-row">
+              <button
+                type="button"
+                class="un-toggle-pill ${hp.wantKeepFit ? 'active' : ''}"
+                onclick="quickToggleKeepFit(true)"
+              >
+                🥗 Có, muốn giữ dáng
+              </button>
+              <button
+                type="button"
+                class="un-toggle-pill ${!hp.wantKeepFit ? 'active' : ''}"
+                onclick="quickToggleKeepFit(false)"
+              >
+                🍽️ Không, ăn thoải mái
+              </button>
+            </div>
+          </div>
+
+          <!-- Câu hỏi 2: Cân nặng hiện tại thế nào -->
+          <div class="un-qq-box">
+            <div class="un-qq-label">⚖️ Cân nặng &amp; Chiều cao hiện tại của bạn:</div>
+            <div class="un-weight-inline-controls">
+              <div class="un-stepper-field">
+                <button type="button" onclick="quickAdjustUserWeight(-1)" title="Giảm 1kg">−</button>
+                <input
+                  type="number"
+                  min="32"
+                  max="180"
+                  step="0.5"
+                  value="${hp.weightKg}"
+                  onchange="quickSetUserWeight(this.value)"
+                  aria-label="Cân nặng hiện tại (kg)"
+                >
+                <span>kg</span>
+                <button type="button" onclick="quickAdjustUserWeight(1)" title="Tăng 1kg">+</button>
+              </div>
+
+              <div class="un-height-mini">
+                <span>Cao:</span>
+                <input
+                  type="number"
+                  min="130"
+                  max="220"
+                  value="${hp.heightCm}"
+                  onchange="quickSetUserHeight(this.value)"
+                  aria-label="Chiều cao (cm)"
+                >
+                <span>cm</span>
+              </div>
+
+              <span class="un-bmi-chip" style="color:${hp.bmiInfo.color}; background:${hp.bmiInfo.color}14; border-color:${hp.bmiInfo.color}40;">
+                BMI ${hp.bmiInfo.bmi} • ${escapeHtml(hp.bmiInfo.status)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mức độ vận động & Ưu tiên cá nhân -->
+        <div class="un-expanded-settings" style="display: block; margin-top: 14px;">
+          <div class="un-expanded-row">
+            <div>
+              <div class="un-qq-label" style="margin-bottom:6px;">🏃 Mức độ vận động hàng tuần:</div>
+              <div class="un-act-pills">
+                ${ACTIVITY_LEVEL_OPTIONS.map(act => `
+                  <button
+                    type="button"
+                    class="un-act-pill ${hp.activityLevel === act.id ? 'active' : ''}"
+                    onclick="quickSelectActivityLevel('${act.id}')"
+                  >
+                    ${escapeHtml(act.label)}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <div class="un-qq-label" style="margin-bottom:6px;">🏷️ Ưu tiên dinh dưỡng cá nhân (chạm để bật/tắt):</div>
+              <div class="un-act-pills">
+                ${DIETARY_NOTE_TAGS.map(tag => {
+                  const hasTag = hp.dietaryNotes.includes(tag);
+                  return `
+                    <button
+                      type="button"
+                      class="un-act-pill ${hasTag ? 'active' : ''}"
+                      onclick="quickToggleDietaryNote('${escapeHtml(tag)}')"
+                    >
+                      ${hasTag ? '✓ ' : '+ '}${escapeHtml(tag)}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="un-expanded-footer" style="margin-top: 16px;">
+            <span>💡 Dựa trên cân nặng <strong>${hp.weightKg}kg</strong> &amp; mục tiêu <strong>${escapeHtml(persona.shortLabel)}</strong>, mức năng lượng khuyến nghị của bạn là <strong>${hp.recommendedCalories} kcal/ngày</strong>.</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+              <button type="button" class="db-secondary-btn" onclick="openHealthProfileSetupModal('${escapeHtml(activeUser.id)}')">
+                📋 Thông số chi tiết
+              </button>
+              <button type="button" class="db-primary-btn" onclick="closeModal(); showToast('checkmarkFilled', 'Đã lưu thiết lập thể trạng thành công!')">
+                ✓ Hoàn tất &amp; Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// =========================================================================
 // 5. THAO TÁC NHANH TRÊN BẢNG KHẢO SÁT & NHẬT KÝ KCAL
 // =========================================================================
 
@@ -905,6 +945,11 @@ function saveActiveUserHealthPatch(patch, toastMsg = null) {
   }
   if (currentView === 'profile') renderProfileView();
   else if (currentView === 'dish-detail') renderDishDetailView();
+
+  const overlay = document.getElementById('modal-overlay');
+  if (overlay && overlay.classList.contains('active') && isNutritionSurveyModalOpen) {
+    renderUserNutritionSurveyModalContent(user);
+  }
 }
 
 function quickSelectUserPersona(personaId) {
@@ -1389,5 +1434,21 @@ function renderPersonalDishMatchBanner(dish, dynNutri) {
       </div>
     </div>
   `;
+}
+
+// Export global survey modal functions
+if (typeof window !== 'undefined') {
+  window.openUserNutritionSurveyModal = openUserNutritionSurveyModal;
+  window.renderUserNutritionSurveyModalContent = renderUserNutritionSurveyModalContent;
+  try {
+    Object.defineProperty(window, 'showInlineHealthSurvey', {
+      get: () => isNutritionSurveyModalOpen,
+      set: (val) => {
+        if (val) openUserNutritionSurveyModal();
+        else closeModal();
+      },
+      configurable: true
+    });
+  } catch (_) { }
 }
 

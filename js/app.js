@@ -273,8 +273,54 @@ function onFloatingSearchInputChange(val) {
   updateSearchResultsOnly();
 }
 
+// =========================================================================
+// QUẢN LÝ THANH CUỘN (SCROLLBAR / SLIDE BAR): TỰ ĐỘNG ẨN CỤC NẮM SAU 5 GIÂY
+// =========================================================================
+let scrollbarIdleTimer = null;
+const SCROLLBAR_IDLE_DELAY = 5000; // 5 giây tự động ẩn cục nắm di chuyển
+
+function notifyScrollbarActivity() {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  const body = document.body;
+  if (root && root.classList) root.classList.remove('scrollbar-idle');
+  if (body && body.classList) body.classList.remove('scrollbar-idle');
+
+  if (scrollbarIdleTimer) {
+    clearTimeout(scrollbarIdleTimer);
+  }
+  scrollbarIdleTimer = setTimeout(() => {
+    if (root && root.classList) root.classList.add('scrollbar-idle');
+    if (body && body.classList) body.classList.add('scrollbar-idle');
+  }, SCROLLBAR_IDLE_DELAY);
+}
+
+function handleAppScroll() {
+  updateFloatingTopBar();
+  notifyScrollbarActivity();
+}
+
+function handleAppMouseMove(e) {
+  if (e && e.clientX >= window.innerWidth - 32) {
+    notifyScrollbarActivity();
+  }
+}
+
+function handleAppKeyDown(e) {
+  if (e && ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+    notifyScrollbarActivity();
+  }
+}
+
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-  window.addEventListener('scroll', updateFloatingTopBar, { passive: true });
+  window.addEventListener('scroll', handleAppScroll, { passive: true });
+  window.addEventListener('wheel', notifyScrollbarActivity, { capture: true, passive: true });
+  window.addEventListener('touchmove', notifyScrollbarActivity, { capture: true, passive: true });
+  window.addEventListener('mousemove', handleAppMouseMove, { passive: true });
+  window.addEventListener('keydown', handleAppKeyDown, { passive: true });
+
+  // Khởi động ban đầu: hiện thanh cuộn và tự động ẩn sau 5 giây nếu không tương tác
+  notifyScrollbarActivity();
 }
 
 // ── User Delivery & Recipient Info (Đồng bộ trực tiếp với DB Hồ sơ người dùng) ──
@@ -1582,6 +1628,9 @@ function closeModal() {
   const overlay = document.getElementById('modal-overlay');
   if (overlay) {
     overlay.classList.remove('active');
+  }
+  if (typeof isNutritionSurveyModalOpen !== 'undefined') {
+    isNutritionSurveyModalOpen = false;
   }
 }
 
