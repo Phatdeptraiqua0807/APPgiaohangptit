@@ -178,10 +178,8 @@ function updateFloatingTopBar() {
     else inPageHeader.classList.remove('is-scrolled');
   }
 
-  const isActivityTab = (currentView === 'activity' && !viewingOrderDetailId);
-
-  // Ở điện thoại (< 768px), page-nav-header gốc đã hiển thị tốt nên không dùng floating-topbar-inner, trừ tab hoạt động có activity-tabs-bar
-  if (window.innerWidth < 768 && !isActivityTab) {
+  // Ở điện thoại (< 768px), floating-page-topbar không xuất hiện (activity-tabs-bar tự nổi dưới page-nav-header khi lướt qua)
+  if (window.innerWidth < 768) {
     if (floatingBar) {
       floatingBar.classList.remove('visible');
       floatingBar.classList.remove('has-activity-tabs');
@@ -214,6 +212,7 @@ function updateFloatingTopBar() {
   // Khi cuộn qua header (> 45px): Hiển thị floating top bar cố định ở đỉnh màn hình trong vùng thấy được
   if (floatingBar && inner) {
     let currentHtml = '';
+    const isActivityTab = (currentView === 'activity' && !viewingOrderDetailId);
     if (isActivityTab && typeof renderActivityTabsBarHtml === 'function') {
       floatingBar.classList.add('has-activity-tabs');
       currentHtml = `

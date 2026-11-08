@@ -1095,16 +1095,19 @@ textarea {
 
 /* Activity Tabs Wrapper with Scroll Buttons */
 .activity-tabs-wrapper {
-  position: relative;
+  position: sticky;
+  top: 48px;
+  z-index: 490;
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 var(--safe-padding);
-  margin-bottom: 14px;
+  padding: 6px var(--safe-padding) 10px;
+  margin-bottom: 8px;
+  transition: all 0.25s ease;
 }
 
 .activity-tabs-wrapper .activity-tabs-bar {
-  margin: 0 !important;
+  margin: 10px 0 0 0 !important;
   flex: 1;
 }
 
@@ -1557,7 +1560,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   }
 }
 
-/* Tránh tạo containing block cho thanh fixed bottom-bar / top-bar trong lúc chạy animation */
+/* Tránh tạo containing block cho thanh fixed bottom-bar / top-bar và sticky header trong lúc chạy animation */
+.activity-view-container.fade-in,
 .cart-view-container.fade-in,
 .checkout-view-container.fade-in,
 .product-detail-page.fade-in,
@@ -3259,35 +3263,6 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   color: #059669 !important;
 }
 
-@media (max-width: 767px) {
-  .floating-page-topbar.has-activity-tabs {
-    display: block !important;
-    top: 8px !important;
-    left: 8px !important;
-    right: 8px !important;
-    width: calc(100% - 16px) !important;
-    max-width: calc(var(--app-max-width, 480px) - 16px) !important;
-    border-radius: 20px !important;
-    padding: 0 !important;
-  }
-
-  .floating-page-topbar.has-activity-tabs .floating-topbar-inner {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
-    padding: 8px 10px !important;
-  }
-
-  .floating-page-topbar.has-activity-tabs .floating-activity-header-group {
-    justify-content: flex-start !important;
-  }
-
-  .floating-page-topbar.has-activity-tabs .floating-activity-tabs-bar {
-    width: 100% !important;
-    overflow-x: auto !important;
-  }
-}
-
 /* Restaurant Header Card in Cart */
 .cart-res-summary-card {
   margin: 14px var(--safe-padding) 10px;
@@ -4616,19 +4591,22 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 /* 4-Tab Activity Navigation - Modern Segmented Control Style */
 .activity-tabs-bar {
   display: flex;
-  background: #f1f5f9;
+  background: rgba(241, 245, 249, 0.94);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   padding: 4px;
   border: 1px solid #e2e8f0;
   border-radius: 9999px;
   position: sticky;
-  top: 56px;
-  z-index: 100;
+  top: 54px;
+  z-index: 490;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  margin: 10px var(--safe-padding) 14px;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  margin: 8px var(--safe-padding) 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
   gap: 4px;
+  transition: all 0.25s ease;
 }
 
 .activity-tabs-bar::-webkit-scrollbar {
@@ -5793,6 +5771,14 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     padding: 24px 36px 60px !important;
   }
 
+  .activity-tabs-wrapper {
+    position: static !important;
+    top: auto !important;
+    padding: 0 !important;
+    margin-bottom: 24px !important;
+    background: transparent !important;
+  }
+
   .activity-tabs-bar {
     top: 0 !important;
     padding: 6px !important;
@@ -5802,9 +5788,18 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   }
 
   .activity-tab-btn {
+    flex: 1 !important;
+    min-width: 82px !important;
+    width: auto !important;
     padding: 10px 18px !important;
     font-size: 13.5px !important;
     border-radius: 9999px !important;
+  }
+
+  .floating-activity-tabs-bar .activity-tab-btn {
+    flex: 1 !important;
+    min-width: 80px !important;
+    width: auto !important;
   }
 
   .past-orders-list {
