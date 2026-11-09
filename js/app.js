@@ -1903,6 +1903,89 @@ function updateFloatingTopBar() {
     }
   }
 
+  // ── Cart Helper: Thêm món hoặc tăng số lượng nếu trùng món & tùy chọn (size, topping, ghi chú) ──
+  function addOrMergeCartItem(newItem) {
+    if (!newItem || !Array.isArray(cart)) return;
+
+    const normalizeToppingIds = (toppings) => {
+      if (!Array.isArray(toppings)) return '';
+      return toppings
+        .map(t => (t && (t.id !== undefined && t.id !== null ? t.id : t.name)) || '')
+        .filter(Boolean)
+        .sort()
+        .join('|');
+    };
+
+    const newSizeName = (newItem.size && newItem.size.name) ? String(newItem.size.name).trim().toLowerCase() : '';
+    const newNote = (newItem.note || '').trim().toLowerCase();
+    const newToppingsKey = normalizeToppingIds(newItem.toppings);
+    const newDishName = (newItem.dishName || '').trim().toLowerCase();
+    const newDishId = newItem.dishId !== undefined && newItem.dishId !== null ? String(newItem.dishId) : null;
+
+    const existingIndex = cart.findIndex(c => {
+      // So sánh dishId (nếu có) hoặc tên món
+      if (newDishId && (c.dishId !== undefined && c.dishId !== null)) {
+        if (String(c.dishId) !== newDishId) return false;
+      } else {
+        if ((c.dishName || '').trim().toLowerCase() !== newDishName) return false;
+      }
+
+      // So sánh nhà hàng
+      if (newItem.restaurantId && c.restaurantId && String(newItem.restaurantId) !== String(c.restaurantId)) {
+        return false;
+      }
+
+      // So sánh size
+      const cSizeName = (c.size && c.size.name) ? String(c.size.name).trim().toLowerCase() : '';
+      if (cSizeName !== newSizeName) return false;
+
+      // So sánh topping
+      const cToppingsKey = normalizeToppingIds(c.toppings);
+      if (cToppingsKey !== newToppingsKey) return false;
+
+      // So sánh ghi chú bếp
+      const cNote = (c.note || '').trim().toLowerCase();
+      if (cNote !== newNote) return false;
+
+      return true;
+    });
+
+    const addQty = Math.max(1, Number(newItem.quantity) || 1);
+
+    if (existingIndex !== -1) {
+      // Đã có món cùng kiểu -> tăng số lượng và cập nhật tổng tiền
+      const existing = cart[existingIndex];
+      existing.quantity = (Number(existing.quantity) || 1) + addQty;
+      const uPrice = Number(existing.unitPrice) || Number(newItem.unitPrice) || 0;
+      existing.unitPrice = uPrice;
+      existing.totalPrice = uPrice * existing.quantity;
+      return { merged: true, item: existing };
+    } else {
+      // Chưa có -> thêm mới
+      const itemToPush = {
+        id: newItem.id || (Date.now() + Math.random().toString(36).substring(2, 6)),
+        dishId: newItem.dishId,
+        dishName: newItem.dishName,
+        restaurantName: newItem.restaurantName || 'ptitngon Kitchen',
+        restaurantId: newItem.restaurantId || 1,
+        image: newItem.image,
+        size: newItem.size || { name: 'Phần Tiêu Chuẩn', extraPrice: 0 },
+        toppings: Array.isArray(newItem.toppings) ? newItem.toppings : [],
+        note: (newItem.note || '').trim(),
+        quantity: addQty,
+        unitPrice: Number(newItem.unitPrice) || 0,
+        totalPrice: (Number(newItem.unitPrice) || 0) * addQty
+      };
+      cart.push(itemToPush);
+      return { merged: false, item: itemToPush };
+    }
+  }
+
+  // Phơi ra window để các module khác (dish-detail.js, ai-chat.js, user-nutrition.js) dùng chung nhất quán
+  if (typeof window !== 'undefined') {
+    window.addOrMergeCartItem = addOrMergeCartItem;
+  }
+
   function confirmAddOptionToCart() {
     if (!modalDish) return;
 
@@ -1917,8 +2000,7 @@ function updateFloatingTopBar() {
     let unitPrice = modalDish.price + (size.extraPrice || 0);
     selectedToppingsList.forEach(t => unitPrice += t.price);
 
-    const cartItem = {
-      id: Date.now() + Math.random().toString(36).substring(2, 6),
+    const result = addOrMergeCartItem({
       dishId: modalDish.id,
       dishName: modalDish.name,
       restaurantName: modalRestaurant ? modalRestaurant.name : 'ptitngon Kitchen',
@@ -1928,18 +2010,20 @@ function updateFloatingTopBar() {
       toppings: selectedToppingsList,
       note: modalKitchenNote.trim(),
       quantity: modalQty,
-      unitPrice: unitPrice,
-      totalPrice: unitPrice * modalQty
-    };
+      unitPrice: unitPrice
+    });
 
-    cart.push(cartItem);
     if (typeof DB !== 'undefined' && DB.isReady) {
       DB.saveCurrentUserCart(cart);
     }
     closeModal();
     updateFloatingCartBar();
 
-    showToast('cartRegular', `Đã thêm ${modalQty}x "${modalDish.name}" (${formatVND(cartItem.totalPrice)}) vào giỏ!`);
+    const currentTotal = result.item ? result.item.totalPrice : (unitPrice * modalQty);
+    const toastMsg = result.merged
+      ? `Đã tăng số lượng "${modalDish.name}" lên ${result.item.quantity} (${formatVND(currentTotal)}) trong giỏ!`
+      : `Đã thêm ${modalQty}x "${modalDish.name}" (${formatVND(currentTotal)}) vào giỏ!`;
+    showToast('cartRegular', toastMsg);
   }
 
   // ========================================
@@ -3695,8 +3779,7 @@ function updateFloatingTopBar() {
       return;
     }
     o.items.forEach(it => {
-      cart.push({
-        id: Date.now() + Math.random().toString(36).substring(2, 6),
+      addOrMergeCartItem({
         dishId: it.dishId || it.id,
         dishName: it.dishName || it.name,
         restaurantName: it.restaurantName || o.resName || 'ptitngon Kitchen',
@@ -3706,8 +3789,7 @@ function updateFloatingTopBar() {
         toppings: it.toppings || [],
         note: it.note || '',
         quantity: it.quantity || 1,
-        unitPrice: it.unitPrice || (it.totalPrice ? Math.round(it.totalPrice / (it.quantity || 1)) : 50000),
-        totalPrice: it.totalPrice || ((it.unitPrice || 50000) * (it.quantity || 1))
+        unitPrice: it.unitPrice || (it.totalPrice ? Math.round(it.totalPrice / (it.quantity || 1)) : 50000)
       });
     });
     if (typeof DB !== 'undefined' && DB.isReady) {

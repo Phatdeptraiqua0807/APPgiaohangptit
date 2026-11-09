@@ -1326,26 +1326,49 @@ function quickAddDishFromAI(itemId, customQuantity = 1, silentToast = false) {
   const qty = Math.max(1, Math.min(20, Number(customQuantity) || 1));
   const unitPrice = Number(item.price) + (Number(defaultSize.extraPrice) || 0);
 
-  cart.push({
-    id: Date.now() + Math.random().toString(36).substring(2, 6),
-    dishName: item.name,
-    restaurantName: store ? store.name : item.restaurantName,
-    restaurantId: store ? store.id : item.restaurantId,
-    image: item.image,
-    size: defaultSize,
-    toppings: [],
-    note: '',
-    quantity: qty,
-    unitPrice: unitPrice,
-    totalPrice: unitPrice * qty
-  });
+  let result = null;
+  if (typeof window !== 'undefined' && typeof window.addOrMergeCartItem === 'function') {
+    result = window.addOrMergeCartItem({
+      dishId: item.id,
+      dishName: item.name,
+      restaurantName: store ? store.name : item.restaurantName,
+      restaurantId: store ? store.id : item.restaurantId,
+      image: item.image,
+      size: defaultSize,
+      toppings: [],
+      note: '',
+      quantity: qty,
+      unitPrice: unitPrice
+    });
+  } else {
+    const fallbackItem = {
+      id: Date.now() + Math.random().toString(36).substring(2, 6),
+      dishId: item.id,
+      dishName: item.name,
+      restaurantName: store ? store.name : item.restaurantName,
+      restaurantId: store ? store.id : item.restaurantId,
+      image: item.image,
+      size: defaultSize,
+      toppings: [],
+      note: '',
+      quantity: qty,
+      unitPrice: unitPrice,
+      totalPrice: unitPrice * qty
+    };
+    cart.push(fallbackItem);
+    result = { merged: false, item: fallbackItem };
+  }
 
   if (typeof DB !== 'undefined' && DB.isReady) {
     DB.saveCurrentUserCart(cart);
   }
   updateFloatingCartBar();
   if (!silentToast) {
-    showToast('cartFilled', `Đã thêm ${qty}x "${item.name}" (${formatVND(unitPrice * qty)}) vào giỏ hàng!`);
+    const curTotal = result.item ? result.item.totalPrice : (unitPrice * qty);
+    const toastMsg = result.merged
+      ? `Đã tăng số lượng "${item.name}" lên ${result.item.quantity} (${formatVND(curTotal)}) trong giỏ!`
+      : `Đã thêm ${qty}x "${item.name}" (${formatVND(unitPrice * qty)}) vào giỏ hàng!`;
+    showToast('cartFilled', toastMsg);
   }
   if (currentView === 'ai' && !aiIsGenerating) {
     renderAIChatView();
@@ -1374,19 +1397,35 @@ function quickAddMultipleFromAI(msgIdx) {
     const unitPrice = Number(item.price) + (Number(defaultSize.extraPrice) || 0);
     addedTotal += unitPrice;
 
-    cart.push({
-      id: Date.now() + Math.random().toString(36).substring(2, 6),
-      dishName: item.name,
-      restaurantName: store ? store.name : item.restaurantName,
-      restaurantId: store ? store.id : item.restaurantId,
-      image: item.image,
-      size: defaultSize,
-      toppings: [],
-      note: 'Combo gợi ý từ AI',
-      quantity: 1,
-      unitPrice: unitPrice,
-      totalPrice: unitPrice
-    });
+    if (typeof window !== 'undefined' && typeof window.addOrMergeCartItem === 'function') {
+      window.addOrMergeCartItem({
+        dishId: item.id,
+        dishName: item.name,
+        restaurantName: store ? store.name : item.restaurantName,
+        restaurantId: store ? store.id : item.restaurantId,
+        image: item.image,
+        size: defaultSize,
+        toppings: [],
+        note: 'Combo gợi ý từ AI',
+        quantity: 1,
+        unitPrice: unitPrice
+      });
+    } else {
+      cart.push({
+        id: Date.now() + Math.random().toString(36).substring(2, 6),
+        dishId: item.id,
+        dishName: item.name,
+        restaurantName: store ? store.name : item.restaurantName,
+        restaurantId: store ? store.id : item.restaurantId,
+        image: item.image,
+        size: defaultSize,
+        toppings: [],
+        note: 'Combo gợi ý từ AI',
+        quantity: 1,
+        unitPrice: unitPrice,
+        totalPrice: unitPrice
+      });
+    }
   });
 
   DB.saveCurrentUserCart(cart);

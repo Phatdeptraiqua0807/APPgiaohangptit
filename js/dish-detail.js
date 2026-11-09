@@ -1127,22 +1127,39 @@ function addDishFromDetailView(buyNow = false) {
   let unitPrice = Number(modalDish.price) + (Number(size.extraPrice) || 0);
   selectedToppingsList.forEach(t => (unitPrice += Number(t.price) || 0));
 
-  const cartItem = {
-    id: Date.now() + Math.random().toString(36).substring(2, 6),
-    dishId: modalDish.id,
-    dishName: modalDish.name,
-    restaurantName: modalRestaurant ? modalRestaurant.name : (modalDish.restaurantName || 'ptitngon Kitchen'),
-    restaurantId: modalRestaurant ? modalRestaurant.id : (modalDish.restaurantId || 1),
-    image: modalDish.image,
-    size: size,
-    toppings: selectedToppingsList,
-    note: (modalKitchenNote || '').trim(),
-    quantity: modalQty,
-    unitPrice: unitPrice,
-    totalPrice: unitPrice * modalQty
-  };
+  let result = null;
+  if (typeof window !== 'undefined' && typeof window.addOrMergeCartItem === 'function') {
+    result = window.addOrMergeCartItem({
+      dishId: modalDish.id,
+      dishName: modalDish.name,
+      restaurantName: modalRestaurant ? modalRestaurant.name : (modalDish.restaurantName || 'ptitngon Kitchen'),
+      restaurantId: modalRestaurant ? modalRestaurant.id : (modalDish.restaurantId || 1),
+      image: modalDish.image,
+      size: size,
+      toppings: selectedToppingsList,
+      note: (modalKitchenNote || '').trim(),
+      quantity: modalQty,
+      unitPrice: unitPrice
+    });
+  } else {
+    const cartItem = {
+      id: Date.now() + Math.random().toString(36).substring(2, 6),
+      dishId: modalDish.id,
+      dishName: modalDish.name,
+      restaurantName: modalRestaurant ? modalRestaurant.name : (modalDish.restaurantName || 'ptitngon Kitchen'),
+      restaurantId: modalRestaurant ? modalRestaurant.id : (modalDish.restaurantId || 1),
+      image: modalDish.image,
+      size: size,
+      toppings: selectedToppingsList,
+      note: (modalKitchenNote || '').trim(),
+      quantity: modalQty,
+      unitPrice: unitPrice,
+      totalPrice: unitPrice * modalQty
+    };
+    cart.push(cartItem);
+    result = { merged: false, item: cartItem };
+  }
 
-  cart.push(cartItem);
   if (typeof DB !== 'undefined' && DB.isReady) {
     DB.saveCurrentUserCart(cart);
   }
@@ -1151,7 +1168,11 @@ function addDishFromDetailView(buyNow = false) {
   if (buyNow) {
     openCheckoutView();
   } else {
-    showToast('cartFilled', `Đã thêm ${modalQty}x "${modalDish.name}" (${formatVND(cartItem.totalPrice)}) vào giỏ!`);
+    const curTotal = result.item ? result.item.totalPrice : (unitPrice * modalQty);
+    const toastMsg = result.merged
+      ? `Đã tăng số lượng "${modalDish.name}" lên ${result.item.quantity} (${formatVND(curTotal)}) trong giỏ!`
+      : `Đã thêm ${modalQty}x "${modalDish.name}" (${formatVND(curTotal)}) vào giỏ!`;
+    showToast('cartFilled', toastMsg);
     renderDishDetailView();
   }
 }
@@ -1418,8 +1439,9 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
               </div>
             </div>
           </div>
-          <button type="button" class="ai-api-status-btn ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()">
-            ⚙️ ${apiReady ? 'API Đã nối' : 'Cấu hình API'}
+          <button type="button" class="ai-api-status-btn ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
+            <span>⚙️</span>
+            <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
           </button>
         </div>
 

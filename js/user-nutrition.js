@@ -1058,20 +1058,35 @@ function quickAddRecommendedDishToCart(itemId) {
   const size = (item.sizes && item.sizes[0]) ? item.sizes[0] : { name: 'Phần Tiêu Chuẩn', extraPrice: 0 };
   const unitPrice = Number(item.price) + (Number(size.extraPrice) || 0);
 
-  cart.push({
-    id: Date.now() + Math.random().toString(36).substring(2, 6),
-    dishId: item.id,
-    dishName: item.name,
-    restaurantName: item.restaurantName || 'ptitngon Kitchen',
-    restaurantId: item.restaurantId || 1,
-    image: item.image,
-    size,
-    toppings: [],
-    note: '',
-    quantity: 1,
-    unitPrice,
-    totalPrice: unitPrice
-  });
+  if (typeof window !== 'undefined' && typeof window.addOrMergeCartItem === 'function') {
+    window.addOrMergeCartItem({
+      dishId: item.id,
+      dishName: item.name,
+      restaurantName: item.restaurantName || 'ptitngon Kitchen',
+      restaurantId: item.restaurantId || 1,
+      image: item.image,
+      size,
+      toppings: [],
+      note: '',
+      quantity: 1,
+      unitPrice
+    });
+  } else {
+    cart.push({
+      id: Date.now() + Math.random().toString(36).substring(2, 6),
+      dishId: item.id,
+      dishName: item.name,
+      restaurantName: item.restaurantName || 'ptitngon Kitchen',
+      restaurantId: item.restaurantId || 1,
+      image: item.image,
+      size,
+      toppings: [],
+      note: '',
+      quantity: 1,
+      unitPrice,
+      totalPrice: unitPrice
+    });
+  }
 
   DB.saveCurrentUserCart(cart);
   updateFloatingCartBar();

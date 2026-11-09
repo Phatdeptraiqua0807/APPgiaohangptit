@@ -6066,7 +6066,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     background: transparent !important;
     box-shadow: none !important;
     border-bottom: 1px solid transparent !important;
-    padding: 18px 0 20px 0 !important;
+    padding: 30px 0 20px 0 !important;
     margin-bottom: 8px !important;
     display: flex !important;
     align-items: center !important;
@@ -14361,25 +14361,34 @@ body.view-ai-active .ai-composer-dock {
     position: relative;
     width: 36px;
     height: 36px;
+    min-width: 36px;
     padding: 0;
     justify-content: center;
     font-size: 16px;
+    border-radius: 50%;
   }
 
-  .ai-api-btn-label {
-    display: none;
+  .ai-api-status-btn .ai-api-btn-label {
+    display: none !important;
+  }
+
+  .ai-api-status-btn.connected {
+    background: #ecfdf5;
+    border-color: #34d399;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
   }
 
   .ai-api-status-btn.connected::after {
     content: '';
     position: absolute;
-    top: 4px;
-    right: 4px;
+    top: 3px;
+    right: 3px;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--green-500);
-    border: 2px solid #ffffff;
+    background: #10b981;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 0 0 1.5px rgba(16, 185, 129, 0.4);
   }
 
   body.view-ai-active .ai-chat-header {
