@@ -9026,16 +9026,38 @@ body.view-ai-active .ai-composer-dock {
 .ai-api-status-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 11px;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px 0 10px;
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
   background: #f1f5f9;
   color: var(--gray-700);
   border: 1px solid var(--gray-200);
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.ai-api-status-btn .ai-api-status-icon,
+.ai-api-status-btn > span:first-child,
+.ai-api-status-btn .fluent-icon,
+.ai-api-status-btn svg {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.ai-api-status-btn.connected .fluent-icon,
+.ai-api-status-btn.connected svg {
+  color: #047857 !important;
+  fill: currentColor !important;
 }
 
 .ai-api-status-btn.connected {
@@ -14058,6 +14080,13 @@ body.view-ai-active .ai-composer-dock {
   gap: 8px;
 }
 
+.ai-trace-meta-header .fluent-icon,
+.ai-trace-meta-header svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: -2.5px;
+}
+
 .ai-trace-source-badge {
   font-size: 10px;
   font-weight: 700;
@@ -14942,13 +14971,22 @@ body.view-ai-active .ai-composer-dock {
   .ai-api-status-btn,
   .ai-api-status-btn.connected {
     position: relative;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
     padding: 0;
     justify-content: center;
-    font-size: 16px;
     border-radius: 50%;
+  }
+
+  .ai-api-status-btn .ai-api-status-icon,
+  .ai-api-status-btn > span:first-child,
+  .ai-api-status-btn .fluent-icon,
+  .ai-api-status-btn svg {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
   }
 
   .ai-api-status-btn .ai-api-btn-label {

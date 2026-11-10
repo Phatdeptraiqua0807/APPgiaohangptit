@@ -891,7 +891,7 @@ function renderAIChatView() {
             onclick="openAISettingsModal()"
             title="Quản lý & Lưu các Profile AI (Gemini, DeepSeek, OpenAI, Groq, OpenRouter, Ollama...)"
           >
-            <span>${FluentIcons.settingsFilled}</span>
+            <span class="ai-api-status-icon">${FluentIcons.settingsFilled}</span>
             <span class="ai-api-btn-label">${escapeHtml(apiStatusText)}</span>
           </button>
 
