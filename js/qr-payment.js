@@ -231,7 +231,7 @@ function renderInlineCheckoutVietQRCard(totalAmount, draftOrderId, methodKey = n
           <span class="vqr-bank-pill ${channel.themeClass}">${channel.icon} ${escapeHtml(channel.channelBadge)}</span>
           <span class="vqr-napas-pill">${escapeHtml(channel.subBadge)}</span>
         </div>
-        <span class="vqr-demo-tag ${channel.themeClass}">⚡ Demo • QR thật tới ${channel.accountNo}</span>
+        <span class="vqr-demo-tag ${channel.themeClass}">${FluentIcons.flashFilled} Demo • QR thật tới ${channel.accountNo}</span>
       </div>
 
       <div class="vqr-inline-grid">
@@ -387,6 +387,7 @@ function openVietQRPaymentModal(totalAmount, resetTimer = true, methodKey = null
   const mins = String(Math.floor(vqrRemainingSeconds / 60)).padStart(2, '0');
   const secs = String(vqrRemainingSeconds % 60).padStart(2, '0');
 
+  sheet.classList.add('vqr-wide-sheet');
   sheet.innerHTML = buildVietQRModalHtml({
     channel,
     totalAmount,
@@ -418,6 +419,7 @@ function openExistingOrderVietQRModal(orderId) {
   const memo = order.qrPayment?.transferContent || buildTransferMemoFromOrderId(order.orderId);
   const qrData = getChannelQRUrls(channel.methodKey, order.totalAmount, memo);
 
+  sheet.classList.add('vqr-wide-sheet');
   sheet.innerHTML = buildVietQRModalHtml({
     channel,
     totalAmount: order.totalAmount,
@@ -469,120 +471,132 @@ function buildVietQRModalHtml({ channel, totalAmount, orderCode, qrData, timerSt
           `}
         </div>
 
-        <!-- Khung mã QR trung tâm -->
-        <div class="vqr-modal-qr-stage ${channel.themeClass}">
-          <div class="vqr-qr-frame large ${channel.themeClass}">
-            <span class="vqr-corner tl"></span>
-            <span class="vqr-corner tr"></span>
-            <span class="vqr-corner bl"></span>
-            <span class="vqr-corner br"></span>
-            <img
-              class="vqr-qr-img"
-              src="${qrData.primaryVietQRUrl}"
-              data-fb1="${qrData.fallbackQrServerUrl}"
-              data-fb2="${qrData.fallbackQuickChartUrl}"
-              data-fallback-step="0"
-              alt="Mã QR chuyển khoản ${escapeHtml(channel.providerShortName)} ${channel.accountNo}"
-              onerror="handleVietQRImageError(this)"
-            >
-            <div class="vqr-offline-fallback" style="display:none;">
-              <div style="font-size:32px;">${channel.icon}</div>
-              <strong>${escapeHtml(channel.providerShortName)} • ${channel.accountNo}</strong>
-              <span>Số tiền: ${formatVND(totalAmount)}</span>
-              <span>Nội dung: ${escapeHtml(qrData.cleanMemo)}</span>
+        <!-- Khung 2 cột ngang hàng trên máy tính: Mã QR & Bảng thông tin CK -->
+        <div class="vqr-modal-content-grid">
+          <!-- Khung mã QR trung tâm (Cột trái trên máy tính) -->
+          <div class="vqr-modal-qr-stage ${channel.themeClass}">
+            <div class="vqr-qr-frame large ${channel.themeClass}">
+              <span class="vqr-corner tl"></span>
+              <span class="vqr-corner tr"></span>
+              <span class="vqr-corner bl"></span>
+              <span class="vqr-corner br"></span>
+              <img
+                class="vqr-qr-img"
+                src="${qrData.primaryVietQRUrl}"
+                data-fb1="${qrData.fallbackQrServerUrl}"
+                data-fb2="${qrData.fallbackQuickChartUrl}"
+                data-fallback-step="0"
+                alt="Mã QR chuyển khoản ${escapeHtml(channel.providerShortName)} ${channel.accountNo}"
+                onerror="handleVietQRImageError(this)"
+              >
+              <div class="vqr-offline-fallback" style="display:none;">
+                <div style="font-size:32px;">${channel.icon}</div>
+                <strong>${escapeHtml(channel.providerShortName)} • ${channel.accountNo}</strong>
+                <span>Số tiền: ${formatVND(totalAmount)}</span>
+                <span>Nội dung: ${escapeHtml(qrData.cleanMemo)}</span>
+              </div>
+            </div>
+
+            <div class="vqr-amount-mode-switch" style="justify-content:center; margin-top:10px;">
+              <button
+                type="button"
+                class="vqr-mode-btn ${channel.themeClass} ${vqrLockExactAmount ? 'active' : ''}"
+                onclick="toggleVietQRAmountMode(true, ${totalAmount}, '${channel.methodKey}', ${existingOrderIdArg})"
+              >
+                ${FluentIcons.targetFilled} Khóa đúng số tiền (${formatVND(totalAmount)})
+              </button>
+              <button
+                type="button"
+                class="vqr-mode-btn ${channel.themeClass} ${!vqrLockExactAmount ? 'active' : ''}"
+                onclick="toggleVietQRAmountMode(false, ${totalAmount}, '${channel.methodKey}', ${existingOrderIdArg})"
+              >
+                🔓 Mã QR tự nhập số tiền
+              </button>
             </div>
           </div>
 
-          <div class="vqr-amount-mode-switch" style="justify-content:center; margin-top:10px;">
-            <button
-              type="button"
-              class="vqr-mode-btn ${channel.themeClass} ${vqrLockExactAmount ? 'active' : ''}"
-              onclick="toggleVietQRAmountMode(true, ${totalAmount}, '${channel.methodKey}', ${existingOrderIdArg})"
-            >
-              🎯 Khóa đúng số tiền (${formatVND(totalAmount)})
-            </button>
-            <button
-              type="button"
-              class="vqr-mode-btn ${channel.themeClass} ${!vqrLockExactAmount ? 'active' : ''}"
-              onclick="toggleVietQRAmountMode(false, ${totalAmount}, '${channel.methodKey}', ${existingOrderIdArg})"
-            >
-              🔓 Mã QR tự nhập số tiền
-            </button>
+          <!-- Bảng chi tiết tài khoản thụ hưởng (Cột phải trên máy tính) -->
+          <div class="vqr-detail-rows modal-box">
+            <div class="vqr-detail-row">
+              <div>
+                <div class="vqr-lbl">Đơn vị thụ hưởng</div>
+                <div class="vqr-val bank ${channel.themeClass}">${channel.icon} ${escapeHtml(channel.providerFullName)}</div>
+              </div>
+            </div>
+
+            <div class="vqr-detail-row">
+              <div>
+                <div class="vqr-lbl">${escapeHtml(channel.accountLabelTitle)}</div>
+                <div class="vqr-val mono">${channel.accountNo}</div>
+              </div>
+              <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${channel.accountNo}', '${escapeHtml(channel.providerShortName)}')">
+                Sao chép
+              </button>
+            </div>
+
+            <div class="vqr-detail-row">
+              <div>
+                <div class="vqr-lbl">Số tiền cần thanh toán</div>
+                <div class="vqr-val price">${formatVND(totalAmount)}</div>
+              </div>
+              <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${totalAmount}', 'số tiền')">
+                Sao chép
+              </button>
+            </div>
+
+            <div class="vqr-detail-row">
+              <div>
+                <div class="vqr-lbl">Nội dung chuyển khoản</div>
+                <div class="vqr-val code">${escapeHtml(qrData.cleanMemo)}</div>
+              </div>
+              <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${escapeHtml(qrData.cleanMemo)}', 'nội dung CK')">
+                Sao chép
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Bảng chi tiết tài khoản thụ hưởng -->
-        <div class="vqr-detail-rows modal-box">
-          <div class="vqr-detail-row">
-            <div>
-              <div class="vqr-lbl">Đơn vị thụ hưởng</div>
-              <div class="vqr-val bank ${channel.themeClass}">${channel.icon} ${escapeHtml(channel.providerFullName)}</div>
-            </div>
-          </div>
-
-          <div class="vqr-detail-row">
-            <div>
-              <div class="vqr-lbl">${escapeHtml(channel.accountLabelTitle)}</div>
-              <div class="vqr-val mono">${channel.accountNo}</div>
-            </div>
-            <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${channel.accountNo}', '${escapeHtml(channel.providerShortName)}')">
-              Sao chép
-            </button>
-          </div>
-
-          <div class="vqr-detail-row">
-            <div>
-              <div class="vqr-lbl">Số tiền cần thanh toán</div>
-              <div class="vqr-val price">${formatVND(totalAmount)}</div>
-            </div>
-            <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${totalAmount}', 'số tiền')">
-              Sao chép
-            </button>
-          </div>
-
-          <div class="vqr-detail-row">
-            <div>
-              <div class="vqr-lbl">Nội dung chuyển khoản</div>
-              <div class="vqr-val code">${escapeHtml(qrData.cleanMemo)}</div>
-            </div>
-            <button type="button" class="vqr-copy-btn ${channel.themeClass}" onclick="copyVietQRField('${escapeHtml(qrData.cleanMemo)}', 'nội dung CK')">
-              Sao chép
-            </button>
-          </div>
-        </div>
-
-        
-
-        <!-- Nút hành động xác nhận thanh toán -->
+      <!-- Nút hành động xác nhận thanh toán cố định luôn hiển thị ở dưới cùng -->
+      <div class="delivery-modal-footer vqr-modal-footer">
         ${isAlreadyPaid ? `
-          <button type="button" class="btn-primary-large" onclick="closeModal()">
+          <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="closeModal()">
             Đóng cửa sổ
           </button>
         ` : existingOrder ? `
-          <button
-            type="button"
-            id="vqr-confirm-paid-btn"
-            class="btn-primary-large vqr-confirm-btn ${channel.themeClass}"
-            onclick="confirmVietQRForExistingOrder('${escapeHtml(existingOrder.orderId)}')"
-          >
-            ✅ Tôi đã chuyển ${escapeHtml(channel.providerShortName)} • Xác nhận (${formatVND(totalAmount)})
-          </button>
+          <div class="vqr-modal-actions" style="width:100%;">
+            <button
+              type="button"
+              class="vqr-secondary-action-btn"
+              onclick="closeModal()"
+            >
+              Để sau
+            </button>
+            <button
+              type="button"
+              id="vqr-confirm-paid-btn"
+              class="btn-primary-large vqr-confirm-btn ${channel.themeClass}"
+              onclick="confirmVietQRForExistingOrder('${escapeHtml(existingOrder.orderId)}')"
+            >
+              Xác nhận chuyển khoản
+            </button>
+          </div>
         ` : `
-          <div class="vqr-modal-actions">
+          <div class="vqr-modal-actions" style="width:100%;">
+            <button
+              type="button"
+              class="vqr-secondary-action-btn"
+              onclick="placeOrderWithPendingQR(${totalAmount}, '${channel.methodKey}')"
+            >
+              Để sau
+            </button>
             <button
               type="button"
               id="vqr-confirm-paid-btn"
               class="btn-primary-large vqr-confirm-btn ${channel.themeClass}"
               onclick="confirmVietQRAndPlaceOrder(${totalAmount}, '${channel.methodKey}')"
             >
-              ✅ Tôi đã chuyển ${escapeHtml(channel.providerShortName)} • Hoàn tất đặt đơn (${formatVND(totalAmount)})
-            </button>
-            <button
-              type="button"
-              class="vqr-secondary-action-btn"
-              onclick="placeOrderWithPendingQR(${totalAmount}, '${channel.methodKey}')"
-            >
-              🕒 Đặt đơn trước, tôi sẽ quét mã QR ${escapeHtml(channel.providerShortName)} sau
+              Xác nhận chuyển khoản
             </button>
           </div>
         `}
@@ -603,7 +617,7 @@ function confirmVietQRAndPlaceOrder(totalAmount, methodKey = null) {
   const banner = document.getElementById('vqr-live-status-banner');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `🔄 Đang kiểm tra giao dịch ${escapeHtml(channel.providerShortName)} ${channel.accountNo}...`;
+    btn.innerHTML = `${FluentIcons.sync} Đang kiểm tra giao dịch ${escapeHtml(channel.providerShortName)} ${channel.accountNo}...`;
   }
   if (banner) {
     banner.innerHTML = `
@@ -677,7 +691,7 @@ function confirmVietQRForExistingOrder(orderId) {
   const btn = document.getElementById('vqr-confirm-paid-btn');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `🔄 Đang xác thực giao dịch ${escapeHtml(channel.providerShortName)} ${channel.accountNo}...`;
+    btn.innerHTML = `${FluentIcons.sync} Đang xác thực giao dịch ${escapeHtml(channel.providerShortName)} ${channel.accountNo}...`;
   }
 
   const txId = channel.txPrefix + Date.now().toString().slice(-8);

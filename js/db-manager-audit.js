@@ -1390,7 +1390,7 @@ function dbmRenderAiAuditFooterHtml() {
     <button type="button" class="btn-primary-large" style="flex:0 1 auto; min-width:220px;"
             ${st.running || actionableCards.length === 0 ? 'disabled' : ''}
             onclick="dbmAuditApplySelected()">
-      💾 Áp dụng ${actionableCards.length} ${meta.plural} đã chọn
+      ${FluentIcons.saveFilled} Áp dụng ${actionableCards.length} ${meta.plural} đã chọn
     </button>`;
 }
 

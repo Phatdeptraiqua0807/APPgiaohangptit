@@ -82,7 +82,7 @@ function dbmDropzoneHtml(key, label, { multiple = true, compact = false } = {}) 
          onclick="this.querySelector('input').click()">
       <input type="file" accept="image/*" ${multiple ? 'multiple' : ''} style="display:none;"
              onclick="event.stopPropagation()" onchange="dbmDzPick(event, '${key}')">
-      <div class="dbm-dropzone-icon">🖼️</div>
+      <div class="dbm-dropzone-icon">${FluentIcons.imageFilled}</div>
       <div class="dbm-dropzone-text">${label}</div>
     </div>`;
 }
@@ -145,15 +145,15 @@ function renderCatalogManagerView() {
     ? `🔗 Đang ghi trực tiếp: ${DB.linkedFileName}`
     : DB.fileSyncStatus === 'server-api'
       ? '🟢 Đang đồng bộ trực tiếp database.json'
-      : '💾 Đã lưu  tự động';
+      : `${FluentIcons.saveFilled} Đã lưu tự động`;
 
   const tabs = [
-    ['items', '📦', 'Mặt hàng', items.length],
-    ['stores', '🏪', 'Cửa hàng', stores.length],
-    ['categories', '🏷️', 'Danh mục', cats.length],
-    ['vouchers', '🎟️', 'Mã giảm giá', vouchers.length],
-    ['images', '🖼️', 'Thư viện ảnh', lib.length],
-    ['ai', '✨', 'AI tạo hàng', aiPending || ''],
+    ['items', `${FluentIcons.boxFilled}`, 'Mặt hàng', items.length],
+    ['stores', `${FluentIcons.shop}`, 'Cửa hàng', stores.length],
+    ['categories', `${FluentIcons.tagFilled}`, 'Danh mục', cats.length],
+    ['vouchers', `${FluentIcons.ticketHorizontalFilled}`, 'Mã giảm giá', vouchers.length],
+    ['images', `${FluentIcons.imageFilled}`, 'Thư viện ảnh', lib.length],
+    ['ai', `${FluentIcons.sparkleFilled}`, 'AI tạo hàng', aiPending || ''],
     ['database', '🗄️', 'File .JSON', '']
   ];
 
@@ -349,7 +349,7 @@ function renderDbmItemsTab(allCats) {
         ${chip(dbmHealthyFilter === 'low', "dbmHealthyFilter = dbmHealthyFilter === 'low' ? 'all' : 'low'; renderCatalogManagerView();", '🍟 Ăn điều độ (<6.5)')}
         ${chip(catalogStatusFilter === 'instock', "catalogStatusFilter='instock'; renderCatalogManagerView();", '✅ Đang bán')}
         ${chip(catalogStatusFilter === 'outofstock', "catalogStatusFilter='outofstock'; renderCatalogManagerView();", '⛔ Tạm hết')}
-        ${chip(dbmMissingImageOnly, 'dbmMissingImageOnly = !dbmMissingImageOnly; renderCatalogManagerView();', `🖼️ Thiếu ảnh (${missingCount})`)}
+        ${chip(dbmMissingImageOnly, 'dbmMissingImageOnly = !dbmMissingImageOnly; renderCatalogManagerView();', `${FluentIcons.imageFilled} Thiếu ảnh (${missingCount})`)}
         ${(dbmTagFilter || dbmStoreFilter !== 'all' || catalogCategoryFilter !== 'all' || catalogStatusFilter !== 'all' || dbmHealthyFilter !== 'all' || dbmMissingImageOnly || catalogSearchQuery)
       ? `<button class="db-chip" onclick="dbmResetItemFilters()">↺ Xóa lọc</button>` : ''}
       </div>
@@ -383,14 +383,14 @@ function renderDbmBulkBar(visibleList) {
               </label>
             </div>
             <div class="dbm-bulk-top-actions">
-              <button class="danger" onclick="dbmBulkDelete()" title="Xóa các món đã chọn">🗑️ Xóa</button>
+              <button class="danger" onclick="dbmBulkDelete()" title="Xóa các món đã chọn">${FluentIcons.deleteRegular} Xóa</button>
               <button class="dbm-bulk-clear-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
             </div>
           </div>
           <div class="dbm-bulk-actions">
             <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('items')" title="Dùng AI đánh giá các món đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
             <button onclick="dbmOpenBulkGoogleImageModal()" title="Tự tìm & chèn ảnh Google #1 hoặc #2 cho các mặt hàng đã chọn">🔍 Ảnh Google</button>
-            <button onclick="openAssignImageModal({ preselectIds: [...dbmSelectedIds] })">🖼️ Gán ảnh</button>
+            <button onclick="openAssignImageModal({ preselectIds: [...dbmSelectedIds] })">${FluentIcons.imageFilled} Gán ảnh</button>
             <button onclick="dbmOpenBulkModal('healthy')" title="Tự đánh giá lại hoặc gán điểm Healthy cho các mặt hàng đã chọn">🥗 Healthy</button>
             <button onclick="dbmOpenBulkModal('category')">🏷️ Danh mục</button>
             <button onclick="dbmOpenBulkModal('store')">🏪 Cửa hàng</button>
@@ -428,7 +428,7 @@ function renderCatalogItemsGridHtml(itemsList) {
   if (itemsList.length === 0) {
     return `${bulk}
       <div class="search-empty-state" style="padding: 48px 20px;">
-        <div class="search-empty-icon">📦</div>
+        <div class="search-empty-icon">${FluentIcons.boxFilled}</div>
         <div class="search-empty-title">Chưa có mặt hàng nào khớp bộ lọc</div>
         <div class="search-empty-sub">Thêm mặt hàng mới, nhờ AI tạo giúp hoặc đặt lại bộ lọc.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
@@ -969,7 +969,7 @@ function openAssignImageModal({ preselectIds = [], imageSrc = '' } = {}) {
   };
 
   dbmOpenSheet(`
-    ${dbmSheetHeader('🖼️', 'Gán ảnh cho nhiều mặt hàng')}
+    ${dbmSheetHeader(FluentIcons.imageFilled, 'Gán ảnh cho nhiều mặt hàng')}
     <div class="delivery-modal-body dbm-editor-body">
       <div class="dbm-assign-top">
         <div class="dbm-assign-preview" id="dbm-assign-preview">${dbmAssignPreviewHtml()}</div>
@@ -1049,7 +1049,7 @@ function renderDbmImagesTab() {
     </div>
     ${lib.length === 0 ? `
       <div class="search-empty-state" style="padding:36px 20px;">
-        <div class="search-empty-icon">🖼️</div>
+        <div class="search-empty-icon">${FluentIcons.imageFilled}</div>
         <div class="search-empty-title">Thư viện đang trống</div>
         <div class="search-empty-sub">Thả ảnh món ăn vào ô phía trên để bắt đầu.</div>
       </div>` : `

@@ -1175,9 +1175,9 @@ function dbmAiReviewHtml(job) {
       </div>
       ${saved ? '' : `
         <div class="dbm-review-footer">
-          ${missing ? `<button class="db-secondary-btn" onclick="dbmAiAssignOneImage('${jid}')">🖼️ Gán 1 ảnh cho nhiều món</button>` : ''}
+          ${missing ? `<button class="db-secondary-btn" onclick="dbmAiAssignOneImage('${jid}')">${FluentIcons.imageFilled} Gán 1 ảnh cho nhiều món</button>` : ''}
           <button class="db-secondary-btn" onclick="dbmAiSelectAll('${jid}', ${selected === 0})">${selected === 0 ? 'Chọn tất cả' : 'Bỏ chọn tất cả'}</button>
-          <button class="btn-primary-large" style="flex:1; min-width:200px;" onclick="dbmAiSaveJob('${jid}', false)">💾 Lưu ${selected} món đã chọn vào Database</button>
+          <button class="btn-primary-large" style="flex:1; min-width:200px;" onclick="dbmAiSaveJob('${jid}', false)">${FluentIcons.saveFilled} Lưu ${selected} món đã chọn vào Database</button>
         </div>`}
     </div>`;
 }
@@ -1238,7 +1238,7 @@ function dbmAiEditHealthy(jobId, idx) {
       </div>
     </div>
     <div class="dbm-editor-footer">
-      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmAiSaveEditedHealthy()">💾 Lưu đánh giá Healthy</button>
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmAiSaveEditedHealthy()">${FluentIcons.saveFilled} Lưu đánh giá Healthy</button>
     </div>`);
 }
 

@@ -149,6 +149,194 @@ textarea {
   flex-shrink: 0;
 }
 
+/* ── Fluent Icons Semantic Color Palette ── */
+:root {
+  --fi-tag: #eab308;
+  /* tag màu vàng */
+  --fi-ticket: #ef4444;
+  /* ticket màu đỏ */
+  --fi-sync: #4d4d4d;
+  /* sync màu xanh */
+  --fi-shop: #0284c7;
+  /* building shop màu xanh */
+  --fi-shield: #82d19f;
+  /* shield filled màu xanh lá nhạt */
+  --fi-target: #cd2255;
+  /* tagget (target) màu đỏ rượu */
+  --fi-flash: #eab308;
+  /* flash màu vàng */
+  --fi-fire: #ea580c;
+  /* fire / flame màu cam đỏ */
+  --fi-delete: #ef4444;
+  /* delete / trash màu đỏ */
+  --fi-sparkle: #f59e0b;
+  /* sparkle màu vàng óng */
+  --fi-star: #f59e0b;
+  /* star màu vàng */
+  --fi-heart: #ef4444;
+  /* heart màu đỏ */
+  --fi-histogram: #6366f1;
+  /* histogram màu tím xanh */
+  --fi-settings: #475569;
+  /* settings màu xám chì */
+  --fi-cart: #f97316;
+  /* cart / bag màu cam */
+  --fi-check: #10b981;
+  /* checkmark màu xanh lá */
+  --fi-person: #575757;
+  /* person màu xanh lam */
+  --fi-location: #4a4949;
+  /* location màu đỏ */
+  --fi-truck: #0284c7;
+  /* truck màu xanh */
+  --fi-money: #059669;
+  /* money màu xanh lục */
+  --fi-card: #0284c7;
+  /* card màu xanh dương */
+  --fi-comm: #10b981;
+  /* call / chat màu xanh */
+  --fi-bell: #f59e0b;
+  /* bell / alert màu vàng cam */
+  --fi-gift: #ec4899;
+  /* gift màu hồng */
+  --fi-receipt: #0284c7;
+  /* receipt màu xanh */
+  --fi-save: #0284c7;
+  /* save / diskette màu xanh */
+  --fi-box: #eca85c;
+  /* box / package màu cam đất */
+  --fi-image: #71cdc8;
+  /* image / photo màu tím */
+  --fi-save: #0284c7;
+  /* save / diskette màu xanh */
+  --fi-box: #d97706;
+  /* box / package màu cam đất */
+}
+
+.fluent-icon.fi-tag {
+  color: var(--fi-tag);
+}
+
+.fluent-icon.fi-save {
+  color: var(--fi-save);
+}
+
+.fluent-icon.fi-box {
+  color: var(--fi-box);
+}
+
+.fluent-icon.fi-image {
+  color: var(--fi-image);
+}
+
+.fluent-icon.fi-ticket {
+  color: var(--fi-ticket);
+}
+
+.fluent-icon.fi-sync {
+  color: var(--fi-sync);
+}
+
+.fluent-icon.fi-shop {
+  color: var(--fi-shop);
+}
+
+.fluent-icon.fi-shield {
+  color: var(--fi-shield);
+}
+
+.fluent-icon.fi-target {
+  color: var(--fi-target);
+}
+
+.fluent-icon.fi-flash {
+  color: var(--fi-flash);
+}
+
+.fluent-icon.fi-fire {
+  color: var(--fi-fire);
+}
+
+.fluent-icon.fi-delete {
+  color: var(--fi-delete);
+}
+
+.fluent-icon.fi-sparkle {
+  color: var(--fi-sparkle);
+}
+
+.fluent-icon.fi-star {
+  color: var(--fi-star);
+}
+
+.fluent-icon.fi-heart {
+  color: var(--fi-heart);
+}
+
+.fluent-icon.fi-histogram {
+  color: var(--fi-histogram);
+}
+
+.fluent-icon.fi-settings {
+  color: var(--fi-settings);
+}
+
+.fluent-icon.fi-cart {
+  color: var(--fi-cart);
+}
+
+.fluent-icon.fi-check {
+  color: var(--fi-check);
+}
+
+.fluent-icon.fi-person {
+  color: var(--fi-person);
+}
+
+.fluent-icon.fi-location {
+  color: var(--fi-location);
+}
+
+.fluent-icon.fi-truck {
+  color: var(--fi-truck);
+}
+
+.fluent-icon.fi-money {
+  color: var(--fi-money);
+}
+
+.fluent-icon.fi-card {
+  color: var(--fi-card);
+}
+
+.fluent-icon.fi-comm {
+  color: var(--fi-comm);
+}
+
+.fluent-icon.fi-bell {
+  color: var(--fi-bell);
+}
+
+.fluent-icon.fi-gift {
+  color: var(--fi-gift);
+}
+
+.fluent-icon.fi-receipt {
+  color: var(--fi-receipt);
+}
+
+.fluent-icon.fi-save {
+  color: var(--fi-save);
+}
+
+.fluent-icon.fi-box {
+  color: var(--fi-box);
+}
+
+.fluent-icon.fi-image {
+  color: var(--fi-image);
+}
+
 /* ── App Shell ── */
 .app {
   max-width: var(--app-max-width);
@@ -1186,6 +1374,22 @@ textarea {
 
 .category-chip-icon {
   font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Categories scroll icons should not have individual colors, follow chip text & active state */
+.categories-scroll .fluent-icon,
+.categories-scroll [class*="fi-"],
+.categories-scroll svg,
+.category-chip .fluent-icon,
+.category-chip [class*="fi-"],
+.category-chip svg,
+.category-chip-icon .fluent-icon,
+.category-chip-icon svg {
+  color: inherit !important;
+  fill: currentColor !important;
 }
 
 /* ── Food Category Grid (big icons) ── */
@@ -1436,6 +1640,29 @@ textarea {
 .bottom-nav-icon .fluent-icon {
   width: 24px;
   height: 24px;
+}
+
+/* Bottom nav icon color normalization (không màu riêng, đồng bộ đơn sắc theo trạng thái active/inactive) */
+.bottom-nav .fluent-icon,
+.bottom-nav .fluent-icon[class*="fi-"],
+.bottom-nav svg,
+.bottom-nav-item .fluent-icon,
+.bottom-nav-item [class*="fi-"],
+.bottom-nav-item svg,
+.bottom-nav-icon .fluent-icon,
+.bottom-nav-icon [class*="fi-"],
+.bottom-nav-icon svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Optical adjustment: Trang chủ & Hoạt động khối hình đặc, giảm nhẹ để cân đối thị giác */
+.bottom-nav-item[data-tab="home"] .bottom-nav-icon svg,
+.bottom-nav-item[data-tab="home"] .bottom-nav-icon .fluent-icon,
+.bottom-nav-item[data-tab="activity"] .bottom-nav-icon svg,
+.bottom-nav-item[data-tab="activity"] .bottom-nav-icon .fluent-icon {
+  width: 21.5px !important;
+  height: 21.5px !important;
 }
 
 .bottom-nav-item:hover .bottom-nav-icon {
@@ -3047,13 +3274,17 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 
 /* Modal Sticky Bottom Action Bar */
 .dish-modal-footer {
-  padding: 14px var(--safe-padding);
+  padding: 14px var(--safe-padding) calc(14px + env(safe-area-inset-bottom, 0px));
   background: var(--white);
-  border-top: 1px solid var(--gray-100);
+  border-top: 1px solid var(--gray-200);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: center;
   gap: 14px;
   flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
 }
 
 .dish-modal-qty-stepper {
@@ -4904,8 +5135,45 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-height: 80vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Modal Sticky Bottom Action Footer (Nút xác nhận / lưu thông tin luôn hiển thị dưới cùng) */
+.delivery-modal-footer,
+.modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07);
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+}
+
+.delivery-modal-footer .btn-primary-large,
+.delivery-modal-footer .db-primary-btn,
+.delivery-modal-footer .db-secondary-btn,
+.delivery-modal-footer .db-danger-outline-btn,
+.modal-footer .btn-primary-large {
+  margin-top: 0 !important;
+}
+
+.delivery-modal-footer .btn-primary-large,
+.modal-footer .btn-primary-large {
+  min-height: 46px;
+  font-size: 14.5px;
+  font-weight: 800;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 177, 79, 0.28);
 }
 
 .delivery-presets-row {
@@ -5116,8 +5384,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   }
 
   .sidebar-loc-icon-wrap {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
     background: #ecfdf5;
     color: #00B14F;
@@ -5125,6 +5393,13 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+
+  .sidebar-loc-icon-wrap .fluent-icon,
+  .sidebar-loc-icon-wrap svg {
+    width: 18px !important;
+    height: 18px !important;
+    color: #00B14F !important;
   }
 
   .sidebar-loc-content {
@@ -5181,13 +5456,21 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     padding-left: 10px;
   }
 
+  /* Desktop sidebar icon color normalization & sizing */
+  .desktop-sidebar .fluent-icon,
+  .desktop-sidebar .fluent-icon[class*="fi-"],
+  .desktop-sidebar svg {
+    color: inherit !important;
+    fill: currentColor !important;
+  }
+
   .sidebar-tab-btn {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
+    gap: 14px;
+    padding: 12px 16px;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 600;
     color: #475569;
     cursor: pointer;
@@ -5230,10 +5513,36 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     align-items: center;
     justify-content: center;
     color: #64748b;
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
+    font-size: 25px;
     flex-shrink: 0;
-    transition: transform 0.2s, color 0.2s;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
+  }
+
+  .sidebar-tab-icon .fluent-icon,
+  .sidebar-tab-icon svg {
+    width: 25px !important;
+    height: 25px !important;
+    min-width: 25px;
+    min-height: 25px;
+    color: inherit !important;
+  }
+
+  /* Optical adjustment: Trang chủ (Home) và Hoạt động (Activity) có hình khối đặc, giảm nhẹ để cân đối thị giác */
+  .sidebar-tab-btn[data-tab="home"] .sidebar-tab-icon,
+  .sidebar-tab-btn[data-tab="activity"] .sidebar-tab-icon {
+    font-size: 21.5px;
+  }
+
+  .sidebar-tab-btn[data-tab="home"] .sidebar-tab-icon .fluent-icon,
+  .sidebar-tab-btn[data-tab="home"] .sidebar-tab-icon svg,
+  .sidebar-tab-btn[data-tab="activity"] .sidebar-tab-icon .fluent-icon,
+  .sidebar-tab-btn[data-tab="activity"] .sidebar-tab-icon svg {
+    width: 21.5px !important;
+    height: 21.5px !important;
+    min-width: 21.5px;
+    min-height: 21.5px;
   }
 
   .sidebar-tab-btn:hover .sidebar-tab-icon {
@@ -6649,6 +6958,10 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .db-subtab-btn.active {
@@ -13369,28 +13682,137 @@ body.view-ai-active .ai-composer-dock {
 }
 
 
-.vqr-modal-actions {
+#vqr-gateway-modal-root {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 90vh !important;
+  overflow: hidden !important;
+}
+
+@media (min-width: 768px) {
+  #vqr-gateway-modal-root {
+    max-height: 88vh !important;
+  }
+
+  .bottom-sheet:has(#vqr-gateway-modal-root),
+  .bottom-sheet.vqr-wide-sheet {
+    max-width: 760px !important;
+    width: min(760px, calc(100vw - var(--sidebar-width, 270px) - 48px)) !important;
+    border-radius: 22px !important;
+  }
+
+  .vqr-modal-content-grid {
+    display: grid !important;
+    grid-template-columns: 290px 1fr !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+
+  .vqr-modal-content-grid .vqr-modal-qr-stage {
+    margin: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 14px 12px !important;
+  }
+
+  .vqr-modal-content-grid .vqr-detail-rows.modal-box {
+    margin-top: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    padding: 14px 16px !important;
+    gap: 10px !important;
+  }
+}
+
+.vqr-modal-content-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+}
+
+.vqr-modal-head {
+  flex-shrink: 0 !important;
+}
+
+.vqr-modal-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.vqr-modal-footer {
+  flex-shrink: 0 !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 30 !important;
+  background: #ffffff !important;
+  border-top: 1px solid var(--gray-200) !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07) !important;
+  padding: 12px 20px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Nút vqr-secondary-action-btn và nút vqr-confirm-paid-btn ngang hàng nhau */
+.vqr-modal-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
 }
 
 .vqr-confirm-btn {
   background: linear-gradient(135deg, #059669 0%, #00b14f 100%) !important;
   box-shadow: 0 6px 18px rgba(5, 150, 105, 0.25);
+  flex: 1.5 !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border-radius: 14px !important;
+  white-space: nowrap !important;
 }
 
 .vqr-secondary-action-btn {
-  width: 100%;
-  padding: 11px 14px;
+  flex: 1 !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 10px 14px !important;
   border-radius: 14px;
   border: 1.5px solid var(--gray-200);
   background: #ffffff;
   color: var(--gray-700);
-  font-size: 13px;
+  font-size: 13.5px !important;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.18s ease;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 520px) {
+
+  .vqr-modal-actions .vqr-secondary-action-btn,
+  .vqr-modal-actions .vqr-confirm-btn {
+    white-space: normal !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
 }
 
 .vqr-secondary-action-btn:hover {
@@ -14763,14 +15185,16 @@ body.view-ai-active .ai-composer-dock {
 }
 
 .filter-sheet-footer {
-  padding: 12px 20px 16px;
+  padding: 12px 20px calc(14px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--gray-200);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07);
   background: #ffffff;
   display: flex;
   gap: 12px;
   position: sticky;
   bottom: 0;
-  z-index: 2;
+  z-index: 30;
+  flex-shrink: 0;
 }
 
 .filter-btn-reset {
@@ -15367,13 +15791,14 @@ body.view-ai-active .ai-composer-dock {
     transform: translateX(-50%) scale(0.92);
     opacity: 0.65;
   }
+
   100% {
     transform: translateX(-50%) scale(1.1);
     opacity: 1;
   }
 }
 
-.osv-hero-card > * {
+.osv-hero-card>* {
   position: relative;
   z-index: 1;
 }

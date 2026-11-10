@@ -299,7 +299,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
     <div class="dbm-editor-footer">
       ${aiReady ? `<button type="button" class="db-secondary-btn" onclick="dbmAiFillItemForm()" title="AI điền tag, nguyên liệu, dinh dưỡng, độ healthy và mô tả dựa trên tên món">🤖 AI điền giúp</button>` : ''}
       <button type="button" class="btn-primary-large" style="flex:1;" onclick="submitItemEditor('${editItemId ? escapeHtml(editItemId) : ''}')">
-        💾 ${editing ? 'Cập nhật & lưu mặt hàng' : 'Thêm & lưu mặt hàng'}
+        ${FluentIcons.saveFilled} ${editing ? 'Cập nhật & lưu mặt hàng' : 'Thêm & lưu mặt hàng'}
       </button>
     </div>`);
 
@@ -734,7 +734,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null, pr
     <div class="dbm-editor-footer">
       ${editing ? `<button type="button" class="db-danger-outline-btn" onclick="closeModal(); handleDeleteCategory('${escapeHtml(editing.id)}')">🗑️ Xóa</button>` : ''}
       <button type="button" class="btn-primary-large" style="flex:1;" onclick="submitCategoryEditor('${editing ? escapeHtml(editing.id) : ''}')">
-        💾 ${editing ? 'Lưu cập nhật' : 'Tạo & lưu danh mục'}
+        ${FluentIcons.saveFilled} ${editing ? 'Lưu cập nhật' : 'Tạo & lưu danh mục'}
       </button>
     </div>`);
   dbmUpdateCatTagCount();
@@ -953,7 +953,7 @@ function renderDbmCategoriesGridHtml(catsList) {
               <span>Hiện dạng dãy quán (restaurants-section)</span>
             </label>
             <div class="db-cat-card-actions">
-              <button class="db-act-btn order" onclick="dbmViewCategoryItems('${id}')">📦 Xem món</button>
+              <button class="db-act-btn order" onclick="dbmViewCategoryItems('${id}')">${FluentIcons.boxFilled} Xem món</button>
               <button class="db-act-btn edit" onclick="openItemEditorModal(null, '${id}')">+ Món</button>
               <button class="db-act-btn edit" onclick="dbmOpenAiAuditModal('categories', ['${id}'])" title="AI đánh giá & gợi ý chỉnh sửa danh mục này">🤖</button>
               <button class="db-act-btn edit" onclick="openCategoryEditorModal('${id}')">✏️</button>
@@ -1167,8 +1167,8 @@ function openStoreEditorModal(editStoreId = null, returnDraft = null) {
       ${field('store-editor-vouchers', 'Nhãn ưu đãi hiển thị (cách nhau bằng dấu phẩy)', st ? (st.vouchers || []).join(', ') : '', 'placeholder="VD: Freeship 0đ, Giảm 50K"')}
     </div>
     <div class="dbm-editor-footer">
-      ${st && st.id !== 1000 ? `<button type="button" class="db-danger-outline-btn" onclick="closeModal(); dbmDeleteStore(${st.id})">🗑️ Xóa</button>` : ''}
-      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSubmitStoreEditor(${st ? st.id : 'null'})">💾 ${st ? 'Lưu cập nhật' : 'Tạo cửa hàng'}</button>
+      ${st && st.id !== 1000 ? `<button type="button" class="db-danger-outline-btn" onclick="closeModal(); dbmDeleteStore(${st.id})">${FluentIcons.deleteRegular} Xóa</button>` : ''}
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSubmitStoreEditor(${st ? st.id : 'null'})">${FluentIcons.saveFilled} ${st ? 'Lưu cập nhật' : 'Tạo cửa hàng'}</button>
     </div>`);
 }
 
@@ -1320,7 +1320,7 @@ function renderDbmStoresGridHtml(storesList) {
             <div class="dbm-store-line">⭐ ${s.rating} (${escapeHtml(s.reviewCount || '')}) • 🚚 ${escapeHtml(s.shippingFee || '')} • ${escapeHtml(s.priceLevel || '')}</div>
             <div class="dbm-store-line"><strong>${count}</strong> mặt hàng • ${escapeHtml(s.category || '')}</div>
             <div class="db-cat-card-actions">
-              <button class="db-act-btn order" onclick="dbmViewStoreItems(${s.id})">📦 Xem món</button>
+              <button class="db-act-btn order" onclick="dbmViewStoreItems(${s.id})">${FluentIcons.boxFilled} Xem món</button>
               <button class="db-act-btn edit" onclick="openItemEditorModal(null, null, { restaurantId: ${s.id} })">+ Món</button>
               <button class="db-act-btn edit" onclick="dbmOpenAiAuditModal('stores', [${s.id}])" title="AI đánh giá & gợi ý chỉnh sửa nhà hàng này">🤖</button>
               <button class="db-act-btn edit" onclick="openStoreEditorModal(${s.id})">✏️ Sửa</button>
@@ -1540,7 +1540,7 @@ function openVoucherEditorModal(code = null) {
       <label class="db-checkbox-row"><input type="checkbox" id="vch-active" ${(!v || v.active !== false) ? 'checked' : ''}><span>Đang hoạt động</span></label>
     </div>
     <div class="dbm-editor-footer">
-      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSubmitVoucherEditor('${v ? escapeHtml(v.code) : ''}')">💾 ${v ? 'Lưu cập nhật' : 'Tạo mã'}</button>
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSubmitVoucherEditor('${v ? escapeHtml(v.code) : ''}')">${FluentIcons.saveFilled} ${v ? 'Lưu cập nhật' : 'Tạo mã'}</button>
     </div>`);
   dbmVoucherTypeChanged();
 }
@@ -1586,7 +1586,7 @@ function dbmOpenVoucherItemsModal(code) {
       ${dbmChecklistHtml(false)}
     </div>
     <div class="dbm-editor-footer">
-      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSaveVoucherItems('${escapeHtml(code)}')">💾 Lưu danh sách áp dụng</button>
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="dbmSaveVoucherItems('${escapeHtml(code)}')">${FluentIcons.saveFilled} Lưu danh sách áp dụng</button>
     </div>`);
 }
 

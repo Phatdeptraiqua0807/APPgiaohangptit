@@ -551,11 +551,11 @@ function renderHomeFeaturedDishesSection() {
               <div class="home-feat-dish-img-wrap">
                 <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
-                <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">🛡️ ATTP</span>
+                <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
               <div class="home-feat-dish-body">
                 <div class="home-feat-dish-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
-                <div class="home-feat-dish-store">🏪 ${escapeHtml(item.restaurantName)}</div>
+                <div class="home-feat-dish-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName)}</div>
                 <div class="home-feat-dish-foot">
                   <span class="home-feat-dish-price">${formatVND(item.price)}</span>
                   <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
@@ -725,18 +725,18 @@ function renderDishDetailView() {
               <div class="pdp-img-badges-bottom">
                 ${store?.isFreeship ? `<span class="pdp-freeship-pill">🚚 Freeship 0đ</span>` : ''}
                 <span class="pdp-safe-quick-pill" onclick="openDishSafetyNutritionView('safety')">
-                  🛡️ Đạt chuẩn VSATTP • ${escapeHtml(profile.safety.renewedAgoText)}
+                  ${FluentIcons.shieldFilled} Đạt chuẩn VSATTP • ${escapeHtml(profile.safety.renewedAgoText)}
                 </span>
               </div>
             </div>
 
             <div class="pdp-info-body">
               <div class="pdp-store-link" onclick="openSearchView('${escapeHtml(store ? store.name : dish.restaurantName)}')">
-                <span>🏪 ${escapeHtml(store ? store.name : dish.restaurantName)}</span>
+                <span>${FluentIcons.shop} ${escapeHtml(store ? store.name : dish.restaurantName)}</span>
                 <span>• ${escapeHtml(store?.distanceText || '0.6 km')} (${escapeHtml(store?.deliveryTime || '15 - 20 phút')}) →</span>
               </div>
               ${(dish.location || store?.address) ? `
-                <div class="pdp-location-line">📍 ${escapeHtml(dish.location || store.address)}</div>
+                <div class="pdp-location-line">${FluentIcons.locationFilled} ${escapeHtml(dish.location || store.address)}</div>
               ` : ''}
 
               <h1 class="pdp-title">${escapeHtml(dish.name)}</h1>
@@ -749,7 +749,7 @@ function renderDishDetailView() {
 
                 <div class="pdp-rating-summary-pills" onclick="scrollToReviewsSection()">
                   <span class="pdp-star-badge">⭐ <strong>${profile.ratingVal}</strong> (${Number.isFinite(Number(dish.reviewCount)) ? Number(dish.reviewCount) : (profile.reviews.length + 45)} đánh giá)</span>
-                  <span class="pdp-sold-badge">🔥 Đã bán ${profile.soldCount}+</span>
+                  <span class="pdp-sold-badge">${FluentIcons.fireFilled} Đã bán ${profile.soldCount}+</span>
                 </div>
               </div>
 
@@ -787,7 +787,7 @@ function renderDishDetailView() {
             <!-- Hàng dưới: Mức độ Healthy và Calo đều nhau trên 1 hàng -->
             <div class="pdp-healthy-level-row">
               <strong style="color: ${profile.healthyColor}; font-size: 13px;">${escapeHtml(profile.healthyLevel)}</strong>
-              <span class="pdp-kcal-tag">🔥 ~${dynNutri.calories} kcal / phần</span>
+              <span class="pdp-kcal-tag">${FluentIcons.fireFilled} ~${dynNutri.calories} kcal / phần</span>
             </div>
 
             <!-- Thành phần dinh dưỡng vĩ mô (đã lược bỏ pdp-progress-track) -->
@@ -817,7 +817,7 @@ function renderDishDetailView() {
                 class="pdp-sn-tab-jump-btn safety"
                 onclick="openDishSafetyNutritionView('safety')"
               >
-                🛡️ Xem giấy chứng nhận
+                ${FluentIcons.shieldFilled} Xem giấy chứng nhận
               </button>
             </div>
           </div>
@@ -1269,7 +1269,7 @@ function renderDishSafetyNutritionView() {
           class="sn-main-tab-btn ${dishSafetyActiveTab === 'safety' ? 'active' : ''}"
           onclick="switchDishSafetyTab('safety')"
         >
-          <span>🛡️</span>
+          <span>${FluentIcons.shieldFilled}</span>
           <div>
             <div class="tab-main-lbl">Đảm Bảo An Toàn</div>
             <div class="tab-sub-lbl">${escapeHtml(profile.safety.renewedAgoText)}</div>
@@ -1352,7 +1352,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                   <span class="sn-ing-amount">~${escapeHtml(ing.amount)}</span>
                 </div>
                 <div class="sn-ing-origin">📍 Nguồn gốc: ${escapeHtml(ing.origin)}</div>
-                <div class="sn-ing-role">✨ Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
+                <div class="sn-ing-role">${FluentIcons.sparkleFilled} Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
               </div>
             </div>
           `).join('')}
@@ -1362,7 +1362,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
       <!-- Khối 3: Bảng Dinh dưỡng ước tính chi tiết -->
       <div class="sn-card">
         <div class="sn-card-title-row">
-          <span class="sn-card-heading">📊 Bảng giá trị dinh dưỡng ước tính (1 khẩu phần)</span>
+          <span class="sn-card-heading">${FluentIcons.histogram} Bảng giá trị dinh dưỡng ước tính (1 khẩu phần)</span>
           ${dynNutri.hasExtra ? `<span class="sn-sub-badge">Đã tính Cỡ/Topping đang chọn</span>` : ''}
         </div>
 
@@ -1440,7 +1440,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
             </div>
           </div>
           <button type="button" class="ai-api-status-btn ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
-            <span>⚙️</span>
+            <span>${FluentIcons.settingsFilled}</span>
             <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
           </button>
         </div>
@@ -1468,7 +1468,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                 <div class="sn-ai-msg-text">${entry.role === 'user' ? escapeHtml(entry.text) : formatAIMarkdown(entry.text)}</div>
                 ${entry.role === 'assistant' ? `
                   <button type="button" class="sn-ai-retry-btn" onclick="retryDishAIQuestion('${escapeHtml(dish.id)}', ${idx})" title="Hỏi lại câu hỏi này">
-                    🔄 Hỏi lại
+                    ${FluentIcons.sync} Hỏi lại
                   </button>
                 ` : ''}
               </div>
@@ -1508,7 +1508,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
               class="sn-ai-send-btn"
               onclick="submitDishAIQuestion()"
             >
-              Hỏi AI ✨
+              Hỏi AI ${FluentIcons.sparkleFilled}
             </button>
           `}
         </div>
@@ -1531,13 +1531,13 @@ function renderDishSafetyCertificateTab(dish, store, profile) {
         </div>
 
         <div class="safety-renewal-main-time">
-          🛡️ Được kiểm định & làm mới cách đây <strong>${sf.daysSinceRenewed} ngày</strong>
+          ${FluentIcons.shieldFilled} Được kiểm định & làm mới cách đây <strong>${sf.daysSinceRenewed} ngày</strong>
         </div>
 
         <div class="safety-renewal-sub-dates">
           <span>📅 Ngày làm mới gần nhất: <strong>${sf.renewedDateStr}</strong></span>
           <span>•</span>
-          <span>🔄 Đợt hậu kiểm định kỳ tiếp theo: <strong>${sf.nextAuditDateStr}</strong></span>
+          <span>${FluentIcons.sync} Đợt hậu kiểm định kỳ tiếp theo: <strong>${sf.nextAuditDateStr}</strong></span>
           <span>•</span>
           <span>⏳ Hiệu lực đến: <strong>${sf.expiryDateStr}</strong></span>
         </div>
@@ -1557,7 +1557,7 @@ function renderDishSafetyCertificateTab(dish, store, profile) {
             <div class="cert-republic-title">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
             <div class="cert-republic-motto">Độc lập - Tự do - Hạnh phúc</div>
             <div class="cert-divider-line"></div>
-            <div class="cert-shield-icon">🏛️🛡️</div>
+            <div class="cert-shield-icon">${FluentIcons.shieldFilled}</div>
             <div class="cert-doc-type">GIẤY CHỨNG NHẬN</div>
             <div class="cert-doc-subtitle">CƠ SỞ ĐỦ ĐIỀU KIỆN ĐẢM BẢO AN TOÀN VỆ SINH THỰC PHẨM</div>
             <div class="cert-code-pill">Số giấy chứng nhận: <strong>${escapeHtml(sf.certCode)}</strong></div>

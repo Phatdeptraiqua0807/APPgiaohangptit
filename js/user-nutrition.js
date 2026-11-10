@@ -473,16 +473,16 @@ function renderProfileHealthSummaryStrip(activeUser) {
         <div>
           <div class="phs-title-row">
             <strong style="color: ${persona.color};">${escapeHtml(persona.title)}</strong>
-            ${hp.wantKeepFit ? `<span class="phs-fit-pill">✨ Ưu tiên Giữ dáng</span>` : ''}
+            ${hp.wantKeepFit ? `<span class="phs-fit-pill">${FluentIcons.sparkleFilled} Ưu tiên Giữ dáng</span>` : ''}
           </div>
           <div class="phs-metrics">
             ⚖️ Cân nặng: <strong>${hp.weightKg} kg</strong> (BMI ${hp.bmiInfo.bmi}) •
-            🔥 Hôm nay: <strong>${summary.consumed.calories} / ${hp.dailyCalorieGoal} kcal</strong>
+            ${FluentIcons.fireFilled} Hôm nay: <strong>${summary.consumed.calories} / ${hp.dailyCalorieGoal} kcal</strong>
           </div>
         </div>
       </div>
       <button type="button" class="phs-edit-btn" onclick="openUserNutritionSurveyModal('${escapeHtml(activeUser.id)}')">
-        🎯 Cá nhân hoá mục tiêu sức khoẻ
+        ${FluentIcons.targetFilled} Cá nhân hoá mục tiêu sức khoẻ
       </button>
     </div>
   `;
@@ -510,7 +510,7 @@ function renderProfileNutritionManagerTab(activeUser) {
       <div class="un-card un-tracker-card">
         <div class="un-card-head">
           <div>
-            <div class="un-card-title">🔥 Quản lý Dinh dưỡng & Lượng Kcal Tiêu thụ Hôm nay</div>
+            <div class="un-card-title">${FluentIcons.fireFilled} Quản lý Dinh dưỡng & Lượng Kcal Tiêu thụ Hôm nay</div>
             <div class="un-card-sub">
               Tự động cộng Kcal khi bạn đặt đơn trên app hoặc ghi nhận món ăn trong ngày (${summary.dateKey.split('-').reverse().join('/')})
             </div>
@@ -554,7 +554,7 @@ function renderProfileNutritionManagerTab(activeUser) {
                 </span>
               ` : `
                 <span class="un-budget-pill ok">
-                  ✨ Còn lại: <strong>${summary.remainingCalories} kcal</strong> hôm nay
+                  ${FluentIcons.sparkleFilled} Còn lại: <strong>${summary.remainingCalories} kcal</strong> hôm nay
                 </span>
               `}
               <div class="un-ring-subnote">${escapeHtml(hp.bmiInfo.advice)}</div>
@@ -634,7 +634,7 @@ function renderProfileNutritionManagerTab(activeUser) {
                   </div>
                   <div class="un-meal-log-right">
                     <div class="un-meal-macros">
-                      <strong>🔥 ${en.calories} kcal</strong>
+                      <strong>${FluentIcons.fireFilled} ${en.calories} kcal</strong>
                       <span>🥩 ${en.protein}g • 🌾 ${en.carbs}g • 🥑 ${en.fat}g</span>
                     </div>
                     <button
@@ -656,7 +656,7 @@ function renderProfileNutritionManagerTab(activeUser) {
         <div class="un-card-head">
           <div>
             <div class="un-card-title">
-              ✨ Gợi ý Sản phẩm Dành riêng cho ${escapeHtml(activeUser.name)} (${escapeHtml(persona.shortLabel)} • ${hp.weightKg}kg)
+              ${FluentIcons.sparkleFilled} Gợi ý Sản phẩm Dành riêng cho ${escapeHtml(activeUser.name)} (${escapeHtml(persona.shortLabel)} • ${hp.weightKg}kg)
             </div>
             <div class="un-card-sub">
               Được chấm điểm tự động từ ${DB.getItems().length} mặt hàng theo mục tiêu ${hp.wantKeepFit ? 'Giữ dáng, ' : ''}cân nặng ${hp.weightKg}kg và quỹ <strong>${Math.max(0, summary.remainingCalories)} kcal</strong> còn lại hôm nay
@@ -674,10 +674,10 @@ function renderProfileNutritionManagerTab(activeUser) {
         <!-- Bộ lọc nhanh chế độ gợi ý -->
         <div class="db-filter-chips-row" style="margin-bottom: 14px;">
           <button type="button" class="db-chip ${nutritionRecFilter === 'best' ? 'active' : ''}" onclick="setNutritionRecFilter('best')">
-            🎯 Phù hợp nhất với bạn
+            ${FluentIcons.targetFilled} Phù hợp nhất với bạn
           </button>
           <button type="button" class="db-chip ${nutritionRecFilter === 'low_cal' ? 'active' : ''}" onclick="setNutritionRecFilter('low_cal')">
-            🔥 Nhẹ bụng (&le; 420 kcal)
+            ${FluentIcons.fireFilled} Nhẹ bụng (&le; 420 kcal)
           </button>
           <button type="button" class="db-chip ${nutritionRecFilter === 'high_protein' ? 'active' : ''}" onclick="setNutritionRecFilter('high_protein')">
             💪 Giàu Đạm Gym (24g+)
@@ -691,20 +691,20 @@ function renderProfileNutritionManagerTab(activeUser) {
         </div>
 
         ${recs.length === 0 ? `
-          <div class="un-empty-log">Không có mặt hàng nào khớp bộ lọc này. Hãy chọn "🎯 Phù hợp nhất với bạn"!</div>
+          <div class="un-empty-log">Không có mặt hàng nào khớp bộ lọc này. Hãy chọn "Phù hợp nhất với bạn"!</div>
         ` : `
           <div class="un-rec-dishes-grid">
             ${recs.map(({ item, prof, reasonText }) => `
               <div class="un-rec-dish-card">
                 <div class="un-rec-img-wrap" onclick="openDishDetailById('${escapeHtml(item.id)}')">
                   <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
-                  <span class="un-rec-kcal-badge">🔥 ~${prof.calories} kcal</span>
+                  <span class="un-rec-kcal-badge">${FluentIcons.fireFilled} ~${prof.calories} kcal</span>
                   <span class="un-rec-healthy-badge">🥗 ${prof.healthyScore}/10</span>
                 </div>
 
                 <div class="un-rec-body">
                   <div class="un-rec-title" onclick="openDishDetailById('${escapeHtml(item.id)}')">${escapeHtml(item.name)}</div>
-                  <div class="un-rec-store">🏪 ${escapeHtml(item.restaurantName)} • <strong>${formatVND(item.price)}</strong></div>
+                  <div class="un-rec-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName)} • <strong>${formatVND(item.price)}</strong></div>
 
                   <div class="un-rec-macros-mini">
                     <span>🥩 Đạm <strong>${prof.protein}g</strong></span>
@@ -768,7 +768,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
   sheet.innerHTML = `
     <div class="delivery-modal-header un-survey-modal-header">
       <div class="delivery-modal-title">
-        <span>🎯</span>
+        <span>${FluentIcons.targetFilled}</span>
         <span>Phân loại Người dùng &amp; Thể trạng</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -781,7 +781,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
         <div class="un-card-head" style="margin-bottom: 12px;">
           <div>
             <div class="un-card-title">
-              <span>🎯 Phân loại &amp; Thể trạng của <strong>${escapeHtml(activeUser.name)}</strong></span>
+              <span>${FluentIcons.targetFilled} Phân loại &amp; Thể trạng của <strong>${escapeHtml(activeUser.name)}</strong></span>
             </div>
             <div class="un-card-sub">
               Cho hệ thống biết mục tiêu, chế độ ăn &amp; cân nặng hiện tại để quản lý Kcal và gợi ý món chuẩn xác nhất
@@ -891,7 +891,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
             </div>
 
             <div>
-              <div class="un-qq-label" style="margin-bottom:6px;">🏷️ Ưu tiên dinh dưỡng cá nhân (chạm để bật/tắt):</div>
+              <div class="un-qq-label" style="margin-bottom:6px;">${FluentIcons.tagFilled} Ưu tiên dinh dưỡng cá nhân (chạm để bật/tắt):</div>
               <div class="un-act-pills">
                 ${DIETARY_NOTE_TAGS.map(tag => {
                   const hasTag = hp.dietaryNotes.includes(tag);
@@ -911,17 +911,19 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
 
           <div class="un-expanded-footer" style="margin-top: 16px;">
             <span>💡 Dựa trên cân nặng <strong>${hp.weightKg}kg</strong> &amp; mục tiêu <strong>${escapeHtml(persona.shortLabel)}</strong>, mức năng lượng khuyến nghị của bạn là <strong>${hp.recommendedCalories} kcal/ngày</strong>.</span>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
-              <button type="button" class="db-secondary-btn" onclick="openHealthProfileSetupModal('${escapeHtml(activeUser.id)}')">
-                📋 Thông số chi tiết
-              </button>
-              <button type="button" class="db-primary-btn" onclick="closeModal(); showToast('checkmarkFilled', 'Đã lưu thiết lập thể trạng thành công!')">
-                ✓ Hoàn tất &amp; Lưu
-              </button>
-            </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Nút lưu & hoàn tất thể trạng cố định dưới cùng modal -->
+    <div class="delivery-modal-footer un-survey-modal-footer">
+      <button type="button" class="db-secondary-btn" onclick="openHealthProfileSetupModal('${escapeHtml(activeUser.id)}')">
+        📋 Thông số chi tiết
+      </button>
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="closeModal(); showToast('checkmarkFilled', 'Đã lưu thiết lập thể trạng thành công!')">
+        ✓ Hoàn tất &amp; Lưu Thể Trạng
+      </button>
     </div>
   `;
 }
@@ -1226,9 +1228,12 @@ function openHealthProfileSetupModal(targetUserId = null) {
           value="${hp.customCalorieGoal ? hp.dailyCalorieGoal : ''}"
         >
       </div>
+    </div>
 
-      <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitHealthProfileSetupModal('${escapeHtml(user.id)}')">
-        💾 Lưu Hồ Sơ Thể Trạng & Cập Nhật Gợi Ý Món
+    <!-- Nút lưu hồ sơ thể trạng cố định dưới cùng modal -->
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitHealthProfileSetupModal('${escapeHtml(user.id)}')">
+        ${FluentIcons.saveFilled} Lưu Hồ Sơ Thể Trạng & Cập Nhật Gợi Ý Món
       </button>
     </div>
   `;
@@ -1340,8 +1345,11 @@ function openManualMealLogModal() {
           <input type="number" id="manual-meal-fat" class="delivery-input-field" min="0" max="150" value="10">
         </div>
       </div>
+    </div>
 
-      <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitManualMealLogModal()">
+    <!-- Nút thêm bữa ăn cố định dưới cùng modal -->
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitManualMealLogModal()">
         ➕ Cộng Vào Lượng Kcal Tiêu Thụ Hôm Nay
       </button>
     </div>

@@ -891,7 +891,7 @@ function renderAIChatView() {
             onclick="openAISettingsModal()"
             title="Quản lý & Lưu các Profile AI (Gemini, DeepSeek, OpenAI, Groq, OpenRouter, Ollama...)"
           >
-            <span>⚙️</span>
+            <span>${FluentIcons.settingsFilled}</span>
             <span class="ai-api-btn-label">${escapeHtml(apiStatusText)}</span>
           </button>
 
@@ -903,7 +903,7 @@ function renderAIChatView() {
 
           ${messages.length > 0 ? `
             <button class="ai-header-icon-btn" onclick="clearCurrentAIChat()" title="Làm mới cuộc trò chuyện">
-              🔄
+              ${FluentIcons.sync}
             </button>
           ` : ''}
         </div>
@@ -942,7 +942,7 @@ function renderAIChatView() {
               onclick="retryAIChatMessage()"
               title="Hỏi lại câu hỏi gần nhất"
             >
-              🔄
+              ${FluentIcons.sync}
             </button>
           ` : ''}
           ${AI_QUICK_BAR_PROMPTS.map((qp, idx) => `
@@ -998,7 +998,7 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
   const userName = activeUser ? activeUser.name : 'bạn';
   return `
     <div class="ai-welcome-hero">
-      <div class="ai-welcome-badge">✨ AI Đọc Trực Tiếp Bảng Hàng & Đơn Đã Đặt</div>
+      <div class="ai-welcome-badge">${FluentIcons.sparkleFilled} AI Đọc Trực Tiếp Bảng Hàng & Đơn Đã Đặt</div>
       <h2 class="ai-welcome-title">Xin chào ${escapeHtml(userName)}! Hôm nay ăn gì để AI chọn giúp nhé? 🍜</h2>
       <p class="ai-welcome-desc">
         Mình nắm rõ toàn bộ <strong>${itemsCount} mặt hàng</strong> thuộc <strong>${catsCount} danh mục</strong>, giá bán, kích cỡ, topping, phí ship và <strong>${ordersCount} đơn hàng bạn đã đặt</strong> để gợi ý món trực quan chuẩn gu nhất.
@@ -1044,7 +1044,7 @@ function renderAIAgentTraceBox(trace) {
       </summary>
       <div class="ai-agent-trace-body">
         <div class="ai-trace-meta-header">
-          <span>⚙️ <strong>${trace.steps.length} lệnh truy vấn phần mềm</strong></span>
+          <span>${FluentIcons.settingsFilled} <strong>${trace.steps.length} lệnh truy vấn phần mềm</strong></span>
           <span class="ai-trace-source-badge">${escapeHtml(sourceShort)}</span>
         </div>
         ${trace.thought ? `
@@ -1125,7 +1125,7 @@ function renderAIMessageList(messages, activeUser) {
                     ${aiIsGenerating ? 'disabled' : ''}
                     title="Hỏi lại câu hỏi này"
                   >
-                    🔄 Hỏi lại
+                    ${FluentIcons.sync} Hỏi lại
                   </button>
                   <button
                     type="button"
@@ -1177,7 +1177,7 @@ function renderAIDishVisualCards(items, msgIdx) {
         <span>🍽️ Món ăn gợi ý trực quan (${items.length} món)</span>
         ${items.filter(it => it.inStock !== false).length >= 2 ? `
           <button type="button" class="ai-add-all-combo-btn" onclick="quickAddMultipleFromAI(${msgIdx})">
-            ⚡ Thêm cả ${items.filter(it => it.inStock !== false).slice(0, 3).length} món vào giỏ
+            ${FluentIcons.flashFilled} Thêm cả ${items.filter(it => it.inStock !== false).slice(0, 3).length} món vào giỏ
           </button>
         ` : ''}
       </div>
@@ -1217,7 +1217,7 @@ function renderAIDishVisualCards(items, msgIdx) {
                 </div>
 
                 <div class="ai-dish-store" onclick="openStoreSearchFromAI('${escapeHtml(item.restaurantName)}')">
-                  🏪 ${escapeHtml(item.restaurantName)} • ${escapeHtml(delivTime)}
+                  ${FluentIcons.shop} ${escapeHtml(item.restaurantName)} • ${escapeHtml(delivTime)}
                 </div>
 
                 <div class="ai-dish-options-meta">
@@ -1287,7 +1287,7 @@ function renderAIOrdersVisualList(orders) {
                   <strong>${escapeHtml(o.orderId)}</strong>
                   <span class="ai-order-status-pill ${statusClass}">${escapeHtml(o.statusText)}</span>
                 </div>
-                <div class="ai-order-mini-store">🏪 ${escapeHtml(o.restaurantName || o.resName || 'ptitngon')}</div>
+                <div class="ai-order-mini-store">${FluentIcons.shop} ${escapeHtml(o.restaurantName || o.resName || 'ptitngon')}</div>
                 <div class="ai-order-mini-items">${escapeHtml(o.itemsSummary || (o.items ? o.items.map(it => `${it.quantity}x ${it.dishName || it.name}`).join(', ') : ''))}</div>
                 <div class="ai-order-mini-bottom">
                   <span class="ai-order-mini-total">${formatVND(o.totalAmount)}</span>
@@ -4039,7 +4039,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
               </div>
             </div>
           ` : `
-            <div class="ai-active-card-icon local">⚡</div>
+            <div class="ai-active-card-icon local">${FluentIcons.flashFilled}</div>
             <div class="ai-active-card-details">
               <div class="ai-active-card-name">
                 <span>AI Thông minh Nội bộ</span>
@@ -4057,7 +4057,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
       ${apiActive ? `
         <div class="ai-profile-quick-switch-row" onclick="switchActiveAIProfile('__local__', true)" title="Chuyển ngay sang AI Nội bộ (không mất cấu hình API đã lưu)">
           <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:22px;">⚡</span>
+            <span style="font-size:22px;">${FluentIcons.flashFilled}</span>
             <div>
               <div style="font-size:13px; font-weight:800; color:#0f172a;">Chuyển về AI Thông minh Nội bộ</div>
               <div style="font-size:11.5px; color:#64748b;">Dùng ngay không cần API Key, các Profile đã lưu vẫn được giữ nguyên</div>
@@ -4094,7 +4094,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
 
         ${profiles.length === 0 ? `
           <div class="ai-profiles-empty-state">
-            <div style="font-size:32px; margin-bottom:6px;">✨</div>
+            <div style="font-size:32px; margin-bottom:6px;">${FluentIcons.sparkleFilled}</div>
             <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">Chưa có Profile AI nào được tạo</div>
             <div style="font-size:12px; color:#64748b; line-height:1.4;">
               Bấm nút bên dưới để thêm Profile Gemini, DeepSeek, OpenRouter hoặc OpenAI và chuyển đổi chỉ với 1 click!
@@ -4127,7 +4127,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
                       ✏️ Sửa
                     </button>
                     <button type="button" class="ai-prof-mini-btn danger" onclick="deleteSavedAIProfile('${escapeHtml(prof.id)}')" title="Xóa Profile này">
-                      🗑️
+                      ${FluentIcons.deleteRegular}
                     </button>
                   </div>
                 </div>
@@ -4136,19 +4136,19 @@ function renderAIProfilesListView(statusBannerHtml = '') {
           </div>
         `}
       </div>
+    </div>
 
-      <!-- Nút to thêm Profile mới -->
-      <div style="margin-top:16px;">
-        <button
-          type="button"
-          class="btn-primary-large"
-          style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;"
-          onclick="openAIProfileForm(null)"
-        >
-          <span>➕</span>
-          <span>Thêm Profile AI Mới</span>
-        </button>
-      </div>
+    <!-- Nút thêm Profile mới cố định dưới cùng modal -->
+    <div class="delivery-modal-footer">
+      <button
+        type="button"
+        class="btn-primary-large"
+        style="flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;"
+        onclick="openAIProfileForm(null)"
+      >
+        <span>➕</span>
+        <span>Thêm Profile AI Mới</span>
+      </button>
     </div>
   `;
 }
@@ -4206,7 +4206,7 @@ function renderAIProfileFormView(statusBannerHtml = '') {
       <!-- Tên gợi nhớ Profile AI -->
       <div class="delivery-input-group">
         <label class="delivery-input-label">
-          🏷️ Đặt tên gợi nhớ cho Profile:
+          ${FluentIcons.tagFilled} Đặt tên gợi nhớ cho Profile:
         </label>
         <input
           type="text"
@@ -4338,27 +4338,28 @@ function renderAIProfileFormView(statusBannerHtml = '') {
         <input type="checkbox" id="ai-cfg-fallback" ${draft.autoFallbackLocal !== false ? 'checked' : ''}>
         <span>Tự động dự phòng bằng AI Nội bộ nếu mất mạng hoặc hết hạn mức API</span>
       </label>
+    </div>
 
-      <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
-        <button type="button" class="db-secondary-btn" onclick="testAIConnectionFromModal()">
-          🔌 Kiểm tra API
+    <!-- Thanh nút thao tác lưu & kiểm tra API cố định mép dưới cùng -->
+    <div class="delivery-modal-footer" style="flex-wrap: wrap; gap: 8px;">
+      <button type="button" class="db-secondary-btn" onclick="testAIConnectionFromModal()">
+        🔌 Kiểm tra API
+      </button>
+      <button type="button" class="db-secondary-btn" onclick="openAIProfileListMode()">
+        Hủy
+      </button>
+      ${isEditingExisting ? `
+        <button type="button" class="db-secondary-btn" onclick="saveAISettingsFromModal(true)" title="Lưu cấu hình này thành một bản Profile mới riêng biệt">
+          ➕ Lưu thành bản mới
         </button>
-        <button type="button" class="db-secondary-btn" onclick="openAIProfileListMode()">
-          Hủy
+        <button type="button" class="btn-primary-large" style="flex: 1; min-width: 160px;" onclick="saveAISettingsFromModal(false)">
+          ${FluentIcons.saveFilled} Cập nhật Profile
         </button>
-        ${isEditingExisting ? `
-          <button type="button" class="db-secondary-btn" onclick="saveAISettingsFromModal(true)" title="Lưu cấu hình này thành một bản Profile mới riêng biệt">
-            ➕ Lưu thành bản mới
-          </button>
-          <button type="button" class="btn-primary-large" style="flex:1; min-width:160px;" onclick="saveAISettingsFromModal(false)">
-            💾 Cập nhật Profile
-          </button>
-        ` : `
-          <button type="button" class="btn-primary-large" style="flex:1; min-width:180px;" onclick="saveAISettingsFromModal(false)">
-            💾 Lưu & Kích Hoạt Dùng
-          </button>
-        `}
-      </div>
+      ` : `
+        <button type="button" class="btn-primary-large" style="flex: 1; min-width: 180px;" onclick="saveAISettingsFromModal(false)">
+          ${FluentIcons.saveFilled} Lưu & Kích Hoạt Dùng
+        </button>
+      `}
     </div>
   `;
 }
@@ -4713,7 +4714,7 @@ function renderAPIModelsExplorerBoxHtml(draft) {
             ⚠️ Không tải được danh sách Model từ API
           </div>
           <div class="ai-profiles-head-btns">
-            <button type="button" class="ai-prof-mini-btn" onclick="toggleOrFetchAPIModelsExplorer(true)">🔄 Thử lại</button>
+            <button type="button" class="ai-prof-mini-btn" onclick="toggleOrFetchAPIModelsExplorer(true)">${FluentIcons.sync} Thử lại</button>
             <button type="button" class="ai-prof-mini-btn" onclick="closeAPIModelsExplorer()">✕ Đóng</button>
           </div>
         </div>
@@ -4739,7 +4740,7 @@ function renderAPIModelsExplorerBoxHtml(draft) {
         </div>
         <div class="ai-profiles-head-btns">
           <button type="button" class="ai-prof-mini-btn" onclick="toggleOrFetchAPIModelsExplorer(true)" title="Gọi lại API để làm mới danh sách">
-            🔄 Làm mới
+            ${FluentIcons.sync} Làm mới
           </button>
           <button type="button" class="ai-prof-mini-btn" onclick="closeAPIModelsExplorer()">
             ✕ Thu gọn

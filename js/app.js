@@ -1121,10 +1121,10 @@ function renderSearchFilterModalContent() {
             🚚 Freeship 0đ
           </button>
           <button type="button" class="filter-chip-btn ${tempFilters.promo === 'voucher' ? 'active' : ''}" onclick="setFilterTemp('promo', 'voucher')">
-            🎟️ Có mã Voucher
+            ${FluentIcons.ticketHorizontalFilled} Có mã Voucher
           </button>
           <button type="button" class="filter-chip-btn ${tempFilters.promo === 'flash_sale' ? 'active' : ''}" onclick="setFilterTemp('promo', 'flash_sale')">
-            ⚡ Flash Sale sinh viên
+            ${FluentIcons.flashFilled} Flash Sale sinh viên
           </button>
           <button type="button" class="filter-chip-btn ${tempFilters.promo === 'partner' ? 'active' : ''}" onclick="setFilterTemp('promo', 'partner')">
             ⭐ Quán đối tác PTIT
@@ -1143,7 +1143,7 @@ function renderSearchFilterModalContent() {
             Tất cả đơn vị
           </button>
           <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'ptit_express' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'ptit_express')">
-            ⚡ PTIT Express (15p)
+            ${FluentIcons.flashFilled} PTIT Express (15p)
           </button>
           <button type="button" class="filter-chip-btn ${tempFilters.shipping === 'grab_express' ? 'active' : ''}" onclick="setFilterTemp('shipping', 'grab_express')">
             🟢 GrabExpress
@@ -1486,7 +1486,7 @@ function renderSearchView() {
             <span>💵 Giá bình dân ($)</span>
           </div>
           <div class="filter-pill-item ${activeFilters.voucher ? 'active' : ''}" onclick="toggleFilter('voucher')">
-            <span>🎟️ Có Voucher</span>
+            <span>${FluentIcons.ticketHorizontalFilled} Có Voucher</span>
           </div>
         </div>
         ${renderActiveFilterPillsHtml()}
@@ -1730,8 +1730,17 @@ function openDishOptionModal(dish, restaurant) {
 
 function closeModal() {
   const overlay = document.getElementById('modal-overlay');
+  const sheet = document.getElementById('modal-bottom-sheet');
   if (overlay) {
     overlay.classList.remove('active');
+  }
+  if (sheet) {
+    setTimeout(() => {
+      if (!overlay || !overlay.classList.contains('active')) {
+        sheet.classList.remove('vqr-wide-sheet');
+        sheet.classList.remove('dbm-wide-sheet');
+      }
+    }, 320);
   }
   if (typeof isNutritionSurveyModalOpen !== 'undefined') {
     isNutritionSurveyModalOpen = false;
@@ -2415,10 +2424,12 @@ function openDeliveryInfoModal() {
         <input type="checkbox" id="delivery-create-new-profile">
         <span>Tạo & ghi nhớ thành hồ sơ người dùng mới (nếu dùng SĐT mới)</span>
       </label>
+    </div>
 
-      <!-- Save Button -->
-      <button class="btn-primary-large" onclick="saveDeliveryInfo()" style="margin-top: 6px;">
-        💾 Lưu & Áp Dụng Thông Tin
+    <!-- Modal Sticky Bottom Footer -->
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" onclick="saveDeliveryInfo()" style="flex: 1; width: 100%;">
+        ${FluentIcons.saveFilled} Lưu & Áp Dụng Thông Tin
       </button>
     </div>
   `;
@@ -3205,8 +3216,8 @@ function renderCartView() {
             </div>
           ` : (typeof dbmRenderCartVoucherChipsHtml === 'function' ? dbmRenderCartVoucherChipsHtml(cart) : `
             <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
-              <span class="note-chip" style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;" onclick="applyPromoCode('HUNGCHIENGION')">🔥 HUNGCHIENGION (-50K)</span>
-              <span class="note-chip" onclick="applyPromoCode('PTITNGON50')">⚡ PTITNGON50 (-50%)</span>
+              <span class="note-chip" style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;" onclick="applyPromoCode('HUNGCHIENGION')">${FluentIcons.fireFilled} HUNGCHIENGION (-50K)</span>
+              <span class="note-chip" onclick="applyPromoCode('PTITNGON50')">${FluentIcons.flashFilled} PTITNGON50 (-50%)</span>
               <span class="note-chip" onclick="applyPromoCode('FREESHIP')">🚚 FREESHIP (0đ)</span>
             </div>
           `)}
@@ -4286,13 +4297,13 @@ function renderSingleOrderDetailView(o) {
                 <!-- Simulation Controls -->
                 <div class="tracking-sim-controls">
                   <button type="button" class="tracking-ctrl-btn primary" id="tracking-btn-speed" onclick="toggleTrackingSpeed()">
-                    ⚡ Tăng tốc mô phỏng (x3)
+                    ${FluentIcons.flashFilled} Tăng tốc mô phỏng (x3)
                   </button>
                   <button type="button" class="tracking-ctrl-btn" id="tracking-btn-pause" onclick="toggleTrackingPause()">
                     ⏸️ Tạm dừng
                   </button>
                   <button type="button" class="tracking-ctrl-btn" onclick="restartTrackingSimulation()">
-                    🔄 Chạy lại từ đầu
+                    ${FluentIcons.sync} Chạy lại từ đầu
                   </button>
                 </div>
               </div>
@@ -4379,7 +4390,7 @@ function renderSingleOrderDetailView(o) {
                 style="padding: 8px 16px; border-radius: 9999px; font-size: 13px; font-weight: 700;"
                 onclick="reorderOrder('${o.orderId}')"
               >
-                🔄 Đặt lại đơn này
+                ${FluentIcons.sync} Đặt lại đơn này
               </button>
             </div>
           `}
@@ -4457,7 +4468,7 @@ function renderSingleOrderDetailView(o) {
             <!-- Danh sách món đã đặt trực quan: ảnh, tên, chi tiết, bấm mở xem sản phẩm -->
             <div class="order-detail-items-section">
               <div class="order-detail-items-head">
-                <span class="order-detail-items-title">🛍️ Món đã đặt (${(o.items || []).length})</span>
+                <span class="order-detail-items-title">${FluentIcons.shoppingBagRegular} Món đã đặt (${(o.items || []).length})</span>
                 <span class="order-detail-items-hint">Chạm món để xem thông tin sản phẩm</span>
               </div>
               <div class="order-detail-items-list">
@@ -4616,7 +4627,7 @@ function renderSingleOrderDetailView(o) {
           ${(isCompleted || isCancelled) ? `
             <div style="margin-top: 8px;">
               <button class="btn-primary-large" onclick="reorderOrder('${o.orderId}')">
-                ${isCancelled ? 'Đặt lại đơn/combo đã hủy này 🔄' : 'Đặt lại đơn hàng này 🍜'}
+                ${isCancelled ? `Đặt lại đơn/combo đã hủy này ${FluentIcons.sync}` : 'Đặt lại đơn hàng này 🍜'}
               </button>
             </div>
           ` : ''}
@@ -4866,7 +4877,7 @@ function toggleTrackingSpeed() {
   trackingSimSpeed = trackingSimSpeed === 1 ? 3 : 1;
   const btn = document.getElementById('tracking-btn-speed');
   if (btn) {
-    btn.textContent = trackingSimSpeed === 3 ? '⚡ Tốc độ x3 (Đang bật)' : '⚡ Tăng tốc mô phỏng (x3)';
+    btn.innerHTML = trackingSimSpeed === 3 ? `${FluentIcons.flashFilled} Tốc độ x3 (Đang bật)` : `${FluentIcons.flashFilled} Tăng tốc mô phỏng (x3)`;
   }
   startTrackingSimulationLoop();
 }

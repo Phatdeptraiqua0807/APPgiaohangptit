@@ -203,7 +203,7 @@ function renderCatalogManagerView() {
     ? `🔗 Đang ghi trực tiếp: ${DB.linkedFileName}`
     : DB.fileSyncStatus === 'server-api'
       ? `🟢 Đang đồng bộ trực tiếp database.json`
-      : `💾 Đã lưu  tự động`;
+      : `${FluentIcons.saveFilled} Đã lưu tự động`;
 
   app.innerHTML = `
     <div class="catalog-view-container fade-in">
@@ -259,10 +259,10 @@ function renderCatalogManagerView() {
       <!-- 3 Sub-Tabs -->
       <div class="db-subtabs-bar">
         <button class="db-subtab-btn ${catalogActiveTab === 'items' ? 'active' : ''}" onclick="switchCatalogTab('items')">
-          📦 Kho Mặt Hàng (${allItems.length})
+          ${FluentIcons.boxFilled} Kho Mặt Hàng (${allItems.length})
         </button>
         <button class="db-subtab-btn ${catalogActiveTab === 'categories' ? 'active' : ''}" onclick="switchCatalogTab('categories')">
-          🏷️ Loại Mặt Hàng (${allCats.length})
+          ${FluentIcons.tagFilled} Loại Mặt Hàng (${allCats.length})
         </button>
         <button class="db-subtab-btn ${catalogActiveTab === 'database' ? 'active' : ''}" onclick="switchCatalogTab('database')">
           🗄️ Đồng Bộ File .JSON
@@ -313,7 +313,7 @@ function renderCatalogItemsTab(allCats) {
           Tất cả
         </button>
         <button class="db-chip ${catalogStatusFilter === 'custom' ? 'active' : ''}" onclick="catalogStatusFilter='custom'; renderCatalogManagerView();">
-          ✨ Do bạn thêm
+          ${FluentIcons.sparkleFilled} Do bạn thêm
         </button>
         <button class="db-chip ${catalogStatusFilter === 'instock' ? 'active' : ''}" onclick="catalogStatusFilter='instock'; renderCatalogManagerView();">
           ✅ Đang bán
@@ -334,7 +334,7 @@ function renderCatalogItemsGridHtml(itemsList) {
   if (itemsList.length === 0) {
     return `
       <div class="search-empty-state" style="padding: 48px 20px;">
-        <div class="search-empty-icon">📦</div>
+        <div class="search-empty-icon">${FluentIcons.boxFilled}</div>
         <div class="search-empty-title">Chưa có mặt hàng nào khớp bộ lọc</div>
         <div class="search-empty-sub">Bạn có thể thêm mặt hàng mới hoặc đặt lại bộ lọc để xem toàn bộ kho hàng.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
@@ -363,7 +363,7 @@ function renderCatalogItemsGridHtml(itemsList) {
             <div class="db-item-img-wrap">
               <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
               <span class="db-item-sku">${escapeHtml(item.sku || 'SP')}</span>
-              ${item.isCustom ? `<span class="db-item-custom-badge">Tùy chỉnh ✨</span>` : ''}
+              ${item.isCustom ? `<span class="db-item-custom-badge">Tùy chỉnh ${FluentIcons.sparkleFilled}</span>` : ''}
               ${isOut ? `<span class="db-item-out-overlay">TẠM HẾT</span>` : ''}
             </div>
 
@@ -382,7 +382,7 @@ function renderCatalogItemsGridHtml(itemsList) {
               </div>
 
               <div class="db-item-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
-              <div class="db-item-shop">🏪 ${escapeHtml(item.restaurantName || 'Gian Hàng PTIT')}</div>
+              <div class="db-item-shop">${FluentIcons.shop} ${escapeHtml(item.restaurantName || 'Gian Hàng PTIT')}</div>
               <div class="db-item-price-row">
                 <span class="db-item-price">${formatVND(item.price)}</span>
                 <span class="db-item-meta-small">
@@ -398,7 +398,7 @@ function renderCatalogItemsGridHtml(itemsList) {
                   ✏️ Sửa
                 </button>
                 <button class="db-act-btn delete" onclick="handleDeleteItem('${escapeHtml(item.id)}')">
-                  🗑️
+                  ${FluentIcons.deleteRegular}
                 </button>
               </div>
             </div>
@@ -490,7 +490,7 @@ function renderCatalogCategoriesTab(allCats, allItems) {
                 ✏️ Sửa
               </button>
               <button class="db-act-btn delete" onclick="handleDeleteCategory('${escapeHtml(cat.id)}')" title="Xóa loại mặt hàng">
-                🗑️
+                ${FluentIcons.deleteRegular}
               </button>
             </div>
           </div>
@@ -570,7 +570,7 @@ function renderCatalogDatabaseTab() {
         </label>
 
         <button class="db-sync-action-card danger" onclick="handleResetDatabase()">
-          <span class="db-sync-card-emoji">🔄</span>
+          <span class="db-sync-card-emoji">${FluentIcons.sync}</span>
           <span class="db-sync-card-title">Khôi phục Database gốc</span>
           <span class="db-sync-card-desc">Đặt lại dữ liệu mặc định ban đầu (23 danh mục, 110 món, 2 người dùng mẫu)</span>
         </button>
@@ -688,7 +688,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
   sheet.innerHTML = `
     <div class="delivery-modal-header">
       <div class="delivery-modal-title">
-        <span>🏷️</span>
+        <span>${FluentIcons.tagFilled}</span>
         <span>${editingCat ? 'Chỉnh sửa Loại mặt hàng' : 'Thêm Loại Mặt Hàng Tùy Chỉnh'}</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -775,17 +775,17 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
         <input type="checkbox" id="cat-editor-visual" ${(!editingCat || editingCat.showInVisualSuggestions !== false) ? 'checked' : ''}>
         <span>Hiển thị loại mặt hàng này trên thanh Gợi ý hình ảnh khi tìm kiếm</span>
       </label>
+    </div>
 
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        ${editingCat ? `
-          <button type="button" class="db-danger-outline-btn" onclick="closeModal(); handleDeleteCategory('${escapeHtml(editingCat.id)}')">
-            🗑️ Xóa loại
-          </button>
-        ` : ''}
-        <button type="button" class="btn-primary-large" style="flex:1;" onclick="submitCategoryEditor('${editingCat ? escapeHtml(editingCat.id) : ''}')">
-          💾 ${editingCat ? 'Lưu Cập Nhật ' : 'Tạo & Lưu  Loại Mặt Hàng'}
+    <div class="delivery-modal-footer">
+      ${editingCat ? `
+        <button type="button" class="db-danger-outline-btn" onclick="closeModal(); handleDeleteCategory('${escapeHtml(editingCat.id)}')">
+          ${FluentIcons.deleteRegular} Xóa loại
         </button>
-      </div>
+      ` : ''}
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="submitCategoryEditor('${editingCat ? escapeHtml(editingCat.id) : ''}')">
+        ${FluentIcons.saveFilled} ${editingCat ? 'Lưu Cập Nhật' : 'Tạo & Lưu Loại Mặt Hàng'}
+      </button>
     </div>
   `;
 
@@ -910,7 +910,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
   sheet.innerHTML = `
     <div class="delivery-modal-header">
       <div class="delivery-modal-title">
-        <span>📦</span>
+        <span>${FluentIcons.boxFilled}</span>
         <span>${editingItem ? 'Chỉnh sửa Mặt hàng' : 'Thêm Mặt Hàng Mới vào Database'}</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -1051,9 +1051,11 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
         <input type="checkbox" id="item-editor-instock" ${(!editingItem || editingItem.inStock !== false) ? 'checked' : ''}>
         <span>Mặt hàng đang còn hàng & sẵn sàng nhận đơn</span>
       </label>
+    </div>
 
-      <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitItemEditor('${editingItem ? escapeHtml(editingItem.id) : ''}')">
-        💾 ${editingItem ? 'Cập Nhật & Lưu  Mặt Hàng' : 'Thêm & Lưu  Mặt Hàng'}
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitItemEditor('${editingItem ? escapeHtml(editingItem.id) : ''}')">
+        ${FluentIcons.saveFilled} ${editingItem ? 'Cập Nhật & Lưu Mặt Hàng' : 'Thêm & Lưu Mặt Hàng'}
       </button>
     </div>
   `;
@@ -1293,7 +1295,7 @@ function renderProfileView() {
             <!-- Mỗi thông tin sđt, email, địa chỉ hiển thị trên đúng 1 dòng - mặc định thu gọn -->
             <div class="profile-hero-details ${isProfileHeroExpanded ? 'expanded' : 'collapsed'}" id="profile-hero-details">
               <div class="profile-detail-line" title="Số điện thoại: ${escapeHtml(activeUser.phone)}">
-                <span class="profile-detail-icon">📞</span>
+                <span class="profile-detail-icon">${FluentIcons.callFilled}</span>
                 <span class="profile-detail-text"><strong>${escapeHtml(activeUser.phone)}</strong></span>
               </div>
               ${activeUser.email ? `
@@ -1303,7 +1305,7 @@ function renderProfileView() {
                 </div>
               ` : ''}
               <div class="profile-detail-line" title="Địa chỉ: ${escapeHtml(activeUser.address)}">
-                <span class="profile-detail-icon">📍</span>
+                <span class="profile-detail-icon">${FluentIcons.locationFilled}</span>
                 <span class="profile-detail-text"><strong>${escapeHtml(activeUser.addressLabel || 'Địa chỉ')}:</strong> ${escapeHtml(activeUser.address)}</span>
               </div>
             </div>
@@ -1342,10 +1344,10 @@ function renderProfileView() {
             ✏️ Chỉnh sửa hồ sơ
           </button>
           <button class="profile-action-btn accent" onclick="openAccountSwitcherModal()">
-            🔄 Chuyển tài khoản (${allUsers.length})
+            ${FluentIcons.sync} Chuyển tài khoản (${allUsers.length})
           </button>
           <button class="profile-action-btn outline" onclick="openAIChatView()">
-            ✨ Trợ lý AI gợi món
+            ${FluentIcons.sparkleFilled} Trợ lý AI gợi món
           </button>
         </div>
       </div>
@@ -1368,42 +1370,42 @@ function renderProfileView() {
             </div>
             <div class="profile-hidden-admin-grid">
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('items')">
-                <span class="tool-emoji">📦</span>
+                <span class="tool-emoji">${FluentIcons.boxFilled}</span>
                 <div>
                   <div class="tool-title">Kho Mặt Hàng</div>
                   <div class="tool-sub">${DB.getItems().length} món • Giá, Tag, Dinh dưỡng</div>
                 </div>
               </button>
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('ai')">
-                <span class="tool-emoji">✨</span>
+                <span class="tool-emoji">${FluentIcons.sparkleFilled}</span>
                 <div>
                   <div class="tool-title">AI Tạo Hàng (Queue)</div>
                   <div class="tool-sub">Tạo liền 5 món theo chủ đề</div>
                 </div>
               </button>
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('stores')">
-                <span class="tool-emoji">🏪</span>
+                <span class="tool-emoji">${FluentIcons.shop}</span>
                 <div>
                   <div class="tool-title">Cửa Hàng & Địa Điểm</div>
                   <div class="tool-sub">${DB.getStores ? DB.getStores().length : DB.data.restaurants.length} cửa hàng đang hoạt động</div>
                 </div>
               </button>
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('categories')">
-                <span class="tool-emoji">🏷️</span>
+                <span class="tool-emoji">${FluentIcons.tagFilled}</span>
                 <div>
                   <div class="tool-title">Danh Mục & Tag</div>
                   <div class="tool-sub">Ẩn/hiện trang chủ & theo Tag</div>
                 </div>
               </button>
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('vouchers')">
-                <span class="tool-emoji">🎟️</span>
+                <span class="tool-emoji">${FluentIcons.ticketHorizontalFilled}</span>
                 <div>
                   <div class="tool-title">Mã Giảm Giá</div>
                   <div class="tool-sub">${DB.getVouchers ? DB.getVouchers().length : 0} mã toàn sàn & theo món</div>
                 </div>
               </button>
               <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('images')">
-                <span class="tool-emoji">🖼️</span>
+                <span class="tool-emoji">${FluentIcons.imageFilled}</span>
                 <div>
                   <div class="tool-title">Thư Viện Ảnh</div>
                   <div class="tool-sub">Thả ảnh & gắn nhiều món</div>
@@ -1547,10 +1549,10 @@ function renderProfileMapSettingsCard() {
             🧪 Kiểm tra kết nối API
           </button>
           <button type="button" class="btn-save-map-cfg" onclick="saveProfileMapSettings()">
-            💾 Lưu cấu hình
+            ${FluentIcons.saveFilled} Lưu cấu hình
           </button>
           <button type="button" class="btn-reset-map-cfg" onclick="resetProfileMapSettings()">
-            🔄 Đặt lại OpenStreetMap
+            ${FluentIcons.reset} Đặt lại OpenStreetMap
           </button>
         </div>
 
@@ -1659,7 +1661,7 @@ async function testProfileGoogleMapsKey() {
   resultBox.className = 'google-test-result';
   resultBox.style.background = '#f1f5f9';
   resultBox.style.color = '#334155';
-  resultBox.innerHTML = '🔄 Đang gửi request kiểm tra API Key với máy chủ Google Maps...';
+  resultBox.innerHTML = `${FluentIcons.sync} Đang gửi request kiểm tra API Key với máy chủ Google Maps...`;
 
   try {
     const res = await MapService.testGoogleApiKey(key);
@@ -1836,7 +1838,7 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
                 <button class="db-icon-mini-btn" onclick="openHealthProfileSetupModal('${escapeHtml(u.id)}')" title="Thiết lập thể trạng & Kcal">🥗</button>
                 <button class="db-icon-mini-btn" onclick="openUserProfileModal('${escapeHtml(u.id)}')" title="Chỉnh sửa thông tin">✏️</button>
                 ${DB.getUsers().length > 1 ? `
-                  <button class="db-icon-mini-btn danger" onclick="handleDeleteUserProfile('${escapeHtml(u.id)}')" title="Xóa hồ sơ">🗑️</button>
+                  <button class="db-icon-mini-btn danger" onclick="handleDeleteUserProfile('${escapeHtml(u.id)}')" title="Xóa hồ sơ">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             </div>
@@ -1849,15 +1851,15 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
                 </div>
               ` : ''}
               <div class="user-detail-line">
-                <span class="ud-icon">📞</span>
+                <span class="ud-icon">${FluentIcons.callFilled}</span>
                 <span><strong>SĐT:</strong> ${escapeHtml(u.phone)}</span>
               </div>
               <div class="user-detail-line">
-                <span class="ud-icon">📍</span>
+                <span class="ud-icon">${FluentIcons.locationFilled}</span>
                 <span><strong>Địa chỉ (${addrCount}):</strong> ${escapeHtml(u.address)}</span>
               </div>
               <div class="user-detail-line">
-                <span class="ud-icon">🧾</span>
+                <span class="ud-icon">${FluentIcons.receiptFilled}</span>
                 <span><strong>Đơn đã đặt:</strong> ${ordersCount} đơn • Tổng ${formatVND(spent)}</span>
               </div>
               ${latestOrder ? `
@@ -1879,7 +1881,7 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
                 </button>
               ` : `
                 <button class="db-primary-btn full" onclick="handleSwitchUserProfile('${escapeHtml(u.id)}')">
-                  🔄 Chuyển sang hồ sơ "${escapeHtml(u.name)}"
+                  ${FluentIcons.sync} Chuyển sang hồ sơ "${escapeHtml(u.name)}"
                 </button>
               `}
             </div>
@@ -1993,7 +1995,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
             </div>
 
             <div style="font-size:12px; color:var(--gray-500); margin-bottom:10px;">
-              📞 ${escapeHtml(order.recipientPhone)} • 📍 ${escapeHtml(order.deliveryAddress)}
+              ${FluentIcons.callFilled} ${escapeHtml(order.recipientPhone)} • ${FluentIcons.locationFilled} ${escapeHtml(order.deliveryAddress)}
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:1px dashed var(--gray-200);">
@@ -2044,14 +2046,14 @@ function renderProfileAddressesTab(activeUser) {
               <div style="display:flex; gap:6px;">
                 <button class="db-icon-mini-btn" onclick="openSavedAddressModal('${escapeHtml(addr.id)}')" title="Sửa">✏️</button>
                 ${addrs.length > 1 ? `
-                  <button class="db-icon-mini-btn danger" onclick="handleDeleteSavedAddress('${escapeHtml(addr.id)}')" title="Xóa">🗑️</button>
+                  <button class="db-icon-mini-btn danger" onclick="handleDeleteSavedAddress('${escapeHtml(addr.id)}')" title="Xóa">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             </div>
 
             <div class="saved-addr-recipient">${escapeHtml(addr.name)} • <strong>${escapeHtml(addr.phone)}</strong></div>
             <div class="saved-addr-text">${escapeHtml(addr.address)}</div>
-            ${addr.note ? `<div class="saved-addr-note">💬 Ghi chú: ${escapeHtml(addr.note)}</div>` : ''}
+            ${addr.note ? `<div class="saved-addr-note">${FluentIcons.chatFilled} Ghi chú: ${escapeHtml(addr.note)}</div>` : ''}
 
             ${!isCurrent ? `
               <button class="db-secondary-btn" style="margin-top:10px; width:100%;" onclick="handleSelectSavedAddress('${escapeHtml(addr.id)}')">
@@ -2102,7 +2104,7 @@ function openAccountSwitcherModal() {
   sheet.innerHTML = `
     <div class="delivery-modal-header">
       <div class="delivery-modal-title">
-        <span>🔄</span>
+        <span>${FluentIcons.sync}</span>
         <span>Tài khoản & Địa chỉ giao hàng</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -2128,7 +2130,7 @@ function openAccountSwitcherModal() {
                 </div>
                 ${users.length > 1 ? `
                   <button type="button" class="db-icon-mini-btn danger" title="Xóa tài khoản"
-                    onclick="event.stopPropagation(); deleteAccountFromSwitcher('${escapeHtml(u.id)}')">🗑️</button>
+                    onclick="event.stopPropagation(); deleteAccountFromSwitcher('${escapeHtml(u.id)}')">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             `;
@@ -2156,13 +2158,22 @@ function openAccountSwitcherModal() {
                   onclick="event.stopPropagation(); openSavedAddressModal('${escapeHtml(a.id)}')">✏️</button>
                 ${addrs.length > 1 ? `
                   <button type="button" class="db-icon-mini-btn danger" title="Xóa địa chỉ"
-                    onclick="event.stopPropagation(); deleteAddressFromSwitcher('${escapeHtml(a.id)}')">🗑️</button>
+                    onclick="event.stopPropagation(); deleteAddressFromSwitcher('${escapeHtml(a.id)}')">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             `;
   }).join('')}
         </div>
       </div>
+    </div>
+
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1;" onclick="openUserProfileModal(null)">
+        ➕ Thêm Người Dùng Mới
+      </button>
+      <button type="button" class="db-secondary-btn" onclick="closeModal()">
+        Đóng
+      </button>
     </div>
   `;
 
@@ -2239,7 +2250,7 @@ function openUserProfileModal(editUserId = null, prefillQuery = '') {
   sheet.innerHTML = `
     <div class="delivery-modal-header">
       <div class="delivery-modal-title">
-        <span>👤</span>
+        <span>${FluentIcons.personFilled}</span>
         <span>${editingUser ? 'Chỉnh Sửa Hồ Sơ Người Dùng' : 'Tạo Hồ Sơ Người Dùng Mới'}</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -2331,9 +2342,11 @@ function openUserProfileModal(editUserId = null, prefillQuery = '') {
           value="${escapeHtml(editingUser ? (editingUser.addressNote || '') : '')}"
         >
       </div>
+    </div>
 
-      <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitUserProfileModal('${editingUser ? escapeHtml(editingUser.id) : ''}')">
-        💾 ${editingUser ? 'Lưu Cập Nhật Hồ Sơ' : 'Tạo & Ghi Nhớ Người Dùng Này'}
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitUserProfileModal('${editingUser ? escapeHtml(editingUser.id) : ''}')">
+        ${FluentIcons.saveFilled} ${editingUser ? 'Lưu Cập Nhật Hồ Sơ' : 'Tạo & Ghi Nhớ Người Dùng Này'}
       </button>
     </div>
   `;
@@ -2448,7 +2461,7 @@ function openSavedAddressModal(editAddrId = null) {
   sheet.innerHTML = `
     <div class="delivery-modal-header">
       <div class="delivery-modal-title">
-        <span>📍</span>
+        <span>${FluentIcons.locationFilled}</span>
         <span>${editing ? 'Sửa Địa Chỉ Đã Lưu' : 'Thêm Địa Chỉ Vào Sổ Địa Chỉ'}</span>
       </div>
       <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
@@ -2472,7 +2485,7 @@ function openSavedAddressModal(editAddrId = null) {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <label class="delivery-input-label" style="margin-bottom:0;">Địa chỉ chi tiết (*):</label>
           <button type="button" class="db-location-detect-btn" onclick="autoDetectSavedAddress()" title="Tự động lấy vị trí hiện tại từ GPS">
-            📍 Lấy vị trí hiện tại
+            ${FluentIcons.myLocationFilled} Lấy vị trí hiện tại
           </button>
         </div>
         <textarea id="saved-addr-detail" class="delivery-input-field" rows="2" placeholder="Số nhà, đường, phường, quận...">${escapeHtml(editing ? editing.address : '')}</textarea>
@@ -2498,9 +2511,11 @@ function openSavedAddressModal(editAddrId = null) {
         <input type="checkbox" id="saved-addr-current" checked>
         <span>Đặt làm địa chỉ nhận hàng hiện tại ngay</span>
       </label>
+    </div>
 
-      <button type="button" class="btn-primary-large" style="margin-top:8px;" onclick="submitSavedAddressModal('${editing ? escapeHtml(editing.id) : ''}')">
-        💾 Lưu Địa Chỉ 
+    <div class="delivery-modal-footer">
+      <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitSavedAddressModal('${editing ? escapeHtml(editing.id) : ''}')">
+        ${FluentIcons.saveFilled} Lưu Địa Chỉ Nhận Hàng
       </button>
     </div>
   `;
