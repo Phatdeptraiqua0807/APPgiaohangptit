@@ -1039,6 +1039,9 @@ function closeSearchFilterModal() {
 function closeSearchFilterModalOnBackdrop(e) {
   // Khi search-filter-overlay active, chạm/click ra vùng ngoài modal không bị thoát ra ngoài
   if (e && (e.target === e.currentTarget || (e.target && e.target.id === 'search-filter-overlay'))) {
+    if (typeof triggerHaptic === 'function') {
+      triggerHaptic('backdrop');
+    }
     const sheet = document.getElementById('search-filter-bottom-sheet');
     if (sheet) {
       sheet.classList.remove('modal-shake-prompt');
@@ -1750,6 +1753,9 @@ function closeModal() {
 function closeModalOnBackdrop(event) {
   // Khi modal-overlay active, chạm/click ra vùng ngoài bảng/modal không bị thoát ra ngoài (static backdrop)
   if (event && (event.target === event.currentTarget || (event.target && event.target.id === 'modal-overlay'))) {
+    if (typeof triggerHaptic === 'function') {
+      triggerHaptic('backdrop');
+    }
     const sheet = document.getElementById('modal-bottom-sheet');
     if (sheet) {
       sheet.classList.remove('modal-shake-prompt');
@@ -3786,6 +3792,10 @@ function submitOrder(totalAmount, qrPaymentMeta = null) {
   viewingOrderDetailId = null;
   activityFilter = 'delivering';
 
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('success');
+  }
+
   if (typeof openOrderSuccessView === 'function') {
     openOrderSuccessView(newOrder);
   } else {
@@ -5338,6 +5348,71 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+
+// ── Phone Vibration & Haptic Feedback Manager ──
+let lastHapticType = null;
+let lastHapticTime = 0;
+
+function isHapticEnabled() {
+  try {
+    return localStorage.getItem('ptitngon_haptic_enabled') !== 'false';
+  } catch (_) {
+    return true;
+  }
+}
+
+function setHapticEnabled(enabled) {
+  try {
+    localStorage.setItem('ptitngon_haptic_enabled', enabled ? 'true' : 'false');
+  } catch (_) {}
+}
+
+function triggerHaptic(type = 'light') {
+  if (!isHapticEnabled()) return false;
+
+  // Throttle duplicate events within 100ms (e.g. pointerdown followed immediately by click)
+  const now = Date.now();
+  if (type === lastHapticType && (now - lastHapticTime) < 100) {
+    return false;
+  }
+  lastHapticType = type;
+  lastHapticTime = now;
+
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator && typeof navigator.vibrate === 'function') {
+    try {
+      let pattern;
+      if (type === 'success' || type === 'order-success') {
+        pattern = [60, 50, 100]; // 2 nhịp rung chúc mừng đặt hàng thành công
+      } else if (type === 'backdrop' || type === 'modal-outside') {
+        pattern = [25, 40, 25]; // Nhịp rung phản hồi xúc giác kép cùng hiệu ứng rung lắc của modal
+      } else if (type === 'bubble' || type === 'chat') {
+        pattern = 25; // Nhịp rung nhẹ khi bong bóng chat xuất hiện
+      } else if (typeof type === 'number' || Array.isArray(type)) {
+        pattern = type;
+      } else {
+        pattern = 20;
+      }
+      return navigator.vibrate(pattern);
+    } catch (_) {
+      return false;
+    }
+  }
+  return false;
+}
+
+window.triggerHaptic = triggerHaptic;
+window.isHapticEnabled = isHapticEnabled;
+window.setHapticEnabled = setHapticEnabled;
+
+// Phản hồi rung tức thì khi người dùng chạm (pointerdown) ra vùng ngoài modal-overlay trên điện thoại
+document.addEventListener('pointerdown', (e) => {
+  const target = e.target;
+  if (!target) return;
+  if (target.id === 'modal-overlay' || target.id === 'search-filter-overlay' || (target.classList && target.classList.contains('modal-overlay'))) {
+    triggerHaptic('backdrop');
+  }
+}, { passive: true });
 
 // ── Init (Khởi tạo Database JSON thống nhất trước khi render UI) ──
 document.addEventListener('DOMContentLoaded', async () => {

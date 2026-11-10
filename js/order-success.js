@@ -11,6 +11,9 @@ let orderSuccessLottieInstance = null;
 
 function openOrderSuccessView(order) {
   if (order) lastPlacedOrder = order;
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('success');
+  }
   if (typeof saveCurrentViewScroll === 'function') saveCurrentViewScroll();
   currentView = 'order-success';
   render();

@@ -897,7 +897,7 @@ function renderAIChatView() {
 
           ${cartCount > 0 ? `
             <button class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Xem giỏ hàng">
-              🛒 <span>${cartCount}</span>
+              ${FluentIcons.cartRegular} <span>${cartCount}</span>
             </button>
           ` : ''}
 
@@ -1808,6 +1808,9 @@ function revealLastAIMessage(role) {
   if (!col || !bubble) return;
 
   bubble.classList.add('ai-fade-bubble');
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('bubble');
+  }
   if (role !== 'assistant') return;
 
   const textEl = bubble.querySelector('.ai-msg-formatted-text');

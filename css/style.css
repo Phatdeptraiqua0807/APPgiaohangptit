@@ -273,6 +273,18 @@ textarea {
   color: var(--fi-heart);
 }
 
+/* Heart outline & regular icons luôn đơn sắc / kế thừa màu container (không mang màu đỏ) */
+.fluent-icon.fi-heart-regular,
+.fluent-icon.fi-heart-outline,
+.res-fav-btn .fluent-icon:not(.fi-heart),
+.res-fav-btn svg:not(.fi-heart),
+.dish-modal-fav-btn .fluent-icon:not(.fi-heart),
+.dish-modal-fav-btn svg:not(.fi-heart),
+.restaurant-card-fav .fluent-icon:not(.fi-heart),
+.restaurant-card-fav svg:not(.fi-heart) {
+  color: inherit !important;
+}
+
 .fluent-icon.fi-histogram {
   color: var(--fi-histogram);
 }
@@ -9058,6 +9070,22 @@ body.view-ai-active .ai-composer-dock {
   background: #ecfdf5;
   border-color: #6ee7b7;
   color: #047857;
+}
+
+.ai-header-icon-btn.cart-pill .fluent-icon,
+.ai-header-icon-btn.cart-pill svg {
+  width: 17px;
+  height: 17px;
+  color: inherit !important;
+  fill: currentColor !important;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.ai-header-icon-btn.cart-pill span {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .ai-header-icon-btn:hover {

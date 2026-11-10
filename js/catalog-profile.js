@@ -1418,6 +1418,7 @@ function renderProfileView() {
 
       <!-- Cấu hình Nhà cung cấp Bản đồ & Định vị (Google Maps / OpenStreetMap) -->
       ${typeof renderProfileMapSettingsCard === 'function' ? renderProfileMapSettingsCard() : ''}
+      ${typeof renderProfileHapticSettingsCard === 'function' ? renderProfileHapticSettingsCard() : ''}
 
       <div class="bottom-spacer"></div>
     </div>
@@ -2570,3 +2571,78 @@ function submitSavedAddressModal(editAddrId) {
   render();
 }
 
+
+
+// ── Cấu hình Rung phản hồi điện thoại (Haptic Feedback) trong Hồ Sơ Tài Khoản ──
+function renderProfileHapticSettingsCard() {
+  const enabled = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
+  const isSupported = (typeof navigator !== 'undefined' && 'vibrate' in navigator);
+
+  return `
+    <div class="profile-map-settings-card" id="profile-haptic-settings-card" style="margin-top: 14px;">
+      <div class="profile-map-header">
+        <div class="profile-map-title-wrap">
+          <span class="profile-map-icon">📳</span>
+          <div>
+            <div class="profile-map-title">Rung phản hồi điện thoại (Haptic Feedback)</div>
+            <div class="profile-map-sub">Kích hoạt rung xúc giác trên điện thoại khi đặt hàng thành công, chạm ra ngoài modal-overlay hoặc khi AI bắt đầu bong bóng chat.</div>
+          </div>
+        </div>
+        <span class="profile-map-badge ${enabled ? 'google' : 'osm'}">
+          ${enabled ? 'BẬT' : 'TẮT'}
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 16px; background: #f8fafc; border-radius: 12px; margin-top: 10px; border: 1px solid var(--gray-200);">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--gray-800);">Trạng thái Rung cảm ứng (Vibration API)</div>
+          <div style="font-size: 12px; color: var(--gray-500); margin-top: 2px;">
+            ${isSupported ? '✅ Thiết bị &amp; Trình duyệt hỗ trợ Web Vibration' : 'ℹ️ Thiết bị hoặc trình duyệt hiện tại không hỗ trợ Web Vibration (hệ thống sẽ tự động bỏ qua)'}
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="btn-reset-map-cfg" style="padding: 7px 15px; font-size: 12px; font-weight: 600; border-radius: 9px; background: #fff; border: 1px solid var(--gray-300); cursor: pointer;" onclick="toggleProfileHapticSetting()">
+            ${enabled ? 'Tắt rung' : 'Bật rung'}
+          </button>
+          <button type="button" class="btn-save-map-cfg" style="padding: 7px 15px; font-size: 12px; font-weight: 700; border-radius: 9px; background: var(--primary); color: #fff; border: none; cursor: pointer;" onclick="testProfileHaptic()">
+            Thử rung ngay
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleProfileHapticSetting() {
+  const current = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
+  if (typeof setHapticEnabled === 'function') {
+    setHapticEnabled(!current);
+  }
+  if (!current && typeof triggerHaptic === 'function') {
+    triggerHaptic('success');
+  }
+  if (typeof renderProfileView === 'function') {
+    renderProfileView();
+  }
+  if (typeof showToast === 'function') {
+    showToast('sparkleRegular', !current ? 'Đã bật rung phản hồi xúc giác điện thoại!' : 'Đã tắt rung phản hồi xúc giác');
+  }
+}
+
+function testProfileHaptic() {
+  const enabled = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
+  if (!enabled) {
+    if (typeof showToast === 'function') showToast('alertRegular', 'Rung đang bị tắt. Hãy bấm "Bật rung" trước nhé!');
+    return;
+  }
+  const ok = (typeof triggerHaptic === 'function') ? triggerHaptic('success') : false;
+  if (ok) {
+    if (typeof showToast === 'function') showToast('checkmarkFilled', 'Đang rung thử nhịp thành công trên điện thoại!');
+  } else {
+    if (typeof showToast === 'function') showToast('sparkleRegular', 'Đã kích hoạt lệnh rung (nếu trên điện thoại hỗ trợ)!');
+  }
+}
+
+window.renderProfileHapticSettingsCard = renderProfileHapticSettingsCard;
+window.toggleProfileHapticSetting = toggleProfileHapticSetting;
+window.testProfileHaptic = testProfileHaptic;

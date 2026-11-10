@@ -700,7 +700,7 @@ function renderDishDetailView() {
             ${(store && store.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
           </button>
           <button class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Giỏ hàng">
-            🛒 <span>${cartCount}</span>
+            ${FluentIcons.cartRegular} <span>${cartCount}</span>
           </button>
         </div>
       </div>
