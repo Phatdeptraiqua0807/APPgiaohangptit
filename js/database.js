@@ -187,7 +187,7 @@ const DB = {
 
     this.isReady = true;
     this.syncToGlobals();
-    this.save('init_sync', true);
+    // Không ghi đè lại file khi chỉ vừa khởi động (init) để tránh Live Server phát hiện file đổi và reload liên tục
     return this.data;
   },
 

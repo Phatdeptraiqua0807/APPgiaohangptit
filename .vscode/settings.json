@@ -1,6 +1,12 @@
 {
   "git.path": "C:\\Program Files\\Git\\cmd\\git.exe",
   "git.enabled": true,
-  "git.autorefresh": true
+  "git.autorefresh": true,
+  "liveServer.settings.ignoreFiles": [
+    "**/database.json",
+    "**/ai-profiles.json",
+    "**/js/food-data.js",
+    "**/.git/**"
+  ]
 }
 

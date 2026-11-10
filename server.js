@@ -26,6 +26,10 @@ const MAX_BODY_BYTES = 10 * 1024 * 1024; // 10MB
 function syncFoodDataSeedFile(parsedData) {
   try {
     const code = `/* Auto-synced seed mirror of database.json for offline file:// protocol compatibility */\nwindow.__DATABASE_SEED__ = ${JSON.stringify(parsedData, null, 2)};\n`;
+    if (fs.existsSync(FOOD_DATA_PATH)) {
+      const currentCode = fs.readFileSync(FOOD_DATA_PATH, 'utf8');
+      if (currentCode === code) return; // Nội dung giống hệt thì không ghi đè để tránh kích hoạt Live Server reload
+    }
     fs.writeFileSync(FOOD_DATA_PATH, code, 'utf8');
   } catch (err) {
     console.warn('Không thể đồng bộ js/food-data.js:', err.message);
@@ -917,7 +921,15 @@ async function handleDatabaseApi(req, res) {
     try {
       const rawBody = await readRequestBody(req);
       const parsed = JSON.parse(rawBody);
-      fs.writeFileSync(DB_FILE_PATH, JSON.stringify(parsed, null, 2), 'utf8');
+      const newFormatted = JSON.stringify(parsed, null, 2);
+      if (fs.existsSync(DB_FILE_PATH)) {
+        const curContent = fs.readFileSync(DB_FILE_PATH, 'utf8');
+        if (curContent !== newFormatted) {
+          fs.writeFileSync(DB_FILE_PATH, newFormatted, 'utf8');
+        }
+      } else {
+        fs.writeFileSync(DB_FILE_PATH, newFormatted, 'utf8');
+      }
       syncFoodDataSeedFile(parsed);
       CatalogIndex.ensureFresh();
       sendJson(res, 200, { ok: true }, { 'X-PTITNGON-DB': '1' });

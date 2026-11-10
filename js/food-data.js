@@ -3,7 +3,7 @@ window.__DATABASE_SEED__ = {
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-08T06:06:46.446Z",
+    "updatedAt": "2026-11-08T14:23:06.765Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
     "lastAction": "update_cart"
   },
@@ -534,9 +534,50 @@ window.__DATABASE_SEED__ = {
       "tagRule": [],
       "isCustom": true,
       "createdAt": "2026-11-07T17:07:56.507Z"
+    },
+    {
+      "id": "cat_custom_mon_ca_thu_3cig",
+      "name": "Món Cá Thu",
+      "visualName": "Món Cá Thu",
+      "keyword": "Món Cá Thu",
+      "icon": "🐟",
+      "image": "https://live.staticflickr.com/6135/5973964589_d4074e0493_b.jpg",
+      "description": "Các món ăn chế biến từ cá thu tươi ngon",
+      "showInVisualSuggestions": true,
+      "showOnHome": true,
+      "showAsRestaurantSection": false,
+      "type": "manual",
+      "tagRule": [],
+      "isCustom": true,
+      "createdAt": "2026-11-08T12:47:45.043Z"
     }
   ],
   "restaurants": [
+    {
+      "id": 1007,
+      "name": "Bếp Cá Thu Hà Đông",
+      "image": "https://live.staticflickr.com/6135/5973964589_d4074e0493_b.jpg",
+      "categoryId": "cat_com_ga",
+      "category": "Cơm gà",
+      "rating": 5,
+      "reviewCount": "Quán mới mở",
+      "priceLevel": "$$",
+      "priceTier": "Trung bình",
+      "distance": 0.5,
+      "distanceText": "0.5 km",
+      "deliveryTime": "20 - 30 phút",
+      "shippingFee": "15.000đ",
+      "shippingFeeNum": 15000,
+      "isFreeship": false,
+      "vouchers": [],
+      "shortReview": "Chuyên các món cá thu đậm đà hương vị biển.",
+      "badge": "Mới",
+      "address": "15 Trần Phú, Hà Đông, Hà Nội",
+      "phone": "0987654321",
+      "isCustom": true,
+      "isAIGenerated": true,
+      "createdAt": "2026-11-08T12:47:45.048Z"
+    },
     {
       "id": 1006,
       "name": "Pasta House - Mì Ý Chuẩn Vị",
@@ -560,16 +601,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0988123456",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T17:07:56.511Z",
-      "lat": 20.9798,
-      "lng": 105.7862,
-      "area": "tran_phu",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "createdAt": "2026-11-07T17:07:56.511Z"
     },
     {
       "id": 1005,
@@ -594,17 +626,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0983 456 789",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T17:06:40.397Z",
-      "lat": 20.9795,
-      "lng": 105.7868,
-      "area": "tran_phu",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": false,
-      "hasFlashSale": true
+      "createdAt": "2026-11-07T17:06:40.397Z"
     },
     {
       "id": 1004,
@@ -629,16 +651,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0988123456",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T16:47:19.400Z",
-      "lat": 20.9804,
-      "lng": 105.7874,
-      "area": "near_ptit",
-      "shippingProviders": [
-        "ptit_express",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "createdAt": "2026-11-07T16:47:19.400Z"
     },
     {
       "id": 1003,
@@ -663,17 +676,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0982 345 678",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T16:07:43.246Z",
-      "lat": 20.9822,
-      "lng": 105.7915,
-      "area": "van_quan",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "createdAt": "2026-11-07T16:07:43.246Z"
     },
     {
       "id": 1002,
@@ -698,16 +701,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0962 345 678",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T15:27:33.677Z",
-      "lat": 20.9792,
-      "lng": 105.786,
-      "area": "tran_phu",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": true
+      "createdAt": "2026-11-07T15:27:33.677Z"
     },
     {
       "id": 1001,
@@ -732,16 +726,7 @@ window.__DATABASE_SEED__ = {
       "phone": "0982 134 567",
       "isCustom": true,
       "isAIGenerated": true,
-      "createdAt": "2026-11-07T15:20:10.995Z",
-      "lat": 20.9801,
-      "lng": 105.7869,
-      "area": "tran_phu",
-      "shippingProviders": [
-        "ptit_express",
-        "shopeefood"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "createdAt": "2026-11-07T15:20:10.995Z"
     },
     {
       "id": 999,
@@ -768,18 +753,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Độc quyền 🔥",
       "address": "Số 01 Ngõ Ao Sen (Đối diện cổng chính PTIT), P. Mộ Lao, Hà Đông",
       "phone": "0983 468 63",
-      "isCustom": false,
-      "lat": 20.9818,
-      "lng": 105.7885,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 1,
@@ -806,17 +780,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "18 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 101 37",
-      "isCustom": false,
-      "lat": 20.9822,
-      "lng": 105.7888,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 2,
@@ -843,17 +807,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "42 Nguyễn Văn Trỗi, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 102 74",
-      "isCustom": false,
-      "lat": 20.9827,
-      "lng": 105.7866,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 3,
@@ -879,17 +833,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Quán quen",
       "address": "105 Phố Nguyễn Văn Lộc, Làng Việt Kiều Châu Âu, Hà Đông",
       "phone": "0982 104 11",
-      "isCustom": false,
-      "lat": 20.9782,
-      "lng": 105.7832,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "shopeefood",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 4,
@@ -915,16 +859,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Yêu thích",
       "address": "26 Ngõ 3 Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 105 48",
-      "isCustom": false,
-      "lat": 20.9825,
-      "lng": 105.7891,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 5,
@@ -950,17 +885,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "68 Đường Chiến Thắng, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 106 85",
-      "isCustom": false,
-      "lat": 20.9852,
-      "lng": 105.7932,
-      "area": "van_quan",
-      "shippingProviders": [
-        "ptit_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 6,
@@ -986,16 +911,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "14 Vũ Trọng Khánh, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 108 22",
-      "isCustom": false,
-      "lat": 20.9768,
-      "lng": 105.7818,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 7,
@@ -1021,18 +937,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Bán chạy",
       "address": "131 Trần Phú (Cạnh Học viện PTIT), Q. Hà Đông, Hà Nội",
       "phone": "0982 109 59",
-      "isCustom": false,
-      "lat": 20.9803,
-      "lng": 105.7876,
-      "area": "near_ptit",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 8,
@@ -1058,17 +963,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "LK6A Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 110 96",
-      "isCustom": false,
-      "lat": 20.9778,
-      "lng": 105.7828,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 9,
@@ -1094,16 +989,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Yêu thích",
       "address": "52 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 112 33",
-      "isCustom": false,
-      "lat": 20.9788,
-      "lng": 105.7838,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 10,
@@ -1129,18 +1015,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "129 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 113 70",
-      "isCustom": false,
-      "lat": 20.9805,
-      "lng": 105.7877,
-      "area": "near_ptit",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 11,
@@ -1166,17 +1041,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Đối tác",
       "address": "08 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 115 07",
-      "isCustom": false,
-      "lat": 20.9816,
-      "lng": 105.7883,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 12,
@@ -1202,16 +1067,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Nổi bật",
       "address": "35 Ngõ 6 Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 116 44",
-      "isCustom": false,
-      "lat": 20.9829,
-      "lng": 105.7895,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "be_delivery"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 13,
@@ -1237,17 +1093,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Bán chạy",
       "address": "22 Nguyễn Khuyến, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 117 81",
-      "isCustom": false,
-      "lat": 20.9765,
-      "lng": 105.7918,
-      "area": "van_quan",
-      "shippingProviders": [
-        "ptit_express",
-        "shopeefood",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 14,
@@ -1273,16 +1119,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "47 Đường 19/5, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 119 18",
-      "isCustom": false,
-      "lat": 20.978,
-      "lng": 105.7935,
-      "area": "van_quan",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 15,
@@ -1308,17 +1145,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "88 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 120 55",
-      "isCustom": false,
-      "lat": 20.9784,
-      "lng": 105.7834,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": true,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 16,
@@ -1344,16 +1171,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "19 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 121 92",
-      "isCustom": false,
-      "lat": 20.9821,
-      "lng": 105.7887,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 17,
@@ -1379,18 +1197,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "135 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 123 29",
-      "isCustom": false,
-      "lat": 20.9802,
-      "lng": 105.7875,
-      "area": "near_ptit",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 18,
@@ -1416,16 +1223,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "11 Ngõ 4 Nguyễn Văn Trỗi, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 124 66",
-      "isCustom": false,
-      "lat": 20.9824,
-      "lng": 105.7863,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "be_delivery"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 19,
@@ -1451,16 +1249,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Quán quen",
       "address": "60 Vũ Trọng Khánh, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 126 03",
-      "isCustom": false,
-      "lat": 20.9758,
-      "lng": 105.7812,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 20,
@@ -1486,17 +1275,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "74 Đường Chiến Thắng, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "phone": "0982 127 40",
-      "isCustom": false,
-      "lat": 20.9856,
-      "lng": 105.7936,
-      "area": "van_quan",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 21,
@@ -1522,18 +1301,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Freeship",
       "address": "31 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 128 77",
-      "isCustom": false,
-      "lat": 20.9823,
-      "lng": 105.789,
-      "area": "ao_sen",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express",
-        "shopeefood",
-        "be_delivery"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": false
     },
     {
       "id": 22,
@@ -1559,16 +1327,7 @@ window.__DATABASE_SEED__ = {
       "badge": "Mới",
       "address": "95 Nguyễn Văn Lộc, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "phone": "0982 130 14",
-      "isCustom": false,
-      "lat": 20.9783,
-      "lng": 105.7833,
-      "area": "nguyen_van_loc",
-      "shippingProviders": [
-        "ptit_express",
-        "grab_express"
-      ],
-      "isPartner": false,
-      "hasFlashSale": false
+      "isCustom": false
     },
     {
       "id": 1000,
@@ -1594,18 +1353,376 @@ window.__DATABASE_SEED__ = {
       "badge": "Tùy chỉnh ✨",
       "address": "Khuôn viên Học viện CNBCVT (PTIT)",
       "phone": "0983 470 00",
-      "isCustom": true,
-      "lat": 20.9806,
-      "lng": 105.7878,
-      "area": "near_ptit",
-      "shippingProviders": [
-        "ptit_express"
-      ],
-      "isPartner": true,
-      "hasFlashSale": true
+      "isCustom": true
     }
   ],
   "items": [
+    {
+      "id": "item_custom_banh_mi_kep_cha_ca_thu_teo3",
+      "sku": "SP-0146",
+      "restaurantId": 1007,
+      "restaurantName": "Bếp Cá Thu Hà Đông",
+      "location": "15 Trần Phú, Hà Đông, Hà Nội",
+      "categoryId": "cat_banh_mi",
+      "category": "Bánh mì",
+      "name": "Bánh Mì Kẹp Chả Cá Thu",
+      "price": 30000,
+      "priceFormatted": "30.000đ",
+      "description": "Bánh mì nóng giòn kẹp chả cá thu làm thủ công",
+      "sizes": [
+        {
+          "name": "Một ổ",
+          "extraPrice": 0
+        }
+      ],
+      "toppings": [
+        {
+          "id": "top_1794141987088_0",
+          "name": "Thêm trứng",
+          "price": 7000
+        }
+      ],
+      "noteSuggestions": [
+        "Không rau",
+        "Nhiều tương ớt"
+      ],
+      "inStock": true,
+      "tags": [
+        "bánh mì",
+        "nhanh gọn",
+        "giá sinh viên"
+      ],
+      "vouchers": [
+        "FREESHIP"
+      ],
+      "image": "https://tse1.mm.bing.net/th?q=b%C3%A1nh%20m%C3%AC%20ch%E1%BA%A3%20c%C3%A1&w=640&h=480&c=7&rs=1&p=0",
+      "imageIsPlaceholder": false,
+      "isCustom": true,
+      "createdByUserId": "user_ptit_01",
+      "createdAt": "2026-11-08T12:47:45.076Z",
+      "isAIGenerated": true,
+      "aiTheme": "món bất kì liên quan đến cá thu",
+      "soldCount": 0,
+      "nutrition": {
+        "calories": 390,
+        "protein": 18,
+        "carbs": 45,
+        "fat": 15,
+        "fiber": 3,
+        "sodium": 700,
+        "sugar": 3
+      },
+      "ingredients": [
+        {
+          "name": "Bánh mì",
+          "amount": "1 ổ"
+        },
+        {
+          "name": "Chả cá thu",
+          "amount": "80g"
+        },
+        {
+          "name": "Dưa leo",
+          "amount": "20g"
+        },
+        {
+          "name": "Tương ớt",
+          "amount": "10g"
+        }
+      ],
+      "healthyScore": 7.5,
+      "healthyLevel": "Tiện lợi • Bữa sáng đầy đủ năng lượng"
+    },
+    {
+      "id": "item_custom_ca_thu_chien_gion_sot_mam_toi_vb7k",
+      "sku": "SP-0145",
+      "restaurantId": 1007,
+      "restaurantName": "Bếp Cá Thu Hà Đông",
+      "location": "15 Trần Phú, Hà Đông, Hà Nội",
+      "categoryId": "cat_custom_mon_ca_thu_3cig",
+      "category": "Món Cá Thu",
+      "name": "Cá Thu Chiên Giòn Sốt Mắm Tỏi",
+      "price": 48000,
+      "priceFormatted": "48.000đ",
+      "description": "Cá thu chiên vàng giòn, áo lớp sốt mắm tỏi thơm lừng",
+      "sizes": [
+        {
+          "name": "Tiêu chuẩn",
+          "extraPrice": 0
+        }
+      ],
+      "toppings": [],
+      "noteSuggestions": [
+        "Giòn hơn",
+        "Ít mặn"
+      ],
+      "inStock": true,
+      "tags": [
+        "chiên giòn",
+        "khoái khẩu",
+        "nhiều đạm"
+      ],
+      "vouchers": [
+        "MONCAY15K"
+      ],
+      "image": "https://tse1.mm.bing.net/th?q=c%C3%A1%20thu%20chi%C3%AAn%20m%E1%BA%AFm%20t%E1%BB%8Fi&w=640&h=480&c=7&rs=1&p=0",
+      "imageIsPlaceholder": false,
+      "isCustom": true,
+      "createdByUserId": "user_ptit_01",
+      "createdAt": "2026-11-08T12:47:45.071Z",
+      "isAIGenerated": true,
+      "aiTheme": "món bất kì liên quan đến cá thu",
+      "soldCount": 0,
+      "nutrition": {
+        "calories": 420,
+        "protein": 28,
+        "carbs": 12,
+        "fat": 22,
+        "fiber": 0,
+        "sodium": 850,
+        "sugar": 4
+      },
+      "ingredients": [
+        {
+          "name": "Cá thu",
+          "amount": "150g"
+        },
+        {
+          "name": "Tỏi băm",
+          "amount": "15g"
+        },
+        {
+          "name": "Nước mắm",
+          "amount": "15ml"
+        },
+        {
+          "name": "Dầu ăn",
+          "amount": "10ml"
+        }
+      ],
+      "healthyScore": 6.8,
+      "healthyLevel": "Ăn điều độ • Khá nhiều chất béo chiên"
+    },
+    {
+      "id": "item_custom_ca_thu_kho_tieu_noi_dat_35br",
+      "sku": "SP-0144",
+      "restaurantId": 1007,
+      "restaurantName": "Bếp Cá Thu Hà Đông",
+      "location": "15 Trần Phú, Hà Đông, Hà Nội",
+      "categoryId": "cat_custom_mon_ca_thu_3cig",
+      "category": "Món Cá Thu",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "price": 50000,
+      "priceFormatted": "50.000đ",
+      "description": "Cá thu kho tiêu đậm vị, thịt chắc, ăn cùng cơm nóng",
+      "sizes": [
+        {
+          "name": "1 khúc",
+          "extraPrice": 0
+        }
+      ],
+      "toppings": [],
+      "noteSuggestions": [
+        "Ít cay",
+        "Nhiều tiêu"
+      ],
+      "inStock": true,
+      "tags": [
+        "cơm trưa",
+        "đậm đà",
+        "truyền thống"
+      ],
+      "vouchers": [
+        "PTITNGON50"
+      ],
+      "image": "https://tse1.mm.bing.net/th?q=c%C3%A1%20thu%20kho%20ti%C3%AAu&w=640&h=480&c=7&rs=1&p=0",
+      "imageIsPlaceholder": false,
+      "isCustom": true,
+      "createdByUserId": "user_ptit_01",
+      "createdAt": "2026-11-08T12:47:45.066Z",
+      "isAIGenerated": true,
+      "aiTheme": "món bất kì liên quan đến cá thu",
+      "soldCount": 0,
+      "nutrition": {
+        "calories": 350,
+        "protein": 30,
+        "carbs": 8,
+        "fat": 14,
+        "fiber": 1,
+        "sodium": 950,
+        "sugar": 6
+      },
+      "ingredients": [
+        {
+          "name": "Cá thu",
+          "amount": "150g"
+        },
+        {
+          "name": "Tiêu đen",
+          "amount": "5g"
+        },
+        {
+          "name": "Nước mắm",
+          "amount": "20ml"
+        },
+        {
+          "name": "Ớt tươi",
+          "amount": "1 quả"
+        }
+      ],
+      "healthyScore": 7.2,
+      "healthyLevel": "Đậm đà • Nhiều protein, vị mặn vừa phải"
+    },
+    {
+      "id": "item_custom_bun_ca_thu_nau_doc_mung_zyi4",
+      "sku": "SP-0143",
+      "restaurantId": 1007,
+      "restaurantName": "Bếp Cá Thu Hà Đông",
+      "location": "15 Trần Phú, Hà Đông, Hà Nội",
+      "categoryId": "cat_custom_mon_ca_thu_3cig",
+      "category": "Món Cá Thu",
+      "name": "Bún Cá Thu Nấu Dọc Mùng",
+      "price": 40000,
+      "priceFormatted": "40.000đ",
+      "description": "Bún cá thu thanh mát với dọc mùng giòn sần sật",
+      "sizes": [
+        {
+          "name": "Tô vừa",
+          "extraPrice": 0
+        },
+        {
+          "name": "Tô lớn",
+          "extraPrice": 10000
+        }
+      ],
+      "toppings": [
+        {
+          "id": "top_1794141987088_0",
+          "name": "Thêm cá",
+          "price": 15000
+        }
+      ],
+      "noteSuggestions": [
+        "Nhiều dọc mùng",
+        "Ít bún"
+      ],
+      "inStock": true,
+      "tags": [
+        "món nước",
+        "thanh đạm",
+        "nóng hổi"
+      ],
+      "vouchers": [
+        "HEALTHY20"
+      ],
+      "image": "https://tse3.mm.bing.net/th?q=M%C3%B3n%20C%C3%A1%20Thu%20m%C3%B3n%20ngon&w=640&h=480&c=7&rs=1&p=0",
+      "imageIsPlaceholder": false,
+      "isCustom": true,
+      "createdByUserId": "user_ptit_01",
+      "createdAt": "2026-11-08T12:47:45.060Z",
+      "isAIGenerated": true,
+      "aiTheme": "món bất kì liên quan đến cá thu",
+      "soldCount": 0,
+      "nutrition": {
+        "calories": 380,
+        "protein": 22,
+        "carbs": 55,
+        "fat": 8,
+        "fiber": 4,
+        "sodium": 800,
+        "sugar": 2
+      },
+      "ingredients": [
+        {
+          "name": "Cá thu lát",
+          "amount": "100g"
+        },
+        {
+          "name": "Dọc mùng",
+          "amount": "50g"
+        },
+        {
+          "name": "Bún tươi",
+          "amount": "200g"
+        },
+        {
+          "name": "Nước dùng",
+          "amount": "300ml"
+        }
+      ],
+      "healthyScore": 8.5,
+      "healthyLevel": "Rất lành mạnh • Thanh đạm, ít dầu mỡ"
+    },
+    {
+      "id": "item_custom_ca_thu_sot_ca_chua_dam_da_e2n1",
+      "sku": "SP-0142",
+      "restaurantId": 1007,
+      "restaurantName": "Bếp Cá Thu Hà Đông",
+      "location": "15 Trần Phú, Hà Đông, Hà Nội",
+      "categoryId": "cat_custom_mon_ca_thu_3cig",
+      "category": "Món Cá Thu",
+      "name": "Cá Thu Sốt Cà Chua Đậm Đà",
+      "price": 45000,
+      "priceFormatted": "45.000đ",
+      "description": "Cá thu chiên sơ sốt cà chua tươi, vị chua ngọt hài hòa",
+      "sizes": [
+        {
+          "name": "Tiêu chuẩn",
+          "extraPrice": 0
+        }
+      ],
+      "toppings": [],
+      "noteSuggestions": [
+        "Nhiều sốt",
+        "Không hành"
+      ],
+      "inStock": true,
+      "tags": [
+        "cơm trưa",
+        "đậm đà",
+        "giàu đạm"
+      ],
+      "vouchers": [
+        "PTITNGON10"
+      ],
+      "image": "https://live.staticflickr.com/6135/5973964589_d4074e0493_b.jpg",
+      "imageIsPlaceholder": false,
+      "isCustom": true,
+      "createdByUserId": "user_ptit_01",
+      "createdAt": "2026-11-08T12:47:45.055Z",
+      "isAIGenerated": true,
+      "aiTheme": "món bất kì liên quan đến cá thu",
+      "soldCount": 0,
+      "nutrition": {
+        "calories": 320,
+        "protein": 28,
+        "carbs": 15,
+        "fat": 12,
+        "fiber": 2,
+        "sodium": 650,
+        "sugar": 5
+      },
+      "ingredients": [
+        {
+          "name": "Cá thu khúc",
+          "amount": "150g"
+        },
+        {
+          "name": "Cà chua",
+          "amount": "2 quả"
+        },
+        {
+          "name": "Hành lá",
+          "amount": "10g"
+        },
+        {
+          "name": "Gia vị",
+          "amount": "vừa đủ"
+        }
+      ],
+      "healthyScore": 7.8,
+      "healthyLevel": "Cân bằng • Giàu protein và vitamin từ cà chua"
+    },
     {
       "id": "item_custom_mi_ong_spaghetti_hai_san_sot_cay_szwx",
       "sku": "SP-0141",
@@ -1638,7 +1755,8 @@ window.__DATABASE_SEED__ = {
       "tags": [
         "cay",
         "nóng hổi",
-        "giàu đạm"
+        "giàu đạm",
+        "cơm trưa"
       ],
       "vouchers": [
         "MONCAY15K"
@@ -1679,7 +1797,8 @@ window.__DATABASE_SEED__ = {
         }
       ],
       "healthyScore": 8,
-      "healthyLevel": "Cân bằng • Giàu protein hải sản"
+      "healthyLevel": "Cân bằng • Giàu protein hải sản",
+      "updatedAt": "2026-11-08T11:09:18.315Z"
     },
     {
       "id": "item_custom_mi_ong_farfalle_sot_kem_nam_truffle_p8h3",
@@ -1751,8 +1870,9 @@ window.__DATABASE_SEED__ = {
           "amount": "50ml"
         }
       ],
-      "healthyScore": 7.2,
-      "healthyLevel": "Đậm đà • Hương vị nấm đặc trưng"
+      "healthyScore": 6.5,
+      "healthyLevel": "Thưởng thức • Hàm lượng chất béo cao",
+      "updatedAt": "2026-11-08T11:09:18.320Z"
     },
     {
       "id": "item_custom_mi_ong_macaroni_sot_thit_bam_ca_chua_ds30",
@@ -1830,8 +1950,9 @@ window.__DATABASE_SEED__ = {
           "amount": "20g"
         }
       ],
-      "healthyScore": 7.8,
-      "healthyLevel": "Cân bằng • Giàu đạm từ thịt bò"
+      "healthyScore": 9.1,
+      "healthyLevel": "Cân bằng • Giàu đạm từ thịt bò",
+      "updatedAt": "2026-11-08T11:09:18.326Z"
     },
     {
       "id": "item_custom_mi_ong_fusilli_sot_pesto_hung_tay_wt18",
@@ -1935,7 +2056,8 @@ window.__DATABASE_SEED__ = {
       "tags": [
         "béo ngậy",
         "phô mai",
-        "khoái khẩu"
+        "khoái khẩu",
+        "ăn nhóm"
       ],
       "vouchers": [
         "PTITNGON10"
@@ -1976,7 +2098,8 @@ window.__DATABASE_SEED__ = {
         }
       ],
       "healthyScore": 6.2,
-      "healthyLevel": "Ăn điều độ • Khá nhiều chất béo"
+      "healthyLevel": "Ăn điều độ • Khá nhiều chất béo",
+      "updatedAt": "2026-11-08T11:09:18.332Z"
     },
     {
       "id": "item_custom_mi_cay_chay_nam_kim_cham_dau_hu_non_jfck",
@@ -2068,8 +2191,9 @@ window.__DATABASE_SEED__ = {
           "amount": "250ml"
         }
       ],
-      "healthyScore": 9.3,
-      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo"
+      "healthyScore": 7.5,
+      "healthyLevel": "Thanh đạm • Lưu ý hàm lượng muối",
+      "updatedAt": "2026-11-08T11:09:18.338Z"
     },
     {
       "id": "item_custom_mi_cay_bach_tuoc_baby_tom_su_uxnw",
@@ -2170,8 +2294,9 @@ window.__DATABASE_SEED__ = {
           "amount": "50g"
         }
       ],
-      "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyScore": 6,
+      "healthyLevel": "Hương vị đậm đà • Hàm lượng muối cao",
+      "updatedAt": "2026-11-08T11:09:18.343Z"
     },
     {
       "id": "item_custom_mi_cay_bo_my_kim_chi_han_quoc_f5gh",
@@ -2273,8 +2398,9 @@ window.__DATABASE_SEED__ = {
           "amount": "40g"
         }
       ],
-      "healthyScore": 8.2,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyScore": 6.5,
+      "healthyLevel": "Cân bằng • Hàm lượng muối cao",
+      "updatedAt": "2026-11-08T11:09:18.348Z"
     },
     {
       "id": "item_custom_sinh_to_bo_chuoi_sua_tuoi_ahhz",
@@ -2282,8 +2408,8 @@ window.__DATABASE_SEED__ = {
       "restaurantId": 1004,
       "restaurantName": "Bếp Nhí PTIT - Món Ngon Cho Bé",
       "location": "Số 10, Trần Phú, Hà Đông, Hà Nội",
-      "categoryId": "cat_custom_mon_an_tre_em_yop3",
-      "category": "Món ăn trẻ em",
+      "categoryId": "cat_tra_sua",
+      "category": "Trà sữa",
       "name": "Sinh Tố Bơ Chuối Sữa Tươi",
       "price": 35000,
       "priceFormatted": "35.000đ",
@@ -2339,7 +2465,8 @@ window.__DATABASE_SEED__ = {
         }
       ],
       "healthyScore": 9,
-      "healthyLevel": "Rất lành mạnh • Đường tự nhiên từ trái cây"
+      "healthyLevel": "Rất lành mạnh • Đường tự nhiên từ trái cây",
+      "updatedAt": "2026-11-08T11:09:18.353Z"
     },
     {
       "id": "item_custom_trung_cuon_rau_cu_cau_vong_pwxp",
@@ -2403,8 +2530,9 @@ window.__DATABASE_SEED__ = {
           "amount": "20g"
         }
       ],
-      "healthyScore": 8.8,
-      "healthyLevel": "Lành mạnh • Giàu protein và chất xơ"
+      "healthyScore": 7.8,
+      "healthyLevel": "Lành mạnh • Giàu protein và chất xơ",
+      "updatedAt": "2026-11-08T11:09:18.361Z"
     },
     {
       "id": "item_custom_nui_hinh_thu_xao_bo_bam_bx3m",
@@ -2439,12 +2567,14 @@ window.__DATABASE_SEED__ = {
       "tags": [
         "khoái khẩu",
         "giàu đạm",
-        "nhanh gọn"
+        "nhanh gọn",
+        "no bụng",
+        "cơm trưa"
       ],
       "vouchers": [
         "PTITNGON10"
       ],
-      "image": "https://www.themealdb.com/images/media/meals/sutysw1468247559.jpg",
+      "image": "https://tse1.mm.bing.net/th?q=Nui%20H%C3%ACnh%20Th%C3%BA%20X%C3%A0o%20B%C3%B2%20B%E1%BA%B1m%20m%C3%B3n%20%C4%83n&w=640&h=480&c=7&rs=1&p=0",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -2476,7 +2606,8 @@ window.__DATABASE_SEED__ = {
         }
       ],
       "healthyScore": 8,
-      "healthyLevel": "Ăn điều độ • Đủ chất, ít gia vị"
+      "healthyLevel": "Ăn điều độ • Đủ chất, ít gia vị",
+      "updatedAt": "2026-11-08T11:09:18.366Z"
     },
     {
       "id": "item_custom_sup_bi_do_kem_tuoi_thom_ngay_5zns",
@@ -2484,8 +2615,8 @@ window.__DATABASE_SEED__ = {
       "restaurantId": 1004,
       "restaurantName": "Bếp Nhí PTIT - Món Ngon Cho Bé",
       "location": "Số 10, Trần Phú, Hà Đông, Hà Nội",
-      "categoryId": "cat_custom_mon_an_tre_em_yop3",
-      "category": "Món ăn trẻ em",
+      "categoryId": "cat_custom_mon_au_xxhj",
+      "category": "Món Âu",
       "name": "Súp Bí Đỏ Kem Tươi Thơm Ngậy",
       "price": 30000,
       "priceFormatted": "30.000đ",
@@ -2548,7 +2679,8 @@ window.__DATABASE_SEED__ = {
         }
       ],
       "healthyScore": 9.2,
-      "healthyLevel": "Rất lành mạnh • Giàu vitamin và khoáng chất"
+      "healthyLevel": "Rất lành mạnh • Giàu vitamin và khoáng chất",
+      "updatedAt": "2026-11-08T11:09:18.372Z"
     },
     {
       "id": "item_custom_com_ga_xe_pho_mai_sot_ngot_q3a4",
@@ -12529,7 +12661,7 @@ window.__DATABASE_SEED__ = {
       "location": "31 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "rating": 4.9,
       "reviewCount": 215,
-      "soldCount": 1440,
+      "soldCount": 1441,
       "nutrition": {
         "calories": 571,
         "protein": 27,
@@ -12959,7 +13091,7 @@ window.__DATABASE_SEED__ = {
       "avatar": "👨‍🎓",
       "memberTier": "PTITer VIP",
       "createdAt": "2026-09-01T08:00:00.000Z",
-      "updatedAt": "2026-11-08T06:06:46.430Z",
+      "updatedAt": "2026-11-08T14:22:24.207Z",
       "address": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "shortAddress": "PTIT Km10 Trần Phú, Hà Đông",
       "addressLabel": "PTIT Hà Đông",
@@ -13003,10 +13135,106 @@ window.__DATABASE_SEED__ = {
         999,
         4,
         10,
-        18
+        18,
+        16
       ],
-      "cart": [],
+      "cart": [
+        {
+          "id": "1794145385843a3a9",
+          "dishId": "item_custom_thang_co_ngua_nong_hoi_kem_men_men_lhgp",
+          "dishName": "Thắng Cố Ngựa Nóng Hổi Kèm Mèn Mén",
+          "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
+          "restaurantId": 1001,
+          "image": "assets/images/uploads/images_1794064752205_s8wx.jpg",
+          "size": {
+            "name": "Tô Chuẩn",
+            "extraPrice": 0
+          },
+          "toppings": [],
+          "note": "",
+          "quantity": 1,
+          "unitPrice": 55000,
+          "totalPrice": 55000
+        },
+        {
+          "id": "1794147786765pua7",
+          "dishId": "1794072496352ned5",
+          "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
+          "restaurantName": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
+          "restaurantId": 4,
+          "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+          "size": {
+            "name": "Tô Siêu Đặc Biệt",
+            "extraPrice": 0
+          },
+          "toppings": [],
+          "note": "",
+          "quantity": 1,
+          "unitPrice": 80000,
+          "totalPrice": 80000
+        }
+      ],
       "orders": [
+        {
+          "orderId": "#PTIT-741846",
+          "categoryStatus": "delivering",
+          "statusText": "Đang chuẩn bị món (Dự kiến 15 phút)",
+          "currentStep": 2,
+          "orderTime": "8/11/2026, 19:54",
+          "estimatedTime": "Khoảng 15 - 20 phút nữa",
+          "resName": "Bún Đậu Mắm Tôm A Chảnh Chuẩn Vị",
+          "resAddress": "31 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "resPhone": "0982 128 77",
+          "deliveryAddress": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "recipientName": "Nguyễn Văn A",
+          "recipientPhone": "0901 234 567",
+          "driverNote": "Giao sảnh nhà A2 hoặc Cổng trường",
+          "items": [
+            {
+              "id": "1794142455717vo33",
+              "dishId": "item_21_5",
+              "dishName": "Nước Mơ Rừng Ngâm & Sấu Ngâm Hà Nội",
+              "restaurantName": "Bún Đậu Mắm Tôm A Chảnh Chuẩn Vị",
+              "restaurantId": 21,
+              "image": "assets/images/bun_cha_1792459712673.jpg",
+              "size": {
+                "name": "Ly 500ml Mát Lạnh",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 18000,
+              "totalPrice": 18000
+            }
+          ],
+          "paymentMethod": "qr",
+          "paymentMethodName": "VietQR VPBank 0921030342 (Đã thanh toán • Mã GD VPB42464649)",
+          "qrPayment": {
+            "isPaid": true,
+            "channelKey": "qr",
+            "bankShortName": "VPBank",
+            "bankFullName": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+            "accountNo": "0921030342",
+            "transferContent": "PTIT 741846",
+            "transactionId": "VPB42464649",
+            "paidAt": "19:54"
+          },
+          "subtotal": 18000,
+          "shippingFee": 15000,
+          "discountAmount": 0,
+          "totalAmount": 33000,
+          "driver": {
+            "name": "Nguyễn Văn Tài",
+            "phone": "0909 123 456",
+            "vehicle": "29-P1 889.24 • Honda Wave Alpha",
+            "rating": 4.9,
+            "avatar": "🛵"
+          },
+          "userReview": null,
+          "userId": "user_ptit_01",
+          "createdAt": "2026-11-08T12:54:25.609Z"
+        },
         {
           "orderId": "PTIT-20261108-6750",
           "categoryStatus": "delivering",
@@ -13482,18 +13710,32 @@ window.__DATABASE_SEED__ = {
         "gender": "male",
         "age": 20,
         "heightCm": 170,
-        "weightKg": 62,
+        "weightKg": 63,
         "targetWeightKg": 60,
         "activityLevel": "moderate",
-        "dailyCalorieGoal": 2000,
+        "dailyCalorieGoal": 2320,
         "customCalorieGoal": false,
         "macroGoals": {
-          "protein": 95,
-          "carbs": 245,
-          "fat": 62
+          "protein": 79,
+          "carbs": 339,
+          "fat": 72
         },
-        "dietaryNotes": [],
-        "isConfigured": false
+        "dietaryNotes": [
+          "Giàu Protein",
+          "Ít đường",
+          "Nhiều rau xanh"
+        ],
+        "isConfigured": true,
+        "recommendedCalories": 2420,
+        "tdee": 2316,
+        "recommendedWaterCups": 9,
+        "bmiInfo": {
+          "bmi": 21.8,
+          "status": "Vóc dáng cân đối chuẩn",
+          "color": "#059669",
+          "advice": "Thể trạng rất lý tưởng! Hãy duy trì dinh dưỡng cân bằng."
+        },
+        "updatedAt": "2026-11-08T14:22:24.207Z"
       },
       "dailyNutritionLogs": {
         "2026-11-07": {
@@ -13519,73 +13761,17 @@ window.__DATABASE_SEED__ = {
           "waterCups": 0,
           "entries": [
             {
-              "id": "nutri_1794118006431_qhtn",
-              "time": "13:06",
-              "mealType": "Bữa trưa",
-              "dishId": "item_14_4",
-              "dishName": "Bì Cuốn Thịt Heo Chấm Mắm Chua Ngọt",
+              "id": "nutri_1794142465610_0jhv",
+              "time": "19:54",
+              "mealType": "Bữa tối",
+              "dishId": "item_21_5",
+              "dishName": "Nước Mơ Rừng Ngâm & Sấu Ngâm Hà Nội",
               "quantity": 1,
-              "calories": 319,
-              "protein": 22,
-              "carbs": 39,
-              "fat": 8,
-              "orderId": "PTIT-20261108-6750",
-              "source": "order"
-            },
-            {
-              "id": "nutri_1794118006431_gx2g",
-              "time": "13:06",
-              "mealType": "Bữa trưa",
-              "dishId": "item_14_1",
-              "dishName": "Phần 4 Gỏi Cuốn Tôm Thịt Tươi Chấm Tương",
-              "quantity": 1,
-              "calories": 271,
-              "protein": 18,
-              "carbs": 36,
-              "fat": 4,
-              "orderId": "PTIT-20261108-6750",
-              "source": "order"
-            },
-            {
-              "id": "nutri_1794118006431_33hc",
-              "time": "13:06",
-              "mealType": "Bữa trưa",
-              "dishId": "item_2_5",
-              "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
-              "quantity": 1,
-              "calories": 466,
-              "protein": 20,
-              "carbs": 56,
-              "fat": 17,
-              "orderId": "PTIT-20261108-6750",
-              "source": "order"
-            },
-            {
-              "id": "nutri_1794118006431_2gg9",
-              "time": "13:06",
-              "mealType": "Bữa trưa",
-              "dishId": "item_custom_men_men_ngo_vang_canh_chua_ot_gio_zjli",
-              "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
-              "quantity": 1,
-              "calories": 380,
-              "protein": 9,
-              "carbs": 72,
-              "fat": 5,
-              "orderId": "PTIT-20261108-6750",
-              "source": "order"
-            },
-            {
-              "id": "nutri_1794072567991_z5jn",
-              "time": "00:29",
-              "mealType": "Bữa sáng",
-              "dishId": "item_4_3",
-              "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
-              "quantity": 1,
-              "calories": 554,
-              "protein": 32,
-              "carbs": 56,
-              "fat": 18,
-              "orderId": "PTIT-20261107-5264",
+              "calories": 571,
+              "protein": 27,
+              "carbs": 58,
+              "fat": 23,
+              "orderId": "#PTIT-741846",
               "source": "order"
             }
           ]
@@ -13809,6 +13995,126 @@ window.__DATABASE_SEED__ = {
     }
   ],
   "imageLibrary": [
+    {
+      "id": "img_banh_mi_kep_cha_ca_thu_9gxr",
+      "name": "Bánh Mì Kẹp Chả Cá Thu",
+      "src": "https://tse1.mm.bing.net/th?q=b%C3%A1nh%20m%C3%AC%20ch%E1%BA%A3%20c%C3%A1&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:47:41.799Z"
+    },
+    {
+      "id": "img_banh_mi_kep_cha_ca_thu_8jp5",
+      "name": "Bánh Mì Kẹp Chả Cá Thu",
+      "src": "https://www.themealdb.com/images/media/meals/z0ageb1583189517.jpg",
+      "createdAt": "2026-11-08T12:47:39.799Z"
+    },
+    {
+      "id": "img_banh_mi_kep_cha_ca_thu_eew5",
+      "name": "Bánh Mì Kẹp Chả Cá Thu",
+      "src": "https://www.themealdb.com/images/media/meals/1wj8w31763781990.jpg",
+      "createdAt": "2026-11-08T12:47:37.832Z"
+    },
+    {
+      "id": "img_banh_mi_kep_cha_ca_thu_qlo2",
+      "name": "Bánh Mì Kẹp Chả Cá Thu",
+      "src": "https://www.themealdb.com/images/media/meals/sonirb1763782831.jpg",
+      "createdAt": "2026-11-08T12:47:33.859Z"
+    },
+    {
+      "id": "img_ca_thu_chien_gion_sot_mam_toi_u2it",
+      "name": "Cá Thu Chiên Giòn Sốt Mắm Tỏi",
+      "src": "https://tse1.mm.bing.net/th?q=c%C3%A1%20thu%20chi%C3%AAn%20m%E1%BA%AFm%20t%E1%BB%8Fi&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:47:27.340Z"
+    },
+    {
+      "id": "img_ca_thu_chien_gion_sot_mam_toi_2ly2",
+      "name": "Cá Thu Chiên Giòn Sốt Mắm Tỏi",
+      "src": "https://live.staticflickr.com/3690/12787515643_ffcbd46f0e_b.jpg",
+      "createdAt": "2026-11-08T12:47:24.840Z"
+    },
+    {
+      "id": "img_ca_thu_chien_gion_sot_mam_toi_p8np",
+      "name": "Cá Thu Chiên Giòn Sốt Mắm Tỏi",
+      "src": "https://live.staticflickr.com/3309/3223441746_8e09ecb334_b.jpg",
+      "createdAt": "2026-11-08T12:47:23.279Z"
+    },
+    {
+      "id": "img_ca_thu_kho_tieu_noi_dat_mnxh",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "src": "https://image.pollinations.ai/prompt/caramelized%20mackerel%20with%20pepper%2C%20appetizing%20vietnamese%20food%20photography%2C%20natural%20light?width=640&height=480&nologo=true&seed=2074",
+      "createdAt": "2026-11-08T12:47:10.687Z"
+    },
+    {
+      "id": "img_ca_thu_kho_tieu_noi_dat_4xgg",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "src": "https://tse4.mm.bing.net/th?q=caramelized%20mackerel%20with%20pepper&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:47:09.472Z"
+    },
+    {
+      "id": "img_ca_thu_kho_tieu_noi_dat_kgrs",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "src": "https://tse2.mm.bing.net/th?q=c%C3%A1%20thu%20kho%20m%C3%B3n%20%C4%83n%20ngon&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:47:07.312Z"
+    },
+    {
+      "id": "img_ca_thu_kho_tieu_noi_dat_ny4d",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "src": "https://tse1.mm.bing.net/th?q=c%C3%A1%20thu%20kho%20ti%C3%AAu&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:47:05.724Z"
+    },
+    {
+      "id": "img_ca_thu_kho_tieu_noi_dat_ug32",
+      "name": "Cá Thu Kho Tiêu Nồi Đất",
+      "src": "https://live.staticflickr.com/597/23516801102_c93e47cc64_b.jpg",
+      "createdAt": "2026-11-08T12:47:04.315Z"
+    },
+    {
+      "id": "img_bun_ca_thu_nau_doc_mung_n4r3",
+      "name": "Bún Cá Thu Nấu Dọc Mùng",
+      "src": "https://tse3.mm.bing.net/th?q=M%C3%B3n%20C%C3%A1%20Thu%20m%C3%B3n%20ngon&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:46:56.740Z"
+    },
+    {
+      "id": "img_bun_ca_thu_nau_doc_mung_kjhx",
+      "name": "Bún Cá Thu Nấu Dọc Mùng",
+      "src": "https://tse2.mm.bing.net/th?q=b%C3%BAn%20ri%C3%AAu%20cua%20h%E1%BA%A3i%20s%E1%BA%A3n%20n%C3%B3ng%20h%E1%BB%95i&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:46:53.892Z"
+    },
+    {
+      "id": "img_bun_ca_thu_nau_doc_mung_e67m",
+      "name": "Bún Cá Thu Nấu Dọc Mùng",
+      "src": "https://tse1.mm.bing.net/th?q=b%C3%BAn%20c%C3%A1%20thu&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T12:46:52.115Z"
+    },
+    {
+      "id": "img_ca_thu_sot_ca_chua_dam_da_4vsh",
+      "name": "Cá Thu Sốt Cà Chua Đậm Đà",
+      "src": "https://live.staticflickr.com/6135/5973964589_d4074e0493_b.jpg",
+      "createdAt": "2026-11-08T12:46:46.183Z"
+    },
+    {
+      "id": "img_ca_thu_sot_ca_chua_dam_da_3l8u",
+      "name": "Cá Thu Sốt Cà Chua Đậm Đà",
+      "src": "https://live.staticflickr.com/7565/15686792229_429daba4cb_b.jpg",
+      "createdAt": "2026-11-08T12:46:43.407Z"
+    },
+    {
+      "id": "img_ca_thu_sot_ca_chua_dam_da_5evo",
+      "name": "Cá Thu Sốt Cà Chua Đậm Đà",
+      "src": "https://live.staticflickr.com/7532/15250555084_1cc3d3fce5_b.jpg",
+      "createdAt": "2026-11-08T12:46:41.077Z"
+    },
+    {
+      "id": "img_ca_thu_sot_ca_chua_dam_da_grbn",
+      "name": "Cá Thu Sốt Cà Chua Đậm Đà",
+      "src": "https://live.staticflickr.com/4065/5145120815_ebbebdc012_b.jpg",
+      "createdAt": "2026-11-08T12:46:39.083Z"
+    },
+    {
+      "id": "img_nui_hinh_thu_xao_bo_bam_203k",
+      "name": "Nui Hình Thú Xào Bò Bằm",
+      "src": "https://tse1.mm.bing.net/th?q=Nui%20H%C3%ACnh%20Th%C3%BA%20X%C3%A0o%20B%C3%B2%20B%E1%BA%B1m%20m%C3%B3n%20%C4%83n&w=640&h=480&c=7&rs=1&p=0",
+      "createdAt": "2026-11-08T10:46:41.691Z"
+    },
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_8cxr",
       "name": "Trà Chanh Đào Tiên Kem Cheese",

@@ -273,7 +273,7 @@ async function dbmFetchJsonWithTimeout(url, headers = {}, timeoutMs = 5000) {
   if (typeof fetch !== 'function') return null;
   const hasAbort = typeof AbortController === 'function';
   const ctrl = hasAbort ? new AbortController() : null;
-  const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) {} }, timeoutMs) : 0;
+  const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) { } }, timeoutMs) : 0;
   try {
     const res = await fetch(url, { headers, signal: ctrl ? ctrl.signal : undefined });
     if (!res || !res.ok) return null;
@@ -629,7 +629,7 @@ function dbmGenerateRandomSeed() {
       crypto.getRandomValues(buf);
       return (buf[0] >>> 0) || 1;
     }
-  } catch (_) {}
+  } catch (_) { }
   return ((Math.floor(Math.random() * 0xffffffff) ^ (Date.now() & 0xffffffff)) >>> 0) || 1;
 }
 
@@ -746,11 +746,13 @@ function renderHomeCategoryRestaurantSections() {
       const r = (Array.isArray(restaurants) ? restaurants : []).find(s => Number(s.id) === Number(it.restaurantId))
         || DB.getStoreById(it.restaurantId) || {};
       const hInfo = dbmGetItemHealthy(it);
+      const scoreNum = Number(hInfo.score) || 0;
+      const scoreBadgeClass = scoreNum >= 8.0 ? 'score-high' : (scoreNum >= 6.5 ? 'score-mid' : 'score-low');
       return `
         <div class="restaurant-card" onclick="openDishDetailById('${escapeHtml(it.id)}')">
           <div class="restaurant-card-img-wrapper">
             <img class="restaurant-card-img" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
-            <span class="restaurant-card-badge">🥗 ${hInfo.score}/10 • ${formatVND(it.price)}</span>
+            <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
             ${r.id ? `
               <button class="restaurant-card-fav" onclick="event.stopPropagation(); toggleFav(${r.id})">
                 ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
@@ -758,7 +760,7 @@ function renderHomeCategoryRestaurantSections() {
           </div>
           <div class="restaurant-card-body">
             <div class="restaurant-card-name">${escapeHtml(it.name)}</div>
-            <div class="restaurant-card-subdish">🏪 ${escapeHtml(r.name || it.restaurantName || 'Quán PTIT')}</div>
+            <div class="restaurant-card-subdish"><strong class="restaurant-card-price">${formatVND(it.price)}</strong> • 🏪 ${escapeHtml(r.name || it.restaurantName || 'Quán PTIT')}</div>
             <div class="restaurant-card-meta">
               <span class="restaurant-card-rating">${FluentIcons.starFilled} ${Number(it.rating || r.rating || 4.8).toFixed(1)}</span>
               <span class="restaurant-card-dot"></span>
@@ -1672,9 +1674,9 @@ function dbmRenderCartVoucherChipsHtml(cartItems) {
   if (!list.length) return '';
   return `<div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
     ${list.map(v => {
-      const hot = v.code === 'HUNGCHIENGION' || v.scope === 'selected';
-      return `<span class="note-chip" ${hot ? 'style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;"' : ''} onclick="applyPromoCode('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${hot ? '🔥' : '🎟️'} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</span>`;
-    }).join('')}
+    const hot = v.code === 'HUNGCHIENGION' || v.scope === 'selected';
+    return `<span class="note-chip" ${hot ? 'style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;"' : ''} onclick="applyPromoCode('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${hot ? '🔥' : '🎟️'} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</span>`;
+  }).join('')}
   </div>`;
 }
 

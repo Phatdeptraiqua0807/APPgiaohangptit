@@ -193,7 +193,7 @@ function handleVietQRImageError(imgEl) {
 function copyVietQRField(value, label) {
   const str = String(value || '');
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(str).catch(() => {});
+    navigator.clipboard.writeText(str).catch(() => { });
   }
   showToast('copyRegular', `Đã sao chép ${label}: ${str}`);
 }
@@ -551,9 +551,7 @@ function buildVietQRModalHtml({ channel, totalAmount, orderCode, qrData, timerSt
           </div>
         </div>
 
-        <div class="vqr-demo-disclaimer">
-          💡 <strong>Lưu ý chế độ Demo:</strong> Mã QR trên sử dụng chuẩn <strong>QR Nhận Tiền Đa Năng thật</strong> trỏ trực tiếp tới <strong>${escapeHtml(channel.providerShortName)} — ${channel.accountNo}</strong>. Sau khi quét thử (hoặc để mô phỏng luồng đặt món), hãy nhấn nút xác nhận bên dưới để hoàn tất đơn hàng!
-        </div>
+        
 
         <!-- Nút hành động xác nhận thanh toán -->
         ${isAlreadyPaid ? `
