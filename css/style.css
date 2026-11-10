@@ -78,6 +78,24 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Locomotive Scroll v5 (Lenis): tắt scroll-behavior native để không xung đột nội suy */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font);
   background: var(--gray-50);
@@ -15263,4 +15281,341 @@ body.view-ai-active .ai-composer-dock {
   border-radius: 50%;
   border: 2px solid #16a34a;
   animation: mapPulseRing 1.4s infinite ease-out;
+}
+
+/* ==========================================================================
+   TRANG ĐẶT HÀNG THÀNH CÔNG (order-success) - phong cách gần giống Shopee
+   ========================================================================== */
+.osv-container {
+  min-height: 100vh;
+  background: var(--gray-50);
+  padding-bottom: 28px;
+}
+
+.osv-layout {
+  padding: 8px var(--safe-padding) 0;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── Hero Card với hiệu ứng Aura Glow & Confetti trang trí cao cấp ── */
+.osv-hero-card {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(120% 90% at 50% -5%, #ecfdf5 0%, #f0fdf4 36%, #ffffff 82%);
+  border: 1.5px solid rgba(16, 185, 129, 0.22);
+  border-radius: 26px;
+  padding: 24px 20px 22px;
+  text-align: center;
+  box-shadow: 0 16px 36px -12px rgba(16, 185, 129, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Vạch viền gradient phát sáng tinh tế ở đỉnh thẻ */
+.osv-hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0) 0%, #10b981 25%, #34d399 50%, #10b981 75%, rgba(16, 185, 129, 0) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hào quang thở (Breathing Aura Glow) phía sau animation chúc mừng */
+.osv-hero-card .osv-hero-glow {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.24) 0%, rgba(52, 211, 153, 0.1) 48%, rgba(255, 255, 255, 0) 72%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: osvAuraPulse 3.6s ease-in-out infinite alternate;
+}
+
+/* Hạt confetti pháo hoa đa sắc & chấm sáng chúc mừng */
+.osv-hero-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Emerald dots */
+    radial-gradient(circle at 12% 16%, rgba(16, 185, 129, 0.38) 0, rgba(16, 185, 129, 0.38) 3.5px, transparent 4.5px),
+    radial-gradient(circle at 88% 20%, rgba(16, 185, 129, 0.32) 0, rgba(16, 185, 129, 0.32) 4px, transparent 5px),
+    radial-gradient(circle at 14% 78%, rgba(16, 185, 129, 0.25) 0, rgba(16, 185, 129, 0.25) 3px, transparent 4px),
+    radial-gradient(circle at 86% 76%, rgba(16, 185, 129, 0.3) 0, rgba(16, 185, 129, 0.3) 3.5px, transparent 4.5px),
+    /* Amber/Gold celebration accents */
+    radial-gradient(circle at 24% 28%, rgba(245, 158, 11, 0.38) 0, rgba(245, 158, 11, 0.38) 3.5px, transparent 4.5px),
+    radial-gradient(circle at 76% 14%, rgba(245, 158, 11, 0.42) 0, rgba(245, 158, 11, 0.42) 4px, transparent 5px),
+    radial-gradient(circle at 84% 50%, rgba(245, 158, 11, 0.3) 0, rgba(245, 158, 11, 0.3) 2.5px, transparent 3.5px),
+    /* Coral & Sky subtle sparkles */
+    radial-gradient(circle at 18% 48%, rgba(56, 189, 248, 0.35) 0, rgba(56, 189, 248, 0.35) 3px, transparent 4px),
+    radial-gradient(circle at 74% 82%, rgba(244, 63, 94, 0.3) 0, rgba(244, 63, 94, 0.3) 3px, transparent 4px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+@keyframes osvAuraPulse {
+  0% {
+    transform: translateX(-50%) scale(0.92);
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.osv-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.osv-lottie {
+  width: 170px;
+  height: 170px;
+  margin: 0 auto 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.osv-fallback-check {
+  width: 100%;
+  height: 100%;
+}
+
+.osv-hero-title {
+  margin: 4px 0 6px;
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--green-700);
+  letter-spacing: -0.3px;
+}
+
+.osv-hero-sub {
+  margin: 0 auto 16px;
+  max-width: 440px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--gray-600);
+}
+
+.osv-hero-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(236, 253, 245, 0.85);
+  border: 1px dashed rgba(16, 185, 129, 0.4);
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.osv-hero-total strong {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--green-700);
+}
+
+.osv-hero-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.osv-btn-primary,
+.osv-btn-secondary {
+  flex: 1;
+  height: 46px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.osv-btn-primary {
+  background: var(--green-500);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 177, 79, 0.25);
+}
+
+.osv-btn-primary:hover {
+  background: var(--green-600);
+  transform: translateY(-1px);
+}
+
+.osv-btn-secondary {
+  background: var(--white);
+  color: var(--gray-800);
+  border: 1.5px solid var(--gray-200);
+}
+
+.osv-btn-secondary:hover {
+  background: var(--gray-50);
+}
+
+/* ── Khu vực gợi ý món sau đặt hàng ── */
+.osv-rec-section {
+  max-width: 720px;
+  margin: 20px auto 0;
+}
+
+.osv-rec-section .section-head {
+  padding-bottom: 10px;
+}
+
+.osv-rec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 4px var(--safe-padding) 0;
+}
+
+.osv-rec-card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1.5px solid var(--gray-100);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.osv-rec-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.osv-rec-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--gray-100);
+  overflow: hidden;
+}
+
+.osv-rec-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.osv-rec-card:hover .osv-rec-img-wrap img {
+  transform: scale(1.04);
+}
+
+.osv-rec-reason {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(16, 185, 129, 0.92);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+  letter-spacing: -0.1px;
+}
+
+.osv-rec-body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.osv-rec-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.osv-rec-store {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.osv-rec-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.osv-rec-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green-600);
+}
+
+.osv-rec-add {
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--green-500);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
+}
+
+.osv-rec-add:hover {
+  background: var(--green-600);
+}
+
+@media (min-width: 768px) {
+  .osv-container {
+    padding: 0 36px 40px;
+  }
+
+  .osv-layout {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .osv-lottie {
+    width: 200px;
+    height: 200px;
+  }
+
+  .osv-rec-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 18px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .osv-rec-section .section-head {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

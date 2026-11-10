@@ -825,9 +825,17 @@ function openAIChatView(initialPrompt = null) {
   } else {
     if (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['ai'] === 'number') {
       const savedY = globalViewScrollPositions['ai'];
-      window.scrollTo({ top: savedY, behavior: 'instant' });
-      requestAnimationFrame(() => {
+      if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+        window.locomotiveScroll.scrollTo(savedY, { immediate: true });
+      } else {
         window.scrollTo({ top: savedY, behavior: 'instant' });
+      }
+      requestAnimationFrame(() => {
+        if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+          window.locomotiveScroll.scrollTo(savedY, { immediate: true });
+        } else {
+          window.scrollTo({ top: savedY, behavior: 'instant' });
+        }
       });
     } else {
       scrollAIChatToBottom(false);
@@ -1628,17 +1636,24 @@ function scrollUserMessageToTop() {
   if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
   setTimeout(() => {
     if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
+    if (typeof window.refreshSmoothScroll === 'function') {
+      window.refreshSmoothScroll();
+    }
     const userRows = document.querySelectorAll('.ai-msg-row.user');
     const lastUserRow = userRows[userRows.length - 1];
     if (lastUserRow) {
       const headerEl = document.querySelector('.ai-chat-header');
       const headerH = headerEl ? headerEl.offsetHeight : 64;
       const rect = lastUserRow.getBoundingClientRect();
-      const targetY = window.pageYOffset + rect.top - headerH - 12;
-      window.scrollTo({
-        top: Math.max(0, targetY),
-        behavior: 'smooth'
-      });
+      const targetY = Math.max(0, window.pageYOffset + rect.top - headerH - 12);
+      if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+        window.locomotiveScroll.scrollTo(targetY, { duration: 0.65 });
+      } else {
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        });
+      }
     }
   }, 40);
 }
@@ -1647,11 +1662,21 @@ function scrollAIChatToBottom(smooth = true) {
   if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
   setTimeout(() => {
     if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
+    if (typeof window.refreshSmoothScroll === 'function') {
+      window.refreshSmoothScroll();
+    }
     const vp = document.getElementById('ai-messages-viewport');
-    if (vp) {
+    if (vp && vp.scrollHeight > vp.clientHeight && getComputedStyle(vp).overflowY !== 'visible') {
       vp.scrollTo({ top: vp.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
     }
-    window.scrollTo({ top: document.body.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+      window.locomotiveScroll.scrollTo('bottom', {
+        duration: smooth ? 0.75 : 0,
+        immediate: !smooth
+      });
+    } else {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
   }, 40);
 }
 

@@ -124,9 +124,17 @@ function restoreViewScroll(targetView, fallbackY = 0) {
   const savedY = (target && typeof globalViewScrollPositions[target] === 'number')
     ? globalViewScrollPositions[target]
     : fallbackY;
-  window.scrollTo({ top: savedY, behavior: 'instant' });
-  requestAnimationFrame(() => {
+  if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+    window.locomotiveScroll.scrollTo(savedY, { immediate: true });
+  } else {
     window.scrollTo({ top: savedY, behavior: 'instant' });
+  }
+  requestAnimationFrame(() => {
+    if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+      window.locomotiveScroll.scrollTo(savedY, { immediate: true });
+    } else {
+      window.scrollTo({ top: savedY, behavior: 'instant' });
+    }
     if (typeof updateHeaderScrolledState === 'function') updateHeaderScrolledState();
   });
 }
@@ -3762,12 +3770,18 @@ function submitOrder(totalAmount, qrPaymentMeta = null) {
   appliedVoucher = null;
   updateFloatingCartBar();
 
-  // Directly view this newly placed order in live tracking!
-  viewingOrderDetailId = newOrder.orderId;
+  // Chuyển sang trang "Đặt hàng thành công" (có nút Xem đơn hàng + gợi ý món theo đơn vừa đặt)
+  lastPlacedOrder = newOrder;
+  viewingOrderDetailId = null;
   activityFilter = 'delivering';
 
-  showToast('checkmarkFilled', `Đã đặt & lưu đơn ${newOrder.orderId} vào hồ sơ ${userDeliveryInfo.name}!`);
-  openActivityView();
+  if (typeof openOrderSuccessView === 'function') {
+    openOrderSuccessView(newOrder);
+  } else {
+    viewingOrderDetailId = newOrder.orderId;
+    showToast('checkmarkFilled', `Đã đặt & lưu đơn ${newOrder.orderId} vào hồ sơ ${userDeliveryInfo.name}!`);
+    openActivityView();
+  }
 }
 
 // ========================================
@@ -5314,64 +5328,6 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// ── Smooth Scroll Integration (Locomotive Scroll & Native Lenis Engine) ──
-let globalSmoothScroller = null;
-
-function initSmoothScrollEngine() {
-  if (typeof window === 'undefined') return;
-
-  // Ưu tiên Lenis (hoạt động trực tiếp trên native window scroll, giữ 100% position: fixed và sticky không bị hỏng)
-  if (typeof Lenis !== 'undefined') {
-    try {
-      globalSmoothScroller = new Lenis({
-        duration: 1.15,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Chuẩn vật lý mượt mà
-        direction: 'vertical',
-        gestureDirection: 'vertical',
-        smooth: true,
-        smoothTouch: false, // Giữ cuộn cảm ứng tự nhiên trên điện thoại để không bị trễ
-        touchMultiplier: 1.5
-      });
-
-      globalSmoothScroller.on('scroll', () => {
-        handleAppScroll();
-      });
-
-      function raf(time) {
-        if (globalSmoothScroller) {
-          globalSmoothScroller.raf(time);
-          requestAnimationFrame(raf);
-        }
-      }
-      requestAnimationFrame(raf);
-      window.__appSmoothScroller = globalSmoothScroller;
-      return;
-    } catch (err) {
-      console.warn('Không thể khởi tạo Lenis smooth scroll:', err);
-    }
-  }
-
-  // Dự phòng Locomotive Scroll nếu có container hỗ trợ
-  if (typeof LocomotiveScroll !== 'undefined') {
-    try {
-      const scrollEl = document.querySelector('[data-scroll-container]') || document.body;
-      globalSmoothScroller = new LocomotiveScroll({
-        el: scrollEl,
-        smooth: true,
-        multiplier: 0.9,
-        smartphone: { smooth: false },
-        tablet: { smooth: false }
-      });
-      globalSmoothScroller.on('scroll', () => {
-        handleAppScroll();
-      });
-      window.__appSmoothScroller = globalSmoothScroller;
-    } catch (err) {
-      console.warn('Không thể khởi tạo LocomotiveScroll:', err);
-    }
-  }
-}
-
 // ── Init (Khởi tạo Database JSON thống nhất trước khi render UI) ──
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof DB !== 'undefined') {
@@ -5381,9 +5337,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     syncGlobalChromeUI();
   }
   render();
-
-  // Kích hoạt cuộn mượt mà
-  initSmoothScrollEngine();
 
   // Gentle auto-rotation for the top banner cushion on Home
   setInterval(() => {

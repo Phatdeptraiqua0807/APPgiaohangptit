@@ -2,9 +2,9 @@
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-08T14:23:06.765Z",
+    "updatedAt": "2026-11-10T14:54:58.256Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
-    "lastAction": "update_cart"
+    "lastAction": "place_order"
   },
   "categories": [
     {
@@ -1621,7 +1621,7 @@
       "createdAt": "2026-11-08T12:47:45.060Z",
       "isAIGenerated": true,
       "aiTheme": "món bất kì liên quan đến cá thu",
-      "soldCount": 0,
+      "soldCount": 1,
       "nutrition": {
         "calories": 380,
         "protein": 22,
@@ -2439,7 +2439,7 @@
       "createdAt": "2026-11-07T16:47:19.429Z",
       "isAIGenerated": true,
       "aiTheme": "Món ăn trẻ em",
-      "soldCount": 0,
+      "soldCount": 1,
       "nutrition": {
         "calories": 180,
         "protein": 4,
@@ -2896,7 +2896,7 @@
       "createdAt": "2026-11-07T16:07:43.287Z",
       "isAIGenerated": true,
       "aiTheme": "món ăn tây âu",
-      "soldCount": 0,
+      "soldCount": 1,
       "nutrition": {
         "calories": 540,
         "protein": 26,
@@ -3470,7 +3470,7 @@
       "createdAt": "2026-11-07T15:27:33.706Z",
       "isAIGenerated": true,
       "aiTheme": "Mì cay",
-      "soldCount": 0,
+      "soldCount": 1,
       "nutrition": {
         "calories": 650,
         "protein": 32,
@@ -4041,7 +4041,7 @@
       "createdAt": "2026-11-07T15:20:11.013Z",
       "isAIGenerated": true,
       "aiTheme": "Món ăn tây bắc (mèn mén chua)",
-      "soldCount": 0,
+      "soldCount": 1,
       "nutrition": {
         "calories": 520,
         "protein": 34,
@@ -9608,7 +9608,7 @@
       "location": "22 Nguyễn Khuyến, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "rating": 4.9,
       "reviewCount": 230,
-      "soldCount": 405,
+      "soldCount": 406,
       "nutrition": {
         "calories": 576,
         "protein": 31,
@@ -10759,7 +10759,7 @@
       "location": "19 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "rating": 4.8,
       "reviewCount": 321,
-      "soldCount": 1526,
+      "soldCount": 1527,
       "nutrition": {
         "calories": 398,
         "protein": 18,
@@ -10846,7 +10846,7 @@
       "location": "135 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "rating": 4.8,
       "reviewCount": 53,
-      "soldCount": 1258,
+      "soldCount": 1259,
       "nutrition": {
         "calories": 602,
         "protein": 30,
@@ -13090,7 +13090,7 @@
       "avatar": "👨‍🎓",
       "memberTier": "PTITer VIP",
       "createdAt": "2026-09-01T08:00:00.000Z",
-      "updatedAt": "2026-11-08T14:22:24.207Z",
+      "updatedAt": "2026-11-10T14:54:58.254Z",
       "address": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
       "shortAddress": "PTIT Km10 Trần Phú, Hà Đông",
       "addressLabel": "PTIT Hà Đông",
@@ -13137,50 +13137,298 @@
         18,
         16
       ],
-      "cart": [
-        {
-          "id": "1794145385843a3a9",
-          "dishId": "item_custom_thang_co_ngua_nong_hoi_kem_men_men_lhgp",
-          "dishName": "Thắng Cố Ngựa Nóng Hổi Kèm Mèn Mén",
-          "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
-          "restaurantId": 1001,
-          "image": "assets/images/uploads/images_1794064752205_s8wx.jpg",
-          "size": {
-            "name": "Tô Chuẩn",
-            "extraPrice": 0
-          },
-          "toppings": [],
-          "note": "",
-          "quantity": 1,
-          "unitPrice": 55000,
-          "totalPrice": 55000
-        },
-        {
-          "id": "1794147786765pua7",
-          "dishId": "1794072496352ned5",
-          "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
-          "restaurantName": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
-          "restaurantId": 4,
-          "image": "assets/images/bun_bo_hue_1792459733043.jpg",
-          "size": {
-            "name": "Tô Siêu Đặc Biệt",
-            "extraPrice": 0
-          },
-          "toppings": [],
-          "note": "",
-          "quantity": 1,
-          "unitPrice": 80000,
-          "totalPrice": 80000
-        }
-      ],
+      "cart": [],
       "orders": [
         {
-          "orderId": "#PTIT-741846",
+          "orderId": "#PTIT-667540",
           "categoryStatus": "delivering",
           "statusText": "Đang chuẩn bị món (Dự kiến 15 phút)",
           "currentStep": 2,
-          "orderTime": "8/11/2026, 19:54",
+          "orderTime": "10/11/2026, 21:54",
           "estimatedTime": "Khoảng 15 - 20 phút nữa",
+          "resName": "Cơm Gà Xối Mỡ 142 Thập Toàn",
+          "resAddress": "22 Nguyễn Khuyến, P. Văn Quán, Q. Hà Đông, Hà Nội",
+          "resPhone": "0982 117 81",
+          "deliveryAddress": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "recipientName": "Nguyễn Văn A",
+          "recipientPhone": "0901 234 567",
+          "driverNote": "Giao sảnh nhà A2 hoặc Cổng trường",
+          "items": [
+            {
+              "id": "1794322459029basa",
+              "dishId": "item_13_5",
+              "dishName": "Canh Rong Biển Nấu Thịt Gà Thanh Ngọt",
+              "restaurantName": "Cơm Gà Xối Mỡ 142 Thập Toàn",
+              "restaurantId": 13,
+              "image": "assets/images/com_tam_1792459701659.jpg",
+              "size": {
+                "name": "1 Chén Canh",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 15000,
+              "totalPrice": 15000
+            },
+            {
+              "id": "1794322469618kegt",
+              "dishId": "item_custom_sinh_to_bo_chuoi_sua_tuoi_ahhz",
+              "dishName": "Sinh Tố Bơ Chuối Sữa Tươi",
+              "restaurantName": "Bếp Nhí PTIT - Món Ngon Cho Bé",
+              "restaurantId": 1004,
+              "image": "https://www.thecocktaildb.com/images/media/drink/jogv4w1487603571.jpg",
+              "size": {
+                "name": "Size M",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 35000,
+              "totalPrice": 35000
+            }
+          ],
+          "paymentMethod": "qr",
+          "paymentMethodName": "VietQR VPBank 0921030342 (Đã thanh toán • Mã GD VPB22497300)",
+          "qrPayment": {
+            "isPaid": true,
+            "channelKey": "qr",
+            "bankShortName": "VPBank",
+            "bankFullName": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+            "accountNo": "0921030342",
+            "transferContent": "PTIT 667540",
+            "transactionId": "VPB22497300",
+            "paidAt": "21:54"
+          },
+          "subtotal": 50000,
+          "shippingFee": 15000,
+          "discountAmount": 0,
+          "totalAmount": 65000,
+          "driver": {
+            "name": "Nguyễn Văn Tài",
+            "phone": "0909 123 456",
+            "vehicle": "29-P1 889.24 • Honda Wave Alpha",
+            "rating": 4.9,
+            "avatar": "🛵"
+          },
+          "userReview": null,
+          "userId": "user_ptit_01",
+          "createdAt": "2026-11-10T14:54:58.254Z"
+        },
+        {
+          "orderId": "#PTIT-773063",
+          "categoryStatus": "delivering",
+          "statusText": "Đang chuẩn bị món (Dự kiến 15 phút)",
+          "currentStep": 2,
+          "orderTime": "10/11/2026, 21:54",
+          "estimatedTime": "Khoảng 15 - 20 phút nữa",
+          "resName": "The Burger Shack - Bò Nướng Phô Mai",
+          "resAddress": "135 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
+          "resPhone": "0982 123 29",
+          "deliveryAddress": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "recipientName": "Nguyễn Văn A",
+          "recipientPhone": "0901 234 567",
+          "driverNote": "Giao sảnh nhà A2 hoặc Cổng trường",
+          "items": [
+            {
+              "id": "17943224207299c3p",
+              "dishId": "item_17_1",
+              "dishName": "Classic Cheeseburger Bò Úc Nướng Than",
+              "restaurantName": "The Burger Shack - Bò Nướng Phô Mai",
+              "restaurantId": 17,
+              "image": "assets/images/ga_ran.jpg",
+              "size": {
+                "name": "Burger Tiêu Chuẩn",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 65000,
+              "totalPrice": 65000
+            }
+          ],
+          "paymentMethod": "qr",
+          "paymentMethodName": "VietQR VPBank 0921030342 (Đã thanh toán • Mã GD VPB22441005)",
+          "qrPayment": {
+            "isPaid": true,
+            "channelKey": "qr",
+            "bankShortName": "VPBank",
+            "bankFullName": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+            "accountNo": "0921030342",
+            "transferContent": "PTIT 773063",
+            "transactionId": "VPB22441005",
+            "paidAt": "21:54"
+          },
+          "subtotal": 65000,
+          "shippingFee": 15000,
+          "discountAmount": 0,
+          "totalAmount": 80000,
+          "driver": {
+            "name": "Nguyễn Văn Tài",
+            "phone": "0909 123 456",
+            "vehicle": "29-P1 889.24 • Honda Wave Alpha",
+            "rating": 4.9,
+            "avatar": "🛵"
+          },
+          "userReview": null,
+          "userId": "user_ptit_01",
+          "createdAt": "2026-11-10T14:54:01.956Z"
+        },
+        {
+          "orderId": "#PTIT-771609",
+          "categoryStatus": "cancelled",
+          "statusText": "Đã hủy đơn hàng (Theo yêu cầu)",
+          "currentStep": 2,
+          "orderTime": "10/11/2026, 21:52",
+          "estimatedTime": "Khoảng 15 - 20 phút nữa",
+          "resName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
+          "resAddress": "42 Trần Phú, P. Mộ Lao, Hà Đông, Hà Nội",
+          "resPhone": "0982 134 567",
+          "deliveryAddress": "Học viện Công nghệ Bưu chính Viễn thông (PTIT), Km10 Đường Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
+          "recipientName": "Nguyễn Văn A",
+          "recipientPhone": "0901 234 567",
+          "driverNote": "Giao sảnh nhà A2 hoặc Cổng trường",
+          "items": [
+            {
+              "id": "1794145385843a3a9",
+              "dishId": "item_custom_thang_co_ngua_nong_hoi_kem_men_men_lhgp",
+              "dishName": "Thắng Cố Ngựa Nóng Hổi Kèm Mèn Mén",
+              "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
+              "restaurantId": 1001,
+              "image": "assets/images/uploads/images_1794064752205_s8wx.jpg",
+              "size": {
+                "name": "Tô Chuẩn",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 55000,
+              "totalPrice": 55000
+            },
+            {
+              "id": "1794147786765pua7",
+              "dishId": "1794072496352ned5",
+              "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
+              "restaurantName": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
+              "restaurantId": 4,
+              "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+              "size": {
+                "name": "Tô Siêu Đặc Biệt",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 80000,
+              "totalPrice": 80000
+            },
+            {
+              "id": "179432232706283ub",
+              "dishId": "item_custom_mi_cay_dui_ga_khong_lo_sot_kim_chi_nkqz",
+              "dishName": "Mì Cay Đùi Gà Khổng Lồ Sốt Kim Chi",
+              "restaurantName": "Mì Cay Seoul 7 Cấp Độ - Học Viện PTIT",
+              "restaurantId": 1002,
+              "image": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.jpg",
+              "size": {
+                "name": "Cấp 0 (Không cay)",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 45000,
+              "totalPrice": 45000
+            },
+            {
+              "id": "1794322334585jm45",
+              "dishId": "item_custom_mi_y_vem_xanh_sot_kem_sua_toi_b5j2",
+              "dishName": "Mì Ý Vẹm Xanh Sốt Kem Sữa Tỏi",
+              "restaurantName": "Le Petit Bistro - Bít Tết & Món Âu Hà Đông",
+              "restaurantId": 1003,
+              "image": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.jpg",
+              "size": {
+                "name": "Khẩu phần tiêu chuẩn",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 65000,
+              "totalPrice": 65000
+            },
+            {
+              "id": "1794322339997jh1g",
+              "dishId": "item_custom_bun_ca_thu_nau_doc_mung_zyi4",
+              "dishName": "Bún Cá Thu Nấu Dọc Mùng",
+              "restaurantName": "Bếp Cá Thu Hà Đông",
+              "restaurantId": 1007,
+              "image": "https://tse3.mm.bing.net/th?q=M%C3%B3n%20C%C3%A1%20Thu%20m%C3%B3n%20ngon&w=640&h=480&c=7&rs=1&p=0",
+              "size": {
+                "name": "Tô vừa",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 40000,
+              "totalPrice": 40000
+            },
+            {
+              "id": "17943223448311kst",
+              "dishId": "item_16_5",
+              "dishName": "Chả Lụa & Chả Chiên Thêm Chấm Mắm",
+              "restaurantName": "Bánh Cuốn Nóng Tây Hồ Gia Truyền",
+              "restaurantId": 16,
+              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "size": {
+                "name": "1 Đĩa Ăn Kèm",
+                "extraPrice": 0
+              },
+              "toppings": [],
+              "note": "",
+              "quantity": 1,
+              "unitPrice": 20000,
+              "totalPrice": 20000
+            }
+          ],
+          "paymentMethod": "qr",
+          "paymentMethodName": "VietQR VPBank 0921030342 (Đã thanh toán • Mã GD VPB22358484)",
+          "qrPayment": {
+            "isPaid": true,
+            "channelKey": "qr",
+            "bankShortName": "VPBank",
+            "bankFullName": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+            "accountNo": "0921030342",
+            "transferContent": "PTIT 771609",
+            "transactionId": "VPB22358484",
+            "paidAt": "21:52"
+          },
+          "subtotal": 305000,
+          "shippingFee": 0,
+          "discountAmount": 0,
+          "totalAmount": 305000,
+          "driver": {
+            "name": "Nguyễn Văn Tài",
+            "phone": "0909 123 456",
+            "vehicle": "29-P1 889.24 • Honda Wave Alpha",
+            "rating": 4.9,
+            "avatar": "🛵"
+          },
+          "userReview": null,
+          "userId": "user_ptit_01",
+          "createdAt": "2026-11-10T14:52:39.439Z",
+          "cancelReason": "Khách hàng hủy đơn"
+        },
+        {
+          "orderId": "#PTIT-741846",
+          "categoryStatus": "completed",
+          "statusText": "Giao hàng thành công",
+          "currentStep": 5,
+          "orderTime": "8/11/2026, 19:54",
+          "estimatedTime": "Đã hoàn tất lúc 21:53",
           "resName": "Bún Đậu Mắm Tôm A Chảnh Chuẩn Vị",
           "resAddress": "31 Phố Ao Sen, P. Mộ Lao, Q. Hà Đông, Hà Nội",
           "resPhone": "0982 128 77",
@@ -13771,6 +14019,137 @@
               "carbs": 58,
               "fat": 23,
               "orderId": "#PTIT-741846",
+              "source": "order"
+            }
+          ]
+        },
+        "2026-11-10": {
+          "waterCups": 0,
+          "entries": [
+            {
+              "id": "nutri_1794322498255_tjct",
+              "time": "21:54",
+              "mealType": "Bữa tối",
+              "dishId": "item_custom_sinh_to_bo_chuoi_sua_tuoi_ahhz",
+              "dishName": "Sinh Tố Bơ Chuối Sữa Tươi",
+              "quantity": 1,
+              "calories": 180,
+              "protein": 4,
+              "carbs": 25,
+              "fat": 8,
+              "orderId": "#PTIT-667540",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322498255_ench",
+              "time": "21:54",
+              "mealType": "Bữa tối",
+              "dishId": "item_13_5",
+              "dishName": "Canh Rong Biển Nấu Thịt Gà Thanh Ngọt",
+              "quantity": 1,
+              "calories": 576,
+              "protein": 31,
+              "carbs": 65,
+              "fat": 17,
+              "orderId": "#PTIT-667540",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322441957_7j8x",
+              "time": "21:54",
+              "mealType": "Bữa tối",
+              "dishId": "item_17_1",
+              "dishName": "Classic Cheeseburger Bò Úc Nướng Than",
+              "quantity": 1,
+              "calories": 602,
+              "protein": 30,
+              "carbs": 48,
+              "fat": 29,
+              "orderId": "#PTIT-773063",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_23hb",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_16_5",
+              "dishName": "Chả Lụa & Chả Chiên Thêm Chấm Mắm",
+              "quantity": 1,
+              "calories": 398,
+              "protein": 18,
+              "carbs": 52,
+              "fat": 11,
+              "orderId": "#PTIT-771609",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_fzcx",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_custom_bun_ca_thu_nau_doc_mung_zyi4",
+              "dishName": "Bún Cá Thu Nấu Dọc Mùng",
+              "quantity": 1,
+              "calories": 380,
+              "protein": 22,
+              "carbs": 55,
+              "fat": 8,
+              "orderId": "#PTIT-771609",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_y83a",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_custom_mi_y_vem_xanh_sot_kem_sua_toi_b5j2",
+              "dishName": "Mì Ý Vẹm Xanh Sốt Kem Sữa Tỏi",
+              "quantity": 1,
+              "calories": 540,
+              "protein": 26,
+              "carbs": 62,
+              "fat": 20,
+              "orderId": "#PTIT-771609",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_g10b",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_custom_mi_cay_dui_ga_khong_lo_sot_kim_chi_nkqz",
+              "dishName": "Mì Cay Đùi Gà Khổng Lồ Sốt Kim Chi",
+              "quantity": 1,
+              "calories": 650,
+              "protein": 32,
+              "carbs": 70,
+              "fat": 24,
+              "orderId": "#PTIT-771609",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_9vzc",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_4_3",
+              "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
+              "quantity": 1,
+              "calories": 554,
+              "protein": 32,
+              "carbs": 56,
+              "fat": 18,
+              "orderId": "#PTIT-771609",
+              "source": "order"
+            },
+            {
+              "id": "nutri_1794322359441_sajv",
+              "time": "21:52",
+              "mealType": "Bữa tối",
+              "dishId": "item_custom_thang_co_ngua_nong_hoi_kem_men_men_lhgp",
+              "dishName": "Thắng Cố Ngựa Nóng Hổi Kèm Mèn Mén",
+              "quantity": 1,
+              "calories": 520,
+              "protein": 34,
+              "carbs": 48,
+              "fat": 20,
+              "orderId": "#PTIT-771609",
               "source": "order"
             }
           ]
