@@ -8940,21 +8940,17 @@ body.view-ai-active .ai-messages-viewport {
 
 body.view-ai-active .ai-composer-dock {
   position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
-  width: calc(100% - 20px) !important;
-  max-width: calc(var(--app-max-width, 480px) - 20px) !important;
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-  margin: 0 auto !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  margin: 0 !important;
   z-index: 90;
   border-radius: 20px !important;
-  box-sizing: border-box !important;
 }
 
 /* Chừa chỗ cho dock cố định để tin nhắn cuối không bị che */
 body.view-ai-active .ai-chat-view-container {
-  padding-bottom: calc(210px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: 260px !important;
 }
 
 .ai-chat-header-left {
@@ -10393,12 +10389,8 @@ body.view-ai-active .ai-chat-view-container {
   body.view-ai-active .ai-composer-dock {
     left: calc(var(--sidebar-width, 270px) + 40px) !important;
     right: 40px !important;
-    transform: none !important;
-    width: auto !important;
-    max-width: none !important;
     bottom: 20px !important;
     border-radius: 22px !important;
-    margin: 0 !important;
   }
 
   body.view-ai-active .ai-chat-view-container {
@@ -15116,51 +15108,8 @@ body.view-ai-active .ai-chat-view-container {
   }
 
   body.view-ai-active .ai-composer-dock {
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    width: calc(100% - 20px) !important;
-    max-width: calc(var(--app-max-width, 480px) - 20px) !important;
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-    margin: 0 auto !important;
-    border-radius: 18px !important;
-    padding: 8px 10px !important;
-  }
-
-  body.view-ai-active .ai-chat-view-container {
-    padding-bottom: calc(200px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-quick-prompts-bar {
-    gap: 5px;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-quick-chip {
-    padding: 4px 9px;
-    font-size: 11px;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-chat-textarea {
-    padding: 8px 12px;
-    font-size: 13.5px;
-    border-radius: 13px;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-send-btn,
-  body.view-ai-active .ai-composer-dock .ai-stop-btn {
-    height: 38px;
-    border-radius: 12px;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-send-btn {
-    width: 38px;
-  }
-
-  body.view-ai-active .ai-composer-dock .ai-stop-btn {
-    padding: 0 12px;
-    font-size: 12px;
+    left: 12px !important;
+    right: 12px !important;
   }
 }
 
