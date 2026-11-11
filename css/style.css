@@ -11399,7 +11399,7 @@ body.view-ai-active .ai-chat-view-container {
 
 /* ── 6. Deep 2-Tab Safety & Nutrition Inspection View ── */
 .sn-deep-page {
-  max-width: 920px;
+  max-width: 1180px;
   margin: 0 auto;
   padding-bottom: 60px;
 }
@@ -11523,6 +11523,46 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* 2-Column Responsive Layout for Nutrition Detail Tab */
+.sn-nutrition-tab-wrap.sn-two-col-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(380px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.sn-nutrition-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sn-nutrition-ai-col {
+  min-width: 0;
+  position: sticky;
+  top: 16px;
+  height: calc(100vh - 110px);
+  max-height: 860px;
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 960px) {
+  .sn-nutrition-tab-wrap.sn-two-col-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sn-nutrition-ai-col {
+    position: static;
+    height: 560px;
+    min-height: 480px;
+    max-height: none;
+  }
 }
 
 .sn-card {
@@ -11778,13 +11818,17 @@ body.view-ai-active .ai-chat-view-container {
 /* ── 7. Inline Dish AI Question Bar inside Nutrition Tab ── */
 .sn-ai-ask-card {
   position: relative;
-  background: radial-gradient(120% 120% at 0% 0%, rgba(236, 253, 245, 0.85) 0%, rgba(240, 249, 255, 0.8) 45%, rgba(255, 255, 255, 0.95) 100%);
-  border: 1.5px solid rgba(167, 243, 208, 0.7);
+  background: radial-gradient(120% 120% at 0% 0%, rgba(236, 253, 245, 0.9) 0%, rgba(240, 249, 255, 0.85) 45%, rgba(255, 255, 255, 0.98) 100%);
+  border: 1.5px solid rgba(167, 243, 208, 0.75);
   border-radius: 24px;
   box-shadow: 0 10px 30px -4px rgba(16, 185, 129, 0.08), 0 4px 16px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .sn-ai-ask-card>*:not(.sn-dish-ai-aura) {
@@ -11792,58 +11836,65 @@ body.view-ai-active .ai-chat-view-container {
   z-index: 2;
 }
 
-/* Aura Halo nền pastel di chuyển hình sin nhẹ nhàng bên trong card */
+/* Aura Halo nền pastel di chuyển hình sin nhẹ nhàng bên trong card:
+   - Bình thường (sau khi đã trả lời xong hoặc chưa hỏi): Ẩn hoàn toàn (opacity: 0, animation dừng để tiết kiệm tài nguyên)
+   - Khi AI đang suy nghĩ/trả lời (.active): Hiện bừng sáng rõ nét, màu sắc pastel đậm đà và sống động hơn
+*/
 .sn-dish-ai-aura {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0.45;
-  transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
 }
 
 .sn-dish-ai-aura.active {
   opacity: 1;
+  visibility: visible;
 }
 
 .sn-dish-ai-aura .sn-aura-wave {
   position: absolute;
-  top: 25%;
+  top: 24%;
   left: 50%;
-  width: 40vmax;
-  height: 28vmax;
-  margin: -14vmax 0 0 -20vmax;
+  width: 44vmax;
+  height: 30vmax;
+  margin: -15vmax 0 0 -22vmax;
   border-radius: 50%;
-  filter: blur(55px);
+  filter: blur(52px);
   mix-blend-mode: normal;
   will-change: transform, opacity;
-  animation: snAuraSinWave 5.5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  animation: snAuraSinWave 5.0s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  animation-play-state: paused;
 }
 
+.sn-dish-ai-aura.active .sn-aura-wave {
+  animation-play-state: running;
+}
+
+/* Các lớp màu pastel đậm hơn, tươi sáng và rõ nét hơn khi AI đang suy luận */
 .sn-dish-ai-aura .sn-aura-wave.w1 {
-  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(34, 197, 94, 0.16) 0%, rgba(14, 165, 233, 0.14) 40%, transparent 75%);
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(34, 197, 94, 0.32) 0%, rgba(14, 165, 233, 0.28) 42%, transparent 74%);
   animation-delay: 0s;
 }
-
 .sn-dish-ai-aura .sn-aura-wave.w2 {
-  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(14, 165, 233, 0.15) 0%, rgba(139, 92, 246, 0.14) 40%, transparent 75%);
-  animation-delay: -1.1s;
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(14, 165, 233, 0.30) 0%, rgba(139, 92, 246, 0.28) 42%, transparent 74%);
+  animation-delay: -1.0s;
 }
-
 .sn-dish-ai-aura .sn-aura-wave.w3 {
-  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(139, 92, 246, 0.14) 0%, rgba(236, 72, 153, 0.14) 40%, transparent 75%);
-  animation-delay: -2.2s;
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(139, 92, 246, 0.28) 0%, rgba(236, 72, 153, 0.28) 42%, transparent 74%);
+  animation-delay: -2.0s;
 }
-
 .sn-dish-ai-aura .sn-aura-wave.w4 {
-  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(236, 72, 153, 0.14) 0%, rgba(245, 158, 11, 0.15) 40%, transparent 75%);
-  animation-delay: -3.3s;
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(236, 72, 153, 0.28) 0%, rgba(245, 158, 11, 0.30) 42%, transparent 74%);
+  animation-delay: -3.0s;
 }
-
 .sn-dish-ai-aura .sn-aura-wave.w5 {
-  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(235, 202, 158, 0.20) 0%, rgba(16, 185, 129, 0.15) 40%, transparent 75%);
-  animation-delay: -4.4s;
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(235, 202, 158, 0.38) 0%, rgba(16, 185, 129, 0.30) 42%, transparent 74%);
+  animation-delay: -4.0s;
 }
 
 @keyframes snAuraSinWave {
@@ -11882,8 +11933,13 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 5px;
-  margin-bottom: 5px;
+  gap: 10px;
+  padding: 16px 18px 12px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(167, 243, 208, 0.35);
+  flex-shrink: 0;
 }
 
 .sn-ai-ask-title {
@@ -11940,29 +11996,81 @@ body.view-ai-active .ai-chat-view-container {
   flex-shrink: 0;
 }
 
-/* ── 2 dòng lướt ngang ngẫu nhiên cho các câu hỏi nhanh ── */
+/* ── 2 dòng lướt ngang ngẫu nhiên cho các câu hỏi nhanh (Gộp chung & Có nút Scroll Arrow thông minh khi Hover) ── */
+.sn-ai-chips-wrapper {
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  flex-shrink: 0;
+}
+
 .sn-ai-chips-scroll-container {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  margin-bottom: 4px;
-  overflow: hidden;
-}
-
-.sn-ai-chips-track {
-  display: flex;
-  gap: 4px;
+  gap: 7px;
+  padding: 8px 14px 10px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 2px 0 2px 0;
 }
 
-.sn-ai-chips-track::-webkit-scrollbar {
+.sn-ai-chips-scroll-container::-webkit-scrollbar {
   display: none;
+}
+
+/* Nút mũi tên cuộn ngang thông minh: Mặc định ẩn, chỉ hiện nổi khi rê chuột vào khung (hover) */
+.sn-chips-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, background 0.18s, color 0.18s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 1.5px solid rgba(167, 243, 208, 0.9) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: var(--green-700) !important;
+}
+
+.sn-chips-arrow.left {
+  left: 8px;
+}
+
+.sn-chips-arrow.right {
+  right: 8px;
+}
+
+/* Khi hover vào wrapper: Nút cuộn hiện lên mượt mà */
+.sn-ai-chips-wrapper:hover .sn-chips-arrow {
+  opacity: 0.95;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+}
+
+.sn-ai-chips-wrapper:hover .sn-chips-arrow:hover:not(:disabled) {
+  opacity: 1;
+  background: var(--green-500) !important;
+  color: #ffffff !important;
+  border-color: var(--green-600) !important;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 177, 79, 0.3);
+}
+
+.sn-chips-arrow:disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Các track giữ nguyên width tự nhiên theo nội dung để container cuộn đồng bộ */
+.sn-ai-chips-track {
+  display: flex;
+  gap: 7px;
+  width: max-content;
+  padding: 1px 0;
 }
 
 .sn-ai-chip {
@@ -11970,8 +12078,8 @@ body.view-ai-active .ai-chat-view-container {
   scroll-snap-align: start;
   padding: 6px 13px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(167, 243, 208, 0.85);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(167, 243, 208, 0.9);
   color: #065f46;
   font-size: 12px;
   font-weight: 700;
@@ -11988,20 +12096,90 @@ body.view-ai-active .ai-chat-view-container {
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.12);
 }
 
+/* ── AI Thread Chat Tràn Viền (Full-Bleed Edge-to-Edge) ── */
 .sn-ai-thread {
+  flex: 1 1 0%;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 320px;
+  gap: 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(229, 231, 235, 0.8);
-  border-radius: 18px;
-  margin-bottom: 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.45);
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sn-ai-thread::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sn-ai-thread::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sn-ai-thread::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.25);
+  border-radius: 999px;
+}
+
+.sn-ai-thread::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.45);
+}
+
+/* Empty placeholder state */
+.sn-ai-thread-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  margin: auto 0;
+  color: var(--gray-600);
+}
+
+.sn-ai-empty-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+  animation: snEmptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes snEmptyFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.sn-ai-empty-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+}
+
+.sn-ai-empty-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--gray-600);
+  max-width: 340px;
+  margin: 0 0 12px 0;
+}
+
+.sn-ai-empty-hint-tag {
+  font-size: 11.5px;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-weight: 700;
 }
 
 .sn-ai-msg {
@@ -12032,9 +12210,23 @@ body.view-ai-active .ai-chat-view-container {
   margin-bottom: 4px;
 }
 
+/* ── Footer: Thanh Nhập Câu Hỏi AI Pinned Bottom ── */
+.sn-ai-card-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1.5px solid rgba(167, 243, 208, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+}
+
 .sn-ai-input-bar {
   display: flex;
   gap: 8px;
+  align-items: center;
+  width: 100%;
 }
 
 .sn-ai-input-bar input {

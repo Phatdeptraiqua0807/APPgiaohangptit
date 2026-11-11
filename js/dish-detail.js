@@ -54,6 +54,25 @@ function getShuffledDishAIQuestions() {
   return dishAIQuestionsSeed;
 }
 
+// Cuộn đồng bộ cả 2 dòng câu hỏi và cập nhật trạng thái nút mũi tên
+function scrollDishAIChips(delta) {
+  const container = document.getElementById('sn-ai-chips-scroll');
+  if (container) {
+    container.scrollBy({ left: delta, behavior: 'smooth' });
+  }
+}
+
+function syncDishAIChipsScroll(container) {
+  if (!container) return;
+  const wrapper = container.closest('.sn-ai-chips-wrapper');
+  if (!wrapper) return;
+  const leftBtn = wrapper.querySelector('.sn-chips-arrow.left');
+  const rightBtn = wrapper.querySelector('.sn-chips-arrow.right');
+  const maxScroll = container.scrollWidth - container.clientWidth;
+  if (leftBtn) leftBtn.disabled = container.scrollLeft <= 4;
+  if (rightBtn) rightBtn.disabled = container.scrollLeft >= maxScroll - 4;
+}
+
 // =========================================================================
 // 1. HỆ THỐNG PHÂN TÍCH DINH DƯỠNG, NGUYÊN LIỆU & AN TOÀN THỰC PHẨM THEO MÓN
 // =========================================================================
@@ -1334,250 +1353,289 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
   const apiReady = (typeof isExternalAPIConfigured === 'function') && isExternalAPIConfigured();
 
   return `
-    <div class="sn-nutrition-tab-wrap">
-      <!-- Khối 1 (ĐƯA LÊN ĐẦU): Bảng Dinh dưỡng ước tính chi tiết -->
-      <div class="sn-card">
-        <div class="sn-card-title-row">
-          <span class="sn-card-heading">${FluentIcons.histogram} Bảng giá trị dinh dưỡng ước tính (1 khẩu phần)</span>
-          ${dynNutri.hasExtra ? `<span class="sn-sub-badge">Đã tính Cỡ/Topping đang chọn</span>` : ''}
-        </div>
-
-        <div class="sn-kcal-banner">
-          <div>
-            <div class="sn-kcal-lbl">Năng lượng ước tính (Calories)</div>
-            <div class="sn-kcal-val">${dynNutri.calories} <span>kcal</span></div>
+    <div class="sn-nutrition-tab-wrap sn-two-col-layout">
+      <!-- CỘT 1: CÁC THÔNG TIN DINH DƯỠNG & NGUYÊN LIỆU -->
+      <div class="sn-nutrition-info-col">
+        <!-- Khối 1 (ĐƯA LÊN ĐẦU): Bảng Dinh dưỡng ước tính chi tiết -->
+        <div class="sn-card">
+          <div class="sn-card-title-row">
+            <span class="sn-card-heading">${FluentIcons.histogram} Bảng giá trị dinh dưỡng ước tính (1 khẩu phần)</span>
+            ${dynNutri.hasExtra ? `<span class="sn-sub-badge">Đã tính Cỡ/Topping đang chọn</span>` : ''}
           </div>
-          <div class="sn-kcal-dv">
-            <strong>${dailyCalPct}%</strong>
-            <span>% Nhu cầu/ngày</span>
-          </div>
-        </div>
 
-        <div class="sn-macros-bars">
-          <div class="sn-macro-row">
-            <div class="sn-macro-head">
-              <span>🥩 Chất đạm (Protein)</span>
-              <strong>${dynNutri.protein}g (${protPct}% DV)</strong>
+          <div class="sn-kcal-banner">
+            <div>
+              <div class="sn-kcal-lbl">Năng lượng ước tính (Calories)</div>
+              <div class="sn-kcal-val">${dynNutri.calories} <span>kcal</span></div>
             </div>
-            <div class="sn-bar-bg"><div class="sn-bar-fill prot" style="width:${protPct}%;"></div></div>
-          </div>
-
-          <div class="sn-macro-row">
-            <div class="sn-macro-head">
-              <span>🌾 Tinh bột (Carbohydrates)</span>
-              <strong>${dynNutri.carbs}g (${carbPct}% DV)</strong>
+            <div class="sn-kcal-dv">
+              <strong>${dailyCalPct}%</strong>
+              <span>% Nhu cầu/ngày</span>
             </div>
-            <div class="sn-bar-bg"><div class="sn-bar-fill carb" style="width:${carbPct}%;"></div></div>
           </div>
 
-          <div class="sn-macro-row">
-            <div class="sn-macro-head">
-              <span>🥑 Chất béo tổng (Total Fat)</span>
-              <strong>${dynNutri.fat}g (${fatPct}% DV)</strong>
+          <div class="sn-macros-bars">
+            <div class="sn-macro-row">
+              <div class="sn-macro-head">
+                <span>🥩 Chất đạm (Protein)</span>
+                <strong>${dynNutri.protein}g (${protPct}% DV)</strong>
+              </div>
+              <div class="sn-bar-bg"><div class="sn-bar-fill prot" style="width:${protPct}%;"></div></div>
             </div>
-            <div class="sn-bar-bg"><div class="sn-bar-fill fat" style="width:${fatPct}%;"></div></div>
-          </div>
 
-          <div class="sn-macro-row">
-            <div class="sn-macro-head">
-              <span>🥬 Chất xơ tự nhiên (Dietary Fiber)</span>
-              <strong>${dynNutri.fiber}g (${fiberPct}% DV)</strong>
+            <div class="sn-macro-row">
+              <div class="sn-macro-head">
+                <span>🌾 Tinh bột (Carbohydrates)</span>
+                <strong>${dynNutri.carbs}g (${carbPct}% DV)</strong>
+              </div>
+              <div class="sn-bar-bg"><div class="sn-bar-fill carb" style="width:${carbPct}%;"></div></div>
             </div>
-            <div class="sn-bar-bg"><div class="sn-bar-fill fiber" style="width:${fiberPct}%;"></div></div>
-          </div>
-        </div>
 
-        <div class="sn-micros-grid">
-          <div class="sn-micro-box">
-            <span class="m-lbl">Muối khoáng (Natri)</span>
-            <strong class="m-val">~${dynNutri.sodium} mg</strong>
-          </div>
-          <div class="sn-micro-box">
-            <span class="m-lbl">Đường tổng số</span>
-            <strong class="m-val">~${dynNutri.sugar} g</strong>
-          </div>
-          <div class="sn-micro-box">
-            <span class="m-lbl">Thời điểm ăn tốt nhất</span>
-            <strong class="m-val">${escapeHtml(profile.bestTime)}</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Khối 2: Đánh giá Healthy & Khuyến nghị đối tượng -->
-      <div class="sn-card">
-        <div class="sn-card-title-row">
-          <span class="sn-card-heading">🌿 Đánh giá tổng thể Mức độ Healthy</span>
-          <span class="sn-healthy-pill" style="background:${profile.healthyColor}18; color:${profile.healthyColor}; border-color:${profile.healthyColor}55;">
-            Điểm Healthy: ${profile.healthyScore}/10
-          </span>
-        </div>
-
-        <p class="sn-lead-summary">
-          <strong>${escapeHtml(dish.name)}</strong> được xếp nhóm <strong>${escapeHtml(profile.healthyLevel)}</strong>.
-          Một khẩu phần cung cấp khoảng <strong>${dynNutri.calories} kcal</strong> (tương đương <strong>${dailyCalPct}%</strong> nhu cầu năng lượng trung bình 2.000 kcal/ngày của người trưởng thành).
-        </p>
-
-        <div class="pdp-sn-highlights-grid" style="margin-top: 12px;">
-          <div class="pdp-sn-highlight-item">
-            <div class="sn-hl-label">👥 Đặc biệt tốt cho ai:</div>
-            <ul class="sn-hl-list">
-              ${profile.goodFor.map(g => `<li>${escapeHtml(g)}</li>`).join('')}
-            </ul>
-          </div>
-          <div class="pdp-sn-highlight-item">
-            <div class="sn-hl-label">💊 Dưỡng chất bổ sung & Lưu ý dị ứng:</div>
-            <div class="sn-supp-tags">
-              ${profile.supplements.map(s => `<span class="sn-supp-chip">✓ ${escapeHtml(s)}</span>`).join('')}
+            <div class="sn-macro-row">
+              <div class="sn-macro-head">
+                <span>🥑 Chất béo tổng (Total Fat)</span>
+                <strong>${dynNutri.fat}g (${fatPct}% DV)</strong>
+              </div>
+              <div class="sn-bar-bg"><div class="sn-bar-fill fat" style="width:${fatPct}%;"></div></div>
             </div>
-            <div class="sn-allergen-note">
-              ⚠️ <strong>Lưu ý thành phần mẫn cảm:</strong> ${escapeHtml(profile.allergens.join(' • '))}
+
+            <div class="sn-macro-row">
+              <div class="sn-macro-head">
+                <span>🥬 Chất xơ tự nhiên (Dietary Fiber)</span>
+                <strong>${dynNutri.fiber}g (${fiberPct}% DV)</strong>
+              </div>
+              <div class="sn-bar-bg"><div class="sn-bar-fill fiber" style="width:${fiberPct}%;"></div></div>
+            </div>
+          </div>
+
+          <div class="sn-micros-grid">
+            <div class="sn-micro-box">
+              <span class="m-lbl">Muối khoáng (Natri)</span>
+              <strong class="m-val">~${dynNutri.sodium} mg</strong>
+            </div>
+            <div class="sn-micro-box">
+              <span class="m-lbl">Đường tổng số</span>
+              <strong class="m-val">~${dynNutri.sugar} g</strong>
+            </div>
+            <div class="sn-micro-box">
+              <span class="m-lbl">Thời điểm ăn tốt nhất</span>
+              <strong class="m-val">${escapeHtml(profile.bestTime)}</strong>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Khối 3: Miêu tả chi tiết các Nguyên liệu nấu ăn -->
-      <div class="sn-card">
-        <div class="sn-card-title-row">
-          <span class="sn-card-heading">🥘 Nguyên liệu nấu ăn & Thành phần chế biến</span>
-          <span class="sn-sub-badge">Sơ chế tươi trong ngày</span>
+        <!-- Khối 2: Đánh giá Healthy & Khuyến nghị đối tượng -->
+        <div class="sn-card">
+          <div class="sn-card-title-row">
+            <span class="sn-card-heading">🌿 Đánh giá tổng thể Mức độ Healthy</span>
+            <span class="sn-healthy-pill" style="background:${profile.healthyColor}18; color:${profile.healthyColor}; border-color:${profile.healthyColor}55;">
+              Điểm Healthy: ${profile.healthyScore}/10
+            </span>
+          </div>
+
+          <p class="sn-lead-summary">
+            <strong>${escapeHtml(dish.name)}</strong> được xếp nhóm <strong>${escapeHtml(profile.healthyLevel)}</strong>.
+            Một khẩu phần cung cấp khoảng <strong>${dynNutri.calories} kcal</strong> (tương đương <strong>${dailyCalPct}%</strong> nhu cầu năng lượng trung bình 2.000 kcal/ngày của người trưởng thành).
+          </p>
+
+          <div class="pdp-sn-highlights-grid" style="margin-top: 12px;">
+            <div class="pdp-sn-highlight-item">
+              <div class="sn-hl-label">👥 Đặc biệt tốt cho ai:</div>
+              <ul class="sn-hl-list">
+                ${profile.goodFor.map(g => `<li>${escapeHtml(g)}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="pdp-sn-highlight-item">
+              <div class="sn-hl-label">💊 Dưỡng chất bổ sung & Lưu ý dị ứng:</div>
+              <div class="sn-supp-tags">
+                ${profile.supplements.map(s => `<span class="sn-supp-chip">✓ ${escapeHtml(s)}</span>`).join('')}
+              </div>
+              <div class="sn-allergen-note">
+                ⚠️ <strong>Lưu ý thành phần mẫn cảm:</strong> ${escapeHtml(profile.allergens.join(' • '))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="sn-ingredients-list">
-          ${profile.ingredients.map(ing => `
-            <div class="sn-ingredient-row">
-              <div class="sn-ing-icon">${ing.icon}</div>
-              <div class="sn-ing-body">
-                <div class="sn-ing-top">
-                  <strong class="sn-ing-name">${escapeHtml(ing.name)}</strong>
-                  <span class="sn-ing-amount">~${escapeHtml(ing.amount)}</span>
+        <!-- Khối 3: Miêu tả chi tiết các Nguyên liệu nấu ăn -->
+        <div class="sn-card">
+          <div class="sn-card-title-row">
+            <span class="sn-card-heading">🥘 Nguyên liệu nấu ăn & Thành phần chế biến</span>
+            <span class="sn-sub-badge">Sơ chế tươi trong ngày</span>
+          </div>
+
+          <div class="sn-ingredients-list">
+            ${profile.ingredients.map(ing => `
+              <div class="sn-ingredient-row">
+                <div class="sn-ing-icon">${ing.icon}</div>
+                <div class="sn-ing-body">
+                  <div class="sn-ing-top">
+                    <strong class="sn-ing-name">${escapeHtml(ing.name)}</strong>
+                    <span class="sn-ing-amount">~${escapeHtml(ing.amount)}</span>
+                  </div>
+                  <div class="sn-ing-origin">📍 Nguồn gốc: ${escapeHtml(ing.origin)}</div>
+                  <div class="sn-ing-role">${FluentIcons.sparkleFilled} Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
                 </div>
-                <div class="sn-ing-origin">📍 Nguồn gốc: ${escapeHtml(ing.origin)}</div>
-                <div class="sn-ing-role">${FluentIcons.sparkleFilled} Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- Khối 4: THANH HỎI BẰNG AI TRỰC TIẾP VỀ MÓN ĂN NÀY -->
-      <div class="sn-card sn-ai-ask-card" id="sn-dish-ai-box">
-        <!-- Aura Halo nền pastel di chuyển hình sin nhẹ nhàng khi AI đang suy luận hoặc phân tích -->
-        <div class="sn-dish-ai-aura ${dishAIIsThinking ? 'active' : ''}" aria-hidden="true">
-          <span class="sn-aura-wave w1"></span>
-          <span class="sn-aura-wave w2"></span>
-          <span class="sn-aura-wave w3"></span>
-          <span class="sn-aura-wave w4"></span>
-          <span class="sn-aura-wave w5"></span>
-        </div>
-
-        <div class="sn-ai-ask-header">
-          <div class="sn-ai-ask-title">
-            <span class="sn-ai-sparkle">🤖</span>
-            <div class="sn-ai-ask-title-text">
-              <div class="sn-card-heading">Hỏi AI Chuyên Gia về "${escapeHtml(dish.name)}"</div>
-              <div class="sn-ai-sub">
-                Tư vấn calo, dinh dưỡng, dị ứng & cách ăn chuẩn lành mạnh
-              </div>
-            </div>
-          </div>
-          <button type="button" class="ai-api-status-btn compact ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
-            <span class="ai-api-status-icon">${FluentIcons.settingsOutline}</span>
-            <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
-          </button>
-        </div>
-
-        <!-- Các câu hỏi gợi ý chia 2 dòng lướt ngang ngẫu nhiên, gọn gàng -->
-        ${(() => {
-          const qData = getShuffledDishAIQuestions();
-          return `
-            <div class="sn-ai-chips-scroll-container" data-lenis-prevent>
-              <div class="sn-ai-chips-track">
-                ${qData.row1.map(qIdx => {
-                  const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
-                  return `
-                    <button
-                      type="button"
-                      class="sn-ai-chip"
-                      onclick="askDishAIQuickQuestion(${qIdx})"
-                      ${dishAIIsThinking ? 'disabled' : ''}
-                    >
-                      ${escapeHtml(qText)}
-                    </button>
-                  `;
-                }).join('')}
-              </div>
-              <div class="sn-ai-chips-track">
-                ${qData.row2.map(qIdx => {
-                  const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
-                  return `
-                    <button
-                      type="button"
-                      class="sn-ai-chip"
-                      onclick="askDishAIQuickQuestion(${qIdx})"
-                      ${dishAIIsThinking ? 'disabled' : ''}
-                    >
-                      ${escapeHtml(qText)}
-                    </button>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          `;
-        })()}
-
-        <!-- Khung hiển thị hội thoại AI về món ăn -->
-        ${logs.length > 0 || dishAIIsThinking ? `
-          <div class="sn-ai-thread" id="sn-ai-thread" data-lenis-prevent>
-            ${logs.map((entry, idx) => `
-              <div class="sn-ai-msg ${entry.role}">
-                <div class="sn-ai-msg-badge">${entry.role === 'user' ? '🧑‍🎓 Bạn hỏi' : '🤖 AI Dinh dưỡng trả lời'}</div>
-                <div class="sn-ai-msg-text">${entry.role === 'user' ? escapeHtml(entry.text) : formatAIMarkdown(entry.text)}</div>
-                ${entry.role === 'assistant' ? `
-                  <button type="button" class="sn-ai-retry-btn" onclick="retryDishAIQuestion('${escapeHtml(dish.id)}', ${idx})" title="Hỏi lại câu hỏi này">
-                    ${FluentIcons.sync} Hỏi lại
-                  </button>
-                ` : ''}
               </div>
             `).join('')}
-            ${dishAIIsThinking ? `
-              <div class="sn-ai-msg assistant">
-                <div class="sn-ai-msg-badge">🤖 AI đang phân tích thành phần món ăn...</div>
-                <div class="ai-typing-indicator" style="margin-top:4px;"><span></span><span></span><span></span></div>
-              </div>
-            ` : ''}
           </div>
-        ` : ''}
+        </div>
+      </div>
 
-        <!-- Thanh nhập câu hỏi AI ngay tại chỗ -->
-        <div class="sn-ai-input-bar">
-          <input
-            type="text"
-            id="sn-dish-ai-input"
-            placeholder="Nhập câu hỏi về món ${escapeHtml(dish.name)} (VD: Đau dạ dày ăn món này được không?)..."
-            value="${escapeHtml(dishAIDraftQuestion)}"
-            oninput="dishAIDraftQuestion = this.value"
-            onkeydown="handleDishAIInputKeydown(event)"
-            ${dishAIIsThinking ? 'disabled' : ''}
-          >
-          ${dishAIIsThinking ? `
-            <button
-              type="button"
-              class="sn-ai-stop-btn"
-              onclick="stopDishAIGeneration()"
-              title="Dừng hỏi AI (Esc)"
-            >
-              ⏹ Dừng
+      <!-- CỘT 2: TRỢ LÝ AI CHUYÊN GIA (TỐI ƯU DIỆN TÍCH HIỂN THỊ, THREAD TRÀN VIỀN, FOOTER INPUT BAR) -->
+      <div class="sn-nutrition-ai-col">
+        <!-- Khối 4: THANH HỎI BẰNG AI TRỰC TIẾP VỀ MÓN ĂN NÀY -->
+        <div class="sn-card sn-ai-ask-card" id="sn-dish-ai-box">
+          <!-- Aura Halo nền pastel di chuyển hình sin nhẹ nhàng khi AI đang suy luận hoặc phân tích -->
+          <div class="sn-dish-ai-aura ${dishAIIsThinking ? 'active' : ''}" aria-hidden="true">
+            <span class="sn-aura-wave w1"></span>
+            <span class="sn-aura-wave w2"></span>
+            <span class="sn-aura-wave w3"></span>
+            <span class="sn-aura-wave w4"></span>
+            <span class="sn-aura-wave w5"></span>
+          </div>
+
+          <div class="sn-ai-ask-header">
+            <div class="sn-ai-ask-title">
+              <span class="sn-ai-sparkle">🤖</span>
+              <div class="sn-ai-ask-title-text">
+                <div class="sn-card-heading">Hỏi AI Chuyên Gia về "${escapeHtml(dish.name)}"</div>
+                <div class="sn-ai-sub">
+                  Tư vấn calo, dinh dưỡng, dị ứng & cách ăn chuẩn lành mạnh
+                </div>
+              </div>
+            </div>
+            <button type="button" class="ai-api-status-btn compact ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
+              <span class="ai-api-status-icon">${FluentIcons.settingsOutline}</span>
+              <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
             </button>
-          ` : `
-            <button
-              type="button"
-              class="sn-ai-send-btn"
-              onclick="submitDishAIQuestion()"
-            >
-              Hỏi AI ${FluentIcons.sparkleFilled}
-            </button>
-          `}
+          </div>
+
+          <!-- Các câu hỏi gợi ý 2 dòng lướt đồng bộ (có nút scroll-arrow-btn thông minh hiện khi hover) -->
+          ${(() => {
+            const qData = getShuffledDishAIQuestions();
+            return `
+              <div class="sn-ai-chips-wrapper">
+                <button
+                  type="button"
+                  class="scroll-arrow-btn small sn-chips-arrow left"
+                  onclick="scrollDishAIChips(-260)"
+                  title="Cuộn sang trái"
+                  aria-label="Cuộn sang trái"
+                >
+                  ${FluentIcons.chevronLeft}
+                </button>
+                <div class="sn-ai-chips-scroll-container" id="sn-ai-chips-scroll" onscroll="syncDishAIChipsScroll(this)" data-lenis-prevent>
+                  <div class="sn-ai-chips-track">
+                    ${qData.row1.map(qIdx => {
+                      const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+                      return `
+                        <button
+                          type="button"
+                          class="sn-ai-chip"
+                          onclick="askDishAIQuickQuestion(${qIdx})"
+                          ${dishAIIsThinking ? 'disabled' : ''}
+                        >
+                          ${escapeHtml(qText)}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                  <div class="sn-ai-chips-track">
+                    ${qData.row2.map(qIdx => {
+                      const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+                      return `
+                        <button
+                          type="button"
+                          class="sn-ai-chip"
+                          onclick="askDishAIQuickQuestion(${qIdx})"
+                          ${dishAIIsThinking ? 'disabled' : ''}
+                        >
+                          ${escapeHtml(qText)}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="scroll-arrow-btn small sn-chips-arrow right"
+                  onclick="scrollDishAIChips(260)"
+                  title="Cuộn sang phải"
+                  aria-label="Cuộn sang phải"
+                >
+                  ${FluentIcons.chevronRight}
+                </button>
+              </div>
+            `;
+          })()}
+
+          <!-- Khung hiển thị hội thoại AI tràn viền (Full-bleed edge-to-edge chat thread) -->
+          <div class="sn-ai-thread ${logs.length === 0 && !dishAIIsThinking ? 'is-empty' : ''}" id="sn-ai-thread" data-lenis-prevent>
+            ${logs.length === 0 && !dishAIIsThinking ? `
+              <div class="sn-ai-thread-empty">
+                <div class="sn-ai-empty-icon">🥗🤖</div>
+                <div class="sn-ai-empty-title">Chuyên Gia Dinh Dưỡng Sẵn Sàng</div>
+                <p class="sn-ai-empty-desc">
+                  Giải đáp chi tiết về calo, chất đạm/béo, chế độ ăn (eat clean, gym, tiểu đường, dạ dày...) cho món <strong>${escapeHtml(dish.name)}</strong>.
+                </p>
+                <div class="sn-ai-empty-hint-tag">
+                  💡 Nhấp vào câu hỏi gợi ý bên trên hoặc đặt câu hỏi bên dưới
+                </div>
+              </div>
+            ` : `
+              ${logs.map((entry, idx) => `
+                <div class="sn-ai-msg ${entry.role}">
+                  <div class="sn-ai-msg-badge">${entry.role === 'user' ? '🧑‍🎓 Bạn hỏi' : '🤖 AI Dinh dưỡng trả lời'}</div>
+                  <div class="sn-ai-msg-text">${entry.role === 'user' ? escapeHtml(entry.text) : formatAIMarkdown(entry.text)}</div>
+                  ${entry.role === 'assistant' ? `
+                    <button type="button" class="sn-ai-retry-btn" onclick="retryDishAIQuestion('${escapeHtml(dish.id)}', ${idx})" title="Hỏi lại câu hỏi này">
+                      ${FluentIcons.sync} Hỏi lại
+                    </button>
+                  ` : ''}
+                </div>
+              `).join('')}
+              ${dishAIIsThinking ? `
+                <div class="sn-ai-msg assistant">
+                  <div class="sn-ai-msg-badge">🤖 AI đang phân tích thành phần món ăn...</div>
+                  <div class="ai-typing-indicator" style="margin-top:4px;"><span></span><span></span><span></span></div>
+                </div>
+              ` : ''}
+            `}
+          </div>
+
+          <!-- Footer thanh nhập câu hỏi AI ngay tại đáy card -->
+          <div class="sn-ai-card-footer">
+            <div class="sn-ai-input-bar">
+              <input
+                type="text"
+                id="sn-dish-ai-input"
+                placeholder="Nhập câu hỏi về món ${escapeHtml(dish.name)} (VD: Đau dạ dày ăn được không?)..."
+                value="${escapeHtml(dishAIDraftQuestion)}"
+                oninput="dishAIDraftQuestion = this.value"
+                onkeydown="handleDishAIInputKeydown(event)"
+                ${dishAIIsThinking ? 'disabled' : ''}
+              >
+              ${dishAIIsThinking ? `
+                <button
+                  type="button"
+                  class="sn-ai-stop-btn"
+                  onclick="stopDishAIGeneration()"
+                  title="Dừng hỏi AI (Esc)"
+                >
+                  ⏹ Dừng
+                </button>
+              ` : `
+                <button
+                  type="button"
+                  class="sn-ai-send-btn"
+                  onclick="submitDishAIQuestion()"
+                >
+                  Hỏi AI ${FluentIcons.sparkleFilled}
+                </button>
+              `}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1817,7 +1875,13 @@ async function submitDishAIQuestion(overrideQ = null) {
   dishAIChatLogs[dish.id].push({ role: 'user', text: question });
 
   dishAIIsThinking = true;
-  if (currentView === 'dish-safety-nutrition') renderDishSafetyNutritionView();
+  if (currentView === 'dish-safety-nutrition') {
+    renderDishSafetyNutritionView();
+    setTimeout(() => {
+      const thread = document.getElementById('sn-ai-thread');
+      if (thread) thread.scrollTop = thread.scrollHeight;
+    }, 40);
+  }
 
   try {
     let answerText = '';
@@ -1841,8 +1905,10 @@ async function submitDishAIQuestion(overrideQ = null) {
     if (currentView === 'dish-safety-nutrition') {
       renderDishSafetyNutritionView();
       setTimeout(() => {
+        const thread = document.getElementById('sn-ai-thread');
+        if (thread) thread.scrollTop = thread.scrollHeight;
         const box = document.getElementById('sn-dish-ai-box');
-        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        if (box && window.innerWidth <= 960) box.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }, 40);
     }
   }
