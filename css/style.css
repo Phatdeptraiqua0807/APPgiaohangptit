@@ -16295,11 +16295,11 @@ body.view-ai-active .ai-chat-view-container {
 
 
 /* ==========================================================================
-   AI AURA HALO — Nền huyền ảo khi AI suy luận (2 giai đoạn chuyển màu nhanh)
-   - Giai đoạn 1 (phase="1"): Xanh lá ngọc & Xanh dương
-   - Giai đoạn 2 (phase="2"): Tím, Hồng & Màu be (Beige ấm)
-   - Tâm halo nằm ở phía trên ~25% từ đỉnh (dịch lên ~50% so với giữa màn hình)
-   - Chuyển màu nhanh (0.55s), các quầng sáng di chuyển nhanh & linh hoạt (~2.5s)
+   AI AURA HALO — Các quầng màu nối tiếp nhau chạy từ phải sang trái
+   theo quỹ đạo đồ thị hình sin biên độ nhỏ dần (Damped Sine Wave)
+   - Giai đoạn 1 (phase="1"): Xanh lá ngọc -> Xanh dương -> Xanh lam sáng
+   - Giai đoạn 2 (phase="2"): Tím Violet -> Hồng Rose -> Màu Be (Warm Beige)
+   - Vị trí trục sin ở phía trên ~24% từ đỉnh màn hình
    - Luôn fade-in / fade-out mượt bằng CSS transition trên DOM cố định
    ========================================================================== */
 body.view-ai-active .ai-chat-view-container {
@@ -16314,22 +16314,22 @@ body.view-ai-active .ai-chat-view-container {
   pointer-events: none;
   overflow: hidden;
   opacity: 0;
-  transform: translateY(-8px) scale(0.96);
+  transform: translateY(-6px) scale(0.98);
   filter: brightness(1) saturate(1);
   transition:
     opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
     transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
     filter 1.6s ease;
   will-change: opacity, transform;
-  --aura-speed: 2.5s;
-  --aura-blur: 62px;
+  --aura-wave-duration: 5.6s;
+  --aura-blur: 88px;
 }
 
 /* Khi đang ở trang AI và AI đang suy luận: Fade-in mượt mà */
 body.view-ai-active .ai-aura[data-state="active"] {
   opacity: 1;
   transform: translateY(0) scale(1);
-  filter: brightness(1.04) saturate(1.08);
+  filter: blur(8px) brightness(1.02);
   transition:
     opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
     transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -16339,8 +16339,8 @@ body.view-ai-active .ai-aura[data-state="active"] {
 /* Khi trả lời xong: Fade-out êm dịu (1.6s) */
 .ai-aura[data-state="idle"] {
   opacity: 0;
-  transform: translateY(-10px) scale(1.02);
-  filter: brightness(1.08) saturate(1.1);
+  transform: translateY(-8px) scale(1.01);
+  filter: brightness(1.06) saturate(1.08);
   transition:
     opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
     transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
@@ -16350,7 +16350,7 @@ body.view-ai-active .ai-aura[data-state="active"] {
 /* Khi ấn nút Dừng (Stop): Fade-out nhanh hơn 1 xíu (0.9s) nhưng vẫn mượt, không dừng đột ngột */
 .ai-aura[data-state="stopping"] {
   opacity: 0;
-  transform: translateY(-6px) scale(0.98);
+  transform: translateY(-4px) scale(0.98);
   filter: brightness(1) saturate(1);
   transition:
     opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
@@ -16370,28 +16370,40 @@ body:not(.view-ai-active) .ai-aura {
   }
 }
 
-/* Hai lớp bảng màu chuyển đổi nhanh (0.55s) để không bị rối 4 màu cùng lúc */
+/* Hai lớp bảng màu chuyển đổi mượt (0.9s) */
 .ai-aura-palette {
   position: absolute;
   inset: 0;
-  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity;
 }
 
-/* Giai đoạn 1: Xanh lá ngọc & Xanh dương */
+/* Giai đoạn 1: Dải 9 sắc độ pastel dịu nhẹ (Xanh lá -> Ngọc lục bảo -> Ngọc bích -> Lam ngọc -> Xanh thiên thanh -> Xanh dương -> Ngọc biển) */
 .ai-aura-palette.p1 {
   opacity: 1;
-  --c1: rgba(16, 185, 129, 0.42);   /* Xanh lá ngọc */
-  --c2: rgba(14, 165, 233, 0.40);   /* Xanh dương */
-  --c3: rgba(56, 189, 248, 0.34);   /* Xanh lam sáng */
+  --c1: rgba(34, 197, 94, 0.16);    /* 1. Xanh lá non */
+  --c2: rgba(16, 185, 129, 0.16);   /* 2. Xanh lục ngọc (trung gian) */
+  --c3: rgba(20, 184, 166, 0.16);   /* 3. Xanh ngọc bích / Teal (trung gian) */
+  --c4: rgba(6, 182, 212, 0.16);    /* 4. Xanh lam ngọc / Cyan (trung gian) */
+  --c5: rgba(14, 165, 233, 0.17);   /* 5. Xanh thiên thanh / Sky */
+  --c6: rgba(59, 130, 246, 0.15);   /* 6. Xanh dương dịu */
+  --c7: rgba(56, 189, 248, 0.16);   /* 7. Xanh lam sáng (trung gian quay về) */
+  --c8: rgba(45, 212, 191, 0.16);   /* 8. Xanh ngọc biển (trung gian) */
+  --c9: rgba(52, 211, 153, 0.16);   /* 9. Xanh bạc hà nối êm về Xanh lá */
 }
 
-/* Giai đoạn 2: Tím, Hồng & Màu be (Beige ấm) */
+/* Giai đoạn 2: Dải 9 sắc độ pastel dịu nhẹ (Tím -> Tím lan -> Tím hồng -> Hồng -> San hô -> Đào -> Kem mơ -> Màu Be -> Oải hương) */
 .ai-aura-palette.p2 {
   opacity: 0;
-  --c1: rgba(139, 92, 246, 0.40);   /* Tím Violet */
-  --c2: rgba(236, 72, 153, 0.36);   /* Hồng Rose */
-  --c3: rgba(235, 198, 150, 0.46);  /* Màu Be (Warm Beige) */
+  --c1: rgba(139, 92, 246, 0.15);   /* 1. Tím Violet */
+  --c2: rgba(168, 85, 247, 0.15);   /* 2. Tím Orchid (trung gian) */
+  --c3: rgba(217, 70, 239, 0.14);   /* 3. Tím hồng Fuchsia (trung gian) */
+  --c4: rgba(236, 72, 153, 0.15);   /* 4. Hồng Rose */
+  --c5: rgba(244, 114, 182, 0.16);  /* 5. Hồng phấn Coral (trung gian) */
+  --c6: rgba(251, 146, 160, 0.17);  /* 6. Hồng cam đào / Peach (trung gian) */
+  --c7: rgba(246, 182, 142, 0.19);  /* 7. Cam kem Apricot (trung gian sang Be) */
+  --c8: rgba(235, 202, 158, 0.22);  /* 8. Màu Be ấm (Warm Beige) */
+  --c9: rgba(196, 148, 238, 0.15);  /* 9. Tím oải hương kem nối êm về Tím */
 }
 
 .ai-aura[data-phase="2"] .ai-aura-palette.p1 {
@@ -16402,89 +16414,125 @@ body:not(.view-ai-active) .ai-aura {
   opacity: 1;
 }
 
-.ai-aura-blob {
+/* Mỗi quầng sáng kéo dài theo phương ngang và chuyển sắc vô cực siêu mịn (gradient đa tầng không biên) */
+.ai-aura-wave {
   position: absolute;
-  width: 50vmax;
-  height: 50vmax;
-  border-radius: 50%;
-  filter: blur(var(--aura-blur));
-  mix-blend-mode: multiply;
-  will-change: transform;
-}
-
-/* Các quầng màu tập trung ở nửa trên (~25% từ đỉnh màn hình) và di chuyển nhanh */
-.ai-aura-blob.b1 {
-  top: -22%;
-  left: -10%;
-  background: radial-gradient(circle, var(--c1) 0%, transparent 66%);
-  animation: aiAuraDrift1 var(--aura-speed) ease-in-out infinite alternate;
-}
-
-.ai-aura-blob.b2 {
-  top: -16%;
-  right: -14%;
-  background: radial-gradient(circle, var(--c2) 0%, transparent 66%);
-  animation: aiAuraDrift2 calc(var(--aura-speed) * 1.15) ease-in-out infinite alternate;
-}
-
-.ai-aura-blob.b3 {
-  top: 2%;
-  left: 14%;
-  background: radial-gradient(circle, var(--c3) 0%, transparent 66%);
-  animation: aiAuraDrift3 calc(var(--aura-speed) * 0.9) ease-in-out infinite alternate;
-}
-
-/* Quầng halo xoay nhanh ở vùng phía trên (~25% từ đỉnh thay vì 50% ở giữa) */
-.ai-aura-ring {
-  position: absolute;
-  top: 25%;
+  top: 24%;
   left: 50%;
-  width: 68vmin;
-  height: 68vmin;
-  margin: -34vmin 0 0 -34vmin;
+  width: 60vmax;
+  height: 44vmax;
+  margin: -22vmax 0 0 -30vmax;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    var(--c1) 0deg,
-    var(--c2) 120deg,
-    var(--c3) 240deg,
-    var(--c1) 360deg
+  background: radial-gradient(
+    ellipse 140% 115% at 50% 50%,
+    var(--ca) 0%,
+    var(--cb) 38%,
+    rgba(255, 255, 255, 0.05) 60%,
+    transparent 78%
   );
-  filter: blur(46px);
-  opacity: 0.7;
-  animation: aiAuraSpin 2.2s linear infinite, aiAuraBreath 1.4s ease-in-out infinite;
+  filter: blur(var(--aura-blur));
+  mix-blend-mode: normal;
+  will-change: transform, opacity;
+  animation: aiAuraDampedSine var(--aura-wave-duration) cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
-@keyframes aiAuraDrift1 {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(22vw, 10vh) scale(1.22); }
-  100% { transform: translate(-8vw, 20vh) scale(0.92); }
+/* 9 quầng màu mang 9 dải sắc độ trung gian nối tiếp nhau mượt như dải cực quang */
+.ai-aura-wave.w1 {
+  --ca: var(--c1);
+  --cb: var(--c2);
+  animation-delay: 0s;
 }
 
-@keyframes aiAuraDrift2 {
-  0% { transform: translate(0, 0) scale(1.06); }
-  50% { transform: translate(-24vw, 12vh) scale(0.88); }
-  100% { transform: translate(8vw, 18vh) scale(1.2); }
+.ai-aura-wave.w2 {
+  --ca: var(--c2);
+  --cb: var(--c3);
+  animation-delay: calc(var(--aura-wave-duration) * -0.1111);
 }
 
-@keyframes aiAuraDrift3 {
-  0% { transform: translate(0, 0) scale(0.94); }
-  50% { transform: translate(20vw, -12vh) scale(1.18); }
-  100% { transform: translate(-16vw, 10vh) scale(1.04); }
+.ai-aura-wave.w3 {
+  --ca: var(--c3);
+  --cb: var(--c4);
+  animation-delay: calc(var(--aura-wave-duration) * -0.2222);
 }
 
-@keyframes aiAuraSpin {
-  to { transform: rotate(360deg); }
+.ai-aura-wave.w4 {
+  --ca: var(--c4);
+  --cb: var(--c5);
+  animation-delay: calc(var(--aura-wave-duration) * -0.3333);
 }
 
-@keyframes aiAuraBreath {
-  0%, 100% { scale: 0.9; }
-  50% { scale: 1.16; }
+.ai-aura-wave.w5 {
+  --ca: var(--c5);
+  --cb: var(--c6);
+  animation-delay: calc(var(--aura-wave-duration) * -0.4444);
+}
+
+.ai-aura-wave.w6 {
+  --ca: var(--c6);
+  --cb: var(--c7);
+  animation-delay: calc(var(--aura-wave-duration) * -0.5556);
+}
+
+.ai-aura-wave.w7 {
+  --ca: var(--c7);
+  --cb: var(--c8);
+  animation-delay: calc(var(--aura-wave-duration) * -0.6667);
+}
+
+.ai-aura-wave.w8 {
+  --ca: var(--c8);
+  --cb: var(--c9);
+  animation-delay: calc(var(--aura-wave-duration) * -0.7778);
+}
+
+.ai-aura-wave.w9 {
+  --ca: var(--c9);
+  --cb: var(--c1);
+  animation-delay: calc(var(--aura-wave-duration) * -0.8889);
+}
+
+/* Quỹ đạo đồ thị hình sin biên độ nhỏ dần từ phải (+46vw) sang trái (-48vw):
+   Được nội suy mượt mà từng nấc nhỏ, giúp dải màu trôi êm như mây lượn */
+@keyframes aiAuraDampedSine {
+  0% {
+    transform: translate3d(46vw, 0vh, 0) scale(1.15);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.7;
+  }
+  14% {
+    transform: translate3d(33vw, -13vh, 0) scale(1.1);
+    opacity: 0.95;
+  }
+  28% {
+    transform: translate3d(19vw, 10.5vh, 0) scale(1.02);
+    opacity: 1;
+  }
+  44% {
+    transform: translate3d(4vw, -7.5vh, 0) scale(0.93);
+    opacity: 0.95;
+  }
+  60% {
+    transform: translate3d(-11vw, 5vh, 0) scale(0.83);
+    opacity: 0.9;
+  }
+  76% {
+    transform: translate3d(-26vw, -2.8vh, 0) scale(0.72);
+    opacity: 0.75;
+  }
+  90% {
+    transform: translate3d(-39vw, 1.2vh, 0) scale(0.60);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate3d(-48vw, 0vh, 0) scale(0.48);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-aura-blob,
-  .ai-aura-ring {
+  .ai-aura-wave {
     animation: none !important;
   }
 }

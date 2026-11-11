@@ -285,16 +285,26 @@ function ensureAIAuraElement() {
     el.setAttribute('aria-hidden', 'true');
     el.innerHTML = `
       <div class="ai-aura-palette p1">
-        <span class="ai-aura-blob b1"></span>
-        <span class="ai-aura-blob b2"></span>
-        <span class="ai-aura-blob b3"></span>
-        <span class="ai-aura-ring"></span>
+        <span class="ai-aura-wave w1"></span>
+        <span class="ai-aura-wave w2"></span>
+        <span class="ai-aura-wave w3"></span>
+        <span class="ai-aura-wave w4"></span>
+        <span class="ai-aura-wave w5"></span>
+        <span class="ai-aura-wave w6"></span>
+        <span class="ai-aura-wave w7"></span>
+        <span class="ai-aura-wave w8"></span>
+        <span class="ai-aura-wave w9"></span>
       </div>
       <div class="ai-aura-palette p2">
-        <span class="ai-aura-blob b1"></span>
-        <span class="ai-aura-blob b2"></span>
-        <span class="ai-aura-blob b3"></span>
-        <span class="ai-aura-ring"></span>
+        <span class="ai-aura-wave w1"></span>
+        <span class="ai-aura-wave w2"></span>
+        <span class="ai-aura-wave w3"></span>
+        <span class="ai-aura-wave w4"></span>
+        <span class="ai-aura-wave w5"></span>
+        <span class="ai-aura-wave w6"></span>
+        <span class="ai-aura-wave w7"></span>
+        <span class="ai-aura-wave w8"></span>
+        <span class="ai-aura-wave w9"></span>
       </div>
     `;
     document.body.appendChild(el);
@@ -329,7 +339,7 @@ function startAIAura() {
     }
     const curr = el.dataset.phase === '2' ? '1' : '2';
     el.dataset.phase = curr;
-  }, 1600);
+  }, 2600);
 }
 
 function stopAIAura(isQuickStop = false) {
