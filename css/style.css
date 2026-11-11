@@ -11871,6 +11871,17 @@ body.view-ai-active .ai-chat-view-container {
   animation-play-state: paused;
 }
 
+@media (max-width: 767px) {
+  .sn-dish-ai-aura .sn-aura-wave {
+    top: 32%;
+    /* Hạ xuống thấp hơn một tí trong card món ăn mobile (từ 24% xuống 32%) */
+    width: 28vmax;
+    height: 20vmax;
+    margin: -10vmax 0 0 -14vmax;
+    filter: blur(34px);
+  }
+}
+
 .sn-dish-ai-aura.active .sn-aura-wave {
   animation-play-state: running;
 }
@@ -11880,18 +11891,22 @@ body.view-ai-active .ai-chat-view-container {
   background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(34, 197, 94, 0.32) 0%, rgba(14, 165, 233, 0.28) 42%, transparent 74%);
   animation-delay: 0s;
 }
+
 .sn-dish-ai-aura .sn-aura-wave.w2 {
   background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(14, 165, 233, 0.30) 0%, rgba(139, 92, 246, 0.28) 42%, transparent 74%);
   animation-delay: -1.0s;
 }
+
 .sn-dish-ai-aura .sn-aura-wave.w3 {
   background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(139, 92, 246, 0.28) 0%, rgba(236, 72, 153, 0.28) 42%, transparent 74%);
   animation-delay: -2.0s;
 }
+
 .sn-dish-ai-aura .sn-aura-wave.w4 {
   background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(236, 72, 153, 0.28) 0%, rgba(245, 158, 11, 0.30) 42%, transparent 74%);
   animation-delay: -3.0s;
 }
+
 .sn-dish-ai-aura .sn-aura-wave.w5 {
   background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(235, 202, 158, 0.38) 0%, rgba(16, 185, 129, 0.30) 42%, transparent 74%);
   animation-delay: -4.0s;
@@ -12149,9 +12164,12 @@ body.view-ai-active .ai-chat-view-container {
 }
 
 @keyframes snEmptyFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
@@ -16722,7 +16740,7 @@ body.view-ai-active .ai-chat-view-container {
     filter 1.6s ease;
   will-change: opacity, transform;
   --aura-wave-duration: 5.6s;
-  --aura-blur: 88px;
+  --aura-blur: 45px;
 }
 
 /* Khi đang ở trang AI và AI đang suy luận: Fade-in mượt mà */
@@ -16835,10 +16853,10 @@ body:not(.view-ai-active) .ai-aura {
 /* Mỗi quầng sáng kéo dài theo phương ngang và chuyển sắc vô cực siêu mịn (gradient đa tầng không biên) */
 .ai-aura-wave {
   position: absolute;
-  top: 14%;
-  left: 50%;
-  width: 60vmax;
-  height: 44vmax;
+  top: 28%;
+  left: 60%;
+  width: 20vmax;
+  height: 34vmax;
   margin: -22vmax 0 0 -30vmax;
   border-radius: 50%;
   background: radial-gradient(ellipse 140% 115% at 50% 50%,
@@ -16850,6 +16868,24 @@ body:not(.view-ai-active) .ai-aura {
   mix-blend-mode: normal;
   will-change: transform, opacity;
   animation: aiAuraDampedSine var(--aura-wave-duration) cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@media (max-width: 767px) {
+  .ai-aura {
+    --aura-blur: 30px;
+  }
+
+  body.view-ai-active .ai-aura[data-state="active"] {
+    filter: blur(10px) brightness(1.03);
+  }
+
+  .ai-aura-wave {
+    top: 12%;
+    /* Hạ xuống thấp hơn PC một tí (từ 14% xuống 22%) để vừa tầm mắt và khung chat mobile */
+    width: 24vmax;
+    height: 46vmax;
+    margin: -13vmax 0 0 -17vmax;
+  }
 }
 
 /* 9 quầng màu mang 9 dải sắc độ trung gian nối tiếp nhau mượt như dải cực quang */
