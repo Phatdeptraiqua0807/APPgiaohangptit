@@ -633,9 +633,14 @@ function openDishDetailView(dish, restaurant) {
   modalKitchenNote = '';
   modalQty = 1;
 
+  // Mỗi lần mở món mới luôn bắt đầu từ đầu trang (không dùng lại vị trí cuộn cũ)
+  if (typeof globalViewScrollPositions !== 'undefined') {
+    globalViewScrollPositions['dish-detail'] = 0;
+    globalViewScrollPositions['dish-safety-nutrition'] = 0;
+  }
   currentView = 'dish-detail';
   render();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  applyPageScroll(0);
 }
 
 function goBackFromDishDetail() {
@@ -649,7 +654,7 @@ function goBackFromDishDetail() {
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll(target, savedY);
   } else {
-    window.scrollTo({ top: savedY, behavior: 'instant' });
+    applyPageScroll(savedY);
   }
 }
 
@@ -1059,7 +1064,7 @@ function selectDishDetailSize(idx) {
   if (pdpMobileDrawerOpen) {
     const newDrawer = document.getElementById('pdp-order-drawer');
     if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-    window.scrollTo({ top: prevWindowScroll, behavior: 'instant' });
+    applyPageScroll(prevWindowScroll);
     document.body.classList.add('pdp-drawer-active');
   }
 }
@@ -1080,7 +1085,7 @@ function toggleDishDetailTopping(topId) {
   if (pdpMobileDrawerOpen) {
     const newDrawer = document.getElementById('pdp-order-drawer');
     if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-    window.scrollTo({ top: prevWindowScroll, behavior: 'instant' });
+    applyPageScroll(prevWindowScroll);
     document.body.classList.add('pdp-drawer-active');
   }
 }
@@ -1098,7 +1103,7 @@ function changeDishDetailQty(delta) {
     if (pdpMobileDrawerOpen) {
       const newDrawer = document.getElementById('pdp-order-drawer');
       if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-      window.scrollTo({ top: prevWindowScroll, behavior: 'instant' });
+      applyPageScroll(prevWindowScroll);
       document.body.classList.add('pdp-drawer-active');
     }
   }
@@ -1192,7 +1197,7 @@ function openDishSafetyNutritionView(tab = 'nutrition') {
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-safety-nutrition', 0);
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    applyPageScroll(0);
   }
 }
 
@@ -1210,7 +1215,7 @@ function backToProductDetailView() {
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-detail', 0);
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    applyPageScroll(0);
   }
 }
 
@@ -1461,7 +1466,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
 
         <!-- Khung hiển thị hội thoại AI về món ăn -->
         ${logs.length > 0 || dishAIIsThinking ? `
-          <div class="sn-ai-thread" id="sn-ai-thread">
+          <div class="sn-ai-thread" id="sn-ai-thread" data-lenis-prevent>
             ${logs.map((entry, idx) => `
               <div class="sn-ai-msg ${entry.role}">
                 <div class="sn-ai-msg-badge">${entry.role === 'user' ? '🧑‍🎓 Bạn hỏi' : '🤖 AI Dinh dưỡng trả lời'}</div>

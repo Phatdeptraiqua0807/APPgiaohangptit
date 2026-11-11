@@ -265,6 +265,91 @@ function getAIToolFriendlyLabel(toolName) {
   return AI_TOOL_FRIENDLY_LABELS[toolName] || (isActionTool(toolName) ? 'Đang thực hiện công việc cho bạn' : 'Đang xử lý yêu cầu');
 }
 
+// ── Aura Halo nền khi AI suy luận ──
+// - 2 giai đoạn màu sắc tách biệt để không bị rối:
+//   + Giai đoạn 1 (phase="1"): Xanh lá ngọc & Xanh dương
+//   + Giai đoạn 2 (phase="2"): Tím, Hồng & Màu be (Beige ấm)
+// - Giữ DOM cố định để fade-in / fade-out luôn mượt mà (bấm Dừng chỉ fade-out nhanh hơn 1 xíu)
+let aiAuraStoppedByUser = false;
+let aiAuraPhaseTimer = null;
+
+function ensureAIAuraElement() {
+  if (typeof document === 'undefined' || !document.body) return null;
+  let el = document.getElementById('ai-aura');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'ai-aura';
+    el.id = 'ai-aura';
+    el.dataset.state = 'idle';
+    el.dataset.phase = '1';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `
+      <div class="ai-aura-palette p1">
+        <span class="ai-aura-blob b1"></span>
+        <span class="ai-aura-blob b2"></span>
+        <span class="ai-aura-blob b3"></span>
+        <span class="ai-aura-ring"></span>
+      </div>
+      <div class="ai-aura-palette p2">
+        <span class="ai-aura-blob b1"></span>
+        <span class="ai-aura-blob b2"></span>
+        <span class="ai-aura-blob b3"></span>
+        <span class="ai-aura-ring"></span>
+      </div>
+    `;
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function setAIAuraPhase(phase) {
+  const el = ensureAIAuraElement();
+  if (el) el.dataset.phase = String(phase);
+}
+
+function startAIAura() {
+  aiAuraStoppedByUser = false;
+  clearInterval(aiAuraPhaseTimer);
+  const el = ensureAIAuraElement();
+  if (!el) return;
+  el.dataset.phase = '1';
+  // Đảm bảo browser đã paint trạng thái ẩn trước khi kích hoạt transition fade-in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (aiIsGenerating) {
+        el.dataset.state = 'active';
+      }
+    });
+  });
+  // Tự động luân chuyển nhanh giữa 2 bảng màu (Xanh/Xanh dương <-> Tím/Hồng/Be) nếu quá trình suy luận kéo dài
+  aiAuraPhaseTimer = setInterval(() => {
+    if (!aiIsGenerating) {
+      clearInterval(aiAuraPhaseTimer);
+      return;
+    }
+    const curr = el.dataset.phase === '2' ? '1' : '2';
+    el.dataset.phase = curr;
+  }, 1600);
+}
+
+function stopAIAura(isQuickStop = false) {
+  clearInterval(aiAuraPhaseTimer);
+  aiAuraPhaseTimer = null;
+  const el = ensureAIAuraElement();
+  if (!el) return;
+  if (isQuickStop) {
+    aiAuraStoppedByUser = true;
+    el.dataset.state = 'stopping';
+  } else if (!aiAuraStoppedByUser) {
+    el.dataset.state = 'idle';
+  }
+}
+
+function renderAIAuraLayer() {
+  ensureAIAuraElement();
+  return '';
+}
+
 async function setAILiveStageProgress(statusText) {
   const text = String(statusText || '').trim();
   if (!text || text === aiLiveProgressText) return;
@@ -277,6 +362,8 @@ async function setAILiveStageProgress(statusText) {
   if (aiLiveProgressText) aiLiveStageLogs.push(aiLiveProgressText);
   aiLiveProgressText = text;
   aiReasoningLastShownAt = Date.now();
+  // Chuyển ngay sang giai đoạn màu 2 (Tím, Hồng, Màu be) khi sang bước suy luận tiếp theo
+  setAIAuraPhase('2');
 
   const listEl = document.getElementById('ai-reasoning-list');
   if (listEl) {
@@ -818,25 +905,14 @@ function openAIChatView(initialPrompt = null) {
     saveCurrentViewScroll();
   }
   currentView = 'ai';
+  if (typeof shuffleAIWelcomePrompts === 'function') shuffleAIWelcomePrompts();
   document.body.classList.add('view-ai-active');
   render();
   if (initialPrompt && typeof initialPrompt === 'string' && initialPrompt.trim()) {
     sendAIPromptChip(initialPrompt);
   } else {
     if (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['ai'] === 'number') {
-      const savedY = globalViewScrollPositions['ai'];
-      if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
-        window.locomotiveScroll.scrollTo(savedY, { immediate: true });
-      } else {
-        window.scrollTo({ top: savedY, behavior: 'instant' });
-      }
-      requestAnimationFrame(() => {
-        if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
-          window.locomotiveScroll.scrollTo(savedY, { immediate: true });
-        } else {
-          window.scrollTo({ top: savedY, behavior: 'instant' });
-        }
-      });
+      applyPageScroll(globalViewScrollPositions['ai']);
     } else {
       scrollAIChatToBottom(false);
     }
@@ -910,7 +986,7 @@ function renderAIChatView() {
       </div>
 
       <!-- Khu vực nội dung tin nhắn hoặc Màn hình chào + Gợi ý Prompt -->
-      <div class="ai-messages-viewport" id="ai-messages-viewport">
+      <div class="ai-messages-viewport${messages.length === 0 && !aiIsGenerating ? ' is-empty' : ''}" id="ai-messages-viewport">
         ${messages.length === 0
       ? renderAIWelcomeScreen(activeUser, allItems.length, allCats.length, userOrders.length)
       : renderAIMessageList(messages, activeUser)}
@@ -931,8 +1007,12 @@ function renderAIChatView() {
         <!-- Dynamic spacer cho turn đang hoạt động: chỉ chiếm diện tích khi đang generate để cuộn câu hỏi lên top, tự biến mất khi AI trả lời xong -->
         <div id="ai-turn-spacer" class="ai-turn-spacer ${aiIsGenerating ? 'active' : ''}"></div>
       </div>
+    </div>
 
-      <!-- Khung soạn thảo cố định phía dưới + Thanh gợi ý Prompt nhanh -->
+      <!-- Hiệu ứng nền Aura Halo khi AI đang suy luận (2 giai đoạn: thinking → working) -->
+      ${renderAIAuraLayer()}
+
+      <!-- Khung soạn thảo: tách hẳn ra ngoài container, cố định (fixed) ở đáy màn hình -->
       <div class="ai-composer-dock">
         <div class="ai-quick-prompts-bar" id="ai-quick-prompts-bar">
           ${messages.length >= 2 && !aiIsGenerating ? `
@@ -990,7 +1070,6 @@ function renderAIChatView() {
           `}
         </div>
       </div>
-    </div>
   `;
 }
 
@@ -1013,7 +1092,9 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
 
       <div class="ai-prompt-section-label">💡 Gợi ý câu hỏi dành cho bạn (Chạm để hỏi ngay):</div>
       <div class="ai-prompt-grid">
-        ${AI_WELCOME_PROMPT_CARDS.map((card, idx) => `
+        ${getAIWelcomePromptOrder().map((idx) => {
+          const card = AI_WELCOME_PROMPT_CARDS[idx];
+          return `
           <div class="ai-prompt-card" onclick="handleWelcomePromptCard(${idx})">
             <div class="ai-prompt-card-top">
               <span class="ai-prompt-card-icon">${card.icon}</span>
@@ -1022,10 +1103,29 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
             <div class="ai-prompt-card-title">${escapeHtml(card.title)}</div>
             <div class="ai-prompt-card-desc">${escapeHtml(card.desc)}</div>
           </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
     </div>
   `;
+}
+
+// Gợi ý câu hỏi ngẫu nhiên: chỉ hiện tối đa 6 thẻ, xáo trộn mỗi lần mở trang AI
+const AI_WELCOME_PROMPT_MAX = 6;
+let aiWelcomePromptOrder = null;
+
+function shuffleAIWelcomePrompts() {
+  const ids = AI_WELCOME_PROMPT_CARDS.map((_, i) => i);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  aiWelcomePromptOrder = ids.slice(0, AI_WELCOME_PROMPT_MAX);
+}
+
+function getAIWelcomePromptOrder() {
+  if (!aiWelcomePromptOrder) shuffleAIWelcomePrompts();
+  return aiWelcomePromptOrder;
 }
 
 function renderAIAgentTraceBox(trace) {
@@ -1510,6 +1610,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 function stopAIChatGeneration() {
   if (!aiIsGenerating) return;
   aiIsGenerating = false;
+  stopAIAura(true);
 
   if (aiCurrentAbortController) {
     try {
@@ -1703,6 +1804,7 @@ async function submitAIChatMessage(overrideText = null) {
 
 async function executeAIResponseGeneration(text) {
   aiIsGenerating = true;
+  startAIAura();
   aiCurrentAbortController = new AbortController();
   aiLiveProgressText = 'Đang phân tích yêu cầu của bạn';
   aiLiveStageLogs = [];
@@ -1768,6 +1870,7 @@ async function executeAIResponseGeneration(text) {
     }
   } finally {
     aiIsGenerating = false;
+    stopAIAura(false);
     aiCurrentAbortController = null;
     activeLiveWS = null;
     aiLiveProgressText = '';

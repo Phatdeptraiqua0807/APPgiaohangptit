@@ -124,19 +124,17 @@ function restoreViewScroll(targetView, fallbackY = 0) {
   const savedY = (target && typeof globalViewScrollPositions[target] === 'number')
     ? globalViewScrollPositions[target]
     : fallbackY;
-  if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
-    window.locomotiveScroll.scrollTo(savedY, { immediate: true });
+  applyPageScroll(savedY);
+  if (typeof updateHeaderScrolledState === 'function') updateHeaderScrolledState();
+}
+
+// Đặt vị trí cuộn tức thì (an toàn với Locomotive Scroll; dự phòng khi smooth-scroll.js chưa tải)
+function applyPageScroll(y) {
+  if (typeof window.setPageScroll === 'function') {
+    window.setPageScroll(y);
   } else {
-    window.scrollTo({ top: savedY, behavior: 'instant' });
+    window.scrollTo({ top: y || 0, behavior: 'instant' });
   }
-  requestAnimationFrame(() => {
-    if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
-      window.locomotiveScroll.scrollTo(savedY, { immediate: true });
-    } else {
-      window.scrollTo({ top: savedY, behavior: 'instant' });
-    }
-    if (typeof updateHeaderScrolledState === 'function') updateHeaderScrolledState();
-  });
 }
 
 // ── Đồng bộ hiệu ứng Floating Top Bar cho các trang có .page-nav-header khi lướt qua ──
@@ -3829,16 +3827,16 @@ function viewOrderDetail(orderId) {
   globalViewScrollPositions['activity_list'] = window.scrollY || 0;
   viewingOrderDetailId = orderId;
   renderActivityView();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  applyPageScroll(0);
 }
 
 function closeOrderDetail() {
   viewingOrderDetailId = null;
   renderActivityView();
   const savedY = globalViewScrollPositions['activity_list'] || 0;
-  window.scrollTo({ top: savedY, behavior: 'instant' });
+  applyPageScroll(savedY);
   requestAnimationFrame(() => {
-    window.scrollTo({ top: savedY, behavior: 'instant' });
+    applyPageScroll(savedY);
   });
 }
 
@@ -5000,7 +4998,7 @@ function openSearchView(keyword = '', filterKey = null) {
   render();
   if (keyword || filterKey) {
     globalViewScrollPositions['search'] = 0;
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    applyPageScroll(0);
   } else {
     restoreViewScroll('search');
   }

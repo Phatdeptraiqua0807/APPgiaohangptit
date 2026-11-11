@@ -17,7 +17,7 @@ function openOrderSuccessView(order) {
   if (typeof saveCurrentViewScroll === 'function') saveCurrentViewScroll();
   currentView = 'order-success';
   render();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  applyPageScroll(0);
 }
 
 function viewPlacedOrderFromSuccess() {
@@ -27,7 +27,7 @@ function viewPlacedOrderFromSuccess() {
     activityFilter = 'delivering';
   }
   openActivityView();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  applyPageScroll(0);
 }
 
 function backHomeFromOrderSuccess() {

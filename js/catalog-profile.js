@@ -160,7 +160,7 @@ function openCatalogManagerView(tab = 'items', catFilter = 'all') {
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('catalog');
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    applyPageScroll(0);
   }
 }
 
@@ -1210,7 +1210,7 @@ function openProfileView(subTab = null) {
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('profile');
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    applyPageScroll(0);
   }
 }
 

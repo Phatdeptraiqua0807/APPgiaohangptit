@@ -8865,7 +8865,7 @@ input[type="checkbox"].app-custom-check:focus-visible {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 76px);
-  padding: 0 var(--safe-padding, 16px) 84px;
+  padding: 0 var(--safe-padding, 16px) 0;
   background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 220px, #f8fafc 100%);
 }
 
@@ -8906,7 +8906,7 @@ body.view-ai-active .ai-chat-view-container {
   max-width: 100% !important;
   margin: 0 !important;
   min-height: 100vh !important;
-  padding: 0 0 24px 0 !important;
+  padding: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   background: transparent !important;
@@ -8939,8 +8939,18 @@ body.view-ai-active .ai-messages-viewport {
 }
 
 body.view-ai-active .ai-composer-dock {
-  margin: auto 20px 14px !important;
+  position: fixed !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  margin: 0 !important;
+  z-index: 90;
   border-radius: 20px !important;
+}
+
+/* Chừa chỗ cho dock cố định để tin nhắn cuối không bị che */
+body.view-ai-active .ai-chat-view-container {
+  padding-bottom: 260px !important;
 }
 
 .ai-chat-header-left {
@@ -9123,6 +9133,12 @@ body.view-ai-active .ai-composer-dock {
   min-height: calc(100vh - 160px);
 }
 
+/* Chưa có tin nhắn: viewport co theo nội dung để hiện trọn màn hình chào */
+.ai-messages-viewport.is-empty {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
 .ai-turn-spacer {
   width: 100%;
   height: 0px;
@@ -9136,11 +9152,48 @@ body.view-ai-active .ai-composer-dock {
 }
 
 .ai-welcome-hero {
-  background: #ffffff;
-  border: 1.5px solid var(--gray-200);
-  border-radius: 24px;
-  padding: 22px 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  position: relative;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(236, 253, 245, 0.85) 0%, rgba(240, 249, 255, 0.8) 45%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(167, 243, 208, 0.6);
+  border-radius: 26px;
+  padding: 26px 22px;
+  box-shadow: 0 12px 36px -4px rgba(16, 185, 129, 0.08), 0 4px 16px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.ai-welcome-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(14, 165, 233, 0) 70%);
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ai-welcome-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: 10%;
+  width: 160px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 70%);
+  filter: blur(22px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ai-welcome-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .ai-welcome-badge {
@@ -9156,10 +9209,10 @@ body.view-ai-active .ai-composer-dock {
 }
 
 .ai-welcome-title {
-  font-size: 19px;
+  font-size: 28px;
   font-weight: 900;
   color: var(--gray-900);
-  line-height: 1.32;
+  line-height: 1.25;
   margin-bottom: 8px;
 }
 
@@ -9202,9 +9255,26 @@ body.view-ai-active .ai-composer-dock {
 }
 
 .ai-prompt-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: nowrap;
   gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 2px 8px;
+  margin: 0 -2px;
+}
+
+.ai-prompt-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-prompt-grid > .ai-prompt-card {
+  flex: 0 0 210px;
+  scroll-snap-align: start;
 }
 
 .ai-prompt-card {
@@ -10275,7 +10345,7 @@ body.view-ai-active .ai-composer-dock {
 @media (min-width: 768px) {
   .ai-chat-view-container {
     min-height: calc(100vh - 90px);
-    padding: 0 0 24px 0 !important;
+    padding: 0 !important;
     background: transparent;
   }
 
@@ -10285,8 +10355,11 @@ body.view-ai-active .ai-composer-dock {
   }
 
   .ai-prompt-grid {
-    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
+  }
+
+  .ai-prompt-grid > .ai-prompt-card {
+    flex-basis: 240px;
   }
 
   .ai-order-cards-list,
@@ -10307,8 +10380,14 @@ body.view-ai-active .ai-composer-dock {
   }
 
   body.view-ai-active .ai-composer-dock {
-    margin: auto 40px 20px !important;
+    left: calc(var(--sidebar-width, 270px) + 40px) !important;
+    right: 40px !important;
+    bottom: 20px !important;
     border-radius: 22px !important;
+  }
+
+  body.view-ai-active .ai-chat-view-container {
+    padding-bottom: 200px !important;
   }
 }
 
@@ -11714,6 +11793,7 @@ body.view-ai-active .ai-composer-dock {
   gap: 10px;
   max-height: 340px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--gray-200);
@@ -15021,7 +15101,8 @@ body.view-ai-active .ai-composer-dock {
   }
 
   body.view-ai-active .ai-composer-dock {
-    margin: auto 12px 12px !important;
+    left: 12px !important;
+    right: 12px !important;
   }
 }
 
@@ -16210,4 +16291,200 @@ body.view-ai-active .ai-composer-dock {
   display: inline-block;
   vertical-align: -2.5px;
   margin-right: 5px;
+}
+
+
+/* ==========================================================================
+   AI AURA HALO — Nền huyền ảo khi AI suy luận (2 giai đoạn chuyển màu nhanh)
+   - Giai đoạn 1 (phase="1"): Xanh lá ngọc & Xanh dương
+   - Giai đoạn 2 (phase="2"): Tím, Hồng & Màu be (Beige ấm)
+   - Tâm halo nằm ở phía trên ~25% từ đỉnh (dịch lên ~50% so với giữa màn hình)
+   - Chuyển màu nhanh (0.55s), các quầng sáng di chuyển nhanh & linh hoạt (~2.5s)
+   - Luôn fade-in / fade-out mượt bằng CSS transition trên DOM cố định
+   ========================================================================== */
+body.view-ai-active .ai-chat-view-container {
+  position: relative;
+  z-index: 1;
+}
+
+.ai-aura {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.96);
+  filter: brightness(1) saturate(1);
+  transition:
+    opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 1.6s ease;
+  will-change: opacity, transform;
+  --aura-speed: 2.5s;
+  --aura-blur: 62px;
+}
+
+/* Khi đang ở trang AI và AI đang suy luận: Fade-in mượt mà */
+body.view-ai-active .ai-aura[data-state="active"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: brightness(1.04) saturate(1.08);
+  transition:
+    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1.2s ease;
+}
+
+/* Khi trả lời xong: Fade-out êm dịu (1.6s) */
+.ai-aura[data-state="idle"] {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.02);
+  filter: brightness(1.08) saturate(1.1);
+  transition:
+    opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 1.6s ease;
+}
+
+/* Khi ấn nút Dừng (Stop): Fade-out nhanh hơn 1 xíu (0.9s) nhưng vẫn mượt, không dừng đột ngột */
+.ai-aura[data-state="stopping"] {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  filter: brightness(1) saturate(1);
+  transition:
+    opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.9s ease;
+}
+
+/* Khi rời khỏi tab AI: cũng mờ dần êm ái */
+body:not(.view-ai-active) .ai-aura {
+  opacity: 0 !important;
+  transition: opacity 0.6s ease !important;
+}
+
+@media (min-width: 768px) {
+  .ai-aura {
+    left: var(--sidebar-width, 270px);
+  }
+}
+
+/* Hai lớp bảng màu chuyển đổi nhanh (0.55s) để không bị rối 4 màu cùng lúc */
+.ai-aura-palette {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+/* Giai đoạn 1: Xanh lá ngọc & Xanh dương */
+.ai-aura-palette.p1 {
+  opacity: 1;
+  --c1: rgba(16, 185, 129, 0.42);   /* Xanh lá ngọc */
+  --c2: rgba(14, 165, 233, 0.40);   /* Xanh dương */
+  --c3: rgba(56, 189, 248, 0.34);   /* Xanh lam sáng */
+}
+
+/* Giai đoạn 2: Tím, Hồng & Màu be (Beige ấm) */
+.ai-aura-palette.p2 {
+  opacity: 0;
+  --c1: rgba(139, 92, 246, 0.40);   /* Tím Violet */
+  --c2: rgba(236, 72, 153, 0.36);   /* Hồng Rose */
+  --c3: rgba(235, 198, 150, 0.46);  /* Màu Be (Warm Beige) */
+}
+
+.ai-aura[data-phase="2"] .ai-aura-palette.p1 {
+  opacity: 0;
+}
+
+.ai-aura[data-phase="2"] .ai-aura-palette.p2 {
+  opacity: 1;
+}
+
+.ai-aura-blob {
+  position: absolute;
+  width: 50vmax;
+  height: 50vmax;
+  border-radius: 50%;
+  filter: blur(var(--aura-blur));
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+
+/* Các quầng màu tập trung ở nửa trên (~25% từ đỉnh màn hình) và di chuyển nhanh */
+.ai-aura-blob.b1 {
+  top: -22%;
+  left: -10%;
+  background: radial-gradient(circle, var(--c1) 0%, transparent 66%);
+  animation: aiAuraDrift1 var(--aura-speed) ease-in-out infinite alternate;
+}
+
+.ai-aura-blob.b2 {
+  top: -16%;
+  right: -14%;
+  background: radial-gradient(circle, var(--c2) 0%, transparent 66%);
+  animation: aiAuraDrift2 calc(var(--aura-speed) * 1.15) ease-in-out infinite alternate;
+}
+
+.ai-aura-blob.b3 {
+  top: 2%;
+  left: 14%;
+  background: radial-gradient(circle, var(--c3) 0%, transparent 66%);
+  animation: aiAuraDrift3 calc(var(--aura-speed) * 0.9) ease-in-out infinite alternate;
+}
+
+/* Quầng halo xoay nhanh ở vùng phía trên (~25% từ đỉnh thay vì 50% ở giữa) */
+.ai-aura-ring {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  width: 68vmin;
+  height: 68vmin;
+  margin: -34vmin 0 0 -34vmin;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--c1) 0deg,
+    var(--c2) 120deg,
+    var(--c3) 240deg,
+    var(--c1) 360deg
+  );
+  filter: blur(46px);
+  opacity: 0.7;
+  animation: aiAuraSpin 2.2s linear infinite, aiAuraBreath 1.4s ease-in-out infinite;
+}
+
+@keyframes aiAuraDrift1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(22vw, 10vh) scale(1.22); }
+  100% { transform: translate(-8vw, 20vh) scale(0.92); }
+}
+
+@keyframes aiAuraDrift2 {
+  0% { transform: translate(0, 0) scale(1.06); }
+  50% { transform: translate(-24vw, 12vh) scale(0.88); }
+  100% { transform: translate(8vw, 18vh) scale(1.2); }
+}
+
+@keyframes aiAuraDrift3 {
+  0% { transform: translate(0, 0) scale(0.94); }
+  50% { transform: translate(20vw, -12vh) scale(1.18); }
+  100% { transform: translate(-16vw, 10vh) scale(1.04); }
+}
+
+@keyframes aiAuraSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes aiAuraBreath {
+  0%, 100% { scale: 0.9; }
+  50% { scale: 1.16; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-aura-blob,
+  .ai-aura-ring {
+    animation: none !important;
+  }
 }
