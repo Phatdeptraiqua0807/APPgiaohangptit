@@ -1240,7 +1240,7 @@ function renderAIMessageList(messages, activeUser) {
                   <button
                     type="button"
                     class="ai-msg-action-btn copy"
-                    onclick="copyAIMessageText(${idx})"
+                    onclick="copyAIMessageText(${idx}, this)"
                     title="Sao chép nội dung"
                   >
                     📋 Sao chép
@@ -1656,9 +1656,7 @@ function stopAIChatGeneration() {
   if (currentView === 'ai') {
     renderAIChatView();
   }
-  if (typeof showToast === 'function') {
-    showToast('infoRegular', 'Đã dừng tạo câu trả lời');
-  }
+  // Đã có tin nhắn '⏹ Bạn đã dừng câu trả lời của AI' trong khung chat, không cần bật popup toast gây phiền
 }
 
 async function retryAIChatMessage(msgIdx = null) {
@@ -1690,7 +1688,6 @@ async function retryAIChatMessage(msgIdx = null) {
   }
 
   if (!userQuery || targetUserIdx === -1) {
-    if (typeof showToast === 'function') showToast('infoRegular', 'Chưa có câu hỏi nào để hỏi lại!');
     return;
   }
 
@@ -1698,22 +1695,39 @@ async function retryAIChatMessage(msgIdx = null) {
   messages.splice(targetUserIdx + 1);
   saveAIChatHistories();
 
-  if (typeof showToast === 'function') {
-    showToast('sparkleRegular', 'Đang hỏi lại AI...');
-  }
-
+  // Không bật toast 'Đang hỏi lại AI...' vì luồng trả lời của AI lập tức hiển thị trên giao diện
   await executeAIResponseGeneration(userQuery);
 }
 
-function copyAIMessageText(msgIdx) {
+function copyAIMessageText(msgIdx, btnEl = null) {
   const messages = getActiveUserChatMessages();
   if (!messages || !messages[msgIdx]) return;
   const text = messages[msgIdx].content || '';
   if (!text) return;
 
+  // Xác định nút bấm để hiển thị phản hồi trực quan tại chỗ thay vì bật popup toast
+  if (!btnEl && typeof window !== 'undefined' && window.event) {
+    const target = window.event.currentTarget || window.event.target;
+    if (target && typeof target.closest === 'function') {
+      btnEl = target.closest('.ai-msg-action-btn') || target;
+    }
+  }
+
+  const markBtnCopied = () => {
+    if (btnEl && btnEl.classList) {
+      const origHtml = btnEl.innerHTML;
+      btnEl.classList.add('copied');
+      btnEl.innerHTML = '✓ Đã chép';
+      setTimeout(() => {
+        btnEl.classList.remove('copied');
+        btnEl.innerHTML = origHtml;
+      }, 1500);
+    }
+  };
+
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
-      if (typeof showToast === 'function') showToast('checkCircleRegular', 'Đã sao chép nội dung vào khay nhớ tạm!');
+      markBtnCopied();
     }).catch(() => fallbackCopy(text));
   } else {
     fallbackCopy(text);
@@ -1728,7 +1742,7 @@ function copyAIMessageText(msgIdx) {
     ta.select();
     try {
       document.execCommand('copy');
-      if (typeof showToast === 'function') showToast('checkCircleRegular', 'Đã sao chép nội dung!');
+      markBtnCopied();
     } catch (_) { }
     document.body.removeChild(ta);
   }
