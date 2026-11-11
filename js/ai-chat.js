@@ -918,10 +918,19 @@ function openAIChatView(initialPrompt = null) {
   if (typeof shuffleAIWelcomePrompts === 'function') shuffleAIWelcomePrompts();
   document.body.classList.add('view-ai-active');
   render();
+
+  const messages = getActiveUserChatMessages();
+
   if (initialPrompt && typeof initialPrompt === 'string' && initialPrompt.trim()) {
     sendAIPromptChip(initialPrompt);
   } else {
-    if (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['ai'] === 'number') {
+    // Nếu chưa chat gì (màn hình chào Welcome Hero): luôn đặt thanh cuộn ở đầu trang (top = 0)
+    if (!messages || messages.length === 0) {
+      if (typeof globalViewScrollPositions !== 'undefined') {
+        globalViewScrollPositions['ai'] = 0;
+      }
+      applyPageScroll(0);
+    } else if (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['ai'] === 'number') {
       applyPageScroll(globalViewScrollPositions['ai']);
     } else {
       scrollAIChatToBottom(false);
@@ -1850,7 +1859,11 @@ function clearCurrentAIChat() {
   const uid = user ? user.id : 'guest';
   aiChatHistories[uid] = [];
   saveAIChatHistories();
+  if (typeof globalViewScrollPositions !== 'undefined') {
+    globalViewScrollPositions['ai'] = 0;
+  }
   renderAIChatView();
+  applyPageScroll(0);
   showToast('sparkleRegular', 'Đã tạo cuộc trò chuyện AI mới!');
 }
 
