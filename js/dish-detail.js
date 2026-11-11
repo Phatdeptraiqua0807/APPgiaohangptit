@@ -18,14 +18,41 @@ let dishAIChatLogs = {}; // Lưu lịch sử hỏi AI riêng theo từng mặt h
 let dishAIIsThinking = false;
 let dishAIDraftQuestion = '';
 
-// Các gợi ý câu hỏi nhanh trên thanh Hỏi AI trong Tab Dinh dưỡng
+// Các gợi ý câu hỏi nhanh trên thanh Hỏi AI trong Tab Dinh dưỡng (kho câu hỏi phong phú, ngẫu nhiên chia 2 dòng)
 const DISH_AI_QUICK_QUESTIONS = [
   '🔥 Món này bao nhiêu calo, đang giảm cân ăn được không?',
   '🥜 Món này có nguyên liệu nào dễ gây dị ứng không?',
   '💪 Món này tốt cho ai và bổ sung dưỡng chất gì nổi bật?',
   '🥗 Cách dặn bếp hoặc chọn cỡ để ăn món này healthy hơn?',
-  '🛡️ Giấy chứng nhận an toàn của quán được làm mới bao lâu rồi?'
+  '🛡️ Giấy chứng nhận an toàn của quán được làm mới bao lâu rồi?',
+  '🏃 Sau khi tập gym hoặc chạy bộ ăn món này có đủ đạm không?',
+  '🩺 Người đau dạ dày, trào ngược ăn món này cần lưu ý gì?',
+  '🌿 Món này có nhiều rau xanh và chất xơ không?',
+  '🧂 Lượng muối/natri và dầu mỡ trong món có cao không?',
+  '🌙 Tối muộn ăn món này có bị đầy bụng, khó ngủ không?',
+  '🥤 Nên uống kèm đồ uống gì để tiêu hóa tốt và thanh mát?',
+  '👶 Trẻ em hoặc người lớn tuổi ăn món này có phù hợp không?',
+  '🥑 Gợi ý thêm bớt topping để tối ưu calo tốt nhất?',
+  '⏱️ Thời điểm vàng trong ngày nên ăn món này là lúc nào?'
 ];
+
+// Ngẫu nhiên xáo trộn câu hỏi và chia thành 2 dòng lướt (lưu dạng mảng index để onclick truyền số an toàn 100%)
+let dishAIQuestionsSeed = null;
+function getShuffledDishAIQuestions() {
+  if (!dishAIQuestionsSeed) {
+    const indices = DISH_AI_QUICK_QUESTIONS.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    const mid = Math.ceil(indices.length / 2);
+    dishAIQuestionsSeed = {
+      row1: indices.slice(0, mid),
+      row2: indices.slice(mid)
+    };
+  }
+  return dishAIQuestionsSeed;
+}
 
 // =========================================================================
 // 1. HỆ THỐNG PHÂN TÍCH DINH DƯỠNG, NGUYÊN LIỆU & AN TOÀN THỰC PHẨM THEO MÓN
@@ -1192,6 +1219,7 @@ function openDishSafetyNutritionView(tab = 'nutrition') {
     saveCurrentViewScroll();
   }
   dishSafetyActiveTab = tab === 'safety' ? 'safety' : 'nutrition';
+  dishAIQuestionsSeed = null; // Tạo mới ngẫu nhiên 2 dòng câu hỏi mỗi khi mở
   currentView = 'dish-safety-nutrition';
   render();
   if (typeof restoreViewScroll === 'function') {
@@ -1307,64 +1335,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
 
   return `
     <div class="sn-nutrition-tab-wrap">
-      <!-- Khối 1: Đánh giá Healthy & Khuyến nghị đối tượng -->
-      <div class="sn-card">
-        <div class="sn-card-title-row">
-          <span class="sn-card-heading">🌿 Đánh giá tổng thể Mức độ Healthy</span>
-          <span class="sn-healthy-pill" style="background:${profile.healthyColor}18; color:${profile.healthyColor}; border-color:${profile.healthyColor}55;">
-            Điểm Healthy: ${profile.healthyScore}/10
-          </span>
-        </div>
-
-        <p class="sn-lead-summary">
-          <strong>${escapeHtml(dish.name)}</strong> được xếp nhóm <strong>${escapeHtml(profile.healthyLevel)}</strong>.
-          Một khẩu phần cung cấp khoảng <strong>${dynNutri.calories} kcal</strong> (tương đương <strong>${dailyCalPct}%</strong> nhu cầu năng lượng trung bình 2.000 kcal/ngày của người trưởng thành).
-        </p>
-
-        <div class="pdp-sn-highlights-grid" style="margin-top: 12px;">
-          <div class="pdp-sn-highlight-item">
-            <div class="sn-hl-label">👥 Đặc biệt tốt cho ai:</div>
-            <ul class="sn-hl-list">
-              ${profile.goodFor.map(g => `<li>${escapeHtml(g)}</li>`).join('')}
-            </ul>
-          </div>
-          <div class="pdp-sn-highlight-item">
-            <div class="sn-hl-label">💊 Dưỡng chất bổ sung & Lưu ý dị ứng:</div>
-            <div class="sn-supp-tags">
-              ${profile.supplements.map(s => `<span class="sn-supp-chip">✓ ${escapeHtml(s)}</span>`).join('')}
-            </div>
-            <div class="sn-allergen-note">
-              ⚠️ <strong>Lưu ý thành phần mẫn cảm:</strong> ${escapeHtml(profile.allergens.join(' • '))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Khối 2: Miêu tả chi tiết các Nguyên liệu nấu ăn -->
-      <div class="sn-card">
-        <div class="sn-card-title-row">
-          <span class="sn-card-heading">🥘 Nguyên liệu nấu ăn & Thành phần chế biến</span>
-          <span class="sn-sub-badge">Sơ chế tươi trong ngày</span>
-        </div>
-
-        <div class="sn-ingredients-list">
-          ${profile.ingredients.map(ing => `
-            <div class="sn-ingredient-row">
-              <div class="sn-ing-icon">${ing.icon}</div>
-              <div class="sn-ing-body">
-                <div class="sn-ing-top">
-                  <strong class="sn-ing-name">${escapeHtml(ing.name)}</strong>
-                  <span class="sn-ing-amount">~${escapeHtml(ing.amount)}</span>
-                </div>
-                <div class="sn-ing-origin">📍 Nguồn gốc: ${escapeHtml(ing.origin)}</div>
-                <div class="sn-ing-role">${FluentIcons.sparkleFilled} Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- Khối 3: Bảng Dinh dưỡng ước tính chi tiết -->
+      <!-- Khối 1 (ĐƯA LÊN ĐẦU): Bảng Dinh dưỡng ước tính chi tiết -->
       <div class="sn-card">
         <div class="sn-card-title-row">
           <span class="sn-card-heading">${FluentIcons.histogram} Bảng giá trị dinh dưỡng ước tính (1 khẩu phần)</span>
@@ -1432,37 +1403,128 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
         </div>
       </div>
 
+      <!-- Khối 2: Đánh giá Healthy & Khuyến nghị đối tượng -->
+      <div class="sn-card">
+        <div class="sn-card-title-row">
+          <span class="sn-card-heading">🌿 Đánh giá tổng thể Mức độ Healthy</span>
+          <span class="sn-healthy-pill" style="background:${profile.healthyColor}18; color:${profile.healthyColor}; border-color:${profile.healthyColor}55;">
+            Điểm Healthy: ${profile.healthyScore}/10
+          </span>
+        </div>
+
+        <p class="sn-lead-summary">
+          <strong>${escapeHtml(dish.name)}</strong> được xếp nhóm <strong>${escapeHtml(profile.healthyLevel)}</strong>.
+          Một khẩu phần cung cấp khoảng <strong>${dynNutri.calories} kcal</strong> (tương đương <strong>${dailyCalPct}%</strong> nhu cầu năng lượng trung bình 2.000 kcal/ngày của người trưởng thành).
+        </p>
+
+        <div class="pdp-sn-highlights-grid" style="margin-top: 12px;">
+          <div class="pdp-sn-highlight-item">
+            <div class="sn-hl-label">👥 Đặc biệt tốt cho ai:</div>
+            <ul class="sn-hl-list">
+              ${profile.goodFor.map(g => `<li>${escapeHtml(g)}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="pdp-sn-highlight-item">
+            <div class="sn-hl-label">💊 Dưỡng chất bổ sung & Lưu ý dị ứng:</div>
+            <div class="sn-supp-tags">
+              ${profile.supplements.map(s => `<span class="sn-supp-chip">✓ ${escapeHtml(s)}</span>`).join('')}
+            </div>
+            <div class="sn-allergen-note">
+              ⚠️ <strong>Lưu ý thành phần mẫn cảm:</strong> ${escapeHtml(profile.allergens.join(' • '))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối 3: Miêu tả chi tiết các Nguyên liệu nấu ăn -->
+      <div class="sn-card">
+        <div class="sn-card-title-row">
+          <span class="sn-card-heading">🥘 Nguyên liệu nấu ăn & Thành phần chế biến</span>
+          <span class="sn-sub-badge">Sơ chế tươi trong ngày</span>
+        </div>
+
+        <div class="sn-ingredients-list">
+          ${profile.ingredients.map(ing => `
+            <div class="sn-ingredient-row">
+              <div class="sn-ing-icon">${ing.icon}</div>
+              <div class="sn-ing-body">
+                <div class="sn-ing-top">
+                  <strong class="sn-ing-name">${escapeHtml(ing.name)}</strong>
+                  <span class="sn-ing-amount">~${escapeHtml(ing.amount)}</span>
+                </div>
+                <div class="sn-ing-origin">📍 Nguồn gốc: ${escapeHtml(ing.origin)}</div>
+                <div class="sn-ing-role">${FluentIcons.sparkleFilled} Vai trò dinh dưỡng: ${escapeHtml(ing.role)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
       <!-- Khối 4: THANH HỎI BẰNG AI TRỰC TIẾP VỀ MÓN ĂN NÀY -->
       <div class="sn-card sn-ai-ask-card" id="sn-dish-ai-box">
+        <!-- Aura Halo nền pastel di chuyển hình sin nhẹ nhàng khi AI đang suy luận hoặc phân tích -->
+        <div class="sn-dish-ai-aura ${dishAIIsThinking ? 'active' : ''}" aria-hidden="true">
+          <span class="sn-aura-wave w1"></span>
+          <span class="sn-aura-wave w2"></span>
+          <span class="sn-aura-wave w3"></span>
+          <span class="sn-aura-wave w4"></span>
+          <span class="sn-aura-wave w5"></span>
+        </div>
+
         <div class="sn-ai-ask-header">
           <div class="sn-ai-ask-title">
             <span class="sn-ai-sparkle">🤖</span>
-            <div>
+            <div class="sn-ai-ask-title-text">
               <div class="sn-card-heading">Hỏi AI Chuyên Gia về "${escapeHtml(dish.name)}"</div>
               <div class="sn-ai-sub">
-                Tư vấn tức thì về calo, nguyên liệu, dị ứng, chế độ tập luyện hoặc cách ăn lành mạnh
+                Tư vấn calo, dinh dưỡng, dị ứng & cách ăn chuẩn lành mạnh
               </div>
             </div>
           </div>
-          <button type="button" class="ai-api-status-btn ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
+          <button type="button" class="ai-api-status-btn compact ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
             <span class="ai-api-status-icon">${FluentIcons.settingsOutline}</span>
             <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
           </button>
         </div>
 
-        <!-- Các câu hỏi gợi ý nhanh cho món ăn -->
-        <div class="sn-ai-quick-chips">
-          ${DISH_AI_QUICK_QUESTIONS.map((qText, qIdx) => `
-            <button
-              type="button"
-              class="sn-ai-chip"
-              onclick="askDishAIQuickQuestion(${qIdx})"
-              ${dishAIIsThinking ? 'disabled' : ''}
-            >
-              ${escapeHtml(qText)}
-            </button>
-          `).join('')}
-        </div>
+        <!-- Các câu hỏi gợi ý chia 2 dòng lướt ngang ngẫu nhiên, gọn gàng -->
+        ${(() => {
+          const qData = getShuffledDishAIQuestions();
+          return `
+            <div class="sn-ai-chips-scroll-container" data-lenis-prevent>
+              <div class="sn-ai-chips-track">
+                ${qData.row1.map(qIdx => {
+                  const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+                  return `
+                    <button
+                      type="button"
+                      class="sn-ai-chip"
+                      onclick="askDishAIQuickQuestion(${qIdx})"
+                      ${dishAIIsThinking ? 'disabled' : ''}
+                    >
+                      ${escapeHtml(qText)}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+              <div class="sn-ai-chips-track">
+                ${qData.row2.map(qIdx => {
+                  const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+                  return `
+                    <button
+                      type="button"
+                      class="sn-ai-chip"
+                      onclick="askDishAIQuickQuestion(${qIdx})"
+                      ${dishAIIsThinking ? 'disabled' : ''}
+                    >
+                      ${escapeHtml(qText)}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        })()}
 
         <!-- Khung hiển thị hội thoại AI về món ăn -->
         ${logs.length > 0 || dishAIIsThinking ? `
@@ -1724,6 +1786,13 @@ function askDishAIQuickQuestion(qIdx) {
   if (q) {
     dishAIDraftQuestion = q;
     submitDishAIQuestion(q);
+  }
+}
+
+function askDishAIQuickQuestionText(qText) {
+  if (qText) {
+    dishAIDraftQuestion = qText;
+    submitDishAIQuestion(qText);
   }
 }
 

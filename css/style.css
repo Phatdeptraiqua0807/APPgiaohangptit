@@ -8880,9 +8880,10 @@ input[type="checkbox"].app-custom-check:focus-visible {
   gap: 10px;
   padding: 12px 14px;
   margin: 10px 0 12px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid #d1fae5;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1.5px solid rgba(209, 250, 229, 0.7);
   border-radius: 20px;
   box-shadow: 0 6px 20px rgba(0, 177, 79, 0.08);
   flex-wrap: wrap;
@@ -8923,11 +8924,11 @@ body.view-ai-active .ai-chat-header {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: 1.5px solid #d1fae5 !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 16px rgba(0, 177, 79, 0.06) !important;
+  border-bottom: 1.5px solid rgba(209, 250, 229, 0.7) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0, 177, 79, 0.05) !important;
   box-sizing: border-box !important;
 }
 
@@ -8947,10 +8948,10 @@ body.view-ai-active .ai-composer-dock {
   z-index: 90;
   border-radius: 20px !important;
   transition: bottom 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              left 0.2s ease,
-              right 0.2s ease,
-              border-radius 0.2s ease,
-              box-shadow 0.2s ease !important;
+    left 0.2s ease,
+    right 0.2s ease,
+    border-radius 0.2s ease,
+    box-shadow 0.2s ease !important;
 }
 
 /* Chừa chỗ cho dock cố định để tin nhắn cuối không bị che */
@@ -8960,6 +8961,7 @@ body.view-ai-active .ai-chat-view-container {
 
 /* ── Tối ưu riêng cho điện thoại khi sử dụng bàn phím ảo ── */
 @media (max-width: 768px) {
+
   /* Ẩn hoàn toàn bottom nav bar khi gõ bàn phím ảo để tránh bị kéo lên cùng khung chat */
   body.view-ai-active.ai-keyboard-open .bottom-nav {
     display: none !important;
@@ -11775,80 +11777,231 @@ body.view-ai-active .ai-chat-view-container {
 
 /* ── 7. Inline Dish AI Question Bar inside Nutrition Tab ── */
 .sn-ai-ask-card {
-  background: linear-gradient(160deg, #f0fdf4 0%, #ffffff 55%, #eff6ff 100%);
-  border: 1.5px solid #6ee7b7;
+  position: relative;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(236, 253, 245, 0.85) 0%, rgba(240, 249, 255, 0.8) 45%, rgba(255, 255, 255, 0.95) 100%);
+  border: 1.5px solid rgba(167, 243, 208, 0.7);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px -4px rgba(16, 185, 129, 0.08), 0 4px 16px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.sn-ai-ask-card>*:not(.sn-dish-ai-aura) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Aura Halo nền pastel di chuyển hình sin nhẹ nhàng bên trong card */
+.sn-dish-ai-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.45;
+  transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sn-dish-ai-aura.active {
+  opacity: 1;
+}
+
+.sn-dish-ai-aura .sn-aura-wave {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  width: 40vmax;
+  height: 28vmax;
+  margin: -14vmax 0 0 -20vmax;
+  border-radius: 50%;
+  filter: blur(55px);
+  mix-blend-mode: normal;
+  will-change: transform, opacity;
+  animation: snAuraSinWave 5.5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+.sn-dish-ai-aura .sn-aura-wave.w1 {
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(34, 197, 94, 0.16) 0%, rgba(14, 165, 233, 0.14) 40%, transparent 75%);
+  animation-delay: 0s;
+}
+
+.sn-dish-ai-aura .sn-aura-wave.w2 {
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(14, 165, 233, 0.15) 0%, rgba(139, 92, 246, 0.14) 40%, transparent 75%);
+  animation-delay: -1.1s;
+}
+
+.sn-dish-ai-aura .sn-aura-wave.w3 {
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(139, 92, 246, 0.14) 0%, rgba(236, 72, 153, 0.14) 40%, transparent 75%);
+  animation-delay: -2.2s;
+}
+
+.sn-dish-ai-aura .sn-aura-wave.w4 {
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(236, 72, 153, 0.14) 0%, rgba(245, 158, 11, 0.15) 40%, transparent 75%);
+  animation-delay: -3.3s;
+}
+
+.sn-dish-ai-aura .sn-aura-wave.w5 {
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(235, 202, 158, 0.20) 0%, rgba(16, 185, 129, 0.15) 40%, transparent 75%);
+  animation-delay: -4.4s;
+}
+
+@keyframes snAuraSinWave {
+  0% {
+    transform: translate3d(38vw, 0vh, 0) scale(1.1);
+    opacity: 0;
+  }
+
+  15% {
+    transform: translate3d(24vw, -9vh, 0) scale(1.05);
+    opacity: 0.9;
+  }
+
+  35% {
+    transform: translate3d(10vw, 7vh, 0) scale(1);
+    opacity: 1;
+  }
+
+  55% {
+    transform: translate3d(-6vw, -5vh, 0) scale(0.9);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: translate3d(-20vw, 3vh, 0) scale(0.8);
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: translate3d(-38vw, 0vh, 0) scale(0.65);
+    opacity: 0;
+  }
 }
 
 .sn-ai-ask-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .sn-ai-ask-title {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sn-ai-ask-title-text {
+  min-width: 0;
+}
+
+.sn-ai-ask-title-text .sn-card-heading {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--gray-900);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sn-ai-sparkle {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #00b14f, #059669);
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00b14f, #0284c7);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 21px;
+  font-size: 19px;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
 }
 
 .sn-ai-sub {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--gray-600);
-  margin-top: 2px;
+  margin-top: 1px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.sn-ai-quick-chips {
+.ai-api-status-btn.compact {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* ── 2 dòng lướt ngang ngẫu nhiên cho các câu hỏi nhanh ── */
+.sn-ai-chips-scroll-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 4px;
+  overflow: hidden;
+}
+
+.sn-ai-chips-track {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2px 0 2px 0;
+}
+
+.sn-ai-chips-track::-webkit-scrollbar {
+  display: none;
 }
 
 .sn-ai-chip {
-  padding: 6px 12px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  padding: 6px 13px;
   border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #a7f3d0;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(167, 243, 208, 0.85);
   color: #065f46;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.18s;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .sn-ai-chip:hover:not(:disabled) {
-  background: #dcfce7;
+  background: #ecfdf5;
   border-color: #10b981;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.12);
 }
 
 .sn-ai-thread {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 340px;
+  max-height: 320px;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--gray-200);
-  border-radius: 15px;
-  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(229, 231, 235, 0.8);
+  border-radius: 18px;
+  margin-bottom: 14px;
 }
 
 .sn-ai-msg {
@@ -16425,11 +16578,11 @@ body:not(.view-ai-active) .ai-aura {
   }
 }
 
-/* Hai lớp bảng màu chuyển đổi mượt (0.9s) */
+/* Hai lớp bảng màu chuyển đổi mượt mà với thời gian cross-fade lâu hơn (2.2s) */
 .ai-aura-palette {
   position: absolute;
   inset: 0;
-  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 2.2s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity;
 }
 
@@ -16490,7 +16643,7 @@ body:not(.view-ai-active) .ai-aura {
 /* Mỗi quầng sáng kéo dài theo phương ngang và chuyển sắc vô cực siêu mịn (gradient đa tầng không biên) */
 .ai-aura-wave {
   position: absolute;
-  top: 24%;
+  top: 14%;
   left: 50%;
   width: 60vmax;
   height: 44vmax;

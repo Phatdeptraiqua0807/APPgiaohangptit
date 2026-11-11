@@ -331,7 +331,7 @@ function startAIAura() {
       }
     });
   });
-  // Tự động luân chuyển nhanh giữa 2 bảng màu (Xanh/Xanh dương <-> Tím/Hồng/Be) nếu quá trình suy luận kéo dài
+  // Luân chuyển êm dịu giữa 2 giai đoạn bảng màu (chu kỳ 4.8s kết hợp cross-fade 2.2s)
   aiAuraPhaseTimer = setInterval(() => {
     if (!aiIsGenerating) {
       clearInterval(aiAuraPhaseTimer);
@@ -339,7 +339,7 @@ function startAIAura() {
     }
     const curr = el.dataset.phase === '2' ? '1' : '2';
     el.dataset.phase = curr;
-  }, 2600);
+  }, 4800);
 }
 
 function stopAIAura(isQuickStop = false) {
