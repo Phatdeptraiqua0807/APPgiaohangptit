@@ -9049,7 +9049,7 @@ body.view-ai-active .ai-chat-view-container {
 }
 
 .ai-api-status-btn .ai-api-status-icon,
-.ai-api-status-btn > span:first-child,
+.ai-api-status-btn>span:first-child,
 .ai-api-status-btn .fluent-icon,
 .ai-api-status-btn svg {
   width: 20px;
@@ -9191,7 +9191,7 @@ body.view-ai-active .ai-chat-view-container {
   z-index: 0;
 }
 
-.ai-welcome-hero > * {
+.ai-welcome-hero>* {
   position: relative;
   z-index: 1;
 }
@@ -9272,7 +9272,7 @@ body.view-ai-active .ai-chat-view-container {
   display: none;
 }
 
-.ai-prompt-grid > .ai-prompt-card {
+.ai-prompt-grid>.ai-prompt-card {
   flex: 0 0 210px;
   scroll-snap-align: start;
 }
@@ -10358,7 +10358,7 @@ body.view-ai-active .ai-chat-view-container {
     gap: 12px;
   }
 
-  .ai-prompt-grid > .ai-prompt-card {
+  .ai-prompt-grid>.ai-prompt-card {
     flex-basis: 240px;
   }
 
@@ -15059,7 +15059,7 @@ body.view-ai-active .ai-chat-view-container {
   }
 
   .ai-api-status-btn .ai-api-status-icon,
-  .ai-api-status-btn > span:first-child,
+  .ai-api-status-btn>span:first-child,
   .ai-api-status-btn .fluent-icon,
   .ai-api-status-btn svg {
     width: 22px;
@@ -16329,7 +16329,7 @@ body.view-ai-active .ai-chat-view-container {
 body.view-ai-active .ai-aura[data-state="active"] {
   opacity: 1;
   transform: translateY(0) scale(1);
-  filter: blur(8px) brightness(1.02);
+  filter: blur(10px) brightness(1.02);
   transition:
     opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
     transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -16381,29 +16381,47 @@ body:not(.view-ai-active) .ai-aura {
 /* Giai đoạn 1: Dải 9 sắc độ pastel dịu nhẹ (Xanh lá -> Ngọc lục bảo -> Ngọc bích -> Lam ngọc -> Xanh thiên thanh -> Xanh dương -> Ngọc biển) */
 .ai-aura-palette.p1 {
   opacity: 1;
-  --c1: rgba(34, 197, 94, 0.16);    /* 1. Xanh lá non */
-  --c2: rgba(16, 185, 129, 0.16);   /* 2. Xanh lục ngọc (trung gian) */
-  --c3: rgba(20, 184, 166, 0.16);   /* 3. Xanh ngọc bích / Teal (trung gian) */
-  --c4: rgba(6, 182, 212, 0.16);    /* 4. Xanh lam ngọc / Cyan (trung gian) */
-  --c5: rgba(14, 165, 233, 0.17);   /* 5. Xanh thiên thanh / Sky */
-  --c6: rgba(59, 130, 246, 0.15);   /* 6. Xanh dương dịu */
-  --c7: rgba(56, 189, 248, 0.16);   /* 7. Xanh lam sáng (trung gian quay về) */
-  --c8: rgba(45, 212, 191, 0.16);   /* 8. Xanh ngọc biển (trung gian) */
-  --c9: rgba(52, 211, 153, 0.16);   /* 9. Xanh bạc hà nối êm về Xanh lá */
+  --c1: rgba(34, 197, 94, 0.16);
+  /* 1. Xanh lá non */
+  --c2: rgba(16, 185, 129, 0.16);
+  /* 2. Xanh lục ngọc (trung gian) */
+  --c3: rgba(20, 184, 166, 0.16);
+  /* 3. Xanh ngọc bích / Teal (trung gian) */
+  --c4: rgba(6, 182, 212, 0.16);
+  /* 4. Xanh lam ngọc / Cyan (trung gian) */
+  --c5: rgba(14, 165, 233, 0.17);
+  /* 5. Xanh thiên thanh / Sky */
+  --c6: rgba(59, 130, 246, 0.15);
+  /* 6. Xanh dương dịu */
+  --c7: rgba(56, 189, 248, 0.16);
+  /* 7. Xanh lam sáng (trung gian quay về) */
+  --c8: rgba(45, 212, 191, 0.16);
+  /* 8. Xanh ngọc biển (trung gian) */
+  --c9: rgba(52, 211, 153, 0.16);
+  /* 9. Xanh bạc hà nối êm về Xanh lá */
 }
 
 /* Giai đoạn 2: Dải 9 sắc độ pastel dịu nhẹ (Tím -> Tím lan -> Tím hồng -> Hồng -> San hô -> Đào -> Kem mơ -> Màu Be -> Oải hương) */
 .ai-aura-palette.p2 {
   opacity: 0;
-  --c1: rgba(139, 92, 246, 0.15);   /* 1. Tím Violet */
-  --c2: rgba(168, 85, 247, 0.15);   /* 2. Tím Orchid (trung gian) */
-  --c3: rgba(217, 70, 239, 0.14);   /* 3. Tím hồng Fuchsia (trung gian) */
-  --c4: rgba(236, 72, 153, 0.15);   /* 4. Hồng Rose */
-  --c5: rgba(244, 114, 182, 0.16);  /* 5. Hồng phấn Coral (trung gian) */
-  --c6: rgba(251, 146, 160, 0.17);  /* 6. Hồng cam đào / Peach (trung gian) */
-  --c7: rgba(246, 182, 142, 0.19);  /* 7. Cam kem Apricot (trung gian sang Be) */
-  --c8: rgba(235, 202, 158, 0.22);  /* 8. Màu Be ấm (Warm Beige) */
-  --c9: rgba(196, 148, 238, 0.15);  /* 9. Tím oải hương kem nối êm về Tím */
+  --c1: rgba(139, 92, 246, 0.15);
+  /* 1. Tím Violet */
+  --c2: rgba(168, 85, 247, 0.15);
+  /* 2. Tím Orchid (trung gian) */
+  --c3: rgba(217, 70, 239, 0.14);
+  /* 3. Tím hồng Fuchsia (trung gian) */
+  --c4: rgba(236, 72, 153, 0.15);
+  /* 4. Hồng Rose */
+  --c5: rgba(244, 114, 182, 0.16);
+  /* 5. Hồng phấn Coral (trung gian) */
+  --c6: rgba(251, 146, 160, 0.17);
+  /* 6. Hồng cam đào / Peach (trung gian) */
+  --c7: rgba(246, 182, 142, 0.19);
+  /* 7. Cam kem Apricot (trung gian sang Be) */
+  --c8: rgba(235, 202, 158, 0.22);
+  /* 8. Màu Be ấm (Warm Beige) */
+  --c9: rgba(196, 148, 238, 0.15);
+  /* 9. Tím oải hương kem nối êm về Tím */
 }
 
 .ai-aura[data-phase="2"] .ai-aura-palette.p1 {
@@ -16423,13 +16441,11 @@ body:not(.view-ai-active) .ai-aura {
   height: 44vmax;
   margin: -22vmax 0 0 -30vmax;
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse 140% 115% at 50% 50%,
-    var(--ca) 0%,
-    var(--cb) 38%,
-    rgba(255, 255, 255, 0.05) 60%,
-    transparent 78%
-  );
+  background: radial-gradient(ellipse 140% 115% at 50% 50%,
+      var(--ca) 0%,
+      var(--cb) 38%,
+      rgba(255, 255, 255, 0.05) 60%,
+      transparent 78%);
   filter: blur(var(--aura-blur));
   mix-blend-mode: normal;
   will-change: transform, opacity;
@@ -16498,33 +16514,41 @@ body:not(.view-ai-active) .ai-aura {
     transform: translate3d(46vw, 0vh, 0) scale(1.15);
     opacity: 0;
   }
+
   6% {
     opacity: 0.7;
   }
+
   14% {
     transform: translate3d(33vw, -13vh, 0) scale(1.1);
     opacity: 0.95;
   }
+
   28% {
     transform: translate3d(19vw, 10.5vh, 0) scale(1.02);
     opacity: 1;
   }
+
   44% {
     transform: translate3d(4vw, -7.5vh, 0) scale(0.93);
     opacity: 0.95;
   }
+
   60% {
     transform: translate3d(-11vw, 5vh, 0) scale(0.83);
     opacity: 0.9;
   }
+
   76% {
     transform: translate3d(-26vw, -2.8vh, 0) scale(0.72);
     opacity: 0.75;
   }
+
   90% {
     transform: translate3d(-39vw, 1.2vh, 0) scale(0.60);
     opacity: 0.45;
   }
+
   100% {
     transform: translate3d(-48vw, 0vh, 0) scale(0.48);
     opacity: 0;
