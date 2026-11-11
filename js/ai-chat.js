@@ -1055,6 +1055,8 @@ function renderAIChatView() {
             placeholder="Hỏi tôi mọi thứ"
             oninput="handleAIChatInputResize(this)"
             onkeydown="handleAIChatKeydown(event)"
+            onfocus="handleAIChatInputFocus(this)"
+            onblur="handleAIChatInputBlur(this)"
             ${aiIsGenerating ? 'disabled' : ''}
           >${escapeHtml(aiDraftInput)}</textarea>
           ${aiIsGenerating ? `
@@ -1081,6 +1083,14 @@ function renderAIChatView() {
         </div>
       </div>
   `;
+
+  // Thiết lập xử lý bàn phím ảo & cử chỉ chạm trên điện thoại
+  if (typeof initAIMobileKeyboardHandlers === 'function') {
+    initAIMobileKeyboardHandlers();
+  }
+  if (typeof syncAIMobileKeyboardViewport === 'function') {
+    syncAIMobileKeyboardViewport();
+  }
 }
 
 function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
@@ -1606,6 +1616,93 @@ function handleAIChatKeydown(e) {
     e.preventDefault();
     submitAIChatMessage();
   }
+}
+
+// ── Tối ưu vị trí & độ cao thanh AI Composer Dock riêng cho điện thoại khi bật bàn phím ảo ──
+function syncAIMobileKeyboardViewport() {
+  if (typeof currentView === 'undefined' || currentView !== 'ai') return;
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) {
+    document.body.classList.remove('ai-keyboard-open');
+    document.documentElement.style.removeProperty('--ai-keyboard-offset');
+    return;
+  }
+
+  const input = document.getElementById('ai-chat-input');
+  const isFocused = input && document.activeElement === input;
+
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    // Chênh lệch giữa innerHeight và chiều cao thực tế nhìn thấy khi có bàn phím ảo
+    const diff = Math.max(0, window.innerHeight - (vv.height + Math.round(vv.offsetTop)));
+    const isKeyboardActive = diff > 60 || isFocused;
+
+    if (isKeyboardActive) {
+      document.body.classList.add('ai-keyboard-open');
+      document.documentElement.style.setProperty('--ai-keyboard-offset', `${diff}px`);
+    } else {
+      document.body.classList.remove('ai-keyboard-open');
+      document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
+    }
+  } else {
+    if (isFocused) {
+      document.body.classList.add('ai-keyboard-open');
+      document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
+    } else {
+      document.body.classList.remove('ai-keyboard-open');
+      document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
+    }
+  }
+}
+
+function handleAIChatInputFocus(el) {
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('ai-keyboard-open');
+    syncAIMobileKeyboardViewport();
+    // Cuộn mượt tin nhắn mới nhất lên trên khung gõ phím
+    setTimeout(() => {
+      scrollAIChatToBottom(true);
+    }, 220);
+  }
+}
+
+function handleAIChatInputBlur(el) {
+  if (window.innerWidth <= 768) {
+    // Chờ 150ms để kiểm tra xem người dùng có bấm vào nút Gửi/Dừng hoặc đổi sang nút khác không
+    setTimeout(() => {
+      const activeEl = document.activeElement;
+      if (!activeEl || activeEl.id !== 'ai-chat-input') {
+        document.body.classList.remove('ai-keyboard-open');
+        syncAIMobileKeyboardViewport();
+      }
+    }, 150);
+  }
+}
+
+function initAIMobileKeyboardHandlers() {
+  const messagesVp = document.getElementById('ai-messages-viewport');
+  if (messagesVp && !messagesVp.dataset.keyboardTouchBound) {
+    messagesVp.dataset.keyboardTouchBound = 'true';
+    // Chạm vào danh sách tin nhắn để thu gọn bàn phím ảo một cách tự nhiên (như Messenger/Telegram)
+    messagesVp.addEventListener('touchstart', (e) => {
+      if (document.body.classList.contains('ai-keyboard-open')) {
+        if (!e.target.closest('button, a, input, textarea, select')) {
+          const inp = document.getElementById('ai-chat-input');
+          if (inp && document.activeElement === inp) {
+            inp.blur();
+          }
+        }
+      }
+    }, { passive: true });
+  }
+}
+
+if (typeof window !== 'undefined') {
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', syncAIMobileKeyboardViewport);
+    window.visualViewport.addEventListener('scroll', syncAIMobileKeyboardViewport);
+  }
+  window.addEventListener('resize', syncAIMobileKeyboardViewport);
 }
 
 // Lắng nghe phím Esc trên toàn trang để dừng AI khi đang tạo
@@ -3261,6 +3358,10 @@ if (typeof window !== 'undefined') {
   window.stopAIChatGeneration = stopAIChatGeneration;
   window.retryAIChatMessage = retryAIChatMessage;
   window.copyAIMessageText = copyAIMessageText;
+  window.syncAIMobileKeyboardViewport = syncAIMobileKeyboardViewport;
+  window.handleAIChatInputFocus = handleAIChatInputFocus;
+  window.handleAIChatInputBlur = handleAIChatInputBlur;
+  window.initAIMobileKeyboardHandlers = initAIMobileKeyboardHandlers;
   try {
     Object.defineProperty(window, 'aiIsGenerating', {
       get: () => aiIsGenerating,

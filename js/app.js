@@ -431,6 +431,8 @@ function render() {
     document.body.classList.add('view-ai-active');
   } else {
     document.body.classList.remove('view-ai-active');
+    document.body.classList.remove('ai-keyboard-open');
+    document.documentElement.style.removeProperty('--ai-keyboard-offset');
   }
 
   // Sync Bottom Nav visibility: visible on main navigation views
