@@ -99,6 +99,8 @@ FluentIcons.bell = FluentIcons.alertRegular;
 FluentIcons.alert = FluentIcons.alertRegular;
 FluentIcons.home = FluentIcons.homeRegular;
 FluentIcons.search = FluentIcons.searchRegular;
+FluentIcons.heartOutline = FluentIcons.heartRegular;
+FluentIcons.heart = FluentIcons.heartRegular;
 FluentIcons.cart = FluentIcons.cartRegular;
 FluentIcons.person = FluentIcons.personRegular;
 FluentIcons.receipt = FluentIcons.receiptRegular;
@@ -130,7 +132,8 @@ FluentIcons.store = FluentIcons.buildingShopRegular;
 FluentIcons.buildingShop = FluentIcons.buildingShopRegular;
 FluentIcons.bag = FluentIcons.shoppingBagRegular;
 FluentIcons.shoppingBag = FluentIcons.shoppingBagRegular;
-FluentIcons.settings = FluentIcons.settingsFilled;
+FluentIcons.settings = FluentIcons.settingsRegular;
+FluentIcons.settingsOutline = FluentIcons.settingsRegular;
 FluentIcons.sync = FluentIcons.arrowSyncFilled;
 FluentIcons.refresh = FluentIcons.arrowSyncFilled;
 FluentIcons.syncFilled = FluentIcons.arrowSyncFilled;
@@ -192,7 +195,7 @@ const FLUENT_ICON_PALETTE = {
   trash: { cls: 'fi-delete', varName: '--fi-delete', color: '#ef4444' },
   sparkle: { cls: 'fi-sparkle', varName: '--fi-sparkle', color: '#f59e0b' },
   star: { cls: 'fi-star', varName: '--fi-star', color: '#f59e0b' },
-  heart: { cls: 'fi-heart', varName: '--fi-heart', color: '#ef4444' },
+  heartfilled: { cls: 'fi-heart', varName: '--fi-heart', color: '#ef4444' },
   histogram: { cls: 'fi-histogram', varName: '--fi-histogram', color: '#6366f1' },
   analytics: { cls: 'fi-histogram', varName: '--fi-histogram', color: '#6366f1' },
   settings: { cls: 'fi-settings', varName: '--fi-settings', color: '#475569' },
@@ -216,10 +219,6 @@ const FLUENT_ICON_PALETTE = {
 
 function resolveFluentIconMeta(key) {
   const k = key.toLowerCase();
-  // heart outline / regular / linear khong gan mau mac dinh
-  if (k.includes('heart') && (k.includes('regular') || k.includes('outline') || k.includes('linear'))) {
-    return null;
-  }
   for (const prefix in FLUENT_ICON_PALETTE) {
     if (k.includes(prefix)) {
       return FLUENT_ICON_PALETTE[prefix];

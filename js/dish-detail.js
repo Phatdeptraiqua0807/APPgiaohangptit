@@ -1440,7 +1440,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
             </div>
           </div>
           <button type="button" class="ai-api-status-btn ${apiReady ? 'connected' : ''}" onclick="openAISettingsModal()" title="Cấu hình & Quản lý API AI">
-            <span>${FluentIcons.settingsFilled}</span>
+            <span class="ai-api-status-icon">${FluentIcons.settingsOutline}</span>
             <span class="ai-api-btn-label">${apiReady ? 'API Đã nối' : 'Cấu hình API'}</span>
           </button>
         </div>

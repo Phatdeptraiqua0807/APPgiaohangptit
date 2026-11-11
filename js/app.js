@@ -2677,7 +2677,7 @@ function renderLeafletDeliveryMap(container, lat, lng) {
       const markerHtml = `
         <div class="custom-map-pin">
           <span class="custom-map-pin-badge">Điểm nhận</span>
-          <span class="custom-map-pin-icon">📍</span>
+          <span class="custom-map-pin-icon">${FluentIcons.locationFilled}</span>
         </div>
       `;
       const pinIcon = L.divIcon({
@@ -4177,7 +4177,7 @@ function renderActivityView() {
                 <div class="past-order-actions" onclick="event.stopPropagation()">
                   ${isDelivering ? `
                     <button class="past-order-btn primary" onclick="viewOrderDetail('${order.orderId}')">
-                      Theo dõi trực tiếp 🛵
+                      Theo dõi trực tiếp ${FluentIcons.truckRegular}
                     </button>
                   ` : isCompleted ? `
                     <button class="past-order-btn secondary" onclick="viewOrderDetail('${order.orderId}')">
@@ -4251,7 +4251,7 @@ function renderSingleOrderDetailView(o) {
           ${isDelivering ? `
             <div class="order-detail-action-bar">
               <button class="order-detail-btn-complete" onclick="completeActiveOrder('${o.orderId}')">
-                🎉 Mô phỏng: Đã nhận món thành công
+                ${FluentIcons.checkmarkFilled} Mô phỏng: Đã nhận món thành công
               </button>
               <button class="order-detail-btn-danger" onclick="cancelActiveOrder('${o.orderId}')">
                 Hủy đơn hàng này
@@ -4270,7 +4270,7 @@ function renderSingleOrderDetailView(o) {
                     <div class="tracking-title-sub">Giả lập vị trí tài xế từ quán đến cổng trường PTIT</div>
                   </div>
                 </div>
-                <span class="tracking-service-badge">🛵 PTIT Express Siêu Tốc</span>
+                <span class="tracking-service-badge">${FluentIcons.truckRegular} PTIT Express Siêu Tốc</span>
               </div>
 
               <!-- Map Container -->
@@ -4301,7 +4301,7 @@ function renderSingleOrderDetailView(o) {
 
                 <!-- Live Status Banner -->
                 <div class="tracking-hud-status-banner" id="tracking-hud-status">
-                  🛵 Tài xế ${escapeHtml(o.driver ? o.driver.name : 'Nguyễn Văn Tài')} đã nhận món và đang di chuyển về phía bạn...
+                  ${FluentIcons.truckRegular} Tài xế ${escapeHtml(o.driver ? o.driver.name : 'Nguyễn Văn Tài')} đã nhận món và đang di chuyển về phía bạn...
                 </div>
 
                 <!-- Simulation Controls -->
@@ -4369,7 +4369,7 @@ function renderSingleOrderDetailView(o) {
                   <div class="stepper-item-icon">${step > 4 ? FluentIcons.checkmarkFilled : '4'}</div>
                   <div class="stepper-item-content">
                     <div class="stepper-item-title" style="${step === 4 ? 'color: var(--green-600); font-weight: 800;' : ''}">
-                      Tài xế đang trên đường giao tới bạn 🛵
+                      Tài xế đang trên đường giao tới bạn ${FluentIcons.truckRegular}
                     </div>
                     <div class="stepper-item-desc">Tài xế đang cách bạn khoảng 800m trên đường Nguyễn Huệ</div>
                     <div class="stepper-item-time">${step >= 4 ? 'Đang di chuyển' : 'Sắp tới'}</div>
@@ -4452,8 +4452,8 @@ function renderSingleOrderDetailView(o) {
                 <div class="vqr-order-detail-bar ${o.qrPayment?.isPaid ? 'paid' : 'pending'} ${o.paymentMethod === 'momo' ? 'momo-bar' : ''}">
                   <div>
                     <strong>${o.qrPayment?.isPaid
-        ? `✅ Đã xác nhận thanh toán QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`
-        : `⏳ Đơn đang chờ quét mã QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`}</strong>
+        ? `${FluentIcons.checkmarkFilled} Đã xác nhận thanh toán QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`
+        : `${FluentIcons.clockRegular} Đơn đang chờ quét mã QR ${o.paymentMethod === 'momo' ? 'Ví MoMo' : 'VietQR'}`}</strong>
                     <div style="font-size: 11.5px; opacity: 0.9;">
                       ${o.paymentMethod === 'momo' ? 'Ví MoMo • 0866072227' : 'VPBank • 0921030342'} ${o.qrPayment?.transferContent ? `• ND: ${escapeHtml(o.qrPayment.transferContent)}` : ''}
                     </div>
@@ -4464,8 +4464,8 @@ function renderSingleOrderDetailView(o) {
                     onclick="openExistingOrderVietQRModal('${o.orderId}')"
                   >
                     ${o.qrPayment?.isPaid
-        ? (o.paymentMethod === 'momo' ? '👛 Xem QR MoMo' : '📲 Xem mã QR')
-        : (o.paymentMethod === 'momo' ? '👛 Mở QR MoMo' : '📲 Mở QR thanh toán')}
+        ? (o.paymentMethod === 'momo' ? `${FluentIcons.walletRegular} Xem QR MoMo` : `${FluentIcons.receiptRegular} Xem mã QR`)
+        : (o.paymentMethod === 'momo' ? `${FluentIcons.walletRegular} Mở QR MoMo` : `${FluentIcons.receiptRegular} Mở QR thanh toán`)}
                   </button>
                 </div>
               ` : ''}
@@ -4516,11 +4516,11 @@ function renderSingleOrderDetailView(o) {
           ${o.driver ? `
             <div class="driver-contact-card">
               <div class="driver-info-row">
-                <div class="driver-avatar">${o.driver.avatar || '🛵'}</div>
+                <div class="driver-avatar">${(o.driver.avatar && o.driver.avatar !== '🛵') ? o.driver.avatar : FluentIcons.personFilled}</div>
                 <div class="driver-meta">
                   <div class="driver-name">${o.driver.name}</div>
                   <div class="driver-vehicle">${o.driver.vehicle}</div>
-                  <div class="driver-rating">⭐ ${o.driver.rating} • Tài xế 5 sao</div>
+                  <div class="driver-rating">${FluentIcons.starFilled} ${o.driver.rating} • Tài xế 5 sao</div>
                 </div>
               </div>
 
@@ -4558,7 +4558,7 @@ function renderSingleOrderDetailView(o) {
                 <div class="submitted-review-box">
                   <div class="submitted-review-head">
                     <div class="submitted-review-stars">
-                      ${'⭐'.repeat(o.userReview.score)}
+                      ${Array.from({ length: o.userReview.score }).map(() => FluentIcons.starFilled).join('')}
                     </div>
                     <span style="font-size: 11px; color: var(--gray-500);">${o.userReview.submittedTime || 'Hôm nay'}</span>
                   </div>
@@ -4582,7 +4582,7 @@ function renderSingleOrderDetailView(o) {
                       onclick="editUserReview('${o.orderId}')" 
                       style="background: none; border: none; font-size: 12px; font-weight: 700; color: var(--green-600); cursor: pointer; padding: 4px 0;"
                     >
-                      Chỉnh sửa đánh giá ✍️
+                      ${FluentIcons.tagEditFilled} Chỉnh sửa đánh giá
                     </button>
                   </div>
                 </div>
@@ -4597,9 +4597,8 @@ function renderSingleOrderDetailView(o) {
                     <span 
                       class="star-tap-btn ${s <= userRatingScore ? 'active' : ''}" 
                       onclick="setRatingScore(${s})"
-                      title="${s} sao"
-                    >
-                      ★
+                      title="${s} sao">
+                      ${s <= userRatingScore ? FluentIcons.starFilled : FluentIcons.starRegular}
                     </span>
                   `).join('')}
                 </div>
@@ -4627,7 +4626,7 @@ function renderSingleOrderDetailView(o) {
 
                 <!-- Submit Button -->
                 <button class="submit-rating-btn" onclick="submitUserReview('${o.orderId}')">
-                  Gửi đánh giá đơn hàng ⭐
+                  ${FluentIcons.starFilled} Gửi đánh giá đơn hàng
                 </button>
               `}
             </div>
@@ -4637,7 +4636,7 @@ function renderSingleOrderDetailView(o) {
           ${(isCompleted || isCancelled) ? `
             <div style="margin-top: 8px;">
               <button class="btn-primary-large" onclick="reorderOrder('${o.orderId}')">
-                ${isCancelled ? `Đặt lại đơn/combo đã hủy này ${FluentIcons.sync}` : 'Đặt lại đơn hàng này 🍜'}
+                ${isCancelled ? `Đặt lại đơn/combo đã hủy này ${FluentIcons.sync}` : `Đặt lại đơn hàng này ${FluentIcons.sync}`}
               </button>
             </div>
           ` : ''}
@@ -4723,7 +4722,7 @@ function initOrderLiveTracking(order) {
       const resShort = (order.resName || 'Quán ăn').split('-')[0].trim();
       const shopIcon = L.divIcon({
         className: 'custom-shop-pin-wrap',
-        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge" style="border-color:#e11d48; color:#be123c;">Quán: ${escapeHtml(resShort)}</span><span class="custom-map-pin-icon">🍜</span></div>`,
+        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge" style="border-color:#e11d48; color:#be123c;">Quán: ${escapeHtml(resShort)}</span><span class="custom-map-pin-icon">${FluentIcons.buildingShopRegular}</span></div>`,
         iconSize: [110, 50],
         iconAnchor: [55, 48]
       });
@@ -4741,7 +4740,7 @@ function initOrderLiveTracking(order) {
       // Moving Shipper Marker
       const driverIcon = L.divIcon({
         className: 'custom-driver-marker-wrap',
-        html: `<div class="custom-driver-pin" title="Tài xế ${escapeHtml(order.driver?.name || 'PTIT Express')}">🛵</div>`,
+        html: `<div class="custom-driver-pin" title="Tài xế ${escapeHtml(order.driver?.name || 'PTIT Express')}">${FluentIcons.truckRegular}</div>`,
         iconSize: [44, 44],
         iconAnchor: [22, 22]
       });
@@ -4862,15 +4861,15 @@ function updateLiveTrackingFrame() {
   if (statusEl) {
     const driverName = trackingActiveOrder?.driver?.name || 'Nguyễn Văn Tài';
     if (progressRatio <= 0.2) {
-      statusEl.innerHTML = `🛵 Tài xế <strong>${escapeHtml(driverName)}</strong> đã lấy món từ <strong>${escapeHtml(trackingActiveOrder?.resName || 'Quán')}</strong>, đang rẽ ra phố Ao Sen.`;
+      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế <strong>${escapeHtml(driverName)}</strong> đã lấy món từ <strong>${escapeHtml(trackingActiveOrder?.resName || 'Quán')}</strong>, đang rẽ ra phố Ao Sen.`;
     } else if (progressRatio <= 0.5) {
-      statusEl.innerHTML = `🛵 Tài xế <strong>${escapeHtml(driverName)}</strong> đang lưu thông trên trục đường Trần Phú, hướng về trường PTIT.`;
+      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế <strong>${escapeHtml(driverName)}</strong> đang lưu thông trên trục đường Trần Phú, hướng về trường PTIT.`;
     } else if (progressRatio <= 0.8) {
-      statusEl.innerHTML = `🛵 Tài xế đang qua nút giao trước cổng Học viện PTIT, giảm tốc độ chuẩn bị rẽ vào điểm hẹn.`;
+      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế đang qua nút giao trước cổng Học viện PTIT, giảm tốc độ chuẩn bị rẽ vào điểm hẹn.`;
     } else if (progressRatio < 1) {
-      statusEl.innerHTML = `🛵 Tài xế đã tới cổng chính PTIT, đang tiến vào sảnh nhà A2...`;
+      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế đã tới cổng chính PTIT, đang tiến vào sảnh nhà A2...`;
     } else {
-      statusEl.innerHTML = `🎉 <strong>Tài xế đã tới sảnh nhà A2 PTIT!</strong> Vui lòng chuẩn bị nhận món thơm ngon.`;
+      statusEl.innerHTML = `${FluentIcons.checkmarkFilled} <strong>Tài xế đã tới sảnh nhà A2 PTIT!</strong> Vui lòng chuẩn bị nhận món thơm ngon.`;
     }
   }
 }
@@ -4880,7 +4879,7 @@ function onDriverArrivedAtDestination() {
     clearInterval(trackingSimTimer);
     trackingSimTimer = null;
   }
-  showToast('checkmarkFilled', '🎉 Shipper đã giao tới sảnh A2 PTIT! Chúc bạn ngon miệng.');
+  showToast('checkmarkFilled', 'Shipper đã giao tới sảnh A2 PTIT! Chúc bạn ngon miệng.');
 }
 
 function toggleTrackingSpeed() {

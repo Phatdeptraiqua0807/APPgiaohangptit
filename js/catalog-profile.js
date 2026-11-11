@@ -1965,7 +1965,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
         <div style="font-size:12px; color:var(--gray-500);">Số điện thoại gắn liền: <strong>${escapeHtml(activeUser.phone)}</strong> • Tổng cộng ${userOrders.length} đơn hàng</div>
       </div>
       <button class="db-secondary-btn" onclick="openActivityView()">
-        Mở trang Theo dõi đơn 🛵
+        Mở trang Theo dõi đơn ${FluentIcons.truckRegular}
       </button>
     </div>
 

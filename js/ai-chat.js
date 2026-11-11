@@ -891,7 +891,7 @@ function renderAIChatView() {
             onclick="openAISettingsModal()"
             title="Quản lý & Lưu các Profile AI (Gemini, DeepSeek, OpenAI, Groq, OpenRouter, Ollama...)"
           >
-            <span class="ai-api-status-icon">${FluentIcons.settingsFilled}</span>
+            <span class="ai-api-status-icon">${FluentIcons.settingsOutline}</span>
             <span class="ai-api-btn-label">${escapeHtml(apiStatusText)}</span>
           </button>
 
@@ -1044,7 +1044,7 @@ function renderAIAgentTraceBox(trace) {
       </summary>
       <div class="ai-agent-trace-body">
         <div class="ai-trace-meta-header">
-          <span>${FluentIcons.settingsFilled} <strong>${trace.steps.length} lệnh truy vấn phần mềm</strong></span>
+          <span>${FluentIcons.settingsOutline} <strong>${trace.steps.length} lệnh truy vấn phần mềm</strong></span>
           <span class="ai-trace-source-badge">${escapeHtml(sourceShort)}</span>
         </div>
         ${trace.thought ? `

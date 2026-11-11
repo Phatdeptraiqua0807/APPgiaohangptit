@@ -273,17 +273,6 @@ textarea {
   color: var(--fi-heart);
 }
 
-/* Heart outline & regular icons luôn đơn sắc / kế thừa màu container (không mang màu đỏ) */
-.fluent-icon.fi-heart-regular,
-.fluent-icon.fi-heart-outline,
-.res-fav-btn .fluent-icon:not(.fi-heart),
-.res-fav-btn svg:not(.fi-heart),
-.dish-modal-fav-btn .fluent-icon:not(.fi-heart),
-.dish-modal-fav-btn svg:not(.fi-heart),
-.restaurant-card-fav .fluent-icon:not(.fi-heart),
-.restaurant-card-fav svg:not(.fi-heart) {
-  color: inherit !important;
-}
 
 .fluent-icon.fi-histogram {
   color: var(--fi-histogram);
@@ -1553,10 +1542,20 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   border-radius: var(--r-full);
-  font-size: 0.85rem;
-  transition: transform 0.2s;
+  color: var(--gray-400);
+  transition: transform 0.2s, color 0.2s;
+}
+
+.restaurant-card-fav .fluent-icon,
+.restaurant-card-fav svg {
+  width: 17px;
+  height: 17px;
+}
+
+.restaurant-card-fav.active {
+  color: var(--red);
 }
 
 .restaurant-card-fav:hover {
@@ -16109,4 +16108,106 @@ body.view-ai-active .ai-composer-dock {
     padding-left: 0;
     padding-right: 0;
   }
+}
+
+/* Fluent Icons Enhancement for Order Detail View */
+.driver-avatar .fluent-icon,
+.driver-avatar svg {
+  width: 28px;
+  height: 28px;
+  color: #16a34a;
+  fill: currentColor;
+}
+
+.driver-rating .fluent-icon,
+.driver-rating svg {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  vertical-align: -1px;
+}
+
+.submitted-review-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.submitted-review-stars .fluent-icon,
+.submitted-review-stars svg {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  color: #f59e0b !important;
+  fill: currentColor !important;
+}
+
+.star-tap-btn .fluent-icon,
+.star-tap-btn svg {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.star-tap-btn:hover .fluent-icon,
+.star-tap-btn:hover svg {
+  transform: scale(1.15);
+}
+
+.star-tap-btn.active .fluent-icon,
+.star-tap-btn.active svg {
+  color: #f59e0b !important;
+  fill: currentColor !important;
+}
+
+.star-tap-btn:not(.active) .fluent-icon,
+.star-tap-btn:not(.active) svg {
+  color: var(--gray-300) !important;
+  fill: currentColor !important;
+}
+
+.custom-driver-pin .fluent-icon,
+.custom-driver-pin svg {
+  width: 24px;
+  height: 24px;
+  color: #ffffff !important;
+  fill: currentColor !important;
+  display: inline-block;
+}
+
+.custom-map-pin-icon .fluent-icon,
+.custom-map-pin-icon svg {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+}
+
+.vqr-order-detail-bar .fluent-icon,
+.vqr-order-detail-bar svg {
+  width: 17px;
+  height: 17px;
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+.vqr-order-detail-action-btn .fluent-icon,
+.vqr-order-detail-action-btn svg {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+.order-detail-btn-complete .fluent-icon,
+.submit-rating-btn .fluent-icon,
+.tracking-service-badge .fluent-icon,
+.tracking-hud-status-banner .fluent-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: -2.5px;
+  margin-right: 5px;
 }
