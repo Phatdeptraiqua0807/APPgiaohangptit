@@ -227,7 +227,7 @@ function updateFloatingTopBar() {
       floatingBar.classList.add('has-activity-tabs');
       currentHtml = `
         <div class="floating-activity-header-group">
-          <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+          <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
             ${FluentIcons.arrowLeft}
           </button>
           <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
@@ -3152,7 +3152,7 @@ function renderCartView() {
     <div class="cart-view-container fade-in">
       <!-- Top Navigation Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Giỏ Hàng (${totalItems} món)</div>
@@ -3542,7 +3542,7 @@ function renderCheckoutView() {
     <div class="checkout-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openCartView()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Xác Nhận Đơn Hàng</div>
@@ -3998,7 +3998,14 @@ function openActivityView() {
   saveCurrentViewScroll();
   currentView = 'activity';
   render();
-  restoreViewScroll('activity');
+  const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['activity_list'] === 'number')
+    ? globalViewScrollPositions['activity_list']
+    : null;
+  if (savedY !== null) {
+    applyPageScroll(savedY);
+  } else {
+    restoreViewScroll('activity');
+  }
 }
 
 function switchActivityFilter(filter) {
@@ -4052,6 +4059,14 @@ function viewOrderDetail(orderId) {
 }
 
 function closeOrderDetail() {
+  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
+    const state = window.history.state;
+    const step = (state && typeof state.step === 'number') ? state.step : 0;
+    if (step > 0 && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+  }
   viewingOrderDetailId = null;
   renderActivityView();
   const savedY = globalViewScrollPositions['activity_list'] || 0;
@@ -4623,7 +4638,7 @@ function renderActivityView() {
     <div class="activity-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
@@ -4668,7 +4683,7 @@ function renderSingleOrderDetailView(o) {
     <div class="activity-view-container fade-in">
       <!-- Header with Back to List -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="closeOrderDetail()" aria-label="Quay lại danh sách">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại danh sách">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Chi Tiết Đơn Hàng</div>
@@ -5093,6 +5108,10 @@ function renderSingleOrderDetailView(o) {
     setTimeout(() => initOrderLiveTracking(o), 80);
   } else {
     stopLiveTrackingSimulation();
+  }
+
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl();
   }
 }
 

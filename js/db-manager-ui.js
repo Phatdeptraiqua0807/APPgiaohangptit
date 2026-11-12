@@ -160,7 +160,7 @@ function renderCatalogManagerView() {
   app.innerHTML = `
     <div class="catalog-view-container dbm-container fade-in">
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">${FluentIcons.arrowLeft}</button>
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
         <div class="page-nav-title">Quản Lý Cơ Sở Dữ Liệu</div>
         <button type="button" class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">⬇️ .JSON</button>
       </div>

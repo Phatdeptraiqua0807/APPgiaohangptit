@@ -1,8 +1,9 @@
 /* ==========================================================================
    ptitngon - SPA Client-side Hash Router
    - Quản lý điều hướng URL không tải lại trang (#/home, #/activity, #/cart, #/ai, ...)
-   - Hỗ trợ F5 giữ nguyên view, nút Back / Forward của trình duyệt
-   - Tương thích hoàn hảo với Live Server (127.0.0.1:5500) và static host
+   - Đồng bộ hoàn hảo với Lịch sử trình duyệt (Browser History API + history.state.step)
+   - Bộ điều phối Back thông minh 2 nhánh: history.back() khi có stack & Logical Fallback khi vào thẳng
+   - Hỗ trợ F5 giữ nguyên view, nút Back / Forward và cử chỉ vuốt lùi trang trên điện thoại
    ========================================================================== */
 
 (function () {
@@ -43,15 +44,142 @@
     },
 
     /**
-     * Khởi tạo Router và lắng nghe sự kiện popstate / hashchange của trình duyệt
+     * Khởi tạo Router, đánh dấu entry đầu tiên trong history.state và lắng nghe sự kiện trình duyệt
      */
     init() {
+      // 1. Đảm bảo entry đầu tiên luôn có step = 0 trong history.state
+      try {
+        const curState = window.history.state;
+        const initialHash = window.location.hash || '#/home';
+        if (!curState || typeof curState.step !== 'number') {
+          window.history.replaceState({ step: 0, path: initialHash }, '', initialHash);
+        }
+      } catch (_) {}
+
+      // 2. Lắng nghe sự kiện popstate / hashchange của trình duyệt
       window.addEventListener('popstate', () => {
         this.handleRouteChange(window.location.hash);
       });
       window.addEventListener('hashchange', () => {
         this.handleRouteChange(window.location.hash);
       });
+    },
+
+    /**
+     * Kiểm tra và ưu tiên đóng các Modal / Drawer đang mở trước khi lùi trang
+     * (Chuẩn trải nghiệm Native Mobile App)
+     */
+    closeActiveModalsOrDrawers() {
+      // 1. PDP Mobile Order Drawer
+      const pdpDrawer = document.querySelector('.pdp-mobile-order-drawer.open, .pdp-mobile-drawer.open, .pdp-mobile-order-drawer.active');
+      if (pdpDrawer) {
+        if (typeof closePDPMobileOrderDrawer === 'function') {
+          closePDPMobileOrderDrawer();
+          return true;
+        }
+      }
+
+      // 2. VietQR Modal
+      const vqrModal = document.querySelector('#vietqr-modal.active, .vietqr-modal-overlay.active');
+      if (vqrModal) {
+        if (typeof closeVietQRModal === 'function') {
+          closeVietQRModal();
+          return true;
+        }
+      }
+
+      // 3. AI Profile modal
+      const aiProfileModal = document.querySelector('.ai-profile-modal-overlay.active, #ai-profile-manage-modal.active');
+      if (aiProfileModal) {
+        if (typeof closeAIProfileManageModal === 'function') {
+          closeAIProfileManageModal();
+          return true;
+        }
+      }
+
+      // 4. User nutrition survey modal
+      const surveyModal = document.querySelector('.un-survey-modal-overlay.active');
+      if (surveyModal) {
+        if (typeof closeNutritionSurveyModal === 'function') {
+          closeNutritionSurveyModal();
+          return true;
+        }
+      }
+
+      // 5. Generic modal overlay
+      const genericModal = document.querySelector('.modal-overlay.active, .app-modal.active');
+      if (genericModal) {
+        if (typeof closeModal === 'function') {
+          closeModal();
+          return true;
+        }
+      }
+
+      return false;
+    },
+
+    /**
+     * Bản đồ Hồi quy Logic (Logical Fallback Map)
+     * Kích hoạt khi người dùng vào thẳng URL / F5 (history.state.step === 0) để không bao giờ bị văng ra khỏi app
+     */
+    executeFallbackNavigation() {
+      const current = (typeof currentView === 'string') ? currentView : 'home';
+
+      // 1. Nếu đang ở trang An Toàn & Dinh Dưỡng: về Chi tiết món
+      if (current === 'dish-safety-nutrition') {
+        if (typeof backToProductDetailView === 'function') {
+          backToProductDetailView();
+          return;
+        }
+      }
+
+      // 2. Nếu đang ở Chi tiết món: về view nguồn trước đó (AI, Search, Cart,...) hoặc Home
+      if (current === 'dish-detail') {
+        if (typeof goBackFromDishDetail === 'function') {
+          goBackFromDishDetail();
+          return;
+        }
+      }
+
+      // 3. Nếu đang ở Checkout: về Giỏ hàng
+      if (current === 'checkout') {
+        if (typeof openCartView === 'function') {
+          openCartView();
+          return;
+        }
+      }
+
+      // 4. Nếu đang ở Chi tiết đơn hàng trong Activity: về danh sách đơn
+      if (current === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+        if (typeof closeOrderDetail === 'function') {
+          closeOrderDetail();
+          return;
+        }
+      }
+
+      // 5. Nếu đang ở Catalog Manager (Admin): về Tài khoản
+      if (current === 'catalog') {
+        if (typeof openProfileView === 'function') {
+          openProfileView();
+          return;
+        }
+      }
+
+      // 6. Nếu đang ở AI Profile Detail mode trong AI Chat: về list mode
+      if (current === 'ai' && typeof isAIProfileDetailMode !== 'undefined' && isAIProfileDetailMode) {
+        if (typeof openAIProfileListMode === 'function') {
+          openAIProfileListMode();
+          return;
+        }
+      }
+
+      // 7. Mặc định cho Cart, Activity, AI, Profile, Search, Order Success: về Home
+      if (typeof openHomeView === 'function') {
+        openHomeView();
+      } else {
+        currentView = 'home';
+        if (typeof render === 'function') render();
+      }
     },
 
     /**
@@ -146,11 +274,16 @@
       const targetHash = '#' + targetPath + queryString;
 
       if (window.location.hash !== targetHash) {
+        const curStep = (window.history.state && typeof window.history.state.step === 'number')
+          ? window.history.state.step
+          : 0;
+
         try {
           if (options && options.replace) {
-            window.history.replaceState({ path: targetHash }, '', targetHash);
+            window.history.replaceState({ step: curStep, path: targetHash }, '', targetHash);
           } else {
-            window.history.pushState({ path: targetHash }, '', targetHash);
+            const nextStep = curStep + 1;
+            window.history.pushState({ step: nextStep, path: targetHash }, '', targetHash);
           }
         } catch (_) {
           window.location.hash = targetHash;
@@ -334,20 +467,26 @@
     },
 
     /**
-     * Điều hướng chủ động từ mã JavaScript
+     * Điều hướng chủ động từ mã JavaScript với step tracking
      */
     navigate(targetPathWithQuery, options = { replace: false }) {
       let target = targetPathWithQuery || '/home';
       if (!target.startsWith('#')) target = '#' + target;
+
+      const curStep = (window.history.state && typeof window.history.state.step === 'number')
+        ? window.history.state.step
+        : 0;
+
       if (options && options.replace) {
         try {
-          window.history.replaceState({ path: target }, '', target);
+          window.history.replaceState({ step: curStep, path: target }, '', target);
         } catch (_) {
           window.location.hash = target;
         }
       } else {
         try {
-          window.history.pushState({ path: target }, '', target);
+          const nextStep = curStep + 1;
+          window.history.pushState({ step: nextStep, path: target }, '', target);
         } catch (_) {
           window.location.hash = target;
         }
@@ -356,19 +495,50 @@
     },
 
     /**
-     * Quay lại trang trước trong lịch sử trình duyệt
+     * Quay lại trang trước một cách thông minh (Smart Hybrid Back)
+     * - Ưu tiên 1: Đóng modal/drawer nếu đang mở (không rời trang)
+     * - Ưu tiên 2: Thực thi customFallback nếu người gọi chỉ định
+     * - Ưu tiên 3: Nếu trong app session đã có bước điều hướng (step > 0): gọi window.history.back()
+     * - Ưu tiên 4: Nếu là trang đầu tiên vào web (step === 0): chạy executeFallbackNavigation() để không bị văng ra khỏi web
      */
-    back(fallback = null) {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else if (typeof fallback === 'function') {
-        fallback();
-      } else if (typeof openHomeView === 'function') {
-        openHomeView();
+    back(customFallback = null) {
+      // 1. Đóng modal hoặc drawer đang mở
+      if (this.closeActiveModalsOrDrawers()) {
+        return;
       }
+
+      // 2. Custom fallback
+      if (typeof customFallback === 'function') {
+        customFallback();
+        return;
+      }
+
+      // 3. Kiểm tra step trong app session
+      const state = window.history.state;
+      const step = (state && typeof state.step === 'number') ? state.step : 0;
+
+      if (step > 0 && window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+
+      // 4. Fallback logic nội bộ app
+      this.executeFallbackNavigation();
+    }
+  };
+
+  /**
+   * Phím tắt Back toàn cục tiện lợi cho mọi nút bấm trên giao diện
+   */
+  window.goBack = function (customFallback = null) {
+    if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
+      window.Router.back(customFallback);
+    } else if (typeof customFallback === 'function') {
+      customFallback();
+    } else if (typeof openHomeView === 'function') {
+      openHomeView();
     }
   };
 
   window.Router = Router;
 })();
-

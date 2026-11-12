@@ -209,7 +209,7 @@ function renderCatalogManagerView() {
     <div class="catalog-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Quản Lý Mặt Hàng & Database</div>
@@ -1327,7 +1327,7 @@ function renderProfileView() {
     <div class="profile-view-container fade-in">
       <!-- Top Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hồ Sơ & Tài Khoản</div>

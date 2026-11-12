@@ -695,38 +695,50 @@ function openDishDetailView(dish, restaurant) {
 
 function goBackFromDishDetail() {
   closePDPMobileOrderDrawer();
-  const target = previousViewBeforeDish || 'home';
-  const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions[target] === 'number')
-    ? globalViewScrollPositions[target]
-    : (viewScrollPositionsBeforeDish[target] || 0);
+  const fallback = () => {
+    const target = previousViewBeforeDish || 'home';
+    const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions[target] === 'number')
+      ? globalViewScrollPositions[target]
+      : (viewScrollPositionsBeforeDish[target] || 0);
 
-  // Đặt lại previousViewBeforeDish để tránh lưu trạng thái cũ
-  previousViewBeforeDish = 'home';
+    previousViewBeforeDish = 'home';
 
-  if (target === 'ai' && typeof openAIChatView === 'function') {
-    openAIChatView();
-  } else if (target === 'search' && typeof openSearchView === 'function') {
-    openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
-  } else if (target === 'cart' && typeof openCartView === 'function') {
-    openCartView();
-  } else if (target === 'activity' && typeof openActivityView === 'function') {
-    openActivityView();
-  } else if (target === 'profile' && typeof openProfileView === 'function') {
-    openProfileView();
-  } else if (target === 'catalog' && typeof openCatalogManagerView === 'function') {
-    openCatalogManagerView();
-  } else if (typeof openHomeView === 'function') {
-    openHomeView();
-  } else {
-    currentView = target;
-    render();
+    if (target === 'ai' && typeof openAIChatView === 'function') {
+      openAIChatView();
+    } else if (target === 'search' && typeof openSearchView === 'function') {
+      openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
+    } else if (target === 'cart' && typeof openCartView === 'function') {
+      openCartView();
+    } else if (target === 'activity' && typeof openActivityView === 'function') {
+      openActivityView();
+    } else if (target === 'profile' && typeof openProfileView === 'function') {
+      openProfileView();
+    } else if (target === 'catalog' && typeof openCatalogManagerView === 'function') {
+      openCatalogManagerView();
+    } else if (typeof openHomeView === 'function') {
+      openHomeView();
+    } else {
+      currentView = target;
+      render();
+    }
+
+    if (typeof restoreViewScroll === 'function') {
+      restoreViewScroll(target, savedY);
+    } else if (typeof applyPageScroll === 'function') {
+      applyPageScroll(savedY);
+    }
+  };
+
+  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
+    const state = window.history.state;
+    const step = (state && typeof state.step === 'number') ? state.step : 0;
+    if (step > 0 && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
   }
 
-  if (typeof restoreViewScroll === 'function') {
-    restoreViewScroll(target, savedY);
-  } else if (typeof applyPageScroll === 'function') {
-    applyPageScroll(savedY);
-  }
+  fallback();
 }
 
 function renderDishDetailView() {
@@ -1287,7 +1299,7 @@ function openDishSafetyNutritionView(tab = 'nutrition') {
   dishSafetyActiveTab = tab === 'safety' ? 'safety' : 'nutrition';
   dishAIQuestionsSeed = null; // Tạo mới ngẫu nhiên 2 dòng câu hỏi mỗi khi mở
   currentView = 'dish-safety-nutrition';
-  render({ replace: true });
+  render();
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-safety-nutrition', 0);
   } else {
@@ -1340,6 +1352,14 @@ function switchDishSafetyTab(tab) {
 function backToProductDetailView() {
   if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
+    const state = window.history.state;
+    const step = (state && typeof state.step === 'number') ? state.step : 0;
+    if (step > 0 && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
   }
   currentView = 'dish-detail';
   render({ replace: true });
