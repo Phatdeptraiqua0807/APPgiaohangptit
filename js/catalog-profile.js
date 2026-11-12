@@ -1327,7 +1327,7 @@ function renderProfileView() {
     <div class="profile-view-container fade-in">
       <!-- Top Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hồ Sơ & Tài Khoản</div>

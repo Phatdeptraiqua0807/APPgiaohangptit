@@ -693,54 +693,6 @@ function openDishDetailView(dish, restaurant) {
   applyPageScroll(0);
 }
 
-function goBackFromDishDetail() {
-  closePDPMobileOrderDrawer();
-  const fallback = () => {
-    const target = previousViewBeforeDish || 'home';
-    const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions[target] === 'number')
-      ? globalViewScrollPositions[target]
-      : (viewScrollPositionsBeforeDish[target] || 0);
-
-    previousViewBeforeDish = 'home';
-
-    if (target === 'ai' && typeof openAIChatView === 'function') {
-      openAIChatView();
-    } else if (target === 'search' && typeof openSearchView === 'function') {
-      openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
-    } else if (target === 'cart' && typeof openCartView === 'function') {
-      openCartView();
-    } else if (target === 'activity' && typeof openActivityView === 'function') {
-      openActivityView();
-    } else if (target === 'profile' && typeof openProfileView === 'function') {
-      openProfileView();
-    } else if (target === 'catalog' && typeof openCatalogManagerView === 'function') {
-      openCatalogManagerView();
-    } else if (typeof openHomeView === 'function') {
-      openHomeView();
-    } else {
-      currentView = target;
-      render();
-    }
-
-    if (typeof restoreViewScroll === 'function') {
-      restoreViewScroll(target, savedY);
-    } else if (typeof applyPageScroll === 'function') {
-      applyPageScroll(savedY);
-    }
-  };
-
-  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
-    const state = window.history.state;
-    const step = (state && typeof state.step === 'number') ? state.step : 0;
-    if (step > 0 && window.history.length > 1) {
-      window.history.back();
-      return;
-    }
-  }
-
-  fallback();
-}
-
 function renderDishDetailView() {
   if (!modalDish) {
     openHomeView();
@@ -775,7 +727,7 @@ function renderDishDetailView() {
     <div class="product-detail-page fade-in">
       <!-- Top Sticky Header -->
       <div class="page-nav-header product-detail-topbar">
-        <button type="button" class="page-back-icon-btn" onclick="goBackFromDishDetail()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Thông Tin Sản Phẩm</div>
@@ -1353,14 +1305,6 @@ function backToProductDetailView() {
   if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
   }
-  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
-    const state = window.history.state;
-    const step = (state && typeof state.step === 'number') ? state.step : 0;
-    if (step > 0 && window.history.length > 1) {
-      window.history.back();
-      return;
-    }
-  }
   currentView = 'dish-detail';
   render({ replace: true });
   if (typeof restoreViewScroll === 'function') {
@@ -1387,7 +1331,7 @@ function renderDishSafetyNutritionView() {
     <div class="dish-safety-nutrition-view-container sn-deep-page fade-in">
       <!-- Top Navigation -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="backToProductDetailView()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">An Toàn &amp; Dinh Dưỡng</div>
@@ -1395,7 +1339,7 @@ function renderDishSafetyNutritionView() {
       </div>
 
       <!-- Mini Dish Summary Strip -->
-      <div class="sn-dish-context-strip" onclick="backToProductDetailView()">
+      <div class="sn-dish-context-strip" onclick="window.goBack()">
         <img src="${escapeHtml(dish.image)}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
         <div class="sn-dish-context-info">
           <div class="sn-dish-context-name">${escapeHtml(dish.name)}</div>

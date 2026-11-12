@@ -227,7 +227,7 @@ function updateFloatingTopBar() {
       floatingBar.classList.add('has-activity-tabs');
       currentHtml = `
         <div class="floating-activity-header-group">
-          <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+          <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
             ${FluentIcons.arrowLeft}
           </button>
           <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
@@ -3130,7 +3130,18 @@ function updateFloatingCartBar() {
 // 5. CART VIEW (Giao diện giỏ hàng đẹp mắt)
 // ========================================
 
+let previousViewBeforeCart = 'home';
+let previousDishBeforeCart = null;
+
 function openCartView() {
+  if (currentView !== 'cart' && currentView !== 'checkout' && currentView !== 'order-success') {
+    previousViewBeforeCart = currentView || 'home';
+    if (typeof modalDish !== 'undefined' && modalDish) {
+      previousDishBeforeCart = modalDish;
+    } else {
+      previousDishBeforeCart = null;
+    }
+  }
   saveCurrentViewScroll();
   currentView = 'cart';
   render();
@@ -3152,7 +3163,7 @@ function renderCartView() {
     <div class="cart-view-container fade-in">
       <!-- Top Navigation Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Giỏ Hàng (${totalItems} món)</div>
@@ -4054,6 +4065,7 @@ function switchActivityFilter(filter) {
 function viewOrderDetail(orderId) {
   globalViewScrollPositions['activity_list'] = window.scrollY || 0;
   viewingOrderDetailId = orderId;
+  currentView = 'activity';
   renderActivityView();
   applyPageScroll(0);
 }
@@ -4613,7 +4625,34 @@ function animateSwitchActivityOrders(pastOrdersListEl, targetOrders, filter) {
 
 function renderActivityView() {
   if (viewingOrderDetailId) {
-    const order = ordersList.find(x => x.orderId === viewingOrderDetailId);
+    const rawId = String(viewingOrderDetailId).trim();
+    const cleanId = rawId.replace(/^#+/, '');
+    let order = (typeof ordersList !== 'undefined' && Array.isArray(ordersList))
+      ? ordersList.find(x => {
+          const xId = String(x.orderId || '').trim();
+          return xId === rawId || xId === cleanId || xId.replace(/^#+/, '') === cleanId;
+        })
+      : null;
+
+    if (!order && typeof DB !== 'undefined' && DB.isReady && DB.data && Array.isArray(DB.data.users)) {
+      for (const u of DB.data.users) {
+        if (Array.isArray(u.orders)) {
+          order = u.orders.find(x => {
+            const xId = String(x.orderId || '').trim();
+            return xId === rawId || xId === cleanId || xId.replace(/^#+/, '') === cleanId;
+          });
+          if (order) break;
+        }
+      }
+    }
+
+    if (!order && typeof lastPlacedOrder !== 'undefined' && lastPlacedOrder) {
+      const xId = String(lastPlacedOrder.orderId || '').trim();
+      if (xId === rawId || xId === cleanId || xId.replace(/^#+/, '') === cleanId) {
+        order = lastPlacedOrder;
+      }
+    }
+
     if (order) {
       renderSingleOrderDetailView(order);
       return;
@@ -4638,7 +4677,7 @@ function renderActivityView() {
     <div class="activity-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>

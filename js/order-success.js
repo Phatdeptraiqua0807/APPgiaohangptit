@@ -16,7 +16,10 @@ function openOrderSuccessView(order) {
   }
   if (typeof saveCurrentViewScroll === 'function') saveCurrentViewScroll();
   currentView = 'order-success';
-  render();
+  if (typeof Router !== 'undefined') {
+    Router.wasInOrderSuccess = true;
+  }
+  render({ replace: true });
   applyPageScroll(0);
 }
 
@@ -32,7 +35,45 @@ function viewPlacedOrderFromSuccess() {
 
 function backHomeFromOrderSuccess() {
   destroyOrderSuccessLottie();
+  if (typeof Router !== 'undefined') {
+    Router.wasInOrderSuccess = false;
+  }
   openHomeView();
+}
+
+function backFromOrderSuccess() {
+  destroyOrderSuccessLottie();
+
+  if (typeof Router !== 'undefined') {
+    Router.wasInOrderSuccess = false;
+  }
+
+  const target = (typeof previousViewBeforeCart === 'string' && previousViewBeforeCart) ? previousViewBeforeCart : 'home';
+  const dish = (typeof previousDishBeforeCart !== 'undefined') ? previousDishBeforeCart : null;
+
+  const state = window.history.state;
+  const step = (state && typeof state.step === 'number') ? state.step : 0;
+
+  // Lùi 2 bước qua cả giỏ hàng và checkout nếu trong session có đủ lịch sử
+  if (step >= 2 && window.history.length > 2) {
+    window.history.go(-2);
+    return;
+  }
+
+  // Fallback nếu không có đủ bước: mở trực tiếp view trước giỏ hàng
+  if (target === 'ai' && typeof openAIChatView === 'function') {
+    openAIChatView();
+  } else if (target === 'dish-detail' && dish && typeof openDishDetailView === 'function') {
+    openDishDetailView(dish);
+  } else if (target === 'search' && typeof openSearchView === 'function') {
+    openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
+  } else if (target === 'activity' && typeof openActivityView === 'function') {
+    openActivityView();
+  } else if (target === 'profile' && typeof openProfileView === 'function') {
+    openProfileView();
+  } else {
+    openHomeView();
+  }
 }
 
 function destroyOrderSuccessLottie() {
@@ -196,7 +237,7 @@ function renderOrderSuccessView() {
   app.innerHTML = `
     <div class="osv-container fade-in">
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="backHomeFromOrderSuccess()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="backFromOrderSuccess()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Đặt hàng thành công</div>

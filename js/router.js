@@ -11,6 +11,7 @@
 
   const Router = {
     isNavigatingFromRouter: false,
+    wasInOrderSuccess: false,
     currentPath: '',
     currentQuery: {},
 
@@ -135,10 +136,43 @@
 
       // 2. Nếu đang ở Chi tiết món: về view nguồn trước đó (AI, Search, Cart,...) hoặc Home
       if (current === 'dish-detail') {
-        if (typeof goBackFromDishDetail === 'function') {
-          goBackFromDishDetail();
-          return;
+        if (typeof closePDPMobileOrderDrawer === 'function') {
+          closePDPMobileOrderDrawer();
         }
+        const target = (typeof previousViewBeforeDish === 'string' && previousViewBeforeDish) ? previousViewBeforeDish : 'home';
+        const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions[target] === 'number')
+          ? globalViewScrollPositions[target]
+          : ((typeof viewScrollPositionsBeforeDish !== 'undefined' && viewScrollPositionsBeforeDish[target]) || 0);
+
+        if (typeof previousViewBeforeDish !== 'undefined') {
+          previousViewBeforeDish = 'home';
+        }
+
+        if (target === 'ai' && typeof openAIChatView === 'function') {
+          openAIChatView();
+        } else if (target === 'search' && typeof openSearchView === 'function') {
+          openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
+        } else if (target === 'cart' && typeof openCartView === 'function') {
+          openCartView();
+        } else if (target === 'activity' && typeof openActivityView === 'function') {
+          openActivityView();
+        } else if (target === 'profile' && typeof openProfileView === 'function') {
+          openProfileView();
+        } else if (target === 'catalog' && typeof openCatalogManagerView === 'function') {
+          openCatalogManagerView();
+        } else if (typeof openHomeView === 'function') {
+          openHomeView();
+        } else {
+          currentView = target;
+          if (typeof render === 'function') render();
+        }
+
+        if (typeof restoreViewScroll === 'function') {
+          restoreViewScroll(target, savedY);
+        } else if (typeof applyPageScroll === 'function') {
+          applyPageScroll(savedY);
+        }
+        return;
       }
 
       // 3. Nếu đang ở Checkout: về Giỏ hàng
@@ -173,7 +207,15 @@
         }
       }
 
-      // 7. Mặc định cho Cart, Activity, AI, Profile, Search, Order Success: về Home
+      // 6b. Nếu đang ở Order Success: quay về trang trước giỏ hàng
+      if (current === 'order-success') {
+        if (typeof backFromOrderSuccess === 'function') {
+          backFromOrderSuccess();
+          return;
+        }
+      }
+
+      // 7. Mặc định cho Cart, Activity, AI, Profile, Search: về Home
       if (typeof openHomeView === 'function') {
         openHomeView();
       } else {
@@ -198,7 +240,8 @@
             break;
           case 'activity':
             if (typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
-              targetPath = `/activity/order/${viewingOrderDetailId}`;
+              const cleanId = String(viewingOrderDetailId).trim().replace(/^#+/, '');
+              targetPath = `/activity/order/${cleanId}`;
             } else if (typeof activityFilter !== 'undefined' && activityFilter && activityFilter !== 'all') {
               targetPath = '/activity';
               targetQuery = { filter: activityFilter };
@@ -350,8 +393,8 @@
         return;
       }
 
-      // 2b. Activity Order Detail: /activity/order/:orderId
-      const activityOrderMatch = path.match(/^\/activity\/order\/([a-zA-Z0-9_\-]+)$/);
+      // 2b. Activity Order Detail: /activity/order/:orderId (hỗ trợ cả có hoặc không có tiền tố # / %23)
+      const activityOrderMatch = path.match(/^\/activity\/order\/(?:#|%23)?([a-zA-Z0-9_\-]+)$/i);
       if (activityOrderMatch) {
         const orderId = activityOrderMatch[1];
         if (typeof viewOrderDetail === 'function') {
@@ -362,6 +405,12 @@
 
       // 3. Cart
       if (path === '/cart') {
+        if (this.wasInOrderSuccess && (!cart || cart.length === 0)) {
+          this.wasInOrderSuccess = false;
+          window.history.back();
+          return;
+        }
+        this.wasInOrderSuccess = false;
         if (typeof openCartView === 'function') {
           openCartView();
         }
@@ -370,6 +419,12 @@
 
       // 4. Checkout
       if (path === '/checkout') {
+        if (this.wasInOrderSuccess && (!cart || cart.length === 0)) {
+          this.wasInOrderSuccess = false;
+          window.history.back();
+          return;
+        }
+        this.wasInOrderSuccess = false;
         if (typeof openCheckoutView === 'function') {
           openCheckoutView();
         }
@@ -427,6 +482,7 @@
 
       // 10. Order Success
       if (path === '/order-success') {
+        this.wasInOrderSuccess = true;
         let order = null;
         if (query && query.orderId && typeof ordersList !== 'undefined') {
           order = ordersList.find(o => o.orderId === query.orderId);
