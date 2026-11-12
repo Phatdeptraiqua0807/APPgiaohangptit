@@ -1846,7 +1846,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 .cart-view-container.fade-in,
 .checkout-view-container.fade-in,
 .product-detail-page.fade-in,
-.catalog-view-container.fade-in {
+.catalog-view-container.fade-in,
+.ai-chat-view-container.fade-in {
   animation: fade-opacity-only 0.25s ease-out both;
 }
 
@@ -8880,12 +8881,12 @@ input[type="checkbox"].app-custom-check:focus-visible {
   gap: 10px;
   padding: 12px 14px;
   margin: 10px 0 12px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1.5px solid rgba(209, 250, 229, 0.7);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
   border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0, 177, 79, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 177, 79, 0.08);
   flex-wrap: wrap;
 }
 
@@ -8924,11 +8925,11 @@ body.view-ai-active .ai-chat-header {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: 1.5px solid rgba(209, 250, 229, 0.7) !important;
-  background: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 4px 16px rgba(0, 177, 79, 0.05) !important;
+  border-bottom: 1.5px solid rgba(167, 243, 208, 0.45) !important;
+  background: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
   box-sizing: border-box !important;
 }
 
@@ -16987,6 +16988,58 @@ body:not(.view-ai-active) .ai-aura {
 
   100% {
     transform: translate3d(-48vw, 0vh, 0) scale(0.48);
+    opacity: 0;
+  }
+}
+
+/* Khi có xác suất 30% xuất hiện: Bong bóng w5 sẽ chuyển động theo đồ thị hình sin LỚN DẦN từ phải sang trái */
+.ai-aura[data-growth="growing"] .ai-aura-wave.w5 {
+  animation-name: aiAuraGrowingSine !important;
+  mix-blend-mode: normal;
+  z-index: 3;
+}
+
+/* Quỹ đạo đồ thị hình sin biên độ & kích thước LỚN DẦN từ phải (+46vw) sang trái (-48vw):
+   - Bắt đầu nhỏ nhẹ (scale: 0.48, biên độ nhỏ ±2vh..±4vh) ở bên phải
+   - Càng trôi dần sang trái, biên độ sin càng mở rộng (±8vh..±13vh) và kích thước phóng to dần lên (scale: 1.25) trước khi tan */
+@keyframes aiAuraGrowingSine {
+  0% {
+    transform: translate3d(106vw, 0vh, 0) scale(0.48);
+    opacity: 0;
+  }
+
+  8% {
+    transform: translate3d(37vw, -1.8vh, 0) scale(0.56);
+    opacity: 0.55;
+  }
+
+  22% {
+    transform: translate3d(25vw, 3.2vh, 0) scale(0.68);
+    opacity: 0.8;
+  }
+
+  38% {
+    transform: translate3d(11vw, -5.5vh, 0) scale(0.82);
+    opacity: 0.92;
+  }
+
+  54% {
+    transform: translate3d(-5vw, 8.2vh, 0) scale(0.98);
+    opacity: 0.98;
+  }
+
+  70% {
+    transform: translate3d(-20vw, -11.5vh, 0) scale(1.12);
+    opacity: 1;
+  }
+
+  86% {
+    transform: translate3d(-35vw, 13.5vh, 0) scale(1.25);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translate3d(-98vw, 0vh, 0) scale(1.3);
     opacity: 0;
   }
 }

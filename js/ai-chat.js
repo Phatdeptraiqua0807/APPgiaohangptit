@@ -323,6 +323,11 @@ function startAIAura() {
   const el = ensureAIAuraElement();
   if (!el) return;
   el.dataset.phase = '1';
+
+  // Tỉ lệ 30% có 1 bong bóng di chuyển theo đồ thị hình sin LỚN DẦN (growing sine wave)
+  const isGrowing = Math.random() < 0.3;
+  el.dataset.growth = isGrowing ? 'growing' : 'normal';
+
   // Đảm bảo browser đã paint trạng thái ẩn trước khi kích hoạt transition fade-in
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -1122,8 +1127,8 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
       <div class="ai-prompt-section-label">💡 Gợi ý câu hỏi dành cho bạn (Chạm để hỏi ngay):</div>
       <div class="ai-prompt-grid">
         ${getAIWelcomePromptOrder().map((idx) => {
-          const card = AI_WELCOME_PROMPT_CARDS[idx];
-          return `
+    const card = AI_WELCOME_PROMPT_CARDS[idx];
+    return `
           <div class="ai-prompt-card" onclick="handleWelcomePromptCard(${idx})">
             <div class="ai-prompt-card-top">
               <span class="ai-prompt-card-icon">${card.icon}</span>
@@ -1133,7 +1138,7 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
             <div class="ai-prompt-card-desc">${escapeHtml(card.desc)}</div>
           </div>
         `;
-        }).join('')}
+  }).join('')}
       </div>
     </div>
   `;
@@ -1880,7 +1885,8 @@ function scrollUserMessageToTop() {
       const headerEl = document.querySelector('.ai-chat-header');
       const headerH = headerEl ? headerEl.offsetHeight : 64;
       const rect = lastUserRow.getBoundingClientRect();
-      const targetY = Math.max(0, window.pageYOffset + rect.top - headerH - 12);
+      const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
+      const targetY = Math.max(0, scrollY + rect.top - headerH - 10);
       if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
         window.locomotiveScroll.scrollTo(targetY, { duration: 0.65 });
       } else {
