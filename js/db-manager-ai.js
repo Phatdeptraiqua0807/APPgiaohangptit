@@ -854,7 +854,7 @@ function renderDbmAITab() {
         ${configured
       ? `🟢 Đang dùng API: <strong>${escapeHtml(providerLabel)}</strong>`
       : '⚠️ Chưa cấu hình API AI. Cần có API key (Gemini, OpenRouter, Groq, NVIDIA/Custom...) để AI tạo hàng.'}
-        <button class="db-inline-link-btn" onclick="openAISettingsModal()">⚙️ Cài đặt API</button>
+        <button type="button" class="db-inline-link-btn" onclick="openAISettingsModal()">⚙️ Cài đặt API</button>
       </div>
 
       <div class="delivery-input-group">
@@ -926,7 +926,7 @@ function renderDbmAITab() {
           <input type="checkbox" ${prefs.autoSave ? 'checked' : ''} onchange="dbmAiSetPref({ autoSave: this.checked })">
           <span>Tự động lưu vào Database khi AI tạo xong (không cần duyệt)</span>
         </label>
-        <button class="btn-primary-large dbm-ai-submit" onclick="dbmAiEnqueueFromForm()">➕ Thêm vào hàng đợi <small>Ctrl+Enter</small></button>
+        <button type="button" class="btn-primary-large dbm-ai-submit" onclick="dbmAiEnqueueFromForm()">➕ Thêm vào hàng đợi <small>Ctrl+Enter</small></button>
       </div>
     </div>
 
@@ -1075,8 +1075,8 @@ function dbmAiQueueHtml() {
           ${counts.running ? `⚙️ ${counts.running} đang chạy • ` : ''}${counts.queued ? `⏳ ${counts.queued} chờ • ` : ''}${counts.review ? `📝 ${counts.review} chờ duyệt • ` : ''}${counts.saved ? `💾 ${counts.saved} đã lưu` : ''}
         </div>
         <div class="dbm-queue-controls">
-          <button class="db-secondary-btn" onclick="dbmAiTogglePause()">${dbmAiPaused ? '▶ Chạy tiếp' : '⏸ Tạm dừng'}</button>
-          <button class="db-secondary-btn" onclick="dbmAiClearFinished()">🧹 Xóa việc đã xong</button>
+          <button type="button" class="db-secondary-btn" onclick="dbmAiTogglePause()">${dbmAiPaused ? '▶ Chạy tiếp' : '⏸ Tạm dừng'}</button>
+          <button type="button" class="db-secondary-btn" onclick="dbmAiClearFinished()">🧹 Xóa việc đã xong</button>
         </div>
       </div>
       ${dbmAiPaused ? `<div class="dbm-hint warn">Hàng đợi đang tạm dừng — các yêu cầu chờ sẽ không chạy cho tới khi bạn bấm “Chạy tiếp”.</div>` : ''}
@@ -1091,10 +1091,10 @@ function dbmAiJobHtml(job) {
   const catModeText = job.catMode === 'specific' ? `danh mục: ${escapeHtml(DB.getCategoryById(job.catId)?.name || '?')}` : job.catMode === 'existing-only' ? 'danh mục có sẵn' : 'danh mục tự động';
 
   let actions = '';
-  if (job.status === 'queued' || job.status === 'running') actions = `<button class="db-act-btn delete" onclick="dbmAiCancelJob('${id}')">Hủy</button>`;
-  else if (job.status === 'error') actions = `<button class="db-act-btn order" onclick="dbmAiRetryJob('${id}')">🔁 Thử lại</button><button class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">🗑️</button>`;
-  else if (job.status === 'review') actions = `<button class="db-act-btn edit" onclick="dbmAiToggleOpen('${id}')">${dbmAiOpenJobs.has(job.id) ? 'Thu gọn' : 'Xem & duyệt'}</button><button class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">Bỏ</button>`;
-  else actions = `<button class="db-act-btn edit" onclick="dbmAiToggleOpen('${id}')">${dbmAiOpenJobs.has(job.id) ? 'Thu gọn' : 'Xem'}</button><button class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">🗑️</button>`;
+  if (job.status === 'queued' || job.status === 'running') actions = `<button type="button" class="db-act-btn delete" onclick="dbmAiCancelJob('${id}')">Hủy</button>`;
+  else if (job.status === 'error') actions = `<button type="button" class="db-act-btn order" onclick="dbmAiRetryJob('${id}')">🔁 Thử lại</button><button type="button" class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">🗑️</button>`;
+  else if (job.status === 'review') actions = `<button type="button" class="db-act-btn edit" onclick="dbmAiToggleOpen('${id}')">${dbmAiOpenJobs.has(job.id) ? 'Thu gọn' : 'Xem & duyệt'}</button><button type="button" class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">Bỏ</button>`;
+  else actions = `<button type="button" class="db-act-btn edit" onclick="dbmAiToggleOpen('${id}')">${dbmAiOpenJobs.has(job.id) ? 'Thu gọn' : 'Xem'}</button><button type="button" class="db-act-btn delete" onclick="dbmAiRemoveJob('${id}')">🗑️</button>`;
 
   return `
     <div class="dbm-job ${cls}">
@@ -1163,11 +1163,11 @@ function dbmAiReviewHtml(job) {
               <div class="dbm-tag-row">${it.tags.map(t => `<span class="dbm-tag-chip">#${escapeHtml(t)}</span>`).join('')}</div>
               ${it.description ? `<div class="dbm-ai-card-desc">${escapeHtml(it.description)}</div>` : ''}
               <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                <button class="db-inline-link-btn" onclick="dbmAiGrabGoogleImage('${jid}', ${idx})" title="Từ khóa đang dùng: ${escapeHtml(it.imageSearchQuery || it.name)} — Bấm nhiều lần để đổi ảnh #1 → #2 → #3...">⚡ Đổi ảnh Free${it._googleRankCursor ? ` (#${(it._googleRankCursor % 6) + 1})` : ''}</button>
-                <button class="db-inline-link-btn" onclick="dbmAiEditImageQuery('${jid}', ${idx})" title="Khai báo rõ từ khóa tìm ảnh riêng cho món này rồi tải ảnh ngay">🔎 Từ khóa ảnh</button>
-                ${!it.saved && !['none', 'google', 'pixabay', 'google_cse'].includes(dbmAiPrefs().imageMode) ? `<button class="db-inline-link-btn" onclick="dbmAiRegenImage('${jid}', ${idx})">🔄 Tạo lại ảnh</button>` : ''}
-                ${!it.saved ? `<button class="db-inline-link-btn" onclick="dbmAiEditHealthy('${jid}', ${idx})" title="Chỉnh sửa đánh giá độ Healthy của món này">🥗 Sửa Healthy</button>` : ''}
-                ${it.saved ? `<button class="db-inline-link-btn" onclick="openItemEditorModal('${escapeHtml(it.savedItemId || '')}')">✏️ Sửa trong Database</button>` : ''}
+                <button type="button" class="db-inline-link-btn" onclick="dbmAiGrabGoogleImage('${jid}', ${idx})" title="Từ khóa đang dùng: ${escapeHtml(it.imageSearchQuery || it.name)} — Bấm nhiều lần để đổi ảnh #1 → #2 → #3...">⚡ Đổi ảnh Free${it._googleRankCursor ? ` (#${(it._googleRankCursor % 6) + 1})` : ''}</button>
+                <button type="button" class="db-inline-link-btn" onclick="dbmAiEditImageQuery('${jid}', ${idx})" title="Khai báo rõ từ khóa tìm ảnh riêng cho món này rồi tải ảnh ngay">🔎 Từ khóa ảnh</button>
+                ${!it.saved && !['none', 'google', 'pixabay', 'google_cse'].includes(dbmAiPrefs().imageMode) ? `<button type="button" class="db-inline-link-btn" onclick="dbmAiRegenImage('${jid}', ${idx})">🔄 Tạo lại ảnh</button>` : ''}
+                ${!it.saved ? `<button type="button" class="db-inline-link-btn" onclick="dbmAiEditHealthy('${jid}', ${idx})" title="Chỉnh sửa đánh giá độ Healthy của món này">🥗 Sửa Healthy</button>` : ''}
+                ${it.saved ? `<button type="button" class="db-inline-link-btn" onclick="openItemEditorModal('${escapeHtml(it.savedItemId || '')}')">✏️ Sửa trong Database</button>` : ''}
               </div>
             </div>
           </div>`;
@@ -1175,9 +1175,9 @@ function dbmAiReviewHtml(job) {
       </div>
       ${saved ? '' : `
         <div class="dbm-review-footer">
-          ${missing ? `<button class="db-secondary-btn" onclick="dbmAiAssignOneImage('${jid}')">${FluentIcons.imageFilled} Gán 1 ảnh cho nhiều món</button>` : ''}
-          <button class="db-secondary-btn" onclick="dbmAiSelectAll('${jid}', ${selected === 0})">${selected === 0 ? 'Chọn tất cả' : 'Bỏ chọn tất cả'}</button>
-          <button class="btn-primary-large" style="flex:1; min-width:200px;" onclick="dbmAiSaveJob('${jid}', false)">${FluentIcons.saveFilled} Lưu ${selected} món đã chọn vào Database</button>
+          ${missing ? `<button type="button" class="db-secondary-btn" onclick="dbmAiAssignOneImage('${jid}')">${FluentIcons.imageFilled} Gán 1 ảnh cho nhiều món</button>` : ''}
+          <button type="button" class="db-secondary-btn" onclick="dbmAiSelectAll('${jid}', ${selected === 0})">${selected === 0 ? 'Chọn tất cả' : 'Bỏ chọn tất cả'}</button>
+          <button type="button" class="btn-primary-large" style="flex:1; min-width:200px;" onclick="dbmAiSaveJob('${jid}', false)">${FluentIcons.saveFilled} Lưu ${selected} món đã chọn vào Database</button>
         </div>`}
     </div>`;
 }

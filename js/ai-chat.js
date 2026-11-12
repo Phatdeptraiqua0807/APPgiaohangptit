@@ -763,9 +763,7 @@ async function syncAIProfilesFromServer() {
   }
 
   saveAIProfilesState(false);
-  if (typeof currentView !== 'undefined' && currentView === 'ai') {
-    renderAIChatView();
-  }
+  updateGlobalAIChromeStatus();
 }
 
 function applyProfileToActiveAIConfig(prof) {
@@ -823,6 +821,174 @@ function upsertProfileFromConfig(cfg, forceNew = false) {
   return savedObj;
 }
 
+function updateGlobalAIChromeStatus() {
+  const apiConnected = isExternalAPIConfigured();
+  const providerInfo = AI_PROVIDER_PRESETS[aiConfig.provider] || AI_PROVIDER_PRESETS.gemini;
+  const displayProfLabel = (aiConfig.profileName || '').trim()
+    ? `${aiConfig.profileName}`
+    : `${providerInfo.badge} (${aiConfig.model})`;
+  const apiStatusText = apiConnected
+    ? `🟢 ${displayProfLabel}`
+    : `⚡ AI Thông minh • Quản lý Profile`;
+
+  // Cập nhật tất cả nút trạng thái AI trong header (Chat AI, Dish Detail, v.v.)
+  document.querySelectorAll('.ai-api-status-btn').forEach(btn => {
+    btn.classList.toggle('connected', apiConnected);
+    const label = btn.querySelector('.ai-api-btn-label');
+    if (label) {
+      if (btn.classList.contains('compact')) {
+        label.textContent = apiConnected ? 'API Đã nối' : 'Cấu hình API';
+      } else {
+        label.textContent = apiStatusText;
+      }
+    }
+  });
+
+  // Cập nhật chấm online
+  document.querySelectorAll('.ai-online-dot').forEach(dot => {
+    dot.className = `ai-online-dot ${apiConnected ? 'api-live' : 'local-smart'}`;
+  });
+}
+
+function updateAISettingsSheetInPlace(targetProf, bannerHtml = '') {
+  const sheet = document.getElementById('modal-bottom-sheet');
+  if (!sheet) return;
+
+  const apiActive = isExternalAPIConfigured();
+
+  // 1. Cập nhật banner thông báo
+  let bannerEl = sheet.querySelector('.ai-test-banner');
+  if (bannerHtml) {
+    if (bannerEl) {
+      bannerEl.outerHTML = bannerHtml;
+    } else {
+      const body = sheet.querySelector('.delivery-modal-body');
+      if (body) {
+        const temp = document.createElement('div');
+        temp.innerHTML = bannerHtml;
+        const newBanner = temp.firstElementChild;
+        if (newBanner) {
+          const proxyBadge = body.querySelector('.ai-proxy-status-card, .ai-proxy-status-badge');
+          if (proxyBadge) {
+            proxyBadge.insertAdjacentElement('afterend', newBanner);
+          } else {
+            body.insertAdjacentElement('afterbegin', newBanner);
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Cập nhật thẻ trạng thái Profile đang dùng (.ai-active-profile-card)
+  const activeCardMain = sheet.querySelector('.ai-active-profile-card .ai-active-card-main');
+  if (activeCardMain) {
+    if (apiActive && targetProf) {
+      const pPreset = AI_PROVIDER_PRESETS[aiConfig.provider] || AI_PROVIDER_PRESETS.gemini;
+      activeCardMain.innerHTML = `
+        <div class="ai-active-card-icon">🤖</div>
+        <div class="ai-active-card-details">
+          <div class="ai-active-card-name">
+            <span>${escapeHtml(aiConfig.profileName || defaultProfileNameForConfig(aiConfig))}</span>
+            <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+          </div>
+          <div class="ai-active-card-sub">
+            ${escapeHtml(pPreset.badge || aiConfig.provider)} • <strong>${escapeHtml(aiConfig.model)}</strong> • Key: ${escapeHtml(maskApiKey(aiConfig.apiKey))}
+          </div>
+        </div>
+      `;
+    } else {
+      activeCardMain.innerHTML = `
+        <div class="ai-active-card-icon local">${FluentIcons.flashFilled}</div>
+        <div class="ai-active-card-details">
+          <div class="ai-active-card-name">
+            <span>AI Thông minh Nội bộ</span>
+            <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+          </div>
+          <div class="ai-active-card-sub">
+            Tự động phân tích món ăn quanh PTIT, giỏ hàng & đơn cũ • Hoàn toàn miễn phí
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // 3. Cập nhật dòng chuyển đổi nhanh AI Nội bộ (.ai-profile-quick-switch-row)
+  let quickSwitchRow = sheet.querySelector('.ai-profile-quick-switch-row');
+  if (apiActive) {
+    if (!quickSwitchRow) {
+      const activeCard = sheet.querySelector('.ai-active-profile-card');
+      if (activeCard) {
+        const div = document.createElement('div');
+        div.className = 'ai-profile-quick-switch-row';
+        div.setAttribute('role', 'button');
+        div.setAttribute('tabindex', '0');
+        div.onclick = () => switchActiveAIProfile('__local__', true);
+        div.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') switchActiveAIProfile('__local__', true); };
+        div.title = 'Chuyển ngay sang AI Nội bộ (không mất cấu hình API đã lưu)';
+        div.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:22px;">${FluentIcons.flashFilled}</span>
+            <div>
+              <div style="font-size:13px; font-weight:800; color:#0f172a;">Chuyển về AI Thông minh Nội bộ</div>
+              <div style="font-size:11.5px; color:#64748b;">Dùng ngay không cần API Key, các Profile đã lưu vẫn được giữ nguyên</div>
+            </div>
+          </div>
+          <button type="button" class="ai-prof-mini-btn" onclick="event.stopPropagation(); switchActiveAIProfile('__local__', true)">Chọn dùng</button>
+        `;
+        activeCard.insertAdjacentElement('afterend', div);
+      }
+    } else {
+      quickSwitchRow.style.display = 'flex';
+    }
+  } else if (quickSwitchRow) {
+    quickSwitchRow.style.display = 'none';
+  }
+
+  // 4. Cập nhật trạng thái từng Profile trong danh sách (.ai-profiles-list)
+  sheet.querySelectorAll('.ai-profile-item-card').forEach(card => {
+    const cardInfo = card.querySelector('.ai-profile-card-info');
+    const onclickAttr = cardInfo ? (cardInfo.getAttribute('onclick') || '') : '';
+    const profIdMatch = onclickAttr.match(/switchActiveAIProfile\('([^']+)'/);
+    const profId = profIdMatch ? profIdMatch[1] : null;
+    const isThisActive = Boolean(apiActive && profId && profId === aiConfig.profileId);
+
+    card.classList.toggle('active', isThisActive);
+    if (cardInfo) {
+      cardInfo.setAttribute('aria-pressed', isThisActive ? 'true' : 'false');
+    }
+
+    const nameEl = card.querySelector('.ai-profile-card-name');
+    if (nameEl) {
+      let pill = nameEl.querySelector('.ai-prof-active-pill');
+      if (isThisActive && !pill) {
+        const newPill = document.createElement('span');
+        newPill.className = 'ai-prof-active-pill';
+        newPill.textContent = '🟢 Đang dùng';
+        nameEl.appendChild(newPill);
+      } else if (!isThisActive && pill) {
+        pill.remove();
+      }
+    }
+
+    const actionsEl = card.querySelector('.ai-profile-card-actions');
+    if (actionsEl) {
+      let useBtn = actionsEl.querySelector('.ai-prof-mini-btn.primary');
+      if (!isThisActive && !useBtn && profId) {
+        useBtn = document.createElement('button');
+        useBtn.type = 'button';
+        useBtn.className = 'ai-prof-mini-btn primary';
+        useBtn.onclick = () => switchActiveAIProfile(profId, true);
+        useBtn.textContent = 'Dùng';
+        actionsEl.insertAdjacentElement('afterbegin', useBtn);
+      } else if (isThisActive && useBtn) {
+        useBtn.remove();
+      }
+    }
+  });
+
+  updateGlobalAIChromeStatus();
+}
+
 function switchActiveAIProfile(profileId, fromModal = false) {
   if (!profileId || profileId === '__local__') {
     aiProfilesState.activeProfileId = null;
@@ -846,15 +1012,19 @@ function switchActiveAIProfile(profileId, fromModal = false) {
     if (fromModal) {
       tempModalProvider = aiConfig.provider;
       tempModalDraft = { ...aiConfig };
-      renderAISettingsSheetContent(`
+      const bannerHtml = `
         <div class="ai-test-banner info">
           ⚡ Đang sử dụng <strong>AI Thông minh Nội bộ</strong> (các Profile đã lưu vẫn được giữ nguyên để bạn chuyển lại bất cứ lúc nào).
         </div>
-      `);
+      `;
+      const sheet = document.getElementById('modal-bottom-sheet');
+      if (sheet && sheet.querySelector('.ai-profiles-list')) {
+        updateAISettingsSheetInPlace(null, bannerHtml);
+      } else {
+        renderAISettingsSheetContent(bannerHtml, true);
+      }
     }
-    if (typeof currentView !== 'undefined' && currentView === 'ai') {
-      renderAIChatView();
-    }
+    updateGlobalAIChromeStatus();
     return;
   }
 
@@ -872,16 +1042,20 @@ function switchActiveAIProfile(profileId, fromModal = false) {
   if (fromModal) {
     tempModalProvider = target.provider;
     tempModalDraft = { ...aiConfig };
-    renderAISettingsSheetContent(`
+    const bannerHtml = `
       <div class="ai-test-banner ok">
         🟢 Đã kích hoạt Profile <strong>${escapeHtml(target.profileName)}</strong> (${escapeHtml(target.model)})!
       </div>
-    `);
+    `;
+    const sheet = document.getElementById('modal-bottom-sheet');
+    if (sheet && sheet.querySelector('.ai-profiles-list')) {
+      updateAISettingsSheetInPlace(target, bannerHtml);
+    } else {
+      renderAISettingsSheetContent(bannerHtml, true);
+    }
   }
 
-  if (typeof currentView !== 'undefined' && currentView === 'ai') {
-    renderAIChatView();
-  }
+  updateGlobalAIChromeStatus();
 }
 
 function loadAIChatHistories() {
@@ -989,7 +1163,7 @@ function renderAIChatView() {
         </div>
 
         <div class="ai-chat-header-actions">
-          <button
+          <button type="button"
             class="ai-api-status-btn ${apiConnected ? 'connected' : ''}"
             onclick="openAISettingsModal()"
             title="Quản lý & Lưu các Profile AI (Gemini, DeepSeek, OpenAI, Groq, OpenRouter, Ollama...)"
@@ -999,13 +1173,13 @@ function renderAIChatView() {
           </button>
 
           ${cartCount > 0 ? `
-            <button class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Xem giỏ hàng">
+            <button type="button" class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Xem giỏ hàng">
               ${FluentIcons.cartRegular} <span>${cartCount}</span>
             </button>
           ` : ''}
 
           ${messages.length > 0 ? `
-            <button class="ai-header-icon-btn" onclick="clearCurrentAIChat()" title="Làm mới cuộc trò chuyện">
+            <button type="button" class="ai-header-icon-btn" onclick="clearCurrentAIChat()" title="Làm mới cuộc trò chuyện">
               ${FluentIcons.sync}
             </button>
           ` : ''}
@@ -4301,7 +4475,7 @@ function openAISettingsModal() {
 function openAIProfileListMode() {
   aiModalViewMode = 'list';
   aiModelsExplorerState.open = false;
-  renderAISettingsSheetContent();
+  renderAISettingsSheetContent('', false);
 }
 
 function openAIProfileForm(profileId = null) {
@@ -4333,7 +4507,7 @@ function openAIProfileForm(profileId = null) {
     };
   }
 
-  renderAISettingsSheetContent();
+  renderAISettingsSheetContent('', false);
   setTimeout(() => {
     document.getElementById('ai-cfg-profname')?.focus();
   }, 40);
@@ -4369,11 +4543,24 @@ async function refreshModalProxyStatus() {
   }
 }
 
-function renderAISettingsSheetContent(statusBannerHtml = '') {
+function renderAISettingsSheetContent(statusBannerHtml = '', preserveScroll = true) {
+  const sheet = document.getElementById('modal-bottom-sheet');
+  if (!sheet) return;
+
+  const bodyEl = sheet.querySelector('.delivery-modal-body');
+  const savedScrollTop = (preserveScroll && bodyEl) ? bodyEl.scrollTop : 0;
+
   if (aiModalViewMode === 'form') {
     renderAIProfileFormView(statusBannerHtml);
   } else {
     renderAIProfilesListView(statusBannerHtml);
+  }
+
+  if (preserveScroll && savedScrollTop > 0) {
+    const newBodyEl = sheet.querySelector('.delivery-modal-body');
+    if (newBodyEl) {
+      newBodyEl.scrollTop = savedScrollTop;
+    }
   }
 }
 
@@ -4392,7 +4579,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
         <span>🤖</span>
         <span>Quản Lý Profile AI</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -4433,7 +4620,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
 
       <!-- Tùy chọn chuyển nhanh sang AI Nội bộ nếu đang dùng API -->
       ${apiActive ? `
-        <div class="ai-profile-quick-switch-row" onclick="switchActiveAIProfile('__local__', true)" title="Chuyển ngay sang AI Nội bộ (không mất cấu hình API đã lưu)">
+        <div class="ai-profile-quick-switch-row" onclick="switchActiveAIProfile('__local__', true)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')switchActiveAIProfile('__local__', true)" title="Chuyển ngay sang AI Nội bộ (không mất cấu hình API đã lưu)">
           <div style="display:flex; align-items:center; gap:10px;">
             <span style="font-size:22px;">${FluentIcons.flashFilled}</span>
             <div>
@@ -4441,7 +4628,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
               <div style="font-size:11.5px; color:#64748b;">Dùng ngay không cần API Key, các Profile đã lưu vẫn được giữ nguyên</div>
             </div>
           </div>
-          <button type="button" class="ai-prof-mini-btn">Chọn dùng</button>
+          <button type="button" class="ai-prof-mini-btn" onclick="event.stopPropagation(); switchActiveAIProfile('__local__', true)">Chọn dùng</button>
         </div>
       ` : ''}
 
@@ -4486,7 +4673,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
     const personaHint = prof.customPrompt ? ' • 🎭 Có phong cách riêng' : '';
     return `
                 <div class="ai-profile-item-card ${isCurrentActive ? 'active' : ''}">
-                  <div class="ai-profile-card-info" onclick="switchActiveAIProfile('${escapeHtml(prof.id)}', true)" style="cursor:pointer;">
+                  <div class="ai-profile-card-info" onclick="switchActiveAIProfile('${escapeHtml(prof.id)}', true)" role="button" tabindex="0" aria-pressed="${isCurrentActive}" onkeydown="if(event.key==='Enter'||event.key===' ')switchActiveAIProfile('${escapeHtml(prof.id)}', true)" style="cursor:pointer;">
                     <div class="ai-profile-card-name">
                       <span>${escapeHtml(prof.profileName)}</span>
                       ${isCurrentActive ? `<span class="ai-prof-active-pill">🟢 Đang dùng</span>` : ''}
@@ -4572,7 +4759,7 @@ function renderAIProfileFormView(statusBannerHtml = '') {
         </button>
         <span>${isEditingExisting ? '✏️ Chỉnh Sửa Profile' : '➕ Tạo Profile AI Mới'}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -5266,10 +5453,8 @@ function deleteSavedAIProfile(profileId) {
     tempModalDraft = { ...aiConfig };
   }
 
-  renderAISettingsSheetContent(`<div class="ai-test-banner warn">${bannerMsg}</div>`);
-  if (typeof currentView !== 'undefined' && currentView === 'ai') {
-    renderAIChatView();
-  }
+  renderAISettingsSheetContent(`<div class="ai-test-banner warn">${bannerMsg}</div>`, true);
+  updateGlobalAIChromeStatus();
 }
 
 function exportAIProfilesToFile() {
@@ -5331,10 +5516,8 @@ function handleImportAIProfilesFile(event) {
         <div class="ai-test-banner ok">
           ✅ Đã nhập thành công <strong>${validList.length} Profile AI</strong> và kích hoạt <strong>${escapeHtml(chosenActive.profileName)}</strong>!
         </div>
-      `);
-      if (typeof currentView !== 'undefined' && currentView === 'ai') {
-        renderAIChatView();
-      }
+      `, true);
+      updateGlobalAIChromeStatus();
     } catch (err) {
       renderAISettingsSheetContent(`
         <div class="ai-test-banner err">❌ Không thể đọc file JSON: ${escapeHtml(err.message)}</div>
@@ -5387,13 +5570,19 @@ function selectModalAIProvider(providerKey) {
       autoFallbackLocal: prevForm.autoFallbackLocal
     };
   }
-  renderAISettingsSheetContent();
+  renderAISettingsSheetContent('', true);
 }
 
 function toggleShowAIApiKey() {
-  tempModalDraft = readModalAIConfigDraft();
   tempShowApiKey = !tempShowApiKey;
-  renderAISettingsSheetContent();
+  const input = document.getElementById('ai-cfg-apikey');
+  const btn = document.querySelector('[onclick*="toggleShowAIApiKey()"]');
+  if (input) {
+    input.type = tempShowApiKey ? 'text' : 'password';
+  }
+  if (btn) {
+    btn.innerHTML = tempShowApiKey ? '🙈 Ẩn' : '👁️ Hiện';
+  }
 }
 
 function readModalAIConfigDraft() {
@@ -5427,7 +5616,7 @@ async function testAIConnectionFromModal() {
       <div class="ai-test-banner warn">
         ⚠️ Bạn chưa nhập API Key. Nếu cần dùng <strong>AI Thông minh Nội bộ</strong> miễn phí, hãy bấm nút <strong>⚡ Dùng AI Nội bộ</strong>!
       </div>
-    `);
+    `, true);
     return;
   }
 
@@ -5435,7 +5624,7 @@ async function testAIConnectionFromModal() {
     <div class="ai-test-banner info">
       ⏳ Đang kiểm tra kết nối tới <strong>${escapeHtml(AI_PROVIDER_PRESETS[draft.provider]?.name || draft.provider)}</strong> (${escapeHtml(draft.model)})...
     </div>
-  `);
+  `, true);
 
   try {
     const testRes = await callExternalLLMAPI([
@@ -5450,13 +5639,13 @@ async function testAIConnectionFromModal() {
         ✅ <strong>Kết nối API & Tương tác Đa Giai Đoạn thành công!</strong> ${traceInfo}<br>
         <em>"${escapeHtml(testRes.content.substring(0, 140))}..."</em>
       </div>
-    `);
+    `, true);
   } catch (err) {
     renderAISettingsSheetContent(`
       <div class="ai-test-banner err">
         ❌ <strong>Không thể kết nối:</strong> ${escapeHtml(err.message)}
       </div>
-    `);
+    `, true);
   }
 }
 
@@ -5482,9 +5671,7 @@ function saveAISettingsFromModal(saveAsNew = false) {
     showToast('sparkleRegular', 'Đang sử dụng chế độ AI Thông minh Nội bộ!');
   }
 
-  if (currentView === 'ai') {
-    renderAIChatView();
-  }
+  updateGlobalAIChromeStatus();
 }
 
 function disconnectExternalAI() {

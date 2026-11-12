@@ -771,7 +771,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
         <span>${FluentIcons.targetFilled}</span>
         <span>Phân loại Người dùng &amp; Thể trạng</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -798,6 +798,10 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
                 class="un-persona-card ${isSelected ? 'active' : ''}"
                 style="${isSelected ? `border-color:${opt.color}; background:${opt.bg};` : ''}"
                 onclick="quickSelectUserPersona('${opt.id}')"
+                role="button"
+                tabindex="0"
+                aria-pressed="${isSelected}"
+                onkeydown="if(event.key==='Enter'||event.key===' ')quickSelectUserPersona('${opt.id}')"
               >
                 <div class="un-persona-top">
                   <span class="un-persona-emoji">${opt.icon}</span>
@@ -929,8 +933,312 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
 }
 
 // =========================================================================
-// 5. THAO TÁC NHANH TRÊN BẢNG KHẢO SÁT & NHẬT KÝ KCAL
+// 5. THAO TÁC NHANH TRÊN BẢNG KHẢO SÁT & NHẬT KÝ KCAL (CẬP NHẬT IN-PLACE TẠI CHỖ)
 // =========================================================================
+
+function renderRecDishesGridHtml(recs) {
+  if (!recs || recs.length === 0) {
+    return `<div class="un-empty-log">Không có mặt hàng nào khớp bộ lọc này. Hãy chọn "Phù hợp nhất với bạn"!</div>`;
+  }
+  return `
+    <div class="un-rec-dishes-grid">
+      ${recs.map(({ item, prof, reasonText }) => `
+        <div class="un-rec-dish-card">
+          <div class="un-rec-img-wrap" onclick="openDishDetailById('${escapeHtml(item.id)}')">
+            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <span class="un-rec-kcal-badge">${FluentIcons.fireFilled} ~${prof.calories} kcal</span>
+            <span class="un-rec-healthy-badge">🥗 ${prof.healthyScore}/10</span>
+          </div>
+
+          <div class="un-rec-body">
+            <div class="un-rec-title" onclick="openDishDetailById('${escapeHtml(item.id)}')">${escapeHtml(item.name)}</div>
+            <div class="un-rec-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName)} • <strong>${formatVND(item.price)}</strong></div>
+
+            <div class="un-rec-macros-mini">
+              <span>🥩 Đạm <strong>${prof.protein}g</strong></span>
+              <span>🌾 Carb <strong>${prof.carbs}g</strong></span>
+              <span>🥑 Béo <strong>${prof.fat}g</strong></span>
+            </div>
+
+            <div class="un-rec-reason">💡 ${escapeHtml(reasonText)}</div>
+
+            <div class="un-rec-actions">
+              <button type="button" class="un-rec-btn detail" onclick="openDishDetailById('${escapeHtml(item.id)}')">
+                Xem món
+              </button>
+              <button type="button" class="un-rec-btn log" onclick="quickLogDishEaten('${escapeHtml(item.id)}')" title="Ghi nhận đã ăn món này vào Kcal hôm nay">
+                🍽️ Đã ăn
+              </button>
+              <button type="button" class="un-rec-btn cart" onclick="quickAddRecommendedDishToCart('${escapeHtml(item.id)}')">
+                🛒 Đặt
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function updateSurveyModalInPlace(hp) {
+  const modalSurvey = document.querySelector('.un-survey-card-modal');
+  if (!modalSurvey) return;
+
+  const persona = getPersonaMeta(hp.personaType);
+
+  // 1. Cập nhật thẻ Persona
+  modalSurvey.querySelectorAll('.un-persona-card').forEach(card => {
+    const onclickAttr = card.getAttribute('onclick') || '';
+    const isSelected = onclickAttr.includes(`'${hp.personaType}'`) || onclickAttr.includes(`"${hp.personaType}"`);
+    card.classList.toggle('active', isSelected);
+    card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    const checkSpan = card.querySelector('.un-persona-check');
+    if (checkSpan) {
+      checkSpan.textContent = isSelected ? '✓ Đang chọn' : 'Chọn';
+    }
+    if (isSelected) {
+      card.style.borderColor = persona.color;
+      card.style.background = persona.bg;
+    } else {
+      card.style.borderColor = '';
+      card.style.background = '';
+    }
+  });
+
+  // 2. Cập nhật toggle giữ dáng
+  const togglePills = modalSurvey.querySelectorAll('.un-keepfit-toggle-row .un-toggle-pill');
+  if (togglePills.length >= 2) {
+    togglePills[0].classList.toggle('active', Boolean(hp.wantKeepFit));
+    togglePills[1].classList.toggle('active', !hp.wantKeepFit);
+  }
+
+  // 3. Cập nhật ô nhập cân nặng & chiều cao (giữ nguyên con trỏ nếu người dùng đang gõ)
+  const weightInput = modalSurvey.querySelector('.un-stepper-field input');
+  if (weightInput && document.activeElement !== weightInput) {
+    weightInput.value = hp.weightKg;
+  }
+  const heightInput = modalSurvey.querySelector('.un-height-mini input');
+  if (heightInput && document.activeElement !== heightInput) {
+    heightInput.value = hp.heightCm;
+  }
+
+  // 4. Cập nhật thẻ BMI
+  const bmiChip = modalSurvey.querySelector('.un-bmi-chip');
+  if (bmiChip && hp.bmiInfo) {
+    bmiChip.textContent = `BMI ${hp.bmiInfo.bmi} • ${hp.bmiInfo.status}`;
+    bmiChip.style.color = hp.bmiInfo.color;
+    bmiChip.style.background = `${hp.bmiInfo.color}14`;
+    bmiChip.style.borderColor = `${hp.bmiInfo.color}40`;
+  }
+
+  // 5. Cập nhật mức độ vận động & ghi chú dinh dưỡng
+  modalSurvey.querySelectorAll('.un-act-pills .un-act-pill').forEach(pill => {
+    const onclickAttr = pill.getAttribute('onclick') || '';
+    if (onclickAttr.includes('quickSelectActivityLevel')) {
+      const isAct = onclickAttr.includes(`'${hp.activityLevel}'`) || onclickAttr.includes(`"${hp.activityLevel}"`);
+      pill.classList.toggle('active', isAct);
+    } else if (onclickAttr.includes('quickToggleDietaryNote')) {
+      DIETARY_NOTE_TAGS.forEach(tag => {
+        if (onclickAttr.includes(`'${tag}'`) || onclickAttr.includes(`"${tag}"`)) {
+          const hasTag = hp.dietaryNotes && hp.dietaryNotes.includes(tag);
+          pill.classList.toggle('active', hasTag);
+          pill.textContent = (hasTag ? '✓ ' : '+ ') + tag;
+        }
+      });
+    }
+  });
+
+  // 6. Cập nhật dòng nhắc nhở định mức năng lượng
+  const footerSpan = modalSurvey.querySelector('.un-expanded-footer span');
+  if (footerSpan) {
+    footerSpan.innerHTML = `💡 Dựa trên cân nặng <strong>${hp.weightKg}kg</strong> &amp; mục tiêu <strong>${escapeHtml(persona.shortLabel)}</strong>, mức năng lượng khuyến nghị của bạn là <strong>${hp.recommendedCalories} kcal/ngày</strong>.`;
+  }
+}
+
+function updateProfileNutritionDashboardInPlace() {
+  const dashWrap = document.querySelector('.un-dashboard-wrap');
+  if (!dashWrap) {
+    if (currentView === 'profile' && typeof renderProfileView === 'function') {
+      renderProfileView();
+    }
+    return;
+  }
+  const user = DB.getCurrentUser();
+  if (!user) return;
+  const summary = getTodayNutritionSummary(user);
+  const hp = summary.hp;
+  const persona = getPersonaMeta(hp.personaType);
+
+  // 1. Cập nhật Vòng tròn Kcal SVG
+  const ringRadius = 52;
+  const circumference = 2 * Math.PI * ringRadius;
+  const ringRatio = Math.min(1, summary.consumed.calories / Math.max(1, hp.dailyCalorieGoal));
+  const strokeDashoffset = Math.round(circumference * (1 - ringRatio));
+  const ringColor = summary.isOverCalories ? '#dc2626' : (ringRatio > 0.85 ? '#d97706' : '#059669');
+
+  const circles = dashWrap.querySelectorAll('.un-svg-ring-wrap svg circle');
+  if (circles.length >= 2) {
+    circles[1].setAttribute('stroke', ringColor);
+    circles[1].setAttribute('stroke-dashoffset', strokeDashoffset);
+  }
+  const ringEaten = dashWrap.querySelector('.un-ring-eaten');
+  if (ringEaten) {
+    ringEaten.textContent = summary.consumed.calories;
+    ringEaten.style.color = ringColor;
+  }
+  const ringGoal = dashWrap.querySelector('.un-ring-goal');
+  if (ringGoal) {
+    ringGoal.textContent = `/ ${hp.dailyCalorieGoal} kcal`;
+  }
+  const ringStatus = dashWrap.querySelector('.un-ring-status');
+  if (ringStatus) {
+    ringStatus.innerHTML = `
+      ${summary.isOverCalories ? `
+        <span class="un-budget-pill over">
+          ⚠️ Vượt ${Math.abs(summary.remainingCalories)} kcal hôm nay
+        </span>
+      ` : `
+        <span class="un-budget-pill ok">
+          ${FluentIcons.sparkleFilled} Còn lại: <strong>${summary.remainingCalories} kcal</strong> hôm nay
+        </span>
+      `}
+      <div class="un-ring-subnote">${escapeHtml(hp.bmiInfo.advice)}</div>
+    `;
+  }
+
+  // 2. Cập nhật 3 thanh đa lượng (Protein / Carbs / Fat)
+  const protPct = Math.min(100, Math.round((summary.consumed.protein / Math.max(1, hp.macroGoals.protein)) * 100));
+  const carbPct = Math.min(100, Math.round((summary.consumed.carbs / Math.max(1, hp.macroGoals.carbs)) * 100));
+  const fatPct = Math.min(100, Math.round((summary.consumed.fat / Math.max(1, hp.macroGoals.fat)) * 100));
+
+  const macroItems = dashWrap.querySelectorAll('.un-macro-item');
+  if (macroItems.length >= 3) {
+    // Protein
+    const pLbl = macroItems[0].querySelector('.un-macro-lbl-row');
+    const pFill = macroItems[0].querySelector('.sn-bar-fill.prot');
+    if (pLbl) pLbl.innerHTML = `<span>🥩 Chất đạm (Protein) ${hp.personaType === 'gym' ? '• Ưu tiên Gym' : ''}</span><strong>${summary.consumed.protein}g / ${hp.macroGoals.protein}g (${protPct}%)</strong>`;
+    if (pFill) pFill.style.width = `${protPct}%`;
+
+    // Carbs
+    const cLbl = macroItems[1].querySelector('.un-macro-lbl-row');
+    const cFill = macroItems[1].querySelector('.sn-bar-fill.carb');
+    if (cLbl) cLbl.innerHTML = `<span>🌾 Tinh bột (Carbs)</span><strong>${summary.consumed.carbs}g / ${hp.macroGoals.carbs}g (${carbPct}%)</strong>`;
+    if (cFill) cFill.style.width = `${carbPct}%`;
+
+    // Fat
+    const fLbl = macroItems[2].querySelector('.un-macro-lbl-row');
+    const fFill = macroItems[2].querySelector('.sn-bar-fill.fat');
+    if (fLbl) fLbl.innerHTML = `<span>🥑 Chất béo (Fat)</span><strong>${summary.consumed.fat}g / ${hp.macroGoals.fat}g (${fatPct}%)</strong>`;
+    if (fFill) fFill.style.width = `${fatPct}%`;
+  }
+
+  // 3. Cập nhật thanh nước uống
+  const waterBar = dashWrap.querySelector('.un-water-bar');
+  if (waterBar) {
+    const strong = waterBar.querySelector('strong');
+    const spanMl = waterBar.querySelector('span[style*="font-size:11.5px"], span[style*="color:var(--gray-500)"]');
+    if (strong) strong.textContent = `${summary.waterCups} / ${hp.recommendedWaterCups} cốc`;
+    if (spanMl) spanMl.textContent = `(${summary.waterCups * 250}ml)`;
+  }
+
+  // 4. Cập nhật cảnh báo Kcal giỏ hàng
+  const cartAlert = dashWrap.querySelector('.un-cart-kcal-alert');
+  if (summary.cartPending.calories > 0) {
+    const alertHtml = `
+      <span>🛒 Giỏ hàng hiện tại của bạn đang có món tương đương <strong>+${summary.cartPending.calories} kcal</strong> (~${summary.cartPending.protein}g Đạm). Sau khi đặt sẽ đạt <strong>${summary.consumed.calories + summary.cartPending.calories} / ${hp.dailyCalorieGoal} kcal</strong>.</span>
+      <strong>Xem giỏ hàng →</strong>
+    `;
+    if (cartAlert) {
+      cartAlert.innerHTML = alertHtml;
+      cartAlert.style.display = 'flex';
+    } else {
+      const trackerGrid = dashWrap.querySelector('.un-kcal-tracker-grid');
+      if (trackerGrid) {
+        const div = document.createElement('div');
+        div.className = 'un-cart-kcal-alert';
+        div.onclick = () => openCartView();
+        div.innerHTML = alertHtml;
+        trackerGrid.insertAdjacentElement('afterend', div);
+      }
+    }
+  } else if (cartAlert) {
+    cartAlert.style.display = 'none';
+  }
+
+  // 5. Cập nhật danh sách món ăn đã tiêu thụ hôm nay
+  const mealLogsBox = dashWrap.querySelector('.un-meal-logs-box');
+  if (mealLogsBox) {
+    mealLogsBox.innerHTML = `
+      <div class="un-meal-logs-head">
+        <span>🍽️ Nhật ký món đã tiêu thụ hôm nay (${summary.entries.length} mục)</span>
+        ${summary.entries.length > 0 ? `<span style="font-size:11.5px; color:var(--gray-500);">Tổng ${summary.consumed.calories} kcal</span>` : ''}
+      </div>
+
+      ${summary.entries.length === 0 ? `
+        <div class="un-empty-log">
+          Hôm nay bạn chưa ghi nhận bữa ăn nào. Khi bạn đặt đơn hàng hoặc bấm <strong>"🍽️ Đã ăn"</strong> ở danh sách gợi ý bên dưới, lượng Kcal sẽ tự động cập nhật tại đây!
+        </div>
+      ` : `
+        <div class="un-meal-log-list">
+          ${summary.entries.map(en => `
+            <div class="un-meal-log-row">
+              <div class="un-meal-log-left">
+                <span class="un-meal-tag">${escapeHtml(en.mealType || 'Bữa ăn')} • ${escapeHtml(en.time || '')}</span>
+                <div class="un-meal-name">
+                  ${en.quantity > 1 ? `${en.quantity}x ` : ''}${escapeHtml(en.dishName)}
+                  ${en.orderId ? `<span class="un-order-ref">(${escapeHtml(en.orderId)})</span>` : ''}
+                </div>
+              </div>
+              <div class="un-meal-log-right">
+                <div class="un-meal-macros">
+                  <strong>${FluentIcons.fireFilled} ${en.calories} kcal</strong>
+                  <span>🥩 ${en.protein}g • 🌾 ${en.carbs}g • 🥑 ${en.fat}g</span>
+                </div>
+                <button
+                  type="button"
+                  class="un-remove-log-btn"
+                  onclick="removeTodayMealEntry('${escapeHtml(en.id)}')"
+                  title="Xóa khỏi nhật ký hôm nay"
+                >✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    `;
+  }
+
+  // 6. Cập nhật khối Gợi ý Sản phẩm Cá nhân hóa
+  const recCard = dashWrap.querySelector('.un-recommendations-card');
+  if (recCard) {
+    const titleEl = recCard.querySelector('.un-card-title');
+    const subEl = recCard.querySelector('.un-card-sub');
+    if (titleEl) {
+      titleEl.innerHTML = `${FluentIcons.sparkleFilled} Gợi ý Sản phẩm Dành riêng cho ${escapeHtml(user.name)} (${escapeHtml(persona.shortLabel)} • ${hp.weightKg}kg)`;
+    }
+    if (subEl) {
+      subEl.innerHTML = `Được chấm điểm tự động từ ${DB.getItems().length} mặt hàng theo mục tiêu ${hp.wantKeepFit ? 'Giữ dáng, ' : ''}cân nặng ${hp.weightKg}kg và quỹ <strong>${Math.max(0, summary.remainingCalories)} kcal</strong> còn lại hôm nay`;
+    }
+    const recs = getPersonalizedDishRecommendations(user, nutritionRecFilter, 6);
+    const gridContainer = recCard.querySelector('.un-rec-dishes-grid, .un-empty-log');
+    if (gridContainer) {
+      gridContainer.outerHTML = renderRecDishesGridHtml(recs);
+    }
+  }
+}
+
+function updateDishDetailMatchBannerInPlace() {
+  const bar = document.querySelector('.pdp-personal-match-bar');
+  if (!bar) return;
+  const dish = (typeof currentDetailDish !== 'undefined') ? currentDetailDish : null;
+  if (!dish) return;
+  const dynNutri = (typeof computeDetailDishNutriTotals === 'function') ? computeDetailDishNutriTotals() : null;
+  if (!dynNutri) return;
+  const newHtml = renderPersonalDishMatchBanner(dish, dynNutri);
+  if (newHtml) {
+    bar.outerHTML = newHtml;
+  }
+}
 
 function saveActiveUserHealthPatch(patch, toastMsg = null) {
   const user = DB.getCurrentUser();
@@ -945,12 +1253,15 @@ function saveActiveUserHealthPatch(patch, toastMsg = null) {
   if (toastMsg) {
     showToast('checkmarkFilled', toastMsg);
   }
-  if (currentView === 'profile') renderProfileView();
-  else if (currentView === 'dish-detail') renderDishDetailView();
 
-  const overlay = document.getElementById('modal-overlay');
-  if (overlay && overlay.classList.contains('active') && isNutritionSurveyModalOpen) {
-    renderUserNutritionSurveyModalContent(user);
+  // Cập nhật in-place trên Survey Modal nếu đang mở
+  updateSurveyModalInPlace(merged);
+
+  // Cập nhật in-place trên Profile Dashboard hoặc Dish Detail
+  if (currentView === 'profile') {
+    updateProfileNutritionDashboardInPlace();
+  } else if (currentView === 'dish-detail') {
+    updateDishDetailMatchBannerInPlace();
   }
 }
 
@@ -1013,14 +1324,36 @@ function quickToggleDietaryNote(tag) {
 
 function setNutritionRecFilter(mode) {
   nutritionRecFilter = mode;
-  renderProfileView();
+  const card = document.querySelector('.un-recommendations-card');
+  if (card) {
+    card.querySelectorAll('.db-chip').forEach(chip => {
+      const onclickAttr = chip.getAttribute('onclick') || '';
+      chip.classList.toggle('active', onclickAttr.includes(`'${mode}'`) || onclickAttr.includes(`"${mode}"`));
+    });
+    const user = DB.getCurrentUser();
+    const recs = getPersonalizedDishRecommendations(user, nutritionRecFilter, 6);
+    const gridContainer = card.querySelector('.un-rec-dishes-grid, .un-empty-log');
+    if (gridContainer) {
+      gridContainer.outerHTML = renderRecDishesGridHtml(recs);
+    }
+  } else if (typeof renderProfileView === 'function') {
+    renderProfileView();
+  }
 }
 
 function adjustTodayWater(delta) {
   const user = DB.getCurrentUser();
   if (!user) return;
-  DB.updateWaterIntakeForUser(user.id, delta, getTodayDateKey());
-  renderProfileView();
+  const nextCups = DB.updateWaterIntakeForUser(user.id, delta, getTodayDateKey());
+  const waterBar = document.querySelector('.un-water-bar');
+  const hp = getNormalizedUserHealthProfile(user);
+  if (waterBar) {
+    const strong = waterBar.querySelector('strong');
+    const spanMl = waterBar.querySelector('span[style*="font-size:11.5px"], span[style*="color:var(--gray-500)"]');
+    if (strong) strong.textContent = `${nextCups} / ${hp.recommendedWaterCups} cốc`;
+    if (spanMl) spanMl.textContent = `(${nextCups * 250}ml)`;
+  }
+  showToast('sparkleRegular', `💧 Đã cập nhật nước uống: ${nextCups}/${hp.recommendedWaterCups} cốc (${nextCups * 250}ml)`);
 }
 
 function quickLogDishEaten(itemId) {
@@ -1051,7 +1384,7 @@ function quickLogDishEaten(itemId) {
   }, getTodayDateKey());
 
   showToast('checkmarkFilled', `🍽️ Đã cộng +${prof.calories} kcal (${item.name}) vào nhật ký hôm nay!`);
-  if (currentView === 'profile') renderProfileView();
+  updateProfileNutritionDashboardInPlace();
 }
 
 function quickAddRecommendedDishToCart(itemId) {
@@ -1093,7 +1426,7 @@ function quickAddRecommendedDishToCart(itemId) {
   DB.saveCurrentUserCart(cart);
   updateFloatingCartBar();
   showToast('cartFilled', `🛒 Đã thêm "${item.name}" vào giỏ hàng!`);
-  if (currentView === 'profile') renderProfileView();
+  updateProfileNutritionDashboardInPlace();
 }
 
 function removeTodayMealEntry(entryId) {
@@ -1101,7 +1434,7 @@ function removeTodayMealEntry(entryId) {
   if (!user) return;
   if (DB.removeNutritionEntryForUser(user.id, entryId, getTodayDateKey())) {
     showToast('deleteRegular', 'Đã xóa mục khỏi nhật ký Kcal hôm nay');
-    renderProfileView();
+    updateProfileNutritionDashboardInPlace();
   }
 }
 
@@ -1136,7 +1469,7 @@ function openHealthProfileSetupModal(targetUserId = null) {
         <span>🥗</span>
         <span>Hồ Sơ Thể Trạng & Dinh Dưỡng — ${escapeHtml(user.name)}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -1294,7 +1627,7 @@ function openManualMealLogModal() {
         <span>🍽️</span>
         <span>Ghi Nhận Bữa Ăn Vào Kcal Hôm Nay</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -1463,6 +1796,21 @@ function renderPersonalDishMatchBanner(dish, dynNutri) {
 if (typeof window !== 'undefined') {
   window.openUserNutritionSurveyModal = openUserNutritionSurveyModal;
   window.renderUserNutritionSurveyModalContent = renderUserNutritionSurveyModalContent;
+  window.saveActiveUserHealthPatch = saveActiveUserHealthPatch;
+  window.quickSelectUserPersona = quickSelectUserPersona;
+  window.quickToggleKeepFit = quickToggleKeepFit;
+  window.quickAdjustUserWeight = quickAdjustUserWeight;
+  window.quickSetUserWeight = quickSetUserWeight;
+  window.quickSetUserHeight = quickSetUserHeight;
+  window.quickSelectActivityLevel = quickSelectActivityLevel;
+  window.quickToggleDietaryNote = quickToggleDietaryNote;
+  window.setNutritionRecFilter = setNutritionRecFilter;
+  window.adjustTodayWater = adjustTodayWater;
+  window.quickLogDishEaten = quickLogDishEaten;
+  window.quickAddRecommendedDishToCart = quickAddRecommendedDishToCart;
+  window.removeTodayMealEntry = removeTodayMealEntry;
+  window.updateProfileNutritionDashboardInPlace = updateProfileNutritionDashboardInPlace;
+  window.updateSurveyModalInPlace = updateSurveyModalInPlace;
   try {
     Object.defineProperty(window, 'showInlineHealthSurvey', {
       get: () => isNutritionSurveyModalOpen,

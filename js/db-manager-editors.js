@@ -877,16 +877,16 @@ function renderDbmCategoryBulkBar(visibleCats) {
               </label>
             </div>
             <div class="dbm-bulk-top-actions">
-              <button class="danger" onclick="dbmBulkDeleteCategories()" title="Xóa các danh mục đã chọn">🗑️ Xóa</button>
-              <button class="dbm-bulk-clear-btn" onclick="dbmClearCategorySelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+              <button type="button" class="danger" onclick="dbmBulkDeleteCategories()" title="Xóa các danh mục đã chọn">🗑️ Xóa</button>
+              <button type="button" class="dbm-bulk-clear-btn" onclick="dbmClearCategorySelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
             </div>
           </div>
           <div class="dbm-bulk-actions">
-            <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('categories')" title="Dùng AI đánh giá các danh mục đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
-            <button onclick="dbmBulkCategoriesHome(true)">🏠 Hiện lưới 2 dòng</button>
-            <button onclick="dbmBulkCategoriesHome(false)">🙈 Ẩn lưới 2 dòng</button>
-            <button onclick="dbmBulkCategoriesResSection(true)">🍽️ Bật dãy quán</button>
-            <button onclick="dbmBulkCategoriesResSection(false)">➖ Tắt dãy quán</button>
+            <button type="button" class="ai-audit-btn" onclick="dbmOpenAiAuditModal('categories')" title="Dùng AI đánh giá các danh mục đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
+            <button type="button" onclick="dbmBulkCategoriesHome(true)">🏠 Hiện lưới 2 dòng</button>
+            <button type="button" onclick="dbmBulkCategoriesHome(false)">🙈 Ẩn lưới 2 dòng</button>
+            <button type="button" onclick="dbmBulkCategoriesResSection(true)">🍽️ Bật dãy quán</button>
+            <button type="button" onclick="dbmBulkCategoriesResSection(false)">➖ Tắt dãy quán</button>
           </div>
         </div>
       </div>
@@ -896,8 +896,8 @@ function renderDbmCategoryBulkBar(visibleCats) {
           <span>Đang chọn <strong>${n}</strong> danh mục — bấm <strong>🤖 AI đánh giá</strong> trên thanh công cụ để xem đề xuất điều chỉnh</span>
         </label>
         <div style="display:flex; align-items:center; gap:10px;">
-          <button class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('categories')">🤖 AI đánh giá (${n})</button>
-          <button class="db-inline-link-btn" onclick="dbmClearCategorySelection()">Bỏ chọn</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('categories')">🤖 AI đánh giá (${n})</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmClearCategorySelection()">Bỏ chọn</button>
         </div>
       </div>`;
   }
@@ -953,13 +953,13 @@ function renderDbmCategoriesGridHtml(catsList) {
               <span>Hiện dạng dãy quán (restaurants-section)</span>
             </label>
             <div class="db-cat-card-actions">
-              <button class="db-act-btn order" onclick="dbmViewCategoryItems('${id}')">${FluentIcons.boxFilled} Xem món</button>
-              <button class="db-act-btn edit" onclick="openItemEditorModal(null, '${id}')">+ Món</button>
-              <button class="db-act-btn edit" onclick="dbmOpenAiAuditModal('categories', ['${id}'])" title="AI đánh giá & gợi ý chỉnh sửa danh mục này">🤖</button>
-              <button class="db-act-btn edit" onclick="openCategoryEditorModal('${id}')">✏️</button>
-              <button class="db-act-btn edit" onclick="dbmMoveCategory('${id}', -1)" ${idx <= 0 ? 'disabled' : ''} title="Đưa lên">↑</button>
-              <button class="db-act-btn edit" onclick="dbmMoveCategory('${id}', 1)" ${idx === allCats.length - 1 ? 'disabled' : ''} title="Đưa xuống">↓</button>
-              <button class="db-act-btn delete" onclick="handleDeleteCategory('${id}')">🗑️</button>
+              <button type="button" class="db-act-btn order" onclick="dbmViewCategoryItems('${id}')">${FluentIcons.boxFilled} Xem món</button>
+              <button type="button" class="db-act-btn edit" onclick="openItemEditorModal(null, '${id}')">+ Món</button>
+              <button type="button" class="db-act-btn edit" onclick="dbmOpenAiAuditModal('categories', ['${id}'])" title="AI đánh giá & gợi ý chỉnh sửa danh mục này">🤖</button>
+              <button type="button" class="db-act-btn edit" onclick="openCategoryEditorModal('${id}')">✏️</button>
+              <button type="button" class="db-act-btn edit" onclick="dbmMoveCategory('${id}', -1)" ${idx <= 0 ? 'disabled' : ''} title="Đưa lên">↑</button>
+              <button type="button" class="db-act-btn edit" onclick="dbmMoveCategory('${id}', 1)" ${idx === allCats.length - 1 ? 'disabled' : ''} title="Đưa xuống">↓</button>
+              <button type="button" class="db-act-btn delete" onclick="handleDeleteCategory('${id}')">🗑️</button>
             </div>
           </div>`;
   }).join('')}
@@ -976,8 +976,8 @@ function renderDbmCategoriesTab() {
         <div style="font-size:12px; color:var(--gray-500);">Danh mục <strong>thủ công</strong>: mỗi món thuộc 1 danh mục. Danh mục <strong>theo tag</strong>: tự gom mọi món có tag đã chọn.</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="db-secondary-btn" onclick="openCategoryEditorModal(null, null, [])"># Danh mục theo tag</button>
-        <button class="db-primary-btn" onclick="openCategoryEditorModal()">➕ Danh mục thủ công</button>
+        <button type="button" class="db-secondary-btn" onclick="openCategoryEditorModal(null, null, [])"># Danh mục theo tag</button>
+        <button type="button" class="db-primary-btn" onclick="openCategoryEditorModal()">➕ Danh mục thủ công</button>
       </div>
     </div>
 
@@ -988,7 +988,7 @@ function renderDbmCategoriesTab() {
           <input type="text" placeholder="Tìm danh mục theo tên, mô tả hoặc tag..."
                  value="${escapeHtml(dbmCategorySearchQuery)}"
                  oninput="dbmCategorySearchQuery = this.value; updateCatalogCategoriesListDOM();">
-          ${dbmCategorySearchQuery ? `<button onclick="dbmCategorySearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
+          ${dbmCategorySearchQuery ? `<button type="button" onclick="dbmCategorySearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
         </div>
       </div>
     </div>
@@ -1260,13 +1260,13 @@ function renderDbmStoreBulkBar(visibleStores) {
               </label>
             </div>
             <div class="dbm-bulk-top-actions">
-              <button class="danger" onclick="dbmBulkDeleteStores()" title="Xóa các nhà hàng đã chọn">🗑️ Xóa</button>
-              <button class="dbm-bulk-clear-btn" onclick="dbmClearStoreSelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+              <button type="button" class="danger" onclick="dbmBulkDeleteStores()" title="Xóa các nhà hàng đã chọn">🗑️ Xóa</button>
+              <button type="button" class="dbm-bulk-clear-btn" onclick="dbmClearStoreSelection()" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
             </div>
           </div>
           <div class="dbm-bulk-actions">
-            <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('stores')" title="Dùng AI đánh giá các nhà hàng đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
-            <button onclick="dbmBulkStoresFreeship()">🚚 Đặt Freeship 0đ</button>
+            <button type="button" class="ai-audit-btn" onclick="dbmOpenAiAuditModal('stores')" title="Dùng AI đánh giá các nhà hàng đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
+            <button type="button" onclick="dbmBulkStoresFreeship()">🚚 Đặt Freeship 0đ</button>
           </div>
         </div>
       </div>
@@ -1276,8 +1276,8 @@ function renderDbmStoreBulkBar(visibleStores) {
           <span>Đang chọn <strong>${n}</strong> nhà hàng — bấm <strong>🤖 AI đánh giá</strong> trên thanh công cụ để xem đề xuất điều chỉnh</span>
         </label>
         <div style="display:flex; align-items:center; gap:10px;">
-          <button class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('stores')">🤖 AI đánh giá (${n})</button>
-          <button class="db-inline-link-btn" onclick="dbmClearStoreSelection()">Bỏ chọn</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('stores')">🤖 AI đánh giá (${n})</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmClearStoreSelection()">Bỏ chọn</button>
         </div>
       </div>`;
   }
@@ -1320,11 +1320,11 @@ function renderDbmStoresGridHtml(storesList) {
             <div class="dbm-store-line">⭐ ${s.rating} (${escapeHtml(s.reviewCount || '')}) • 🚚 ${escapeHtml(s.shippingFee || '')} • ${escapeHtml(s.priceLevel || '')}</div>
             <div class="dbm-store-line"><strong>${count}</strong> mặt hàng • ${escapeHtml(s.category || '')}</div>
             <div class="db-cat-card-actions">
-              <button class="db-act-btn order" onclick="dbmViewStoreItems(${s.id})">${FluentIcons.boxFilled} Xem món</button>
-              <button class="db-act-btn edit" onclick="openItemEditorModal(null, null, { restaurantId: ${s.id} })">+ Món</button>
-              <button class="db-act-btn edit" onclick="dbmOpenAiAuditModal('stores', [${s.id}])" title="AI đánh giá & gợi ý chỉnh sửa nhà hàng này">🤖</button>
-              <button class="db-act-btn edit" onclick="openStoreEditorModal(${s.id})">✏️ Sửa</button>
-              ${s.id !== 1000 ? `<button class="db-act-btn delete" onclick="dbmDeleteStore(${s.id})">🗑️</button>` : ''}
+              <button type="button" class="db-act-btn order" onclick="dbmViewStoreItems(${s.id})">${FluentIcons.boxFilled} Xem món</button>
+              <button type="button" class="db-act-btn edit" onclick="openItemEditorModal(null, null, { restaurantId: ${s.id} })">+ Món</button>
+              <button type="button" class="db-act-btn edit" onclick="dbmOpenAiAuditModal('stores', [${s.id}])" title="AI đánh giá & gợi ý chỉnh sửa nhà hàng này">🤖</button>
+              <button type="button" class="db-act-btn edit" onclick="openStoreEditorModal(${s.id})">✏️ Sửa</button>
+              ${s.id !== 1000 ? `<button type="button" class="db-act-btn delete" onclick="dbmDeleteStore(${s.id})">🗑️</button>` : ''}
             </div>
           </div>
         </div>`;
@@ -1340,7 +1340,7 @@ function renderDbmStoresTab() {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Cửa hàng & địa điểm (${stores.length})</div>
         <div style="font-size:12px; color:var(--gray-500);">Mỗi mặt hàng thuộc một cửa hàng. Cửa hàng có địa chỉ, phí giao, thời gian giao, đánh giá riêng.</div>
       </div>
-      <button class="db-primary-btn" onclick="openStoreEditorModal()">➕ Tạo cửa hàng</button>
+      <button type="button" class="db-primary-btn" onclick="openStoreEditorModal()">➕ Tạo cửa hàng</button>
     </div>
 
     <div class="db-controls-card" style="margin-bottom:12px;">
@@ -1350,7 +1350,7 @@ function renderDbmStoresTab() {
           <input type="text" placeholder="Tìm nhà hàng theo tên, địa chỉ, danh mục..."
                  value="${escapeHtml(dbmStoreSearchQuery)}"
                  oninput="dbmStoreSearchQuery = this.value; updateCatalogStoresListDOM();">
-          ${dbmStoreSearchQuery ? `<button onclick="dbmStoreSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
+          ${dbmStoreSearchQuery ? `<button type="button" onclick="dbmStoreSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
         </div>
       </div>
     </div>
@@ -1444,7 +1444,7 @@ function renderDbmVouchersTab() {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Mã giảm giá (${vouchers.length})</div>
         <div style="font-size:12px; color:var(--gray-500);">Mã <strong>mọi món</strong>: áp dụng cho cả giỏ. Mã <strong>chỉ món được gán</strong>: chỉ giảm trên các món bạn tick trong trình sửa mặt hàng (hoặc nút “Chọn mặt hàng”).</div>
       </div>
-      <button class="db-primary-btn" onclick="openVoucherEditorModal()">➕ Tạo mã giảm giá</button>
+      <button type="button" class="db-primary-btn" onclick="openVoucherEditorModal()">➕ Tạo mã giảm giá</button>
     </div>
     <div class="dbm-voucher-grid">
       ${vouchers.map(v => {
@@ -1461,9 +1461,9 @@ function renderDbmVouchersTab() {
             <span>${v.active !== false ? 'Đang hoạt động' : 'Đang tắt'}</span>
           </label>
           <div class="db-cat-card-actions">
-            <button class="db-act-btn edit" onclick="openVoucherEditorModal('${code}')">✏️ Sửa</button>
-            <button class="db-act-btn order" onclick="dbmOpenVoucherItemsModal('${code}')">📌 Chọn mặt hàng</button>
-            <button class="db-act-btn delete" onclick="dbmDeleteVoucher('${code}')">🗑️</button>
+            <button type="button" class="db-act-btn edit" onclick="openVoucherEditorModal('${code}')">✏️ Sửa</button>
+            <button type="button" class="db-act-btn order" onclick="dbmOpenVoucherItemsModal('${code}')">📌 Chọn mặt hàng</button>
+            <button type="button" class="db-act-btn delete" onclick="dbmDeleteVoucher('${code}')">🗑️</button>
           </div>
         </div>`;
   }).join('')}

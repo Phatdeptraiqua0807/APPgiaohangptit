@@ -447,7 +447,7 @@ function buildVietQRModalHtml({ channel, totalAmount, orderCode, qrData, timerSt
             <div class="vqr-modal-sub ${channel.themeClass}">${escapeHtml(channel.providerShortName)} • ${channel.accountNo} • Đơn ${escapeHtml(orderCode)}</div>
           </div>
         </div>
-        <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+        <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
           ${FluentIcons.dismiss}
         </button>
       </div>

@@ -209,11 +209,11 @@ function renderCatalogManagerView() {
     <div class="catalog-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">
+        <button type="button" class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Quản Lý Mặt Hàng & Database</div>
-        <button class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">
+        <button type="button" class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">
           ⬇️ .JSON
         </button>
       </div>
@@ -227,10 +227,10 @@ function renderCatalogManagerView() {
             <div class="db-hero-sub">Thêm loại mặt hàng tùy chỉnh, thêm sản phẩm mới và đồng bộ </div>
           </div>
           <div class="db-hero-actions">
-            <button class="db-btn-white" onclick="openCategoryEditorModal()">
+            <button type="button" class="db-btn-white" onclick="openCategoryEditorModal()">
               ➕ Thêm loại mặt hàng
             </button>
-            <button class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
+            <button type="button" class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
               ➕ Thêm mặt hàng mới
             </button>
           </div>
@@ -258,13 +258,13 @@ function renderCatalogManagerView() {
 
       <!-- 3 Sub-Tabs -->
       <div class="db-subtabs-bar">
-        <button class="db-subtab-btn ${catalogActiveTab === 'items' ? 'active' : ''}" onclick="switchCatalogTab('items')">
+        <button type="button" class="db-subtab-btn ${catalogActiveTab === 'items' ? 'active' : ''}" onclick="switchCatalogTab('items')">
           ${FluentIcons.boxFilled} Kho Mặt Hàng (${allItems.length})
         </button>
-        <button class="db-subtab-btn ${catalogActiveTab === 'categories' ? 'active' : ''}" onclick="switchCatalogTab('categories')">
+        <button type="button" class="db-subtab-btn ${catalogActiveTab === 'categories' ? 'active' : ''}" onclick="switchCatalogTab('categories')">
           ${FluentIcons.tagFilled} Loại Mặt Hàng (${allCats.length})
         </button>
-        <button class="db-subtab-btn ${catalogActiveTab === 'database' ? 'active' : ''}" onclick="switchCatalogTab('database')">
+        <button type="button" class="db-subtab-btn ${catalogActiveTab === 'database' ? 'active' : ''}" onclick="switchCatalogTab('database')">
           🗄️ Đồng Bộ File .JSON
         </button>
       </div>
@@ -295,7 +295,7 @@ function renderCatalogItemsTab(allCats) {
             value="${escapeHtml(catalogSearchQuery)}"
             oninput="catalogSearchQuery = this.value; updateCatalogItemsListDOM();"
           >
-          ${catalogSearchQuery ? `<button onclick="catalogSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
+          ${catalogSearchQuery ? `<button type="button" onclick="catalogSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
         </div>
 
         <select class="db-select-box" onchange="catalogCategoryFilter = this.value; renderCatalogManagerView();">
@@ -309,16 +309,16 @@ function renderCatalogItemsTab(allCats) {
       </div>
 
       <div class="db-filter-chips-row">
-        <button class="db-chip ${catalogStatusFilter === 'all' ? 'active' : ''}" onclick="catalogStatusFilter='all'; renderCatalogManagerView();">
+        <button type="button" class="db-chip ${catalogStatusFilter === 'all' ? 'active' : ''}" onclick="catalogStatusFilter='all'; renderCatalogManagerView();">
           Tất cả
         </button>
-        <button class="db-chip ${catalogStatusFilter === 'custom' ? 'active' : ''}" onclick="catalogStatusFilter='custom'; renderCatalogManagerView();">
+        <button type="button" class="db-chip ${catalogStatusFilter === 'custom' ? 'active' : ''}" onclick="catalogStatusFilter='custom'; renderCatalogManagerView();">
           ${FluentIcons.sparkleFilled} Do bạn thêm
         </button>
-        <button class="db-chip ${catalogStatusFilter === 'instock' ? 'active' : ''}" onclick="catalogStatusFilter='instock'; renderCatalogManagerView();">
+        <button type="button" class="db-chip ${catalogStatusFilter === 'instock' ? 'active' : ''}" onclick="catalogStatusFilter='instock'; renderCatalogManagerView();">
           ✅ Đang bán
         </button>
-        <button class="db-chip ${catalogStatusFilter === 'outofstock' ? 'active' : ''}" onclick="catalogStatusFilter='outofstock'; renderCatalogManagerView();">
+        <button type="button" class="db-chip ${catalogStatusFilter === 'outofstock' ? 'active' : ''}" onclick="catalogStatusFilter='outofstock'; renderCatalogManagerView();">
           ⛔ Tạm hết hàng
         </button>
       </div>
@@ -338,10 +338,10 @@ function renderCatalogItemsGridHtml(itemsList) {
         <div class="search-empty-title">Chưa có mặt hàng nào khớp bộ lọc</div>
         <div class="search-empty-sub">Bạn có thể thêm mặt hàng mới hoặc đặt lại bộ lọc để xem toàn bộ kho hàng.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
-          <button class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
+          <button type="button" class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
             ➕ Thêm mặt hàng mới ngay
           </button>
-          <button class="db-secondary-btn" onclick="catalogSearchQuery=''; catalogCategoryFilter='all'; catalogStatusFilter='all'; renderCatalogManagerView();">
+          <button type="button" class="db-secondary-btn" onclick="catalogSearchQuery=''; catalogCategoryFilter='all'; catalogStatusFilter='all'; renderCatalogManagerView();">
             Xem tất cả mặt hàng
           </button>
         </div>
@@ -372,7 +372,7 @@ function renderCatalogItemsGridHtml(itemsList) {
                 <span class="db-cat-pill" onclick="catalogCategoryFilter='${escapeHtml(item.categoryId)}'; renderCatalogManagerView();">
                   ${catIcon} ${escapeHtml(item.category)}
                 </span>
-                <button
+                <button type="button"
                   class="db-stock-toggle ${isOut ? 'off' : 'on'}"
                   onclick="handleToggleItemStock('${escapeHtml(item.id)}')"
                   title="Bấm để đổi trạng thái Còn hàng / Hết hàng"
@@ -391,13 +391,13 @@ function renderCatalogItemsGridHtml(itemsList) {
               </div>
 
               <div class="db-item-actions">
-                <button class="db-act-btn order" onclick="orderItemDirectlyById('${escapeHtml(item.id)}')" ${isOut ? 'disabled' : ''}>
+                <button type="button" class="db-act-btn order" onclick="orderItemDirectlyById('${escapeHtml(item.id)}')" ${isOut ? 'disabled' : ''}>
                   🛒 Đặt món
                 </button>
-                <button class="db-act-btn edit" onclick="openItemEditorModal('${escapeHtml(item.id)}')">
+                <button type="button" class="db-act-btn edit" onclick="openItemEditorModal('${escapeHtml(item.id)}')">
                   ✏️ Sửa
                 </button>
-                <button class="db-act-btn delete" onclick="handleDeleteItem('${escapeHtml(item.id)}')">
+                <button type="button" class="db-act-btn delete" onclick="handleDeleteItem('${escapeHtml(item.id)}')">
                   ${FluentIcons.deleteRegular}
                 </button>
               </div>
@@ -458,7 +458,7 @@ function renderCatalogCategoriesTab(allCats, allItems) {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Danh sách Loại Mặt Hàng (${allCats.length})</div>
         <div style="font-size:12px; color:var(--gray-500);">Loại mặt hàng tùy chỉnh bạn thêm sẽ xuất hiện trên toàn ứng dụng và lưu .</div>
       </div>
-      <button class="db-primary-btn" onclick="openCategoryEditorModal()">
+      <button type="button" class="db-primary-btn" onclick="openCategoryEditorModal()">
         ➕ Tạo loại mặt hàng tùy chỉnh
       </button>
     </div>
@@ -480,16 +480,16 @@ function renderCatalogCategoriesTab(allCats, allItems) {
             </div>
             ${cat.description ? `<div class="db-cat-card-desc">${escapeHtml(cat.description)}</div>` : ''}
             <div class="db-cat-card-actions">
-              <button class="db-act-btn order" onclick="openSearchView('${escapeHtml(cat.keyword)}')">
+              <button type="button" class="db-act-btn order" onclick="openSearchView('${escapeHtml(cat.keyword)}')">
                 🔍 Xem trên Shop
               </button>
-              <button class="db-act-btn edit" onclick="openItemEditorModal(null, '${escapeHtml(cat.id)}')">
+              <button type="button" class="db-act-btn edit" onclick="openItemEditorModal(null, '${escapeHtml(cat.id)}')">
                 + Thêm món
               </button>
-              <button class="db-act-btn edit" onclick="openCategoryEditorModal('${escapeHtml(cat.id)}')">
+              <button type="button" class="db-act-btn edit" onclick="openCategoryEditorModal('${escapeHtml(cat.id)}')">
                 ✏️ Sửa
               </button>
-              <button class="db-act-btn delete" onclick="handleDeleteCategory('${escapeHtml(cat.id)}')" title="Xóa loại mặt hàng">
+              <button type="button" class="db-act-btn delete" onclick="handleDeleteCategory('${escapeHtml(cat.id)}')" title="Xóa loại mặt hàng">
                 ${FluentIcons.deleteRegular}
               </button>
             </div>
@@ -548,7 +548,7 @@ function renderCatalogDatabaseTab() {
       </div>
 
       <div class="db-sync-actions-grid">
-        <button class="db-sync-action-card primary" onclick="handleLinkDatabaseJson()">
+        <button type="button" class="db-sync-action-card primary" onclick="handleLinkDatabaseJson()">
           <span class="db-sync-card-emoji">🔗</span>
           <span class="db-sync-card-title">
             ${DB.fileSyncStatus === 'permission-needed' ? 'Cấp lại quyền ghi database.json' : 'Liên kết trực tiếp file database.json'}
@@ -556,7 +556,7 @@ function renderCatalogDatabaseTab() {
           <span class="db-sync-card-desc">Chọn file database.json trong thư mục project để tự động lưu đè trực tiếp mỗi khi thay đổi</span>
         </button>
 
-        <button class="db-sync-action-card" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json hoàn chỉnh!');">
+        <button type="button" class="db-sync-action-card" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json hoàn chỉnh!');">
           <span class="db-sync-card-emoji">⬇️</span>
           <span class="db-sync-card-title">Xuất / Tải về database.json</span>
           <span class="db-sync-card-desc">Tải toàn bộ dữ liệu mặt hàng, danh mục & hồ sơ người dùng ra file .json</span>
@@ -569,7 +569,7 @@ function renderCatalogDatabaseTab() {
           <span class="db-sync-card-desc">Nạp file database.json có sẵn từ máy tính và lưu  vào hệ thống</span>
         </label>
 
-        <button class="db-sync-action-card danger" onclick="handleResetDatabase()">
+        <button type="button" class="db-sync-action-card danger" onclick="handleResetDatabase()">
           <span class="db-sync-card-emoji">${FluentIcons.sync}</span>
           <span class="db-sync-card-title">Khôi phục Database gốc</span>
           <span class="db-sync-card-desc">Đặt lại dữ liệu mặc định ban đầu (23 danh mục, 110 món, 2 người dùng mẫu)</span>
@@ -600,7 +600,7 @@ function renderCatalogDatabaseTab() {
       </div>
 
       <div style="margin-top: 16px;">
-        <button class="db-secondary-btn" onclick="showRawJsonPreview = !showRawJsonPreview; renderCatalogManagerView();">
+        <button type="button" class="db-secondary-btn" onclick="showRawJsonPreview = !showRawJsonPreview; renderCatalogManagerView();">
           ${showRawJsonPreview ? '🙈 Ẩn nội dung JSON trực tiếp' : '👁️ Xem cấu trúc JSON trực tiếp (Live Preview)'}
         </button>
       </div>
@@ -609,7 +609,7 @@ function renderCatalogDatabaseTab() {
         <div class="db-json-preview-box">
           <div class="db-json-preview-head">
             <span>database.json (Live State)</span>
-            <button onclick="copyDatabaseJsonToClipboard()">📋 Sao chép JSON</button>
+            <button type="button" onclick="copyDatabaseJsonToClipboard()">📋 Sao chép JSON</button>
           </div>
           <pre>${escapeHtml(JSON.stringify({
       meta: DB.data.meta,
@@ -691,7 +691,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
         <span>${FluentIcons.tagFilled}</span>
         <span>${editingCat ? 'Chỉnh sửa Loại mặt hàng' : 'Thêm Loại Mặt Hàng Tùy Chỉnh'}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -913,7 +913,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
         <span>${FluentIcons.boxFilled}</span>
         <span>${editingItem ? 'Chỉnh sửa Mặt hàng' : 'Thêm Mặt Hàng Mới vào Database'}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -1221,7 +1221,60 @@ function switchProfileSubTab(tab) {
 
 function toggleHiddenDbDrawer() {
   showHiddenDbDrawer = !showHiddenDbDrawer;
-  renderProfileView();
+  const drawer = document.querySelector('.profile-hidden-admin-drawer');
+  if (drawer) {
+    const chevron = drawer.querySelector('.drawer-chevron');
+    if (chevron) chevron.classList.toggle('open', showHiddenDbDrawer);
+    let body = drawer.querySelector('.profile-hidden-admin-body');
+    if (showHiddenDbDrawer) {
+      if (!body) {
+        body = document.createElement('div');
+        body.className = 'profile-hidden-admin-body';
+        body.innerHTML = `
+          <div class="profile-hidden-admin-desc">
+            Quản lý toàn diện <strong>${DB.getItems().length}</strong> mặt hàng, <strong>${DB.getStores ? DB.getStores().length : DB.data.restaurants.length}</strong> cửa hàng, <strong>${DB.getCategories().length}</strong> danh mục (thủ công & theo Tag), mã giảm giá, thư viện ảnh và hàng đợi AI tạo sản phẩm.
+          </div>
+          <div class="profile-hidden-admin-grid">
+            <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('items')">
+              <span class="tool-emoji">${FluentIcons.boxFilled}</span>
+              <div>
+                <div class="tool-title">Kho Mặt Hàng</div>
+                <div class="tool-sub">${DB.getItems().length} món • Giá, Tag, Dinh dưỡng</div>
+              </div>
+            </button>
+            <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('ai')">
+              <span class="tool-emoji">${FluentIcons.sparkleFilled}</span>
+              <div>
+                <div class="tool-title">Tạo Hàng Bằng AI</div>
+                <div class="tool-sub">Tự động sinh thực đơn & ảnh món</div>
+              </div>
+            </button>
+            <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('stores')">
+              <span class="tool-emoji">${FluentIcons.storeFilled}</span>
+              <div>
+                <div class="tool-title">Cửa Hàng Đối Tác</div>
+                <div class="tool-sub">${DB.getStores ? DB.getStores().length : DB.data.restaurants.length} quán • Giờ mở, phí ship</div>
+              </div>
+            </button>
+            <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('audit')">
+              <span class="tool-emoji">${FluentIcons.analyticsFilled}</span>
+              <div>
+                <div class="tool-title">Kiểm Toán Dữ Liệu</div>
+                <div class="tool-sub">Audit VSATTP, ảnh lỗi & giá</div>
+              </div>
+            </button>
+          </div>
+        `;
+        drawer.appendChild(body);
+      } else {
+        body.style.display = 'block';
+      }
+    } else if (body) {
+      body.style.display = 'none';
+    }
+  } else {
+    renderProfileView();
+  }
 }
 
 let isProfileHeroExpanded = false;
@@ -1274,7 +1327,7 @@ function renderProfileView() {
     <div class="profile-view-container fade-in">
       <!-- Top Header -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hồ Sơ & Tài Khoản</div>
@@ -1340,13 +1393,13 @@ function renderProfileView() {
 
         <!-- Các nút thao tác hồ sơ -->
         <div class="profile-hero-actions">
-          <button class="profile-action-btn primary" onclick="openUserProfileModal('${escapeHtml(activeUser.id)}')">
+          <button type="button" class="profile-action-btn primary" onclick="openUserProfileModal('${escapeHtml(activeUser.id)}')">
             ✏️ Chỉnh sửa hồ sơ
           </button>
-          <button class="profile-action-btn accent" onclick="openAccountSwitcherModal()">
+          <button type="button" class="profile-action-btn accent" onclick="openAccountSwitcherModal()">
             ${FluentIcons.sync} Chuyển tài khoản (${allUsers.length})
           </button>
-          <button class="profile-action-btn outline" onclick="openAIChatView()">
+          <button type="button" class="profile-action-btn outline" onclick="openAIChatView()">
             ${FluentIcons.sparkleFilled} Trợ lý AI gợi món
           </button>
         </div>
@@ -1359,7 +1412,7 @@ function renderProfileView() {
 
       <!-- Ngăn Quản trị Cơ sở dữ liệu & Kho mặt hàng -->
       <div class="profile-hidden-admin-drawer">
-        <button class="profile-hidden-admin-toggle" onclick="toggleHiddenDbDrawer()">
+        <button type="button" class="profile-hidden-admin-toggle" onclick="toggleHiddenDbDrawer()">
           <span>🗄️ Quản lý Cơ sở dữ liệu & Tạo mặt hàng bằng AI</span>
           <span class="drawer-chevron ${showHiddenDbDrawer ? 'open' : ''}">${FluentIcons.chevronDown}</span>
         </button>
@@ -1369,42 +1422,42 @@ function renderProfileView() {
               Quản lý toàn diện <strong>${DB.getItems().length}</strong> mặt hàng, <strong>${DB.getStores ? DB.getStores().length : DB.data.restaurants.length}</strong> cửa hàng, <strong>${DB.getCategories().length}</strong> danh mục (thủ công & theo Tag), mã giảm giá, thư viện ảnh và hàng đợi AI tạo sản phẩm.
             </div>
             <div class="profile-hidden-admin-grid">
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('items')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('items')">
                 <span class="tool-emoji">${FluentIcons.boxFilled}</span>
                 <div>
                   <div class="tool-title">Kho Mặt Hàng</div>
                   <div class="tool-sub">${DB.getItems().length} món • Giá, Tag, Dinh dưỡng</div>
                 </div>
               </button>
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('ai')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('ai')">
                 <span class="tool-emoji">${FluentIcons.sparkleFilled}</span>
                 <div>
                   <div class="tool-title">AI Tạo Hàng (Queue)</div>
                   <div class="tool-sub">Tạo liền 5 món theo chủ đề</div>
                 </div>
               </button>
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('stores')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('stores')">
                 <span class="tool-emoji">${FluentIcons.shop}</span>
                 <div>
                   <div class="tool-title">Cửa Hàng & Địa Điểm</div>
                   <div class="tool-sub">${DB.getStores ? DB.getStores().length : DB.data.restaurants.length} cửa hàng đang hoạt động</div>
                 </div>
               </button>
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('categories')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('categories')">
                 <span class="tool-emoji">${FluentIcons.tagFilled}</span>
                 <div>
                   <div class="tool-title">Danh Mục & Tag</div>
                   <div class="tool-sub">Ẩn/hiện trang chủ & theo Tag</div>
                 </div>
               </button>
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('vouchers')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('vouchers')">
                 <span class="tool-emoji">${FluentIcons.ticketHorizontalFilled}</span>
                 <div>
                   <div class="tool-title">Mã Giảm Giá</div>
                   <div class="tool-sub">${DB.getVouchers ? DB.getVouchers().length : 0} mã toàn sàn & theo món</div>
                 </div>
               </button>
-              <button class="profile-admin-tool-btn" onclick="openCatalogManagerView('images')">
+              <button type="button" class="profile-admin-tool-btn" onclick="openCatalogManagerView('images')">
                 <span class="tool-emoji">${FluentIcons.imageFilled}</span>
                 <div>
                   <div class="tool-title">Thư Viện Ảnh</div>
@@ -1772,7 +1825,7 @@ function renderRememberedUsersTab(allUsers, activeUser) {
           <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Danh bạ Người Dùng Đã Tạo & Ghi Nhớ</div>
           <div style="font-size:12px; color:var(--gray-500);">Hệ thống lưu  SĐT, địa chỉ nhận hàng và toàn bộ lịch sử đơn đặt của từng người dùng.</div>
         </div>
-        <button class="db-primary-btn" onclick="openUserProfileModal(null)">
+        <button type="button" class="db-primary-btn" onclick="openUserProfileModal(null)">
           ➕ Tạo hồ sơ mới
         </button>
       </div>
@@ -1785,7 +1838,7 @@ function renderRememberedUsersTab(allUsers, activeUser) {
           value="${escapeHtml(profileUserSearchQuery)}"
           oninput="profileUserSearchQuery = this.value; updateRememberedUsersDOM();"
         >
-        ${profileUserSearchQuery ? `<button onclick="profileUserSearchQuery=''; renderProfileView();">✕</button>` : ''}
+        ${profileUserSearchQuery ? `<button type="button" onclick="profileUserSearchQuery=''; renderProfileView();">✕</button>` : ''}
       </div>
     </div>
 
@@ -1802,7 +1855,7 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
         <div class="search-empty-icon">👤</div>
         <div class="search-empty-title">Chưa tìm thấy người dùng khớp "${escapeHtml(profileUserSearchQuery)}"</div>
         <div class="search-empty-sub">Bạn có muốn tạo ngay hồ sơ mới với thông tin này để hệ thống ghi nhớ không?</div>
-        <button class="db-primary-btn" style="margin-top:14px;" onclick="openUserProfileModal(null, '${escapeHtml(profileUserSearchQuery)}')">
+        <button type="button" class="db-primary-btn" style="margin-top:14px;" onclick="openUserProfileModal(null, '${escapeHtml(profileUserSearchQuery)}')">
           ➕ Tạo hồ sơ người dùng mới
         </button>
       </div>
@@ -1836,10 +1889,10 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
                 </div>
               </div>
               <div class="user-record-head-btns">
-                <button class="db-icon-mini-btn" onclick="openHealthProfileSetupModal('${escapeHtml(u.id)}')" title="Thiết lập thể trạng & Kcal">🥗</button>
-                <button class="db-icon-mini-btn" onclick="openUserProfileModal('${escapeHtml(u.id)}')" title="Chỉnh sửa thông tin">✏️</button>
+                <button type="button" class="db-icon-mini-btn" onclick="openHealthProfileSetupModal('${escapeHtml(u.id)}')" title="Thiết lập thể trạng & Kcal">🥗</button>
+                <button type="button" class="db-icon-mini-btn" onclick="openUserProfileModal('${escapeHtml(u.id)}')" title="Chỉnh sửa thông tin">✏️</button>
                 ${DB.getUsers().length > 1 ? `
-                  <button class="db-icon-mini-btn danger" onclick="handleDeleteUserProfile('${escapeHtml(u.id)}')" title="Xóa hồ sơ">${FluentIcons.deleteRegular}</button>
+                  <button type="button" class="db-icon-mini-btn danger" onclick="handleDeleteUserProfile('${escapeHtml(u.id)}')" title="Xóa hồ sơ">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             </div>
@@ -1877,11 +1930,11 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
 
             <div class="user-record-footer">
               ${isCurrent ? `
-                <button class="db-secondary-btn full" onclick="switchProfileSubTab('orders')">
+                <button type="button" class="db-secondary-btn full" onclick="switchProfileSubTab('orders')">
                   🧾 Xem ${ordersCount} đơn hàng của tôi
                 </button>
               ` : `
-                <button class="db-primary-btn full" onclick="handleSwitchUserProfile('${escapeHtml(u.id)}')">
+                <button type="button" class="db-primary-btn full" onclick="handleSwitchUserProfile('${escapeHtml(u.id)}')">
                   ${FluentIcons.sync} Chuyển sang hồ sơ "${escapeHtml(u.name)}"
                 </button>
               `}
@@ -1951,7 +2004,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
         <div class="search-empty-icon">🧾</div>
         <div class="search-empty-title">${escapeHtml(activeUser.name)} chưa có đơn hàng nào</div>
         <div class="search-empty-sub">Mọi đơn hàng bạn đặt sẽ được ghi nhớ  trong hồ sơ của ${escapeHtml(activeUser.name)} (${escapeHtml(activeUser.phone)}).</div>
-        <button class="db-primary-btn" style="margin-top:14px;" onclick="openSearchView()">
+        <button type="button" class="db-primary-btn" style="margin-top:14px;" onclick="openSearchView()">
           🍜 Đặt món đầu tiên ngay
         </button>
       </div>
@@ -1964,7 +2017,7 @@ function renderProfileOrdersTab(activeUser, userOrders) {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Lịch sử Đơn Đã Đặt của ${escapeHtml(activeUser.name)}</div>
         <div style="font-size:12px; color:var(--gray-500);">Số điện thoại gắn liền: <strong>${escapeHtml(activeUser.phone)}</strong> • Tổng cộng ${userOrders.length} đơn hàng</div>
       </div>
-      <button class="db-secondary-btn" onclick="openActivityView()">
+      <button type="button" class="db-secondary-btn" onclick="openActivityView()">
         Mở trang Theo dõi đơn ${FluentIcons.truckRegular}
       </button>
     </div>
@@ -2004,10 +2057,10 @@ function renderProfileOrdersTab(activeUser, userOrders) {
                 ${formatVND(order.totalAmount)}
               </div>
               <div class="past-order-actions" onclick="event.stopPropagation()">
-                <button class="past-order-btn secondary" onclick="viewingOrderDetailId='${escapeHtml(order.orderId)}'; openActivityView();">
+                <button type="button" class="past-order-btn secondary" onclick="viewingOrderDetailId='${escapeHtml(order.orderId)}'; openActivityView();">
                   Chi tiết
                 </button>
-                <button class="past-order-btn primary" onclick="reorderOrder('${escapeHtml(order.orderId)}')">
+                <button type="button" class="past-order-btn primary" onclick="reorderOrder('${escapeHtml(order.orderId)}')">
                   Đặt lại
                 </button>
               </div>
@@ -2028,7 +2081,7 @@ function renderProfileAddressesTab(activeUser) {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Sổ Địa Chỉ Nhận Hàng của ${escapeHtml(activeUser.name)}</div>
         <div style="font-size:12px; color:var(--gray-500);">Lưu nhiều địa chỉ (KTX, Trường học, Nhà riêng, Văn phòng) để chọn 1 chạm khi đặt đơn.</div>
       </div>
-      <button class="db-primary-btn" onclick="openSavedAddressModal()">
+      <button type="button" class="db-primary-btn" onclick="openSavedAddressModal()">
         ➕ Thêm địa chỉ mới
       </button>
     </div>
@@ -2045,9 +2098,9 @@ function renderProfileAddressesTab(activeUser) {
                 ${isCurrent ? `<span class="active-user-pill">Đang giao đến đây</span>` : ''}
               </div>
               <div style="display:flex; gap:6px;">
-                <button class="db-icon-mini-btn" onclick="openSavedAddressModal('${escapeHtml(addr.id)}')" title="Sửa">✏️</button>
+                <button type="button" class="db-icon-mini-btn" onclick="openSavedAddressModal('${escapeHtml(addr.id)}')" title="Sửa">✏️</button>
                 ${addrs.length > 1 ? `
-                  <button class="db-icon-mini-btn danger" onclick="handleDeleteSavedAddress('${escapeHtml(addr.id)}')" title="Xóa">${FluentIcons.deleteRegular}</button>
+                  <button type="button" class="db-icon-mini-btn danger" onclick="handleDeleteSavedAddress('${escapeHtml(addr.id)}')" title="Xóa">${FluentIcons.deleteRegular}</button>
                 ` : ''}
               </div>
             </div>
@@ -2057,7 +2110,7 @@ function renderProfileAddressesTab(activeUser) {
             ${addr.note ? `<div class="saved-addr-note">${FluentIcons.chatFilled} Ghi chú: ${escapeHtml(addr.note)}</div>` : ''}
 
             ${!isCurrent ? `
-              <button class="db-secondary-btn" style="margin-top:10px; width:100%;" onclick="handleSelectSavedAddress('${escapeHtml(addr.id)}')">
+              <button type="button" class="db-secondary-btn" style="margin-top:10px; width:100%;" onclick="handleSelectSavedAddress('${escapeHtml(addr.id)}')">
                 Chọn làm địa chỉ giao hàng hiện tại
               </button>
             ` : ''}
@@ -2108,7 +2161,7 @@ function openAccountSwitcherModal() {
         <span>${FluentIcons.sync}</span>
         <span>Tài khoản & Địa chỉ giao hàng</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -2254,7 +2307,7 @@ function openUserProfileModal(editUserId = null, prefillQuery = '') {
         <span>${FluentIcons.personFilled}</span>
         <span>${editingUser ? 'Chỉnh Sửa Hồ Sơ Người Dùng' : 'Tạo Hồ Sơ Người Dùng Mới'}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -2465,7 +2518,7 @@ function openSavedAddressModal(editAddrId = null) {
         <span>${FluentIcons.locationFilled}</span>
         <span>${editing ? 'Sửa Địa Chỉ Đã Lưu' : 'Thêm Địa Chỉ Vào Sổ Địa Chỉ'}</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>

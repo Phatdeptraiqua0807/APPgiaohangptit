@@ -169,7 +169,7 @@ function osvRenderRecommendationCard({ item, reason }) {
         <div class="osv-rec-store">${escapeHtml(item.restaurantName || 'Quán PTIT')}</div>
         <div class="osv-rec-bottom">
           <span class="osv-rec-price">${formatVND(item.price)}</span>
-          <button class="osv-rec-add" title="Thêm vào giỏ"
+          <button type="button" class="osv-rec-add" title="Thêm vào giỏ"
                   onclick="event.stopPropagation(); quickAddRecommendedDishToCart('${id}')">+</button>
         </div>
       </div>
@@ -196,7 +196,7 @@ function renderOrderSuccessView() {
   app.innerHTML = `
     <div class="osv-container fade-in">
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="backHomeFromOrderSuccess()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="backHomeFromOrderSuccess()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Đặt hàng thành công</div>
@@ -212,8 +212,8 @@ function renderOrderSuccessView() {
             <p class="osv-hero-sub">${escapeHtml(subtitle)}</p>
             
             <div class="osv-hero-actions">
-              <button class="osv-btn-secondary" onclick="backHomeFromOrderSuccess()">Về trang chủ</button>
-              <button class="osv-btn-primary" onclick="viewPlacedOrderFromSuccess()">Xem đơn hàng</button>
+              <button type="button" class="osv-btn-secondary" onclick="backHomeFromOrderSuccess()">Về trang chủ</button>
+              <button type="button" class="osv-btn-primary" onclick="viewPlacedOrderFromSuccess()">Xem đơn hàng</button>
             </div>
           </div>
 

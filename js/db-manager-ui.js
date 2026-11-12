@@ -160,9 +160,9 @@ function renderCatalogManagerView() {
   app.innerHTML = `
     <div class="catalog-view-container dbm-container fade-in">
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">${FluentIcons.arrowLeft}</button>
+        <button type="button" class="page-back-icon-btn" onclick="openProfileView()" title="Quay lại Tài khoản" aria-label="Quay lại Tài khoản">${FluentIcons.arrowLeft}</button>
         <div class="page-nav-title">Quản Lý Cơ Sở Dữ Liệu</div>
-        <button class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">⬇️ .JSON</button>
+        <button type="button" class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">⬇️ .JSON</button>
       </div>
 
       <div class="db-hero-banner">
@@ -173,8 +173,8 @@ function renderCatalogManagerView() {
             <div class="db-hero-sub">Tạo thủ công hoặc nhờ AI tạo hàng loạt — mọi thay đổi lưu </div>
           </div>
           <div class="db-hero-actions">
-            <button class="db-btn-white" onclick="switchCatalogTab('ai')">✨ AI tạo hàng</button>
-            <button class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng</button>
+            <button type="button" class="db-btn-white" onclick="switchCatalogTab('ai')">✨ AI tạo hàng</button>
+            <button type="button" class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng</button>
           </div>
         </div>
         <div class="db-stats-grid">
@@ -203,7 +203,7 @@ function renderCatalogManagerView() {
         </button>
         <div class="db-subtabs-bar" id="dbm-subtabs-scroll">
           ${tabs.map(([key, icon, label, count]) => `
-            <button class="db-subtab-btn ${catalogActiveTab === key ? 'active' : ''}" onclick="switchCatalogTab('${key}')">
+            <button type="button" class="db-subtab-btn ${catalogActiveTab === key ? 'active' : ''}" onclick="switchCatalogTab('${key}')">
               ${icon} ${label}${count !== '' ? ` (${count})` : ''}
             </button>`).join('')}
         </div>
@@ -301,7 +301,7 @@ function renderDbmItemsTab(allCats) {
   const missingCount = allItems.filter(dbmIsPlaceholderImage).length;
   const highHealthyCount = allItems.filter(it => dbmGetItemHealthy(it).score >= 8.0).length;
   const chip = (cond, handler, label) =>
-    `<button class="db-chip ${cond ? 'active' : ''}" onclick="${handler}">${label}</button>`;
+    `<button type="button" class="db-chip ${cond ? 'active' : ''}" onclick="${handler}">${label}</button>`;
 
   return `
     <div class="db-controls-card">
@@ -311,7 +311,7 @@ function renderDbmItemsTab(allCats) {
           <input type="text" placeholder="Tìm theo tên, mã SP, tag, danh mục, cửa hàng, nhận xét healthy..."
                  value="${escapeHtml(catalogSearchQuery)}"
                  oninput="catalogSearchQuery = this.value; updateCatalogItemsListDOM();">
-          ${catalogSearchQuery ? `<button onclick="catalogSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
+          ${catalogSearchQuery ? `<button type="button" onclick="catalogSearchQuery=''; renderCatalogManagerView();">✕</button>` : ''}
         </div>
       </div>
       <div class="dbm-filter-row">
@@ -351,7 +351,7 @@ function renderDbmItemsTab(allCats) {
         ${chip(catalogStatusFilter === 'outofstock', "catalogStatusFilter='outofstock'; renderCatalogManagerView();", '⛔ Tạm hết')}
         ${chip(dbmMissingImageOnly, 'dbmMissingImageOnly = !dbmMissingImageOnly; renderCatalogManagerView();', `${FluentIcons.imageFilled} Thiếu ảnh (${missingCount})`)}
         ${(dbmTagFilter || dbmStoreFilter !== 'all' || catalogCategoryFilter !== 'all' || catalogStatusFilter !== 'all' || dbmHealthyFilter !== 'all' || dbmMissingImageOnly || catalogSearchQuery)
-      ? `<button class="db-chip" onclick="dbmResetItemFilters()">↺ Xóa lọc</button>` : ''}
+      ? `<button type="button" class="db-chip" onclick="dbmResetItemFilters()">↺ Xóa lọc</button>` : ''}
       </div>
     </div>
     <div id="catalog-items-list-container">${renderCatalogItemsGridHtml(getFilteredCatalogItems())}</div>`;
@@ -383,21 +383,21 @@ function renderDbmBulkBar(visibleList) {
               </label>
             </div>
             <div class="dbm-bulk-top-actions">
-              <button class="danger" onclick="dbmBulkDelete()" title="Xóa các món đã chọn">${FluentIcons.deleteRegular} Xóa</button>
-              <button class="dbm-bulk-clear-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
+              <button type="button" class="danger" onclick="dbmBulkDelete()" title="Xóa các món đã chọn">${FluentIcons.deleteRegular} Xóa</button>
+              <button type="button" class="dbm-bulk-clear-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();" title="Bỏ chọn tất cả">✕ Bỏ chọn</button>
             </div>
           </div>
           <div class="dbm-bulk-actions">
-            <button class="ai-audit-btn" onclick="dbmOpenAiAuditModal('items')" title="Dùng AI đánh giá các món đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
-            <button onclick="dbmOpenBulkGoogleImageModal()" title="Tự tìm & chèn ảnh Google #1 hoặc #2 cho các mặt hàng đã chọn">🔍 Ảnh Google</button>
-            <button onclick="openAssignImageModal({ preselectIds: [...dbmSelectedIds] })">${FluentIcons.imageFilled} Gán ảnh</button>
-            <button onclick="dbmOpenBulkModal('healthy')" title="Tự đánh giá lại hoặc gán điểm Healthy cho các mặt hàng đã chọn">🥗 Healthy</button>
-            <button onclick="dbmOpenBulkModal('category')">🏷️ Danh mục</button>
-            <button onclick="dbmOpenBulkModal('store')">🏪 Cửa hàng</button>
-            <button onclick="dbmOpenBulkModal('tags')"># Tag</button>
-            <button onclick="dbmOpenBulkModal('vouchers')">🎟️ Mã giảm</button>
-            <button onclick="dbmBulkStock(true)">✅ Mở bán</button>
-            <button onclick="dbmBulkStock(false)">⛔ Tạm hết</button>
+            <button type="button" class="ai-audit-btn" onclick="dbmOpenAiAuditModal('items')" title="Dùng AI đánh giá các món đã chọn cần điều chỉnh gì">🤖 AI đánh giá (${n})</button>
+            <button type="button" onclick="dbmOpenBulkGoogleImageModal()" title="Tự tìm & chèn ảnh Google #1 hoặc #2 cho các mặt hàng đã chọn">🔍 Ảnh Google</button>
+            <button type="button" onclick="openAssignImageModal({ preselectIds: [...dbmSelectedIds] })">${FluentIcons.imageFilled} Gán ảnh</button>
+            <button type="button" onclick="dbmOpenBulkModal('healthy')" title="Tự đánh giá lại hoặc gán điểm Healthy cho các mặt hàng đã chọn">🥗 Healthy</button>
+            <button type="button" onclick="dbmOpenBulkModal('category')">🏷️ Danh mục</button>
+            <button type="button" onclick="dbmOpenBulkModal('store')">🏪 Cửa hàng</button>
+            <button type="button" onclick="dbmOpenBulkModal('tags')"># Tag</button>
+            <button type="button" onclick="dbmOpenBulkModal('vouchers')">🎟️ Mã giảm</button>
+            <button type="button" onclick="dbmBulkStock(true)">✅ Mở bán</button>
+            <button type="button" onclick="dbmBulkStock(false)">⛔ Tạm hết</button>
           </div>
         </div>
       </div>
@@ -407,8 +407,8 @@ function renderDbmBulkBar(visibleList) {
           <span>Đang chọn <strong>${n}</strong> mặt hàng — thao tác nhanh trên thanh công cụ trên cùng</span>
         </label>
         <div style="display:flex; align-items:center; gap:10px;">
-          <button class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('items')">🤖 AI đánh giá (${n})</button>
-          <button class="db-inline-link-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();">Bỏ chọn</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmOpenAiAuditModal('items')">🤖 AI đánh giá (${n})</button>
+          <button type="button" class="db-inline-link-btn" onclick="dbmSelectedIds.clear(); updateCatalogItemsListDOM();">Bỏ chọn</button>
         </div>
       </div>`;
   }
@@ -432,9 +432,9 @@ function renderCatalogItemsGridHtml(itemsList) {
         <div class="search-empty-title">Chưa có mặt hàng nào khớp bộ lọc</div>
         <div class="search-empty-sub">Thêm mặt hàng mới, nhờ AI tạo giúp hoặc đặt lại bộ lọc.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
-          <button class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng mới</button>
-          <button class="db-secondary-btn" onclick="switchCatalogTab('ai')">✨ Nhờ AI tạo</button>
-          <button class="db-secondary-btn" onclick="dbmResetItemFilters()">Xem tất cả</button>
+          <button type="button" class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng mới</button>
+          <button type="button" class="db-secondary-btn" onclick="switchCatalogTab('ai')">✨ Nhờ AI tạo</button>
+          <button type="button" class="db-secondary-btn" onclick="dbmResetItemFilters()">Xem tất cả</button>
         </div>
       </div>`;
   }
@@ -471,7 +471,7 @@ function renderCatalogItemsGridHtml(itemsList) {
                 <span class="db-cat-pill" onclick="catalogCategoryFilter='${escapeHtml(item.categoryId)}'; renderCatalogManagerView();">
                   ${catObj ? catObj.icon : '🍽️'} ${escapeHtml(item.category)}
                 </span>
-                <button class="db-stock-toggle ${isOut ? 'off' : 'on'}" onclick="handleToggleItemStock('${id}')" title="Đổi trạng thái Còn hàng / Hết hàng">
+                <button type="button" class="db-stock-toggle ${isOut ? 'off' : 'on'}" onclick="handleToggleItemStock('${id}')" title="Đổi trạng thái Còn hàng / Hết hàng">
                   ${isOut ? '⛔ Tạm hết' : '✅ Còn hàng'}
                 </button>
               </div>
@@ -492,12 +492,12 @@ function renderCatalogItemsGridHtml(itemsList) {
               ${tags.length ? `<div class="dbm-tag-row">${tags.map(t => `<span class="dbm-tag-chip" onclick="dbmTagFilter='${escapeHtml(t)}'; renderCatalogManagerView();">#${escapeHtml(t)}</span>`).join('')}${(item.tags || []).length > 4 ? `<span class="dbm-tag-more">+${item.tags.length - 4}</span>` : ''}</div>` : ''}
               ${(item.vouchers || []).length ? `<div class="dbm-voucher-row">🎟️ ${(item.vouchers).map(c => escapeHtml(c)).join(' • ')}</div>` : ''}
               <div class="db-item-actions">
-                <button class="db-act-btn order" onclick="orderItemDirectlyById('${id}')" ${isOut ? 'disabled' : ''}>🛒 Đặt</button>
-                <button class="db-act-btn edit" onclick="openItemEditorModal('${id}')">✏️ Sửa</button>
-                <button class="db-act-btn edit" onclick="dbmOpenAiAuditModal('items', ['${id}'])" title="AI đánh giá & gợi ý chỉnh sửa món này">🤖</button>
-                <button class="db-act-btn edit" onclick="dbmQuickGoogleImageForCard('${id}')" title="Tự lấy ảnh Google (#1 → #2 → #3)">🔍</button>
-                <button class="db-act-btn edit" onclick="dbmDuplicateItem('${id}')" title="Nhân bản">⧉</button>
-                <button class="db-act-btn delete" onclick="handleDeleteItem('${id}')">🗑️</button>
+                <button type="button" class="db-act-btn order" onclick="orderItemDirectlyById('${id}')" ${isOut ? 'disabled' : ''}>🛒 Đặt</button>
+                <button type="button" class="db-act-btn edit" onclick="openItemEditorModal('${id}')">✏️ Sửa</button>
+                <button type="button" class="db-act-btn edit" onclick="dbmOpenAiAuditModal('items', ['${id}'])" title="AI đánh giá & gợi ý chỉnh sửa món này">🤖</button>
+                <button type="button" class="db-act-btn edit" onclick="dbmQuickGoogleImageForCard('${id}')" title="Tự lấy ảnh Google (#1 → #2 → #3)">🔍</button>
+                <button type="button" class="db-act-btn edit" onclick="dbmDuplicateItem('${id}')" title="Nhân bản">⧉</button>
+                <button type="button" class="db-act-btn delete" onclick="handleDeleteItem('${id}')">🗑️</button>
               </div>
             </div>
           </div>`;
@@ -1044,7 +1044,7 @@ function renderDbmImagesTab() {
       <div id="dbm-library-dropzone">${dbmDropzoneHtml('library', 'Thả ảnh vào đây (nhiều file được) hoặc bấm để chọn')}</div>
       <div class="dbm-inline-form">
         <input type="text" id="dbm-library-url" class="delivery-input-field" placeholder="Hoặc dán đường dẫn ảnh (URL)...">
-        <button class="db-secondary-btn" onclick="dbmAddLibraryUrl()">+ Thêm URL</button>
+        <button type="button" class="db-secondary-btn" onclick="dbmAddLibraryUrl()">+ Thêm URL</button>
       </div>
     </div>
     ${lib.length === 0 ? `
@@ -1062,8 +1062,8 @@ function renderDbmImagesTab() {
             <div class="dbm-library-name" title="${escapeHtml(img.name)}">${escapeHtml(img.name)}</div>
             <div class="dbm-library-used">${used > 0 ? `Đang dùng bởi ${used} mặt hàng` : 'Chưa gán'}</div>
             <div class="dbm-library-actions">
-              <button class="db-act-btn order" data-src="${escapeHtml(img.src)}" onclick="openAssignImageModal({ imageSrc: this.getAttribute('data-src') })">Gán cho mặt hàng</button>
-              <button class="db-act-btn delete" onclick="dbmRemoveLibraryImage('${escapeHtml(img.id)}')">🗑️</button>
+              <button type="button" class="db-act-btn order" data-src="${escapeHtml(img.src)}" onclick="openAssignImageModal({ imageSrc: this.getAttribute('data-src') })">Gán cho mặt hàng</button>
+              <button type="button" class="db-act-btn delete" onclick="dbmRemoveLibraryImage('${escapeHtml(img.id)}')">🗑️</button>
             </div>
           </div>`;
   }).join('')}

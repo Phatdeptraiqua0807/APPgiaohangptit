@@ -754,7 +754,7 @@ function renderHomeCategoryRestaurantSections() {
             <img class="restaurant-card-img" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
             <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
             ${r.id ? `
-              <button class="restaurant-card-fav" onclick="event.stopPropagation(); toggleFav(${r.id})">
+              <button type="button" class="restaurant-card-fav ${r.fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${r.id})">
                 ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
               </button>` : ''}
           </div>
@@ -778,10 +778,10 @@ function renderHomeCategoryRestaurantSections() {
           <div class="section-title">${cat.icon} ${escapeHtml(cat.name)}</div>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="scroll-arrow-controls">
-              <button class="scroll-arrow-btn small" onclick="scrollHorizontally('${scrollId}', -280)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+              <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('${scrollId}', -280)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
                 ${FluentIcons.chevronLeft}
               </button>
-              <button class="scroll-arrow-btn small" onclick="scrollHorizontally('${scrollId}', 280)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+              <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('${scrollId}', 280)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
                 ${FluentIcons.chevronRight}
               </button>
             </div>
@@ -1675,7 +1675,7 @@ function dbmRenderCartVoucherChipsHtml(cartItems) {
   return `<div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
     ${list.map(v => {
     const hot = v.code === 'HUNGCHIENGION' || v.scope === 'selected';
-    return `<span class="note-chip" ${hot ? 'style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;"' : ''} onclick="applyPromoCode('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${hot ? '🔥' : '🎟️'} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</span>`;
+    return `<button type="button" class="note-chip" ${hot ? 'style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;"' : ''} onclick="applyPromoCode('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${hot ? '🔥' : '🎟️'} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</button>`;
   }).join('')}
   </div>`;
 }
@@ -1686,7 +1686,7 @@ function dbmRenderCheckoutVoucherChipsHtml(cartItems, activeCode) {
   return list.map(v => {
     const isActive = activeCode === v.code || (v.aliases || []).includes(activeCode);
     const iconSvg = (typeof FluentIcons !== 'undefined' && FluentIcons[v.icon]) ? FluentIcons[v.icon] : (typeof FluentIcons !== 'undefined' ? FluentIcons.tagRegular : '🎟️');
-    return `<div class="cart-voucher-chip ${isActive ? 'active' : ''}" onclick="applyPromoCodeFromCheckout('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${iconSvg} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</div>`;
+    return `<button type="button" class="cart-voucher-chip ${isActive ? 'active' : ''}" onclick="applyPromoCodeFromCheckout('${escapeHtml(v.code)}')" title="${escapeHtml(v.desc || v.title)}">${iconSvg} ${escapeHtml(v.code)} (${escapeHtml(dbmVoucherShortBadge(v))})</button>`;
   }).join('');
 }
 

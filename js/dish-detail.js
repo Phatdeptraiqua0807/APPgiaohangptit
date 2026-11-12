@@ -576,10 +576,10 @@ function renderHomeFeaturedDishesSection() {
         <div class="section-title">Mặt hàng nổi bật • Đạt chuẩn Dinh dưỡng & ATTP</div>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', -260)" title="Cuộn sang trái">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', -260)" title="Cuộn sang trái">
               ${FluentIcons.chevronLeft}
             </button>
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', 260)" title="Cuộn sang phải">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', 260)" title="Cuộn sang phải">
               ${FluentIcons.chevronRight}
             </button>
           </div>
@@ -613,6 +613,10 @@ function renderHomeFeaturedDishesSection() {
       </div>
     </div>
   `;
+
+  if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 // =========================================================================
@@ -695,11 +699,32 @@ function goBackFromDishDetail() {
   const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions[target] === 'number')
     ? globalViewScrollPositions[target]
     : (viewScrollPositionsBeforeDish[target] || 0);
-  currentView = target;
-  render();
+
+  // Đặt lại previousViewBeforeDish để tránh lưu trạng thái cũ
+  previousViewBeforeDish = 'home';
+
+  if (target === 'ai' && typeof openAIChatView === 'function') {
+    openAIChatView();
+  } else if (target === 'search' && typeof openSearchView === 'function') {
+    openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
+  } else if (target === 'cart' && typeof openCartView === 'function') {
+    openCartView();
+  } else if (target === 'activity' && typeof openActivityView === 'function') {
+    openActivityView();
+  } else if (target === 'profile' && typeof openProfileView === 'function') {
+    openProfileView();
+  } else if (target === 'catalog' && typeof openCatalogManagerView === 'function') {
+    openCatalogManagerView();
+  } else if (typeof openHomeView === 'function') {
+    openHomeView();
+  } else {
+    currentView = target;
+    render();
+  }
+
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll(target, savedY);
-  } else {
+  } else if (typeof applyPageScroll === 'function') {
     applyPageScroll(savedY);
   }
 }
@@ -738,19 +763,19 @@ function renderDishDetailView() {
     <div class="product-detail-page fade-in">
       <!-- Top Sticky Header -->
       <div class="page-nav-header product-detail-topbar">
-        <button class="page-back-icon-btn" onclick="goBackFromDishDetail()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="goBackFromDishDetail()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Thông Tin Sản Phẩm</div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button
-            class="page-back-icon-btn"
+          <button type="button"
+            class="page-back-icon-btn res-detail-top-fav-btn ${(store && store.fav) ? 'active' : ''}"
             onclick="toggleFav(${store ? store.id : 1})"
             title="Lưu quán yêu thích"
           >
             ${(store && store.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
           </button>
-          <button class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Giỏ hàng">
+          <button type="button" class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Giỏ hàng">
             ${FluentIcons.cartRegular} <span>${cartCount}</span>
           </button>
         </div>
@@ -1025,11 +1050,11 @@ function renderDishDetailView() {
             <!-- Action Bar cố định -->
             <div class="pdp-bottom-action-bar">
               <div class="dish-modal-qty-stepper">
-                <button class="stepper-btn" onclick="changeDishDetailQty(-1)" aria-label="Giảm">
+                <button type="button" class="stepper-btn" onclick="changeDishDetailQty(-1)" aria-label="Giảm">
                   ${FluentIcons.subtractRegular}
                 </button>
                 <span class="stepper-count">${modalQty}</span>
-                <button class="stepper-btn" onclick="changeDishDetailQty(1)" aria-label="Tăng">
+                <button type="button" class="stepper-btn" onclick="changeDishDetailQty(1)" aria-label="Tăng">
                   ${FluentIcons.addRegular}
                 </button>
               </div>
@@ -1061,11 +1086,11 @@ function renderDishDetailView() {
       <!-- Action Bar dính mép dưới trên điện thoại: Ấn mở giao diện Tùy chỉnh phần ăn -->
       <div class="pdp-mobile-sticky-bar">
         <div class="dish-modal-qty-stepper">
-          <button class="stepper-btn" onclick="changeDishDetailQty(-1)" aria-label="Giảm">
+          <button type="button" class="stepper-btn" onclick="changeDishDetailQty(-1)" aria-label="Giảm">
             ${FluentIcons.subtractRegular}
           </button>
           <span class="stepper-count">${modalQty}</span>
-          <button class="stepper-btn" onclick="changeDishDetailQty(1)" aria-label="Tăng">
+          <button type="button" class="stepper-btn" onclick="changeDishDetailQty(1)" aria-label="Tăng">
             ${FluentIcons.addRegular}
           </button>
         </div>
@@ -1092,6 +1117,10 @@ function renderDishDetailView() {
       </div>
     </div>
   `;
+
+  if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 function scrollToReviewsSection() {
@@ -1099,20 +1128,46 @@ function scrollToReviewsSection() {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function updateDishDetailCustomizerInPlace() {
+  if (!modalDish) return;
+  // 1. Cập nhật Size rows
+  document.querySelectorAll('.size-option-row').forEach((row, i) => {
+    row.classList.toggle('selected', i === modalSelectedSizeIndex);
+  });
+
+  // 2. Cập nhật Topping rows
+  document.querySelectorAll('.topping-option-row').forEach(row => {
+    const onclickStr = row.getAttribute('onclick') || '';
+    const match = onclickStr.match(/toggleDishDetailTopping\(['"]([^'"]+)['"]\)/);
+    if (match) {
+      const topId = match[1];
+      const isSelected = modalSelectedToppingIds.includes(topId);
+      row.classList.toggle('selected', isSelected);
+    }
+  });
+
+  // 3. Cập nhật Stepper count
+  document.querySelectorAll('.stepper-count').forEach(el => {
+    el.textContent = modalQty;
+  });
+
+  // 4. Cập nhật Live Kcal notice
+  const store = (typeof DB !== 'undefined' && DB.isReady && modalDish.restaurantId && restaurants.find(r => Number(r.id) === Number(modalDish.restaurantId))) || modalRestaurant;
+  if (typeof getDishNutritionAndSafetyProfile === 'function' && typeof getAdjustedNutritionBySelection === 'function') {
+    const profile = getDishNutritionAndSafetyProfile(modalDish, store);
+    const dynNutri = getAdjustedNutritionBySelection(profile);
+    const noticeStrong = document.querySelector('.pdp-live-kcal-notice strong');
+    if (noticeStrong && dynNutri) {
+      noticeStrong.textContent = `~${(dynNutri.calories || 0) * modalQty} kcal`;
+    }
+  }
+}
+
 function selectDishDetailSize(idx) {
   modalSelectedSizeIndex = Number(idx);
   const noteEl = document.getElementById('pdp-kitchen-note');
   if (noteEl) modalKitchenNote = noteEl.value;
-  const drawer = document.getElementById('pdp-order-drawer');
-  const prevDrawerScroll = drawer ? drawer.scrollTop : 0;
-  const prevWindowScroll = window.scrollY;
-  renderDishDetailView();
-  if (pdpMobileDrawerOpen) {
-    const newDrawer = document.getElementById('pdp-order-drawer');
-    if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-    applyPageScroll(prevWindowScroll);
-    document.body.classList.add('pdp-drawer-active');
-  }
+  updateDishDetailCustomizerInPlace();
 }
 
 function toggleDishDetailTopping(topId) {
@@ -1124,16 +1179,7 @@ function toggleDishDetailTopping(topId) {
   }
   const noteEl = document.getElementById('pdp-kitchen-note');
   if (noteEl) modalKitchenNote = noteEl.value;
-  const drawer = document.getElementById('pdp-order-drawer');
-  const prevDrawerScroll = drawer ? drawer.scrollTop : 0;
-  const prevWindowScroll = window.scrollY;
-  renderDishDetailView();
-  if (pdpMobileDrawerOpen) {
-    const newDrawer = document.getElementById('pdp-order-drawer');
-    if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-    applyPageScroll(prevWindowScroll);
-    document.body.classList.add('pdp-drawer-active');
-  }
+  updateDishDetailCustomizerInPlace();
 }
 
 function changeDishDetailQty(delta) {
@@ -1142,16 +1188,7 @@ function changeDishDetailQty(delta) {
     modalQty = next;
     const noteEl = document.getElementById('pdp-kitchen-note');
     if (noteEl) modalKitchenNote = noteEl.value;
-    const drawer = document.getElementById('pdp-order-drawer');
-    const prevDrawerScroll = drawer ? drawer.scrollTop : 0;
-    const prevWindowScroll = window.scrollY;
-    renderDishDetailView();
-    if (pdpMobileDrawerOpen) {
-      const newDrawer = document.getElementById('pdp-order-drawer');
-      if (newDrawer && prevDrawerScroll) newDrawer.scrollTop = prevDrawerScroll;
-      applyPageScroll(prevWindowScroll);
-      document.body.classList.add('pdp-drawer-active');
-    }
+    updateDishDetailCustomizerInPlace();
   }
 }
 
@@ -1224,7 +1261,11 @@ function addDishFromDetailView(buyNow = false) {
       ? `Đã tăng số lượng "${modalDish.name}" lên ${result.item.quantity} (${formatVND(curTotal)}) trong giỏ!`
       : `Đã thêm ${modalQty}x "${modalDish.name}" (${formatVND(curTotal)}) vào giỏ!`;
     showToast('cartFilled', toastMsg);
-    renderDishDetailView();
+    // Cập nhật số lượng giỏ hàng trên header tại chỗ, không cần render lại toàn trang
+    const cartPill = document.querySelector('.product-detail-topbar .cart-pill span, .ai-header-icon-btn.cart-pill span');
+    if (cartPill) {
+      cartPill.textContent = cart.reduce((sum, c) => sum + c.quantity, 0);
+    }
   }
 }
 
@@ -1234,13 +1275,19 @@ function addDishFromDetailView(buyNow = false) {
 
 function openDishSafetyNutritionView(tab = 'nutrition') {
   if (!modalDish) return;
-  if (typeof saveCurrentViewScroll === 'function') {
+  if (currentView !== 'dish-detail' && currentView !== 'dish-safety-nutrition') {
+    previousViewBeforeDish = currentView || 'home';
+    if (typeof saveCurrentViewScroll === 'function') {
+      saveCurrentViewScroll();
+    }
+    viewScrollPositionsBeforeDish[previousViewBeforeDish] = window.scrollY;
+  } else if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
   }
   dishSafetyActiveTab = tab === 'safety' ? 'safety' : 'nutrition';
   dishAIQuestionsSeed = null; // Tạo mới ngẫu nhiên 2 dòng câu hỏi mỗi khi mở
   currentView = 'dish-safety-nutrition';
-  render();
+  render({ replace: true });
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-safety-nutrition', 0);
   } else {
@@ -1249,7 +1296,44 @@ function openDishSafetyNutritionView(tab = 'nutrition') {
 }
 
 function switchDishSafetyTab(tab) {
+  if (dishSafetyActiveTab === tab) return;
   dishSafetyActiveTab = tab;
+
+  const contentArea = document.querySelector('.sn-tab-content-area');
+  const tabsBar = document.querySelector('.sn-two-tabs-bar');
+
+  if (contentArea && tabsBar && modalDish) {
+    // 1. Cập nhật class active cho nút tab
+    const tabButtons = tabsBar.querySelectorAll('.sn-main-tab-btn');
+    tabButtons.forEach(btn => {
+      const onclickAttr = btn.getAttribute('onclick') || '';
+      if (onclickAttr.includes(`'${tab}'`) || onclickAttr.includes(`"${tab}"`)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // 2. Render nội dung tab tại chỗ: KHÔNG reload toàn trang, KHÔNG giật cuộn
+    const dish = (typeof DB !== 'undefined' && DB.isReady && modalDish.id && DB.getItemById(modalDish.id)) || modalDish;
+    const store = (typeof DB !== 'undefined' && DB.isReady && dish.restaurantId && restaurants.find(r => Number(r.id) === Number(dish.restaurantId))) || modalRestaurant;
+    const profile = getDishNutritionAndSafetyProfile(dish, store);
+    const dynNutri = getAdjustedNutritionBySelection(profile);
+
+    contentArea.innerHTML = dishSafetyActiveTab === 'nutrition'
+      ? renderDishNutritionDetailTab(dish, store, profile, dynNutri)
+      : renderDishSafetyCertificateTab(dish, store, profile);
+
+    // 3. Cập nhật hash router mượt mà
+    if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+      window.Router.syncUrl({ replace: true });
+    }
+    if (typeof window.refreshSmoothScroll === 'function') {
+      window.refreshSmoothScroll();
+    }
+    return;
+  }
+
   renderDishSafetyNutritionView();
 }
 
@@ -1258,7 +1342,7 @@ function backToProductDetailView() {
     saveCurrentViewScroll();
   }
   currentView = 'dish-detail';
-  render();
+  render({ replace: true });
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-detail', 0);
   } else {
@@ -1280,14 +1364,14 @@ function renderDishSafetyNutritionView() {
   const dynNutri = getAdjustedNutritionBySelection(profile);
 
   app.innerHTML = `
-    <div class="sn-deep-page fade-in">
+    <div class="dish-safety-nutrition-view-container sn-deep-page fade-in">
       <!-- Top Navigation -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="backToProductDetailView()" aria-label="Quay lại mặt hàng">
+        <button type="button" class="page-back-icon-btn" onclick="backToProductDetailView()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
-        <div class="page-nav-title">An Toàn & Dinh Dưỡng Chi Tiết</div>
-        <div style="width: 36px;"></div>
+        <div class="page-nav-title">An Toàn &amp; Dinh Dưỡng</div>
+        <div class="page-nav-spacer" aria-hidden="true"></div>
       </div>
 
       <!-- Mini Dish Summary Strip -->
@@ -1339,6 +1423,10 @@ function renderDishSafetyNutritionView() {
       <div class="bottom-spacer"></div>
     </div>
   `;
+
+  if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 // ── TAB 1: NGUYÊN LIỆU NẤU ĂN, DINH DƯỠNG ƯỚC TÍNH & THANH HỎI BẰNG AI ──
@@ -1640,6 +1728,10 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
       </div>
     </div>
   `;
+
+  if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 // ── TAB 2: ĐẢM BẢO AN TOÀN & GIẤY CHỨNG NHẬN VSATTP (LÀM MỚI CÁCH ĐÂY BAO LÂU) ──
@@ -1772,6 +1864,10 @@ function renderDishSafetyCertificateTab(dish, store, profile) {
       </div>
     </div>
   `;
+
+  if (typeof updateHeaderScrolledState === 'function') {
+    updateHeaderScrolledState();
+  }
 }
 
 function verifyCertificateLive(certCode, daysAgo) {
@@ -1797,6 +1893,122 @@ function handleDishAIInputKeydown(e) {
   }
 }
 
+function updateDishAIChatUIInPlace() {
+  const box = document.getElementById('sn-dish-ai-box');
+  if (!box || !modalDish) {
+    if (currentView === 'dish-safety-nutrition') {
+      renderDishSafetyNutritionView();
+    }
+    return;
+  }
+
+  const logs = (modalDish && dishAIChatLogs[modalDish.id]) ? dishAIChatLogs[modalDish.id] : [];
+  const thread = document.getElementById('sn-ai-thread');
+
+  if (thread) {
+    if (logs.length === 0 && !dishAIIsThinking) {
+      thread.className = 'sn-ai-thread is-empty';
+      thread.innerHTML = `
+        <div class="sn-ai-thread-empty">
+          <div class="sn-ai-empty-icon">🥗🤖</div>
+          <div class="sn-ai-empty-title">Chuyên Gia Dinh Dưỡng Sẵn Sàng</div>
+          <p class="sn-ai-empty-desc">
+            Giải đáp chi tiết về calo, chất đạm/béo, chế độ ăn (eat clean, gym, tiểu đường, dạ dày...) cho món <strong>${escapeHtml(modalDish.name)}</strong>.
+          </p>
+          <div class="sn-ai-empty-hint-tag">
+            💡 Nhấp vào câu hỏi gợi ý bên trên hoặc đặt câu hỏi bên dưới
+          </div>
+        </div>
+      `;
+    } else {
+      thread.className = 'sn-ai-thread';
+      let threadHtml = logs.map((entry, idx) => `
+        <div class="sn-ai-msg ${entry.role}">
+          <div class="sn-ai-msg-badge">${entry.role === 'user' ? '🧑‍🎓 Bạn hỏi' : '🤖 AI Dinh dưỡng trả lời'}</div>
+          <div class="sn-ai-msg-text">${entry.role === 'user' ? escapeHtml(entry.text) : formatAIMarkdown(entry.text)}</div>
+          ${entry.role === 'assistant' ? `
+            <button type="button" class="sn-ai-retry-btn" onclick="retryDishAIQuestion('${escapeHtml(modalDish.id)}', ${idx})" title="Hỏi lại câu hỏi này">
+              ${FluentIcons.sync} Hỏi lại
+            </button>
+          ` : ''}
+        </div>
+      `).join('');
+
+      if (dishAIIsThinking) {
+        threadHtml += `
+          <div class="sn-ai-msg assistant">
+            <div class="sn-ai-msg-badge">🤖 AI đang phân tích thành phần món ăn...</div>
+            <div class="ai-typing-indicator" style="margin-top:4px;"><span></span><span></span><span></span></div>
+          </div>
+        `;
+      }
+      thread.innerHTML = threadHtml;
+    }
+
+    requestAnimationFrame(() => {
+      thread.scrollTop = thread.scrollHeight;
+    });
+  }
+
+  // Cập nhật Aura sóng gợn
+  const aura = box.querySelector('.sn-dish-ai-aura');
+  if (aura) {
+    if (dishAIIsThinking) {
+      aura.classList.add('active');
+    } else {
+      aura.classList.remove('active');
+    }
+  }
+
+  // Cập nhật ô nhập input
+  const inputEl = document.getElementById('sn-dish-ai-input');
+  if (inputEl) {
+    inputEl.disabled = dishAIIsThinking;
+    if (!dishAIIsThinking && dishAIDraftQuestion === '') {
+      inputEl.value = '';
+    }
+  }
+
+  // Cập nhật nút Dừng / Gửi
+  const inputBar = box.querySelector('.sn-ai-input-bar');
+  if (inputBar) {
+    const existingStopBtn = inputBar.querySelector('.sn-ai-stop-btn');
+    const existingSendBtn = inputBar.querySelector('.sn-ai-send-btn');
+    if (dishAIIsThinking) {
+      if (existingSendBtn) {
+        existingSendBtn.outerHTML = `
+          <button
+            type="button"
+            class="sn-ai-stop-btn"
+            onclick="stopDishAIGeneration()"
+            title="Dừng hỏi AI (Esc)"
+          >
+            ⏹ Dừng
+          </button>
+        `;
+      }
+    } else {
+      if (existingStopBtn) {
+        existingStopBtn.outerHTML = `
+          <button
+            type="button"
+            class="sn-ai-send-btn"
+            onclick="submitDishAIQuestion()"
+          >
+            Hỏi AI ${FluentIcons.sparkleFilled}
+          </button>
+        `;
+      }
+    }
+  }
+
+  // Cập nhật trạng thái disabled cho các chip câu hỏi gợi ý
+  const chips = box.querySelectorAll('.sn-ai-chip');
+  chips.forEach(c => {
+    c.disabled = dishAIIsThinking;
+  });
+}
+
 function stopDishAIGeneration() {
   if (!dishAIIsThinking) return;
   dishAIIsThinking = false;
@@ -1809,9 +2021,7 @@ function stopDishAIGeneration() {
       logs.push({ role: 'assistant', text: '⏹ *Bạn đã dừng câu trả lời của AI.*' });
     }
   }
-  if (currentView === 'dish-safety-nutrition') {
-    renderDishSafetyNutritionView();
-  }
+  updateDishAIChatUIInPlace();
 }
 
 async function retryDishAIQuestion(dishId, idx) {
@@ -1875,13 +2085,7 @@ async function submitDishAIQuestion(overrideQ = null) {
   dishAIChatLogs[dish.id].push({ role: 'user', text: question });
 
   dishAIIsThinking = true;
-  if (currentView === 'dish-safety-nutrition') {
-    renderDishSafetyNutritionView();
-    setTimeout(() => {
-      const thread = document.getElementById('sn-ai-thread');
-      if (thread) thread.scrollTop = thread.scrollHeight;
-    }, 40);
-  }
+  updateDishAIChatUIInPlace();
 
   try {
     let answerText = '';
@@ -1902,15 +2106,7 @@ async function submitDishAIQuestion(overrideQ = null) {
     dishAIChatLogs[dish.id].push({ role: 'assistant', text: answerText });
   } finally {
     dishAIIsThinking = false;
-    if (currentView === 'dish-safety-nutrition') {
-      renderDishSafetyNutritionView();
-      setTimeout(() => {
-        const thread = document.getElementById('sn-ai-thread');
-        if (thread) thread.scrollTop = thread.scrollHeight;
-        const box = document.getElementById('sn-dish-ai-box');
-        if (box && window.innerWidth <= 960) box.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 40);
-    }
+    updateDishAIChatUIInPlace();
   }
 }
 

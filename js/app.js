@@ -227,7 +227,7 @@ function updateFloatingTopBar() {
       floatingBar.classList.add('has-activity-tabs');
       currentHtml = `
         <div class="floating-activity-header-group">
-          <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+          <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
             ${FluentIcons.arrowLeft}
           </button>
           <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
@@ -259,7 +259,7 @@ function initFloatingSearchBar() {
   inner.dataset.initialized = 'true';
   const hasActiveFilter = (activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0);
   inner.innerHTML = `
-    <button class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
+    <button type="button" class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
       ${FluentIcons.arrowLeft}
     </button>
     <div class="search-view-input-box">
@@ -276,7 +276,7 @@ function initFloatingSearchBar() {
         ${FluentIcons.dismiss}
       </span>
     </div>
-    <button class="search-filter-toggle-btn ${hasActiveFilter ? 'active' : ''}" id="floating-search-filter-btn" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
+    <button type="button" class="search-filter-toggle-btn ${hasActiveFilter ? 'active' : ''}" id="floating-search-filter-btn" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
       ${FluentIcons.filterRegular}
     </button>
   `;
@@ -325,9 +325,16 @@ function notifyScrollbarActivity() {
   }, SCROLLBAR_IDLE_DELAY);
 }
 
+let appScrollTicking = false;
 function handleAppScroll() {
-  updateFloatingTopBar();
   notifyScrollbarActivity();
+  if (!appScrollTicking) {
+    appScrollTicking = true;
+    requestAnimationFrame(() => {
+      updateFloatingTopBar();
+      appScrollTicking = false;
+    });
+  }
 }
 
 function handleAppMouseMove(e) {
@@ -425,7 +432,7 @@ function formatVND(num) {
 }
 
 // ── Main Render Router ──
-function render() {
+function render(options = { replace: false }) {
   // Sync active view state for AI chat (full-bleed layout)
   if (currentView === 'ai') {
     document.body.classList.add('view-ai-active');
@@ -490,6 +497,11 @@ function render() {
   } else if (typeof updateHeaderScrolledState === 'function') {
     updateHeaderScrolledState();
   }
+
+  // Đồng bộ hóa URL thanh địa chỉ (Hash Router SPA)
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl(options);
+  }
 }
 
 // ========================================
@@ -499,10 +511,10 @@ function render() {
 function renderBannerHtml(b, idx) {
   return `
     <div class="top-banner-card" onclick="onBannerClick(${idx})">
-      <button class="banner-arrow-btn prev" onclick="prevBanner(event)" title="Banner trước" aria-label="Banner trước">
+      <button type="button" class="banner-arrow-btn prev" onclick="prevBanner(event)" title="Banner trước" aria-label="Banner trước">
         ${FluentIcons.chevronLeft || FluentIcons.prev}
       </button>
-      <button class="banner-arrow-btn next" onclick="nextBanner(event)" title="Banner tiếp theo" aria-label="Banner tiếp theo">
+      <button type="button" class="banner-arrow-btn next" onclick="nextBanner(event)" title="Banner tiếp theo" aria-label="Banner tiếp theo">
         ${FluentIcons.chevronRight || FluentIcons.next}
       </button>
       <div class="top-banner-content">
@@ -571,10 +583,10 @@ function renderHomeView() {
           </div>
         </div>
         <div class="header-actions">
-          <button class="header-btn" onclick="openAIChatView()" title="Chat AI tư vấn & gợi ý món ăn" aria-label="Chat AI">
+          <button type="button" class="header-btn" onclick="openAIChatView()" title="Chat AI tư vấn & gợi ý món ăn" aria-label="Chat AI">
             ✨
           </button>
-          <button class="header-btn" onclick="openProfileView()" title="Hồ sơ & Danh bạ người dùng" aria-label="Tài khoản">
+          <button type="button" class="header-btn" onclick="openProfileView()" title="Hồ sơ & Danh bạ người dùng" aria-label="Tài khoản">
             ${FluentIcons.personRegular}
           </button>
         </div>
@@ -593,7 +605,7 @@ function renderHomeView() {
       <div class="search-bar fade-in fade-in-delay-2" onclick="openSearchView()">
         <span class="search-bar-icon">${FluentIcons.searchRegular}</span>
         <input type="text" placeholder="Tìm món ăn, quán ăn, loại mặt hàng..." readonly style="cursor: pointer;">
-        <button class="search-filter-btn" onclick="event.stopPropagation(); openSearchFilterModal();" aria-label="Bộ lọc">
+        <button type="button" class="search-filter-btn" onclick="event.stopPropagation(); openSearchFilterModal();" aria-label="Bộ lọc">
           ${FluentIcons.filterRegular}
         </button>
       </div>
@@ -632,10 +644,10 @@ function renderHomeView() {
       <div class="section-head">
         <div class="section-title">Khám phá nhanh</div>
         <div class="scroll-arrow-controls">
-          <button class="scroll-arrow-btn small" onclick="scrollHorizontally('home-categories-scroll', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+          <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-categories-scroll', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
             ${FluentIcons.chevronLeft}
           </button>
-          <button class="scroll-arrow-btn small" onclick="scrollHorizontally('home-categories-scroll', 220)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+          <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-categories-scroll', 220)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
             ${FluentIcons.chevronRight}
           </button>
         </div>
@@ -656,10 +668,10 @@ function renderHomeView() {
         <div class="section-title">Danh mục món ăn</div>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('food-categories-scroll', -320)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('food-categories-scroll', -320)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
               ${FluentIcons.chevronLeft}
             </button>
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('food-categories-scroll', 320)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('food-categories-scroll', 320)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
               ${FluentIcons.chevronRight}
             </button>
           </div>
@@ -688,10 +700,10 @@ function renderHomeView() {
         <div class="section-title">Quán ăn nổi bật gần bạn</div>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('restaurants-scroll', -420)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('restaurants-scroll', -420)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
               ${FluentIcons.chevronLeft}
             </button>
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('restaurants-scroll', 420)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('restaurants-scroll', 420)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
               ${FluentIcons.chevronRight}
             </button>
           </div>
@@ -722,7 +734,7 @@ function renderHomeView() {
               <div class="res-details-col">
                 <div class="res-name-row">
                   <div class="res-name-title">${escapeHtml(r.name)}</div>
-                  <span class="res-fav-btn" onclick="event.stopPropagation(); toggleFav(${r.id})" title="Lưu quán yêu thích">
+                  <span class="res-fav-btn ${r.fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${r.id})" title="Lưu quán yêu thích">
                     ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
                   </span>
                 </div>
@@ -755,10 +767,10 @@ function renderHomeView() {
                 <div class="res-dishes-header-row">
                   <div class="res-dishes-label">Món ngon nổi bật (${indexedDishes.length} món):</div>
                   <div class="scroll-arrow-controls">
-                    <button class="scroll-arrow-btn small" onclick="scrollHorizontally('${dishesScrollId}', -200)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+                    <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('${dishesScrollId}', -200)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
                       ${FluentIcons.chevronLeft}
                     </button>
-                    <button class="scroll-arrow-btn small" onclick="scrollHorizontally('${dishesScrollId}', 200)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+                    <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('${dishesScrollId}', 200)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
                       ${FluentIcons.chevronRight}
                     </button>
                   </div>
@@ -776,7 +788,7 @@ function renderHomeView() {
                             ${isOut ? `
                               <span style="font-size:10px; font-weight:700; color:#dc2626;">Hết hàng</span>
                             ` : `
-                              <button 
+                              <button type="button" 
                                 class="dish-add-btn" 
                                 onclick="event.stopPropagation(); openDishOptionModalByIndices(${r.id}, ${originalIdx})"
                                 title="Xem chi tiết & chọn option thêm vào giỏ"
@@ -1317,7 +1329,21 @@ function removeSearchFilterChip(filterKey) {
     activeFilters.ratingMin = 0;
     activeFilters.rating45 = false;
   }
-  renderSearchView();
+  const searchContainer = document.querySelector('.search-view-container');
+  if (searchContainer) {
+    document.querySelectorAll('.filter-pill-item').forEach(pill => {
+      const onclickAttr = pill.getAttribute('onclick') || '';
+      if (filterKey === 'ratingMin' && onclickAttr.includes('rating45')) {
+        pill.classList.remove('active');
+        pill.setAttribute('aria-pressed', 'false');
+      }
+    });
+    const slot = document.getElementById('active-filter-pills-slot');
+    if (slot) slot.innerHTML = renderActiveFilterPillsHtml();
+    updateSearchResultsOnly();
+  } else {
+    renderSearchView();
+  }
 }
 
 function renderActiveFilterPillsHtml() {
@@ -1379,7 +1405,7 @@ function renderSearchEmptyStateHtml() {
         Hãy thử tìm với từ khóa khác hoặc đặt lại khoảng cách &amp; bộ lọc để khám phá các quán ngon quanh bạn nhé!
       </div>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 14px;">
-        <button 
+        <button type="button" 
           onclick="resetAllFilters()" 
           style="padding: 10px 22px; background: var(--green-500); color: white; border: none; border-radius: var(--r-full); font-weight: 700; font-size: 13px; cursor: pointer;"
         >
@@ -1392,6 +1418,9 @@ function renderSearchEmptyStateHtml() {
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
   }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
 }
 
 function renderSearchView() {
@@ -1401,7 +1430,7 @@ function renderSearchView() {
     <div class="search-view fade-in">
       <!-- In-Page Search Header: Hiển thị tự nhiên, phẳng, không đổ bóng hay nổi tách biệt -->
       <div class="search-view-header">
-        <button class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
+        <button type="button" class="search-back-btn" onclick="openHomeView()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="search-view-input-box">
@@ -1420,7 +1449,7 @@ function renderSearchView() {
             </span>
           ` : ''}
         </div>
-        <button class="search-filter-toggle-btn ${(activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0) ? 'active' : ''}" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
+        <button type="button" class="search-filter-toggle-btn ${(activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0) ? 'active' : ''}" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
           ${FluentIcons.filterRegular}
         </button>
       </div>
@@ -1431,10 +1460,10 @@ function renderSearchView() {
           <span>Gợi ý món ngon & danh mục</span>
           <div style="display:inline-flex;align-items:center;gap:8px;">
             <div class="scroll-arrow-controls">
-              <button class="scroll-arrow-btn small" onclick="scrollHorizontally('visual-suggestions-scroll', -200)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+              <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('visual-suggestions-scroll', -200)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
                 ${FluentIcons.chevronLeft}
               </button>
-              <button class="scroll-arrow-btn small" onclick="scrollHorizontally('visual-suggestions-scroll', 200)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+              <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('visual-suggestions-scroll', 200)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
                 ${FluentIcons.chevronRight}
               </button>
             </div>
@@ -1460,39 +1489,41 @@ function renderSearchView() {
         <!-- Tìm kiếm quán ăn có gần hay không (Distance Chips) -->
         <div class="distance-chips-row">
           <span style="font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase;">Khoảng cách:</span>
-          <div class="dist-chip ${distanceFilter === null ? 'active' : ''}" onclick="setDistanceFilter(null)">
+          <div class="dist-chip ${distanceFilter === null ? 'active' : ''}" onclick="setDistanceFilter(null)" role="button" tabindex="0" aria-pressed="${distanceFilter === null}" onkeydown="if(event.key==='Enter'||event.key===' ')setDistanceFilter(null)">
             Tất cả
           </div>
-          <div class="dist-chip ${distanceFilter === 1 ? 'active' : ''}" onclick="setDistanceFilter(1)">
+          <div class="dist-chip ${distanceFilter === 1 ? 'active' : ''}" onclick="setDistanceFilter(1)" role="button" tabindex="0" aria-pressed="${distanceFilter === 1}" onkeydown="if(event.key==='Enter'||event.key===' ')setDistanceFilter(1)">
             📍 &lt; 1 km (Đi bộ)
           </div>
-          <div class="dist-chip ${distanceFilter === 2 ? 'active' : ''}" onclick="setDistanceFilter(2)">
+          <div class="dist-chip ${distanceFilter === 2 ? 'active' : ''}" onclick="setDistanceFilter(2)" role="button" tabindex="0" aria-pressed="${distanceFilter === 2}" onkeydown="if(event.key==='Enter'||event.key===' ')setDistanceFilter(2)">
             🛵 &lt; 2 km (Gần bạn)
           </div>
-          <div class="dist-chip ${distanceFilter === 5 ? 'active' : ''}" onclick="setDistanceFilter(5)">
+          <div class="dist-chip ${distanceFilter === 5 ? 'active' : ''}" onclick="setDistanceFilter(5)" role="button" tabindex="0" aria-pressed="${distanceFilter === 5}" onkeydown="if(event.key==='Enter'||event.key===' ')setDistanceFilter(5)">
             🚀 &lt; 5 km (Toàn vùng)
           </div>
         </div>
 
         <!-- Filter Pills Row -->
         <div class="filter-pills-row">
-          <div class="filter-pill-item ${activeFilters.near ? 'active' : ''}" onclick="toggleFilter('near')">
+          <div class="filter-pill-item ${activeFilters.near ? 'active' : ''}" onclick="toggleFilter('near')" role="button" tabindex="0" aria-pressed="${Boolean(activeFilters.near)}" onkeydown="if(event.key==='Enter'||event.key===' ')toggleFilter('near')">
             <span>📍 Gần nhất</span>
           </div>
-          <div class="filter-pill-item ${activeFilters.rating45 ? 'active' : ''}" onclick="toggleFilter('rating45')">
+          <div class="filter-pill-item ${activeFilters.rating45 ? 'active' : ''}" onclick="toggleFilter('rating45')" role="button" tabindex="0" aria-pressed="${Boolean(activeFilters.rating45)}" onkeydown="if(event.key==='Enter'||event.key===' ')toggleFilter('rating45')">
             <span>⭐ Đánh giá cao (4.8+)</span>
           </div>
-          <div class="filter-pill-item ${activeFilters.freeship ? 'active' : ''}" onclick="toggleFilter('freeship')">
+          <div class="filter-pill-item ${activeFilters.freeship ? 'active' : ''}" onclick="toggleFilter('freeship')" role="button" tabindex="0" aria-pressed="${Boolean(activeFilters.freeship)}" onkeydown="if(event.key==='Enter'||event.key===' ')toggleFilter('freeship')">
             <span>🚚 Freeship 0đ</span>
           </div>
-          <div class="filter-pill-item ${activeFilters.budget ? 'active' : ''}" onclick="toggleFilter('budget')">
+          <div class="filter-pill-item ${activeFilters.budget ? 'active' : ''}" onclick="toggleFilter('budget')" role="button" tabindex="0" aria-pressed="${Boolean(activeFilters.budget)}" onkeydown="if(event.key==='Enter'||event.key===' ')toggleFilter('budget')">
             <span>💵 Giá bình dân ($)</span>
           </div>
-          <div class="filter-pill-item ${activeFilters.voucher ? 'active' : ''}" onclick="toggleFilter('voucher')">
+          <div class="filter-pill-item ${activeFilters.voucher ? 'active' : ''}" onclick="toggleFilter('voucher')" role="button" tabindex="0" aria-pressed="${Boolean(activeFilters.voucher)}" onkeydown="if(event.key==='Enter'||event.key===' ')toggleFilter('voucher')">
             <span>${FluentIcons.ticketHorizontalFilled} Có Voucher</span>
           </div>
         </div>
-        ${renderActiveFilterPillsHtml()}
+        <div id="active-filter-pills-slot">
+          ${renderActiveFilterPillsHtml()}
+        </div>
       </div>
 
       <!-- Results Summary Bar -->
@@ -1580,7 +1611,7 @@ function renderRestaurantDetailCard(r) {
         <div class="res-details-col">
           <div class="res-name-row">
             <div class="res-name-title">${escapeHtml(r.name)}</div>
-            <span class="res-fav-btn" onclick="toggleFav(${r.id})" title="Lưu quán yêu thích">
+            <span class="res-fav-btn ${r.fav ? 'active' : ''}" onclick="toggleFav(${r.id})" title="Lưu quán yêu thích">
               ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
             </span>
           </div>
@@ -1629,10 +1660,10 @@ function renderRestaurantDetailCard(r) {
         <div class="res-dishes-header-row">
           <div class="res-dishes-label">Món ngon nổi bật (${r.relatedDishes.length} món):</div>
           <div class="scroll-arrow-controls">
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('res-dishes-scroll-${r.id}', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('res-dishes-scroll-${r.id}', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
               ${FluentIcons.chevronLeft}
             </button>
-            <button class="scroll-arrow-btn small" onclick="scrollHorizontally('res-dishes-scroll-${r.id}', 220)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('res-dishes-scroll-${r.id}', 220)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
               ${FluentIcons.chevronRight}
             </button>
           </div>
@@ -1650,7 +1681,7 @@ function renderRestaurantDetailCard(r) {
                     ${isOut ? `
                       <span style="font-size:10px; font-weight:700; color:#dc2626;">Hết hàng</span>
                     ` : `
-                      <button 
+                      <button type="button" 
                         class="dish-add-btn" 
                         onclick="event.stopPropagation(); openDishOptionModalByIndices(${r.id}, ${originalIdx})"
                         title="Xem chi tiết & chọn option thêm vào giỏ"
@@ -1670,6 +1701,9 @@ function renderRestaurantDetailCard(r) {
 
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
 }
 
@@ -1808,10 +1842,10 @@ function renderDishOptionModal() {
     <!-- Modal Dish Header Image -->
     <div class="dish-modal-header">
       <img class="dish-modal-hero-img" src="${modalDish.image}" alt="${modalDish.name}">
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
-      <button class="dish-modal-fav-btn" onclick="toggleFav(${modalRestaurant ? modalRestaurant.id : 1})" title="Yêu thích">
+      <button type="button" class="dish-modal-fav-btn ${(modalRestaurant && modalRestaurant.fav) ? 'active' : ''}" onclick="toggleFav(${modalRestaurant ? modalRestaurant.id : 1})" title="Yêu thích">
         ${(modalRestaurant && modalRestaurant.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
       </button>
     </div>
@@ -1916,16 +1950,16 @@ function renderDishOptionModal() {
     <!-- Modal Footer Action Bar (Quantity Stepper & Add to Cart) -->
     <div class="dish-modal-footer">
       <div class="dish-modal-qty-stepper">
-        <button class="stepper-btn" onclick="changeModalQty(-1)" aria-label="Giảm">
+        <button type="button" class="stepper-btn" onclick="changeModalQty(-1)" aria-label="Giảm">
           ${FluentIcons.subtractRegular}
         </button>
         <span class="stepper-count" id="modal-qty-display">${modalQty}</span>
-        <button class="stepper-btn" onclick="changeModalQty(1)" aria-label="Tăng">
+        <button type="button" class="stepper-btn" onclick="changeModalQty(1)" aria-label="Tăng">
           ${FluentIcons.addRegular}
         </button>
       </div>
 
-      <button class="dish-modal-submit-btn" onclick="confirmAddOptionToCart()">
+      <button type="button" class="dish-modal-submit-btn" onclick="confirmAddOptionToCart()">
         <span>Thêm vào giỏ</span>
         <span id="modal-submit-price">${formatVND(currentTotal)}</span>
       </button>
@@ -2260,7 +2294,7 @@ function openDeliveryInfoModal() {
         ${FluentIcons.locationRegular}
         <span>Người nhận & Địa chỉ giao hàng</span>
       </div>
-      <button class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
+      <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
     </div>
@@ -2779,6 +2813,9 @@ function renderVectorDeliveryMapFallback(container, lat, lng) {
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
   }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
 }
 
 // ── Định vị GPS & Hoàn chỉnh chức năng Lấy Vị Trí Hiện Tại ──
@@ -3115,7 +3152,7 @@ function renderCartView() {
     <div class="cart-view-container fade-in">
       <!-- Top Navigation Header -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Giỏ Hàng (${totalItems} món)</div>
@@ -3130,7 +3167,7 @@ function renderCartView() {
           </div>
           <div class="search-empty-title">Giỏ hàng của bạn đang trống</div>
           <div class="search-empty-sub">Hãy khám phá các món ăn ngon lành và thêm vào giỏ nhé!</div>
-          <button 
+          <button type="button" 
             onclick="openSearchView()" 
             style="margin-top: 20px; padding: 12px 24px; background: var(--green-500); color: white; border: none; border-radius: var(--r-full); font-weight: 700; font-size: 14px; cursor: pointer;"
           >
@@ -3150,7 +3187,7 @@ function renderCartView() {
                   <span>${FluentIcons.clockRegular} Giao 15-20 phút</span>
                 </div>
               </div>
-              <button 
+              <button type="button" 
                 onclick="openSearchView()" 
                 style="font-size: 12px; font-weight: 700; color: var(--green-600); cursor: pointer;"
               >
@@ -3180,16 +3217,16 @@ function renderCartView() {
                   
                   <div class="cart-item-actions">
                     <div class="dish-modal-qty-stepper" style="padding: 2px;">
-                      <button class="stepper-btn" style="width: 26px; height: 26px;" onclick="updateCartItemQty(${idx}, -1)">
+                      <button type="button" class="stepper-btn" style="width: 26px; height: 26px;" onclick="updateCartItemQty(${idx}, -1)">
                         ${FluentIcons.subtractRegular}
                       </button>
                       <span class="stepper-count" style="font-size: 12px; min-width: 18px;">${item.quantity}</span>
-                      <button class="stepper-btn" style="width: 26px; height: 26px;" onclick="updateCartItemQty(${idx}, 1)">
+                      <button type="button" class="stepper-btn" style="width: 26px; height: 26px;" onclick="updateCartItemQty(${idx}, 1)">
                         ${FluentIcons.addRegular}
                       </button>
                     </div>
 
-                    <button class="cart-item-delete-btn" onclick="removeCartItem(${idx})" title="Xóa món">
+                    <button type="button" class="cart-item-delete-btn" onclick="removeCartItem(${idx})" title="Xóa món">
                       ${FluentIcons.deleteRegular}
                     </button>
                   </div>
@@ -3211,20 +3248,21 @@ function renderCartView() {
               id="cart-voucher-input" 
               placeholder="Nhập mã: PTITNGON50 hoặc FREESHIP"
               value="${appliedVoucher ? appliedVoucher.code : ''}"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();handleApplyVoucherInput();}"
             >
-            <button class="cart-voucher-apply-btn" onclick="handleApplyVoucherInput()">
+            <button type="button" class="cart-voucher-apply-btn" onclick="handleApplyVoucherInput()">
               ${appliedVoucher ? 'Hủy' : 'Áp dụng'}
             </button>
           </div>
           ${appliedVoucher ? `
-            <div style="font-size: 12px; color: var(--green-600); font-weight: 600; margin-top: 6px; padding-left: 4px;">
+            <div class="cart-voucher-feedback" style="font-size: 12px; color: var(--green-600); font-weight: 600; margin-top: 6px; padding-left: 4px;">
               🎉 Đã áp dụng mã ${appliedVoucher.code}: Giảm ${formatVND(discountAmount)}
             </div>
           ` : (typeof dbmRenderCartVoucherChipsHtml === 'function' ? dbmRenderCartVoucherChipsHtml(cart) : `
-            <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
-              <span class="note-chip" style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;" onclick="applyPromoCode('HUNGCHIENGION')">${FluentIcons.fireFilled} HUNGCHIENGION (-50K)</span>
-              <span class="note-chip" onclick="applyPromoCode('PTITNGON50')">${FluentIcons.flashFilled} PTITNGON50 (-50%)</span>
-              <span class="note-chip" onclick="applyPromoCode('FREESHIP')">🚚 FREESHIP (0đ)</span>
+            <div class="cart-voucher-feedback" style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+              <button type="button" class="note-chip" style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;" onclick="applyPromoCode('HUNGCHIENGION')">${FluentIcons.fireFilled} HUNGCHIENGION (-50K)</button>
+              <button type="button" class="note-chip" onclick="applyPromoCode('PTITNGON50')">${FluentIcons.flashFilled} PTITNGON50 (-50%)</button>
+              <button type="button" class="note-chip" onclick="applyPromoCode('FREESHIP')">🚚 FREESHIP (0đ)</button>
             </div>
           `)}
         </div>
@@ -3256,7 +3294,7 @@ function renderCartView() {
 
             <!-- Sticky Bottom Checkout Button -->
             <div class="cart-bottom-bar">
-              <button class="cart-checkout-btn" onclick="openCheckoutView()">
+              <button type="button" class="cart-checkout-btn" onclick="openCheckoutView()">
                 <div style="text-align: left;">
                   <div style="font-size: 11px; font-weight: 500; opacity: 0.9;">Tổng cộng (${totalItems} món)</div>
                   <div style="font-size: 17px; font-weight: 800;">${formatVND(finalTotal)}</div>
@@ -3273,19 +3311,133 @@ function renderCartView() {
   `;
 }
 
+function updateCartViewInPlace() {
+  const cartContainer = document.querySelector('.cart-view-container');
+  if (!cartContainer) {
+    if (currentView === 'cart') renderCartView();
+    return;
+  }
+
+  // Nếu giỏ hàng trống, render lại view để hiển thị màn hình Empty Cart
+  if (cart.length === 0) {
+    renderCartView();
+    return;
+  }
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const shippingFee = subtotal > 150000 ? 0 : 15000;
+  const discountAmount = (typeof computeVoucherDiscount === 'function')
+    ? computeVoucherDiscount(appliedVoucher, subtotal, cart)
+    : 0;
+  const finalTotal = Math.max(0, subtotal + shippingFee - discountAmount);
+
+  // 1. Cập nhật tiêu đề giỏ hàng
+  const titleEl = cartContainer.querySelector('.page-nav-title');
+  if (titleEl) titleEl.textContent = `Giỏ Hàng (${totalItems} món)`;
+
+  // 2. Cập nhật khối Voucher (.cart-voucher-section)
+  const voucherSection = cartContainer.querySelector('.cart-voucher-section');
+  if (voucherSection) {
+    const input = voucherSection.querySelector('.cart-voucher-input');
+    const applyBtn = voucherSection.querySelector('.cart-voucher-apply-btn');
+    if (input && document.activeElement !== input) {
+      input.value = appliedVoucher ? appliedVoucher.code : '';
+    }
+    if (applyBtn) {
+      applyBtn.textContent = appliedVoucher ? 'Hủy' : 'Áp dụng';
+    }
+
+    const card = voucherSection.querySelector('.cart-voucher-card');
+    if (card) {
+      const voucherSubHtml = appliedVoucher ? `
+        <div class="cart-voucher-feedback" style="font-size: 12px; color: var(--green-600); font-weight: 600; margin-top: 6px; padding-left: 4px;">
+          🎉 Đã áp dụng mã ${appliedVoucher.code}: Giảm ${formatVND(discountAmount)}
+        </div>
+      ` : (typeof dbmRenderCartVoucherChipsHtml === 'function' ? dbmRenderCartVoucherChipsHtml(cart) : `
+        <div class="cart-voucher-feedback" style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+          <button type="button" class="note-chip" style="background:#fff1f0;border-color:#ffa39e;color:#cf1322;" onclick="applyPromoCode('HUNGCHIENGION')">${FluentIcons.fireFilled} HUNGCHIENGION (-50K)</button>
+          <button type="button" class="note-chip" onclick="applyPromoCode('PTITNGON50')">${FluentIcons.flashFilled} PTITNGON50 (-50%)</button>
+          <button type="button" class="note-chip" onclick="applyPromoCode('FREESHIP')">🚚 FREESHIP (0đ)</button>
+        </div>
+      `);
+
+      const oldFeedback = voucherSection.querySelector('.cart-voucher-feedback, div[style*="font-size: 12px"], div[style*="display: flex; gap: 6px; margin-top: 8px"]');
+      if (oldFeedback) {
+        oldFeedback.outerHTML = voucherSubHtml;
+      } else {
+        card.insertAdjacentHTML('afterend', voucherSubHtml);
+      }
+    }
+  }
+
+  // 3. Cập nhật thẻ Chi tiết thanh toán (.cart-bill-card)
+  const billCard = cartContainer.querySelector('.cart-bill-card');
+  if (billCard) {
+    billCard.innerHTML = `
+      <div class="bill-title">Chi tiết thanh toán</div>
+      <div class="bill-row">
+        <span>Tạm tính (${totalItems} món)</span>
+        <span>${formatVND(subtotal)}</span>
+      </div>
+      <div class="bill-row">
+        <span>Phí giao hàng</span>
+        <span>${shippingFee === 0 ? '<strong style="color: var(--green-600);">Miễn phí</strong>' : formatVND(shippingFee)}</span>
+      </div>
+      ${discountAmount > 0 ? `
+        <div class="bill-row discount">
+          <span>Khuyến mãi Voucher</span>
+          <span>-${formatVND(discountAmount)}</span>
+        </div>
+      ` : ''}
+      <div class="bill-row total-row">
+        <span>Tổng thanh toán</span>
+        <span class="bill-total-price">${formatVND(finalTotal)}</span>
+      </div>
+    `;
+  }
+
+  // 4. Cập nhật nút Thanh toán cố định (.cart-bottom-bar)
+  const checkoutBtn = cartContainer.querySelector('.cart-checkout-btn');
+  if (checkoutBtn) {
+    const subInfo = checkoutBtn.querySelector('div:first-child');
+    if (subInfo) {
+      subInfo.innerHTML = `
+        <div style="font-size: 11px; font-weight: 500; opacity: 0.9;">Tổng cộng (${totalItems} món)</div>
+        <div style="font-size: 17px; font-weight: 800;">${formatVND(finalTotal)}</div>
+      `;
+    }
+  }
+
+  updateFloatingCartBar();
+}
+
 function updateCartItemQty(idx, delta) {
   if (!cart[idx]) return;
   const newQty = cart[idx].quantity + delta;
   if (newQty <= 0) {
     removeCartItem(idx);
+    return;
+  }
+  cart[idx].quantity = newQty;
+  cart[idx].totalPrice = cart[idx].unitPrice * newQty;
+  if (typeof DB !== 'undefined' && DB.isReady) {
+    DB.saveCurrentUserCart(cart);
+  }
+
+  // Cập nhật DOM giỏ hàng tại chỗ không reload toàn trang
+  const cartContainer = document.querySelector('.cart-view-container');
+  const cartRows = document.querySelectorAll('.cart-item-card');
+  if (cartContainer && cartRows[idx]) {
+    const row = cartRows[idx];
+    const qtyEl = row.querySelector('.stepper-count');
+    const priceEl = row.querySelector('.cart-item-price');
+    if (qtyEl) qtyEl.textContent = newQty;
+    if (priceEl) priceEl.textContent = formatVND(cart[idx].totalPrice);
+
+    updateCartViewInPlace();
   } else {
-    cart[idx].quantity = newQty;
-    cart[idx].totalPrice = cart[idx].unitPrice * newQty;
-    if (typeof DB !== 'undefined' && DB.isReady) {
-      DB.saveCurrentUserCart(cart);
-    }
     renderCartView();
-    updateFloatingCartBar();
   }
 }
 
@@ -3296,16 +3448,44 @@ function removeCartItem(idx) {
   if (typeof DB !== 'undefined' && DB.isReady) {
     DB.saveCurrentUserCart(cart);
   }
-  renderCartView();
-  updateFloatingCartBar();
   showToast('deleteRegular', `Đã xóa "${name}" khỏi giỏ hàng`);
+
+  const cartContainer = document.querySelector('.cart-view-container');
+  if (cartContainer && cart.length > 0) {
+    const itemsSection = cartContainer.querySelector('.cart-items-section');
+    const rows = itemsSection ? itemsSection.querySelectorAll('.cart-item-card') : [];
+    if (rows[idx]) {
+      rows[idx].remove();
+    }
+    // Cập nhật lại index trong các hàng còn lại
+    if (itemsSection) {
+      itemsSection.querySelectorAll('.cart-item-card').forEach((card, newIdx) => {
+        const stepperBtns = card.querySelectorAll('.stepper-btn');
+        if (stepperBtns.length >= 2) {
+          stepperBtns[0].setAttribute('onclick', `updateCartItemQty(${newIdx}, -1)`);
+          stepperBtns[1].setAttribute('onclick', `updateCartItemQty(${newIdx}, 1)`);
+        }
+        const deleteBtn = card.querySelector('.cart-item-delete-btn');
+        if (deleteBtn) {
+          deleteBtn.setAttribute('onclick', `removeCartItem(${newIdx})`);
+        }
+      });
+    }
+    updateCartViewInPlace();
+  } else {
+    renderCartView();
+  }
 }
 
 function handleApplyVoucherInput() {
   if (appliedVoucher) {
     appliedVoucher = null;
     showToast('tagRegular', 'Đã hủy áp dụng mã giảm giá');
-    renderCartView();
+    if (currentView === 'cart') {
+      updateCartViewInPlace();
+    } else {
+      renderCartView();
+    }
     return;
   }
   const input = document.getElementById('cart-voucher-input');
@@ -3326,7 +3506,9 @@ function applyPromoCode(code) {
   appliedVoucher = promo.applied;
   showToast(promo.icon || 'giftRegular', promo.toast);
   if (currentView === 'cart') {
-    renderCartView();
+    updateCartViewInPlace();
+  } else if (currentView === 'checkout') {
+    renderCheckoutView();
   }
 }
 
@@ -3360,7 +3542,7 @@ function renderCheckoutView() {
     <div class="checkout-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openCartView()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="openCartView()" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Xác Nhận Đơn Hàng</div>
@@ -3554,7 +3736,7 @@ function renderCheckoutView() {
                   ${appliedVoucher ? 'disabled' : ''}
                   style="text-transform: uppercase;"
                 >
-                <button 
+                <button type="button" 
                   class="cart-voucher-btn ${appliedVoucher ? 'applied' : ''}" 
                   onclick="handleApplyCheckoutVoucher()"
                 >
@@ -3636,7 +3818,7 @@ function renderCheckoutView() {
 
           <!-- Sticky Place Order Button -->
           <div class="cart-bottom-bar">
-            <button class="cart-checkout-btn" onclick="handleCheckoutPrimaryAction(${finalTotal})">
+            <button type="button" class="cart-checkout-btn" onclick="handleCheckoutPrimaryAction(${finalTotal})">
               <div style="text-align: left;">
                 <div style="font-size: 11px; font-weight: 500; opacity: 0.9;">
                   ${selectedPaymentMethod === 'qr'
@@ -3663,6 +3845,9 @@ function renderCheckoutView() {
 
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
 }
 
@@ -3817,11 +4002,45 @@ function openActivityView() {
 }
 
 function switchActivityFilter(filter) {
+  if (activityFilter === filter && !viewingOrderDetailId) return;
   activityFilter = filter;
-  viewingOrderDetailId = null;
-  renderActivityView();
+
+  // Nếu đang xem chi tiết đơn hàng hoặc chưa có container activity trên DOM, render đầy đủ lại view
+  const activityContainer = document.querySelector('.activity-view-container');
+  const pastOrdersListEl = document.querySelector('.past-orders-list');
+  if (viewingOrderDetailId || !activityContainer || !pastOrdersListEl) {
+    viewingOrderDetailId = null;
+    renderActivityView();
+    if (typeof updateFloatingTopBar === 'function') {
+      updateFloatingTopBar();
+    }
+    return;
+  }
+
+  // Cập nhật trạng thái active trên các nút tab (kể cả floating bar nếu có) ngay lập tức mà không reload trang
+  document.querySelectorAll('.activity-tab-btn').forEach(btn => {
+    const fn = btn.getAttribute('onclick') || '';
+    if (fn.includes(`'${filter}'`) || fn.includes(`"${filter}"`)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // Lọc danh sách đơn hàng theo tab vừa chọn
+  const filteredOrders = ordersList.filter(o => {
+    if (activityFilter === 'all') return true;
+    return o.categoryStatus === activityFilter;
+  });
+
+  // Cập nhật mượt mà danh sách đơn hàng với hiệu ứng: Cái biến mất thì fade/exit, cái ở lại thì giữ nguyên & lướt êm ái
+  animateSwitchActivityOrders(pastOrdersListEl, filteredOrders, activityFilter);
+
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
 }
 
@@ -3976,7 +4195,26 @@ function callRestaurant(phone, resName) {
 
 function setRatingScore(score) {
   userRatingScore = score;
-  renderActivityView();
+  const starBtns = document.querySelectorAll('.star-tap-btn');
+  const labelEl = document.querySelector('.rating-score-label');
+  const ratingDescMap = {
+    1: 'Rất không hài lòng 😞',
+    2: 'Cần cải thiện thêm 😐',
+    3: 'Tạm ổn, đúng kỳ vọng 🙂',
+    4: 'Hài lòng, món ngon 😊',
+    5: 'Rất tuyệt vời, đồ ăn chuẩn vị! 🌟'
+  };
+  if (starBtns.length > 0) {
+    starBtns.forEach((btn, idx) => {
+      const s = idx + 1;
+      const isFilled = s <= score;
+      btn.classList.toggle('active', isFilled);
+      btn.innerHTML = isFilled ? FluentIcons.starFilled : FluentIcons.starRegular;
+    });
+    if (labelEl) labelEl.textContent = ratingDescMap[score] || `${score} sao`;
+  } else {
+    renderActivityView();
+  }
 }
 
 function toggleRatingTag(tag) {
@@ -3986,7 +4224,16 @@ function toggleRatingTag(tag) {
   } else {
     userRatingTags.push(tag);
   }
-  renderActivityView();
+  const tagChips = document.querySelectorAll('.rating-tag-chip');
+  if (tagChips.length > 0) {
+    tagChips.forEach(chip => {
+      if (chip.innerText.trim() === tag) {
+        chip.classList.toggle('active', userRatingTags.includes(tag));
+      }
+    });
+  } else {
+    renderActivityView();
+  }
 }
 
 function submitUserReview(orderId) {
@@ -4076,6 +4323,279 @@ function renderActivityTabsBarHtml(isFloating = false) {
   `;
 }
 
+function renderSinglePastOrderCardHtml(order) {
+  const isDelivering = order.categoryStatus === 'delivering';
+  const isCompleted = order.categoryStatus === 'completed';
+  const isCancelled = order.categoryStatus === 'cancelled';
+
+  const badgeClass = isDelivering ? 'delivering' : (isCompleted ? 'completed' : 'cancelled');
+  const badgeText = isDelivering
+    ? `<span class="pulse-dot"></span> Đang giao`
+    : (isCompleted ? `Giao thành công` : `Đã hủy đơn`);
+
+  const itemsSummary = order.items.map(it => `${it.quantity}x ${it.dishName || it.name}`).join(' • ');
+
+  return `
+    <div class="past-order-card" data-order-id="${order.orderId}" onclick="viewOrderDetail('${order.orderId}')" style="cursor: pointer;">
+      <div class="past-order-head">
+        <div>
+          <div class="past-order-res">${order.resName}</div>
+          <div style="font-size: 11px; color: var(--gray-400); margin-top: 2px;">
+            Mã đơn: <strong style="color: var(--gray-700);">${order.orderId}</strong> • ${order.orderTime}
+          </div>
+        </div>
+        <span class="past-order-status-badge ${badgeClass}">${badgeText}</span>
+      </div>
+
+      <!-- Dishes Summary -->
+      <div style="font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; line-height: 1.4;">
+        ${itemsSummary}
+      </div>
+
+      <!-- Recipient & Address -->
+      <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">
+        ${FluentIcons.locationRegular}
+        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          ${order.recipientName} • ${order.deliveryAddress}
+        </span>
+      </div>
+
+      <!-- Price & Action Buttons -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
+        <div style="font-size: 15px; font-weight: 800; color: var(--green-600);">
+          ${formatVND(order.totalAmount)}
+        </div>
+        <div class="past-order-actions" onclick="event.stopPropagation()">
+          ${isDelivering ? `
+            <button type="button" class="past-order-btn primary" onclick="viewOrderDetail('${order.orderId}')">
+              Theo dõi trực tiếp ${FluentIcons.truckRegular}
+            </button>
+          ` : isCompleted ? `
+            <button type="button" class="past-order-btn secondary" onclick="viewOrderDetail('${order.orderId}')">
+              Xem chi tiết
+            </button>
+            <button type="button" class="past-order-btn primary" onclick="reorderOrder('${order.orderId}')">
+              Đặt lại
+            </button>
+          ` : `
+            <button type="button" class="past-order-btn secondary" onclick="viewOrderDetail('${order.orderId}')">
+              Xem chi tiết
+            </button>
+            <button type="button" class="past-order-btn primary" onclick="reorderOrder('${order.orderId}')" title="Đặt lại đơn/combo đã hủy này">
+              Đặt lại
+            </button>
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEmptyOrdersHtml(filter = activityFilter) {
+  const filterLabel = filter === 'delivering' ? 'Đang giao' : filter === 'completed' ? 'Đã giao' : filter === 'cancelled' ? 'Đã hủy' : 'Tất cả';
+  return `
+    <div class="activity-empty-state empty-enter" style="text-align: center; padding: 60px 20px;">
+      <div style="color: var(--gray-400); display: flex; justify-content: center; margin-bottom: 12px;">
+        ${FluentIcons.receiptRegular}
+      </div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px;">
+        Chưa có đơn hàng nào
+      </div>
+      <div class="empty-filter-desc" style="font-size: 13px; color: var(--gray-500); margin-bottom: 20px;">
+        Không có đơn hàng nào trong mục "${filterLabel}".
+      </div>
+      <button type="button" class="btn-primary-large" onclick="openHomeView()" style="max-width: 240px; margin: 0 auto;">
+        Khám phá món ngon ngay
+      </button>
+    </div>
+  `;
+}
+
+function renderPastOrdersListHtml(filteredOrders, filter = activityFilter) {
+  if (!filteredOrders || filteredOrders.length === 0) {
+    return renderEmptyOrdersHtml(filter);
+  }
+  return filteredOrders.map(order => renderSinglePastOrderCardHtml(order)).join('');
+}
+
+function animateSwitchActivityOrders(pastOrdersListEl, targetOrders, filter) {
+  if (window._activityTabAnimTimeout) {
+    clearTimeout(window._activityTabAnimTimeout);
+    window._activityTabAnimTimeout = null;
+  }
+
+  // Dọn dẹp ngay các thẻ đang dở dang hiệu ứng exit nếu người dùng nhấn tab liên tục
+  const pendingExitCards = pastOrdersListEl.querySelectorAll('.past-order-card-exit');
+  pendingExitCards.forEach(c => c.remove());
+
+  const currentEmptyEl = pastOrdersListEl.querySelector('.activity-empty-state');
+  const currentCards = Array.from(pastOrdersListEl.querySelectorAll('.past-order-card'));
+
+  // 1. Trường hợp danh sách đích không có đơn hàng nào
+  if (!targetOrders || targetOrders.length === 0) {
+    if (currentEmptyEl) {
+      const descEl = currentEmptyEl.querySelector('.empty-filter-desc');
+      const filterLabel = filter === 'delivering' ? 'Đang giao' : filter === 'completed' ? 'Đã giao' : filter === 'cancelled' ? 'Đã hủy' : 'Tất cả';
+      if (descEl) descEl.textContent = `Không có đơn hàng nào trong mục "${filterLabel}".`;
+      return;
+    }
+
+    if (currentCards.length > 0) {
+      // Hiệu ứng các card biến mất
+      currentCards.forEach(card => card.classList.add('past-order-card-exit'));
+      window._activityTabAnimTimeout = setTimeout(() => {
+        pastOrdersListEl.innerHTML = renderEmptyOrdersHtml(filter);
+        if (typeof window.refreshSmoothScroll === 'function') {
+          window.refreshSmoothScroll();
+        }
+      }, 200);
+      return;
+    }
+
+    pastOrdersListEl.innerHTML = renderEmptyOrdersHtml(filter);
+    return;
+  }
+
+  // 2. Trường hợp trước đó rỗng, giờ có đơn hàng
+  if (currentEmptyEl) {
+    currentEmptyEl.style.opacity = '0';
+    currentEmptyEl.style.transform = 'translateY(-6px) scale(0.96)';
+    window._activityTabAnimTimeout = setTimeout(() => {
+      pastOrdersListEl.innerHTML = renderPastOrdersListHtml(targetOrders, filter);
+      const newCards = pastOrdersListEl.querySelectorAll('.past-order-card');
+      newCards.forEach((c, idx) => {
+        c.classList.add('past-order-card-enter-init');
+        setTimeout(() => {
+          c.classList.remove('past-order-card-enter-init');
+          c.classList.add('past-order-card-enter-active');
+        }, idx * 30 + 15);
+      });
+      if (typeof window.refreshSmoothScroll === 'function') {
+        window.refreshSmoothScroll();
+      }
+    }, 180);
+    return;
+  }
+
+  // 3. Trường hợp chuyển đổi giữa các danh sách có đơn hàng
+  const targetMap = new Map();
+  targetOrders.forEach(o => targetMap.set(o.orderId, o));
+
+  const currentMap = new Map();
+  currentCards.forEach(c => currentMap.set(c.getAttribute('data-order-id'), c));
+
+  const toRemove = [];
+  const toStay = [];
+  currentCards.forEach(card => {
+    const id = card.getAttribute('data-order-id');
+    if (targetMap.has(id)) {
+      toStay.push(card);
+    } else {
+      toRemove.push(card);
+    }
+  });
+
+  const toAdd = targetOrders.filter(o => !currentMap.has(o.orderId));
+
+  // Nếu danh sách không có thay đổi
+  if (toRemove.length === 0 && toAdd.length === 0) {
+    return;
+  }
+
+  // [CÁI BIẾN MẤT]: Bật hiệu ứng fade out + thu nhỏ nhẹ
+  toRemove.forEach(card => {
+    card.classList.add('past-order-card-exit');
+  });
+
+  // [CÁI Ở LẠI]: Bật hiệu ứng viền phát sáng nhẹ nhàng xác nhận đơn này được giữ lại
+  toStay.forEach(card => {
+    card.classList.remove('past-order-card-stay');
+    void card.offsetWidth; // force reflow
+    card.classList.add('past-order-card-stay');
+  });
+
+  // Hàm FLIP: Giữ nguyên card ở lại, trượt êm ái sang vị trí mới
+  const executeFlipTransition = () => {
+    // 1. First: Ghi nhận vị trí ban đầu của các card ở lại
+    const firstRects = new Map();
+    toStay.forEach(card => {
+      firstRects.set(card, card.getBoundingClientRect());
+    });
+
+    // 2. Tháo gỡ các thẻ biến mất khỏi DOM
+    toRemove.forEach(card => card.remove());
+
+    // 3. Sắp xếp lại thứ tự DOM theo danh sách targetOrders
+    const fragment = document.createDocumentFragment();
+    const newlyAddedEls = [];
+
+    targetOrders.forEach(order => {
+      const existingEl = currentMap.get(order.orderId);
+      if (existingEl) {
+        fragment.appendChild(existingEl);
+      } else {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = renderSinglePastOrderCardHtml(order).trim();
+        const newEl = tempDiv.firstElementChild;
+        newEl.classList.add('past-order-card-enter-init');
+        newlyAddedEls.push(newEl);
+        fragment.appendChild(newEl);
+      }
+    });
+
+    pastOrdersListEl.appendChild(fragment);
+
+    // 4. Invert: Tính độ lệch deltaY và đặt transform ban đầu để card không bị giật
+    toStay.forEach(card => {
+      const first = firstRects.get(card);
+      if (first) {
+        const last = card.getBoundingClientRect();
+        const deltaY = first.top - last.top;
+        if (Math.abs(deltaY) > 0.5) {
+          card.style.transform = `translateY(${deltaY}px)`;
+          card.style.transition = 'none';
+        }
+      }
+    });
+
+    // 5. Play: Cho các card trượt mượt mà về vị trí tự nhiên
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        toStay.forEach(card => {
+          card.style.transition = 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1)';
+          card.style.transform = '';
+        });
+        newlyAddedEls.forEach(card => {
+          card.classList.remove('past-order-card-enter-init');
+          card.classList.add('past-order-card-enter-active');
+        });
+      });
+    });
+
+    // 6. Dọn dẹp inline style sau khi animation kết thúc
+    window._activityTabAnimTimeout = setTimeout(() => {
+      toStay.forEach(card => {
+        card.style.transition = '';
+        card.style.transform = '';
+        card.classList.remove('past-order-card-stay');
+      });
+      newlyAddedEls.forEach(card => {
+        card.classList.remove('past-order-card-enter-active');
+      });
+      if (typeof window.refreshSmoothScroll === 'function') {
+        window.refreshSmoothScroll();
+      }
+    }, 350);
+  };
+
+  // Nếu có thẻ biến mất, giữ 200ms để người dùng quan sát thấy rõ thẻ biến mất trước khi dồn chỗ các thẻ ở lại
+  if (toRemove.length > 0) {
+    window._activityTabAnimTimeout = setTimeout(executeFlipTransition, 200);
+  } else {
+    executeFlipTransition();
+  }
+}
+
 function renderActivityView() {
   if (viewingOrderDetailId) {
     const order = ordersList.find(x => x.orderId === viewingOrderDetailId);
@@ -4103,7 +4623,7 @@ function renderActivityView() {
     <div class="activity-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
+        <button type="button" class="page-back-icon-btn" onclick="openHomeView()" aria-label="Về trang chủ">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Hoạt Động &amp; Đơn Hàng</div>
@@ -4117,94 +4637,16 @@ function renderActivityView() {
 
       <!-- Orders List Content -->
       <div class="past-orders-list fade-in">
-        ${filteredOrders.length === 0 ? `
-          <div style="text-align: center; padding: 60px 20px;">
-            <div style="color: var(--gray-400); display: flex; justify-content: center; margin-bottom: 12px;">
-              ${FluentIcons.receiptRegular}
-            </div>
-            <div style="font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px;">
-              Chưa có đơn hàng nào
-            </div>
-            <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 20px;">
-              Không có đơn hàng nào trong mục "${activityFilter === 'delivering' ? 'Đang giao' : activityFilter === 'completed' ? 'Đã giao' : activityFilter === 'cancelled' ? 'Đã hủy' : 'Tất cả'}".
-            </div>
-            <button class="btn-primary-large" onclick="openHomeView()" style="max-width: 240px; margin: 0 auto;">
-              Khám phá món ngon ngay
-            </button>
-          </div>
-        ` : filteredOrders.map(order => {
-    const isDelivering = order.categoryStatus === 'delivering';
-    const isCompleted = order.categoryStatus === 'completed';
-    const isCancelled = order.categoryStatus === 'cancelled';
-
-    const badgeClass = isDelivering ? 'delivering' : (isCompleted ? 'completed' : 'cancelled');
-    const badgeText = isDelivering
-      ? `<span class="pulse-dot"></span> Đang giao`
-      : (isCompleted ? `Giao thành công` : `Đã hủy đơn`);
-
-    const itemsSummary = order.items.map(it => `${it.quantity}x ${it.dishName || it.name}`).join(' • ');
-
-    return `
-            <div class="past-order-card" onclick="viewOrderDetail('${order.orderId}')" style="cursor: pointer;">
-              <div class="past-order-head">
-                <div>
-                  <div class="past-order-res">${order.resName}</div>
-                  <div style="font-size: 11px; color: var(--gray-400); margin-top: 2px;">
-                    Mã đơn: <strong style="color: var(--gray-700);">${order.orderId}</strong> • ${order.orderTime}
-                  </div>
-                </div>
-                <span class="past-order-status-badge ${badgeClass}">${badgeText}</span>
-              </div>
-
-              <!-- Dishes Summary -->
-              <div style="font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; line-height: 1.4;">
-                ${itemsSummary}
-              </div>
-
-              <!-- Recipient & Address -->
-              <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">
-                ${FluentIcons.locationRegular}
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  ${order.recipientName} • ${order.deliveryAddress}
-                </span>
-              </div>
-
-              <!-- Price & Action Buttons -->
-              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <div style="font-size: 15px; font-weight: 800; color: var(--green-600);">
-                  ${formatVND(order.totalAmount)}
-                </div>
-                <div class="past-order-actions" onclick="event.stopPropagation()">
-                  ${isDelivering ? `
-                    <button class="past-order-btn primary" onclick="viewOrderDetail('${order.orderId}')">
-                      Theo dõi trực tiếp ${FluentIcons.truckRegular}
-                    </button>
-                  ` : isCompleted ? `
-                    <button class="past-order-btn secondary" onclick="viewOrderDetail('${order.orderId}')">
-                      Xem chi tiết
-                    </button>
-                    <button class="past-order-btn primary" onclick="reorderOrder('${order.orderId}')">
-                      Đặt lại
-                    </button>
-                  ` : `
-                    <button class="past-order-btn secondary" onclick="viewOrderDetail('${order.orderId}')">
-                      Xem chi tiết
-                    </button>
-                    <button class="past-order-btn primary" onclick="reorderOrder('${order.orderId}')" title="Đặt lại đơn/combo đã hủy này">
-                      Đặt lại
-                    </button>
-                  `}
-                </div>
-              </div>
-            </div>
-          `;
-  }).join('')}
+        ${renderPastOrdersListHtml(filteredOrders)}
       </div>
     </div>
   `;
 
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
 }
 
@@ -4226,7 +4668,7 @@ function renderSingleOrderDetailView(o) {
     <div class="activity-view-container fade-in">
       <!-- Header with Back to List -->
       <div class="page-nav-header">
-        <button class="page-back-icon-btn" onclick="closeOrderDetail()" aria-label="Quay lại danh sách">
+        <button type="button" class="page-back-icon-btn" onclick="closeOrderDetail()" aria-label="Quay lại danh sách">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Chi Tiết Đơn Hàng</div>
@@ -4241,7 +4683,7 @@ function renderSingleOrderDetailView(o) {
               <span class="order-code-title">MÃ ĐƠN HÀNG</span>
               <span class="order-code-val">${o.orderId}</span>
             </div>
-            <button class="order-code-copy-btn" onclick="copyOrderCode('${o.orderId}')" aria-label="Sao chép mã đơn hàng">
+            <button type="button" class="order-code-copy-btn" onclick="copyOrderCode('${o.orderId}')" aria-label="Sao chép mã đơn hàng">
               ${FluentIcons.copyRegular}
               <span>Sao chép</span>
             </button>
@@ -4250,10 +4692,10 @@ function renderSingleOrderDetailView(o) {
           <!-- Simulation Action Bar for Delivering Order -->
           ${isDelivering ? `
             <div class="order-detail-action-bar">
-              <button class="order-detail-btn-complete" onclick="completeActiveOrder('${o.orderId}')">
+              <button type="button" class="order-detail-btn-complete" onclick="completeActiveOrder('${o.orderId}')">
                 ${FluentIcons.checkmarkFilled} Mô phỏng: Đã nhận món thành công
               </button>
-              <button class="order-detail-btn-danger" onclick="cancelActiveOrder('${o.orderId}')">
+              <button type="button" class="order-detail-btn-danger" onclick="cancelActiveOrder('${o.orderId}')">
                 Hủy đơn hàng này
               </button>
             </div>
@@ -4526,15 +4968,15 @@ function renderSingleOrderDetailView(o) {
 
               <!-- 3 Nút liên hệ nhanh -->
               <div class="quick-contact-actions">
-                <button class="contact-action-btn call" onclick="callDriver('${o.driver.phone}')">
+                <button type="button" class="contact-action-btn call" onclick="callDriver('${o.driver.phone}')">
                   ${FluentIcons.callRegular}
                   <span>Gọi tài xế</span>
                 </button>
-                <button class="contact-action-btn chat" onclick="chatDriver('${o.driver.name}')">
+                <button type="button" class="contact-action-btn chat" onclick="chatDriver('${o.driver.name}')">
                   ${FluentIcons.chatRegular}
                   <span>Nhắn tin</span>
                 </button>
-                <button class="contact-action-btn store" onclick="callRestaurant('${o.resPhone}', '${escapeHtml(o.resName)}')">
+                <button type="button" class="contact-action-btn store" onclick="callRestaurant('${o.resPhone}', '${escapeHtml(o.resName)}')">
                   ${FluentIcons.callRegular}
                   <span>Gọi quán</span>
                 </button>
@@ -4578,7 +5020,7 @@ function renderSingleOrderDetailView(o) {
                   </div>
 
                   <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                    <button 
+                    <button type="button" 
                       onclick="editUserReview('${o.orderId}')" 
                       style="background: none; border: none; font-size: 12px; font-weight: 700; color: var(--green-600); cursor: pointer; padding: 4px 0;"
                     >
@@ -4625,7 +5067,7 @@ function renderSingleOrderDetailView(o) {
                 >${userReviewInputText}</textarea>
 
                 <!-- Submit Button -->
-                <button class="submit-rating-btn" onclick="submitUserReview('${o.orderId}')">
+                <button type="button" class="submit-rating-btn" onclick="submitUserReview('${o.orderId}')">
                   ${FluentIcons.starFilled} Gửi đánh giá đơn hàng
                 </button>
               `}
@@ -4635,7 +5077,7 @@ function renderSingleOrderDetailView(o) {
           <!-- Reorder CTA for Completed or Cancelled Order -->
           ${(isCompleted || isCancelled) ? `
             <div style="margin-top: 8px;">
-              <button class="btn-primary-large" onclick="reorderOrder('${o.orderId}')">
+              <button type="button" class="btn-primary-large" onclick="reorderOrder('${o.orderId}')">
                 ${isCancelled ? `Đặt lại đơn/combo đã hủy này ${FluentIcons.sync}` : `Đặt lại đơn hàng này ${FluentIcons.sync}`}
               </button>
             </div>
@@ -4944,6 +5386,9 @@ function renderVectorTrackingFallback(container, sLat, sLng, uLat, uLng, order) 
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
   }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
 }
 
 function updateVectorShipperPos(ratio) {
@@ -5106,17 +5551,27 @@ function selectVisualSuggestion(keyword) {
 
 function setDistanceFilter(dist) {
   distanceFilter = dist;
-  renderSearchView();
   if (dist === null) {
     showToast('locationRegular', 'Hiển thị tất cả khoảng cách');
   } else {
     showToast('locationRegular', `Lọc các quán trong bán kính < ${dist} km`);
   }
+  const searchContainer = document.querySelector('.search-view-container');
+  if (searchContainer) {
+    document.querySelectorAll('.dist-chip, .quick-chip-item').forEach(chip => {
+      const onclickAttr = chip.getAttribute('onclick') || '';
+      const isActive = (dist === null) ? onclickAttr.includes('null') : onclickAttr.includes(`(${dist})`);
+      chip.classList.toggle('active', isActive);
+      chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+    updateSearchResultsOnly();
+  } else {
+    renderSearchView();
+  }
 }
 
 function toggleFilter(filterKey) {
   activeFilters[filterKey] = !activeFilters[filterKey];
-  renderSearchView();
   const labelMap = {
     near: 'Gần nhất',
     rating45: 'Đánh giá cao 4.8+',
@@ -5127,12 +5582,41 @@ function toggleFilter(filterKey) {
   if (activeFilters[filterKey]) {
     showToast('optionsRegular', `Đã bật bộ lọc: ${labelMap[filterKey]}`);
   }
+  const searchContainer = document.querySelector('.search-view-container');
+  if (searchContainer) {
+    document.querySelectorAll('.filter-pill-item').forEach(pill => {
+      const onclickAttr = pill.getAttribute('onclick') || '';
+      if (onclickAttr.includes(`'${filterKey}'`) || onclickAttr.includes(`"${filterKey}"`)) {
+        const isActive = Boolean(activeFilters[filterKey]);
+        pill.classList.toggle('active', isActive);
+        pill.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      }
+    });
+    const slot = document.getElementById('active-filter-pills-slot');
+    if (slot) slot.innerHTML = renderActiveFilterPillsHtml();
+    updateSearchResultsOnly();
+  } else {
+    renderSearchView();
+  }
 }
 
 function toggleSortNear() {
   activeFilters.near = !activeFilters.near;
-  renderSearchView();
   showToast('navigationRegular', activeFilters.near ? 'Đã sắp xếp quán gần nhất lên đầu' : 'Đã bỏ sắp xếp khoảng cách');
+  const searchContainer = document.querySelector('.search-view-container');
+  if (searchContainer) {
+    document.querySelectorAll('.filter-pill-item').forEach(pill => {
+      const onclickAttr = pill.getAttribute('onclick') || '';
+      if (onclickAttr.includes("'near'") || onclickAttr.includes('"near"')) {
+        const isActive = Boolean(activeFilters.near);
+        pill.classList.toggle('active', isActive);
+        pill.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      }
+    });
+    updateSearchResultsOnly();
+  } else {
+    renderSearchView();
+  }
 }
 
 function resetAllFilters() {
@@ -5153,8 +5637,27 @@ function resetAllFilters() {
     maxPrice: null,
     ratingMin: 0
   };
-  renderSearchView();
   showToast('optionsRegular', 'Đã đặt lại tất cả bộ lọc');
+  const searchContainer = document.querySelector('.search-view-container');
+  if (searchContainer) {
+    document.querySelectorAll('.filter-pill-item, .quick-chip-item').forEach(el => {
+      el.classList.remove('active');
+      el.setAttribute('aria-pressed', 'false');
+    });
+    document.querySelectorAll('.dist-chip').forEach(el => {
+      const onclickAttr = el.getAttribute('onclick') || '';
+      const isNullChip = onclickAttr.includes('null');
+      el.classList.toggle('active', isNullChip);
+      el.setAttribute('aria-pressed', isNullChip ? 'true' : 'false');
+    });
+    const slot = document.getElementById('active-filter-pills-slot');
+    if (slot) slot.innerHTML = '';
+    const input = document.getElementById('search-view-input');
+    if (input) input.value = '';
+    updateSearchResultsOnly();
+  } else {
+    renderSearchView();
+  }
 }
 
 function selectHomeFilterChip(idx) {
@@ -5177,29 +5680,67 @@ function handleQuickOptionClick(idx) {
 }
 
 function toggleFav(id) {
+  const numId = Number(id);
   let isFav = false;
-  const rBefore = restaurants.find(x => x.id === id);
-  const resName = rBefore ? rBefore.name : 'Quán ăn';
+  const rBefore = (Array.isArray(restaurants) ? restaurants : []).find(x => Number(x.id) === numId);
+  const resName = rBefore ? rBefore.name : ((typeof modalRestaurant !== 'undefined' && modalRestaurant && Number(modalRestaurant.id) === numId) ? modalRestaurant.name : 'Quán ăn');
 
-  if (typeof DB !== 'undefined' && DB.isReady) {
-    isFav = DB.toggleFavoriteRestaurant(id);
+  if (typeof DB !== 'undefined' && DB.isReady && typeof DB.toggleFavoriteRestaurant === 'function') {
+    isFav = DB.toggleFavoriteRestaurant(numId);
   } else if (rBefore) {
     rBefore.fav = !rBefore.fav;
     isFav = rBefore.fav;
+  } else {
+    isFav = true;
   }
 
-  if (modalRestaurant && Number(modalRestaurant.id) === Number(id)) {
+  // Đồng bộ trạng thái in-memory
+  if (rBefore) {
+    rBefore.fav = isFav;
+  }
+  if (typeof modalRestaurant !== 'undefined' && modalRestaurant && Number(modalRestaurant.id) === numId) {
     modalRestaurant.fav = isFav;
   }
 
-  if (currentView === 'home') {
-    renderHomeView();
-  } else if (currentView === 'search') {
-    updateSearchResultsOnly();
-  } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
-    renderDishDetailView();
+  // Cập nhật DOM trực tiếp tại chỗ (in-place), TUYỆT ĐỐI KHÔNG reload/re-render toàn bộ giao diện
+  const favIconHtml = isFav ? FluentIcons.heartFilled : FluentIcons.heartRegular;
+
+  // 1. Quét tất cả nút yêu thích trên các thẻ quán (Home, Search, DBM) tương ứng với id này
+  const selector = `[onclick*="toggleFav(${numId})"], [onclick*="toggleFav('${numId}')"], [onclick*='toggleFav("${numId}")']`;
+  const matchingButtons = document.querySelectorAll(selector);
+  matchingButtons.forEach(btn => {
+    btn.innerHTML = favIconHtml;
+    btn.classList.toggle('active', isFav);
+    btn.classList.remove('anim-heart-pop');
+    void btn.offsetWidth; // Force reflow để trigger lại keyframe animation
+    btn.classList.add('anim-heart-pop');
+  });
+
+  // 2. Nút yêu thích trong modal tùy biến món nếu đang mở quán này
+  const modalFavBtn = document.querySelector('.dish-modal-fav-btn');
+  if (modalFavBtn && typeof modalRestaurant !== 'undefined' && modalRestaurant && Number(modalRestaurant.id) === numId) {
+    modalFavBtn.innerHTML = favIconHtml;
+    modalFavBtn.classList.toggle('active', isFav);
+    modalFavBtn.classList.remove('anim-heart-pop');
+    void modalFavBtn.offsetWidth;
+    modalFavBtn.classList.add('anim-heart-pop');
   }
-  showToast(isFav ? 'heartFilled' : 'heartRegular', isFav ? `Đã lưu ${resName} vào Yêu thích ❤️` : `Đã bỏ lưu ${resName}`);
+
+  // 3. Nút yêu thích trên topbar trang Chi Tiết Món Ăn (dish-detail) nếu đang xem quán này
+  if (currentView === 'dish-detail') {
+    const detailFavBtns = document.querySelectorAll('.product-detail-topbar button[onclick*="toggleFav"], .res-detail-top-fav-btn');
+    detailFavBtns.forEach(detailFavBtn => {
+      detailFavBtn.innerHTML = favIconHtml;
+      detailFavBtn.classList.toggle('active', isFav);
+      detailFavBtn.classList.remove('anim-heart-pop');
+      void detailFavBtn.offsetWidth;
+      detailFavBtn.classList.add('anim-heart-pop');
+    });
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(isFav ? 'heartFilled' : 'heartRegular', isFav ? `Đã lưu ${resName} vào Yêu thích ❤️` : `Đã bỏ lưu ${resName}`);
+  }
 }
 
 const AI_SPARKLE_ICON_REGULAR = `<svg class="fluent-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2.75a.75.75 0 0 1 .68.434l1.79 3.848a1.75 1.75 0 0 0 .848.848l3.848 1.79a.75.75 0 0 1 0 1.36l-3.848 1.79a1.75 1.75 0 0 0-.848.848l-1.79 3.848a.75.75 0 0 1-1.36 0l-1.79-3.848a1.75 1.75 0 0 0-.848-.848l-3.848-1.79a.75.75 0 0 1 0-1.36l3.848-1.79a1.75 1.75 0 0 0 .848-.848l1.79-3.848a.75.75 0 0 1 .68-.434Zm0 2.752-1.106 2.378a3.25 3.25 0 0 1-1.574 1.574L6.442 10.56l2.378 1.106a3.25 3.25 0 0 1 1.574 1.574l1.106 2.378 1.106-2.378a3.25 3.25 0 0 1 1.574-1.574l2.378-1.106-2.378-1.106a3.25 3.25 0 0 1-1.574-1.574L11.5 5.502Zm7.25 9.748a.5.5 0 0 1 .453.289l.698 1.49a.75.75 0 0 0 .362.362l1.49.698a.5.5 0 0 1 0 .906l-1.49.698a.75.75 0 0 0-.362.362l-.698 1.49a.5.5 0 0 1-.906 0l-.698-1.49a.75.75 0 0 0-.362-.362l-1.49-.698a.5.5 0 0 1 0-.906l1.49-.698a.75.75 0 0 0 .362-.362l.698-1.49a.5.5 0 0 1 .453-.289Z"/></svg>`;
@@ -5421,7 +5962,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof syncGlobalChromeUI === 'function') {
     syncGlobalChromeUI();
   }
-  render();
+
+  // Khởi động Router SPA Client-side
+  if (typeof Router !== 'undefined') {
+    Router.init();
+    if (window.location.hash && window.location.hash.length > 1) {
+      Router.handleRouteChange(window.location.hash);
+    } else {
+      render();
+      Router.syncUrl({ replace: true });
+    }
+  } else {
+    render();
+  }
 
   // Gentle auto-rotation for the top banner cushion on Home
   setInterval(() => {
@@ -5434,4 +5987,104 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }, 6000);
 });
+
+// =========================================================================
+// KIỂM TRA HÀNG LOẠT VÀ TỰ ĐỘNG CHUẨN HÓA type="button" TRÊN TOÀN BỘ DOM
+// =========================================================================
+
+/**
+ * Hàm kiểm tra hàng loạt thuộc tính type="button" trên toàn bộ cây DOM
+ * Mở F12 Console và gõ: checkAllButtonsType()
+ */
+window.checkAllButtonsType = function() {
+  const allBtns = Array.from(document.querySelectorAll('button'));
+  const missing = allBtns.filter(b => !b.getAttribute('type') || b.getAttribute('type') === '');
+  console.group('🔍 [Audit Scanner] Báo cáo kiểm tra thẻ <button type="button">');
+  console.log(`- Tổng số <button type="button"> đang hiển thị trên DOM: %c${allBtns.length}`, 'font-weight:bold;color:#0284c7;');
+  console.log(`- Số button thiếu type="button":          %c${missing.length}`, `font-weight:bold;color:${missing.length ? '#ef4444' : '#16a34a'};`);
+  if (missing.length > 0) {
+    console.warn('Danh sách các button thiếu type:', missing);
+  } else {
+    console.log('✅ 100% tất cả các thẻ <button type="button"> đã được trang bị type="button" an toàn!');
+  }
+  console.groupEnd();
+  return { total: allBtns.length, missing: missing.length, elements: missing };
+};
+
+/**
+ * Hàm kiểm tra toàn diện thẻ <button type="button"> và thẻ <a> đóng vai trò nút bấm
+ * Mở F12 Console và gõ: checkAllInteractiveElements()
+ */
+window.checkAllInteractiveElements = function() {
+  const allBtns = Array.from(document.querySelectorAll('button'));
+  const missingBtnType = allBtns.filter(b => !b.getAttribute('type') || b.getAttribute('type') === '');
+  const allLinks = Array.from(document.querySelectorAll('a'));
+  const hashLinks = allLinks.filter(a => {
+    const href = a.getAttribute('href');
+    return !href || href === '#' || href === '' || href.startsWith('javascript:');
+  });
+
+  console.group('🔍 [Audit Scanner] Báo cáo kiểm tra phần tử tương tác (Button & Link)');
+  console.log(`- Thẻ <button type="button">: ${allBtns.length} phần tử | Thiếu type="button": %c${missingBtnType.length}`, `font-weight:bold;color:${missingBtnType.length ? '#ef4444' : '#16a34a'};`);
+  console.log(`- Thẻ <a> làm nút (href="#"): %c${hashLinks.length}`, `font-weight:bold;color:${hashLinks.length ? '#ef4444' : '#16a34a'};`);
+
+  if (hashLinks.length > 0) {
+    console.warn('Cần chuyển các thẻ <a> này sang <button type="button">:', hashLinks);
+  } else {
+    console.log('✅ Tuyệt đối không có thẻ <a href="#"> nào đóng vai trò nút bấm!');
+  }
+  console.groupEnd();
+  return { buttons: { total: allBtns.length, missing: missingBtnType.length }, hashLinks: hashLinks.length };
+};
+
+// Runtime Guardian: Tự động gắn type="button" cho bất kỳ thẻ <button type="button"> nào thiếu trên toàn app
+function ensureButtonTypesOnDOM(root = document) {
+  const buttons = (root || document).querySelectorAll('button:not([type])');
+  buttons.forEach(btn => {
+    btn.setAttribute('type', 'button');
+  });
+}
+
+// Chạy bảo vệ ngay khi load DOM và theo dõi bằng MutationObserver duy nhất
+document.addEventListener('DOMContentLoaded', () => {
+  ensureButtonTypesOnDOM();
+  try {
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          m.addedNodes.forEach(node => {
+            if (node.nodeType === 1) {
+              if (node.tagName === 'BUTTON' && !node.getAttribute('type')) {
+                node.setAttribute('type', 'button');
+              } else if (node.querySelectorAll) {
+                ensureButtonTypesOnDOM(node);
+              }
+            }
+          });
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  } catch (_) { }
+});
+
+// Ngăn chặn 100% việc reload trang ngoài ý muốn do form submit mặc định
+document.addEventListener('submit', (e) => {
+  const form = e.target;
+  if (!form || !form.getAttribute('action') || form.getAttribute('action') === '#' || form.getAttribute('action') === '') {
+    e.preventDefault();
+  }
+});
+
+// Ngăn chặn 100% việc reload hoặc nhảy scroll do các thẻ <a href="#"> đóng vai trò nút bấm
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a');
+  if (link) {
+    const href = link.getAttribute('href');
+    if (!href || href === '#' || href === '' || href.startsWith('javascript:')) {
+      e.preventDefault();
+      console.warn('[Accessibility Guardian] Đã chặn click thẻ <a href="#">:', link);
+    }
+  }
+}, true);
 
