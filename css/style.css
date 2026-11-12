@@ -1846,9 +1846,12 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 .cart-view-container.fade-in,
 .checkout-view-container.fade-in,
 .product-detail-page.fade-in,
-.catalog-view-container.fade-in,
-.ai-chat-view-container.fade-in {
+.catalog-view-container.fade-in {
   animation: fade-opacity-only 0.25s ease-out both;
+}
+
+.ai-chat-view-container.fade-in {
+  animation: fade-opacity-only 0.25s ease-out;
 }
 
 @keyframes fade-opacity-only {
@@ -8881,10 +8884,10 @@ input[type="checkbox"].app-custom-check:focus-visible {
   gap: 10px;
   padding: 12px 14px;
   margin: 10px 0 12px;
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.78) 100%);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 177, 79, 0.08);
   flex-wrap: wrap;
@@ -8926,9 +8929,9 @@ body.view-ai-active .ai-chat-header {
   border-left: none !important;
   border-right: none !important;
   border-bottom: 1.5px solid rgba(167, 243, 208, 0.45) !important;
-  background: rgba(255, 255, 255, 0.42) !important;
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.78) 100%) !important;
+  backdrop-filter: blur(28px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
   box-sizing: border-box !important;
 }
@@ -8936,8 +8939,9 @@ body.view-ai-active .ai-chat-header {
 body.view-ai-active .ai-messages-viewport {
   width: 100% !important;
   max-width: 100% !important;
-  padding: 16px 20px 24px !important;
+  padding: 16px 20px 16px !important;
   box-sizing: border-box !important;
+  min-height: 0 !important;
 }
 
 body.view-ai-active .ai-composer-dock {
@@ -8955,9 +8959,9 @@ body.view-ai-active .ai-composer-dock {
     box-shadow 0.2s ease !important;
 }
 
-/* Chừa chỗ cho dock cố định để tin nhắn cuối không bị che */
+/* Khoảng trống đệm đáy được tính toán động vừa khít chiều cao thanh dock bằng syncAIDockClearance() */
 body.view-ai-active .ai-chat-view-container {
-  padding-bottom: 210px !important;
+  padding-bottom: var(--ai-dock-clearance, 110px) !important;
 }
 
 /* ── Tối ưu riêng cho điện thoại khi sử dụng bàn phím ảo ── */
@@ -8995,7 +8999,7 @@ body.view-ai-active .ai-chat-view-container {
 
   /* Điều chỉnh khoảng đệm đáy để cuộn mượt mà không che nội dung */
   body.view-ai-active.ai-keyboard-open .ai-chat-view-container {
-    padding-bottom: calc(var(--ai-keyboard-offset, 0px) + 100px) !important;
+    padding-bottom: var(--ai-dock-clearance, calc(var(--ai-keyboard-offset, 0px) + 90px)) !important;
   }
 }
 
@@ -9175,8 +9179,8 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-bottom: 24px;
-  min-height: calc(100vh - 160px);
+  padding-bottom: 16px;
+  min-height: 0;
 }
 
 /* Chưa có tin nhắn: viewport co theo nội dung để hiện trọn màn hình chào */
@@ -9190,11 +9194,11 @@ body.view-ai-active .ai-chat-view-container {
   height: 0px;
   flex-shrink: 0;
   pointer-events: none;
-  transition: height 0.25s ease;
+  transition: none !important;
 }
 
 .ai-turn-spacer.active {
-  height: calc(100vh - 220px);
+  min-height: 0;
 }
 
 .ai-welcome-hero {
@@ -9638,7 +9642,7 @@ body.view-ai-active .ai-chat-view-container {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -10429,7 +10433,8 @@ body.view-ai-active .ai-chat-view-container {
   }
 
   body.view-ai-active .ai-messages-viewport {
-    padding: 24px 40px 32px !important;
+    padding: 24px 40px 16px !important;
+    min-height: 0 !important;
   }
 
   body.view-ai-active .ai-composer-dock {
@@ -10440,7 +10445,7 @@ body.view-ai-active .ai-chat-view-container {
   }
 
   body.view-ai-active .ai-chat-view-container {
-    padding-bottom: 200px !important;
+    padding-bottom: var(--ai-dock-clearance, 90px) !important;
   }
 }
 
@@ -11849,12 +11854,23 @@ body.view-ai-active .ai-chat-view-container {
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
+  transform-origin: top center;
+  transform: translateY(-46px) scaleY(0.78);
+  transition:
+    opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 1.2s,
+    transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
 }
 
 .sn-dish-ai-aura.active {
   opacity: 1;
   visibility: visible;
+  transform: translateY(0) scaleY(1);
+  transition:
+    opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 1.0s,
+    transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sn-dish-ai-aura .sn-aura-wave {
@@ -16733,43 +16749,44 @@ body.view-ai-active .ai-chat-view-container {
   pointer-events: none;
   overflow: hidden;
   opacity: 0;
-  transform: translateY(-6px) scale(0.98);
+  transform-origin: top center;
+  transform: translateY(-130px) scaleY(0.72) scaleX(1.05);
   filter: brightness(1) saturate(1);
   transition:
-    opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 1.6s ease;
+    opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 1.5s ease;
   will-change: opacity, transform;
   --aura-wave-duration: 5.6s;
   --aura-blur: 45px;
 }
 
-/* Khi đang ở trang AI và AI đang suy luận: Fade-in mượt mà */
+/* Khi đang ở trang AI và AI đang suy luận: Tràn vào từ trên xuống mềm mại */
 body.view-ai-active .ai-aura[data-state="active"] {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scaleY(1) scaleX(1);
   filter: blur(10px) brightness(1.02);
   transition:
-    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 1.2s ease;
+    opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.3s ease;
 }
 
-/* Khi trả lời xong: Fade-out êm dịu (1.6s) */
+/* Khi trả lời xong: Tràn ra / rút về phía trên êm dịu */
 .ai-aura[data-state="idle"] {
   opacity: 0;
-  transform: translateY(-8px) scale(1.01);
+  transform: translateY(-140px) scaleY(0.7) scaleX(1.05);
   filter: brightness(1.06) saturate(1.08);
   transition:
-    opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 1.6s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 1.6s ease;
+    opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 1.5s ease;
 }
 
-/* Khi ấn nút Dừng (Stop): Fade-out nhanh hơn 1 xíu (0.9s) nhưng vẫn mượt, không dừng đột ngột */
+/* Khi ấn nút Dừng (Stop): Tràn ra phía trên nhanh hơn một chút */
 .ai-aura[data-state="stopping"] {
   opacity: 0;
-  transform: translateY(-4px) scale(0.98);
+  transform: translateY(-120px) scaleY(0.75) scaleX(1.04);
   filter: brightness(1) saturate(1);
   transition:
     opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
@@ -16777,10 +16794,11 @@ body.view-ai-active .ai-aura[data-state="active"] {
     filter 0.9s ease;
 }
 
-/* Khi rời khỏi tab AI: cũng mờ dần êm ái */
+/* Khi rời khỏi tab AI: cũng thu gọn lên trên */
 body:not(.view-ai-active) .ai-aura {
   opacity: 0 !important;
-  transition: opacity 0.6s ease !important;
+  transform: translateY(-110px) scaleY(0.7) !important;
+  transition: opacity 0.6s ease, transform 0.6s ease !important;
 }
 
 @media (min-width: 768px) {
@@ -16802,7 +16820,7 @@ body:not(.view-ai-active) .ai-aura {
   opacity: 1;
   --c1: rgba(34, 197, 94, 0.16);
   /* 1. Xanh lá non */
-  --c2: rgba(16, 185, 129, 0.16);
+  --c2: rgba(16, 185, 129, 0.56);
   /* 2. Xanh lục ngọc (trung gian) */
   --c3: rgba(20, 184, 166, 0.16);
   /* 3. Xanh ngọc bích / Teal (trung gian) */
@@ -16825,7 +16843,7 @@ body:not(.view-ai-active) .ai-aura {
   opacity: 0;
   --c1: rgba(139, 92, 246, 0.15);
   /* 1. Tím Violet */
-  --c2: rgba(168, 85, 247, 0.15);
+  --c2: rgba(168, 85, 247, 0.55);
   /* 2. Tím Orchid (trung gian) */
   --c3: rgba(217, 70, 239, 0.14);
   /* 3. Tím hồng Fuchsia (trung gian) */
@@ -16833,11 +16851,11 @@ body:not(.view-ai-active) .ai-aura {
   /* 4. Hồng Rose */
   --c5: rgba(244, 114, 182, 0.16);
   /* 5. Hồng phấn Coral (trung gian) */
-  --c6: rgba(251, 146, 160, 0.17);
+  --c6: rgba(251, 146, 160, 0.57);
   /* 6. Hồng cam đào / Peach (trung gian) */
-  --c7: rgba(246, 182, 142, 0.19);
+  --c7: rgba(246, 182, 142, 0.59);
   /* 7. Cam kem Apricot (trung gian sang Be) */
-  --c8: rgba(235, 202, 158, 0.22);
+  --c8: rgba(235, 202, 158, 0.72);
   /* 8. Màu Be ấm (Warm Beige) */
   --c9: rgba(196, 148, 238, 0.15);
   /* 9. Tím oải hương kem nối êm về Tím */

@@ -390,6 +390,9 @@ async function setAILiveStageProgress(statusText) {
     row.className = 'ai-reason-step active';
     row.textContent = text;
     listEl.appendChild(row);
+    if (typeof updateAITurnSpacerHeight === 'function') {
+      updateAITurnSpacerHeight();
+    }
   }
 }
 
@@ -1105,6 +1108,10 @@ function renderAIChatView() {
   if (typeof syncAIMobileKeyboardViewport === 'function') {
     syncAIMobileKeyboardViewport();
   }
+  if (typeof syncAIDockClearance === 'function') {
+    syncAIDockClearance();
+    initAIDockObserver();
+  }
 }
 
 function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
@@ -1667,6 +1674,9 @@ function syncAIMobileKeyboardViewport() {
       document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
     }
   }
+  if (typeof syncAIDockClearance === 'function') {
+    syncAIDockClearance();
+  }
 }
 
 function handleAIChatInputFocus(el) {
@@ -1688,6 +1698,9 @@ function handleAIChatInputBlur(el) {
       if (!activeEl || activeEl.id !== 'ai-chat-input') {
         document.body.classList.remove('ai-keyboard-open');
         syncAIMobileKeyboardViewport();
+        if (aiIsGenerating) {
+          scrollUserMessageToTop();
+        }
       }
     }, 150);
   }
@@ -1716,7 +1729,12 @@ if (typeof window !== 'undefined') {
     window.visualViewport.addEventListener('resize', syncAIMobileKeyboardViewport);
     window.visualViewport.addEventListener('scroll', syncAIMobileKeyboardViewport);
   }
-  window.addEventListener('resize', syncAIMobileKeyboardViewport);
+  window.addEventListener('resize', () => {
+    syncAIMobileKeyboardViewport();
+    if (typeof currentView !== 'undefined' && currentView === 'ai' && aiIsGenerating) {
+      if (typeof updateAITurnSpacerHeight === 'function') updateAITurnSpacerHeight();
+    }
+  });
 }
 
 // Lắng nghe phím Esc trên toàn trang để dừng AI khi đang tạo
@@ -1872,31 +1890,141 @@ function clearCurrentAIChat() {
   showToast('sparkleRegular', 'Đã tạo cuộc trò chuyện AI mới!');
 }
 
-function scrollUserMessageToTop() {
-  if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
-  setTimeout(() => {
-    if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
+// ── Tính toán động khoảng trống đáy (clearance) theo độ cao & vị trí thực tế của ai-composer-dock:
+// Đảm bảo tin nhắn cuối cùng không bao giờ bị thanh dock che khuất trên mọi kích cỡ màn hình / thiết bị
+let aiDockResizeObserver = null;
+
+function syncAIDockClearance() {
+  if (typeof currentView !== 'undefined' && currentView !== 'ai') return 0;
+  const dock = document.querySelector('.ai-composer-dock');
+  const container = document.querySelector('.ai-chat-view-container');
+  if (!dock) return 0;
+
+  // Đo khoảng cách thực tế từ đỉnh dock tới đáy màn hình (bao gồm cả bottom offset, safe area, quick prompts, multiline...)
+  const rect = dock.getBoundingClientRect();
+  const dockOffsetFromBottom = Math.max(0, Math.round(window.innerHeight - rect.top));
+  // Thêm 12px đệm thở để phần tử cuối không dính sát sạt vào mép trên của dock
+  const clearance = dockOffsetFromBottom > 0 ? (dockOffsetFromBottom + 12) : 110;
+
+  document.documentElement.style.setProperty('--ai-dock-clearance', `${clearance}px`);
+  if (container) {
+    container.style.setProperty('padding-bottom', `${clearance}px`, 'important');
+  }
+
+  return clearance;
+}
+window.syncAIDockClearance = syncAIDockClearance;
+
+function initAIDockObserver() {
+  if (typeof ResizeObserver === 'undefined') return;
+  const dock = document.querySelector('.ai-composer-dock');
+  if (!dock) return;
+  if (aiDockResizeObserver) {
+    aiDockResizeObserver.disconnect();
+  }
+  aiDockResizeObserver = new ResizeObserver(() => {
+    syncAIDockClearance();
+  });
+  aiDockResizeObserver.observe(dock);
+}
+
+// ── Tính toán động độ cao của ai-turn-spacer:
+// Sao cho khi tin nhắn mới nhất nằm ở vị trí neo (cách header 7px),
+// trang vừa chạm đáy (maxScrollY = targetY) và người dùng không thể lướt thêm khoảng trống thừa
+function updateAITurnSpacerHeight(customTargetY = null) {
+  if (typeof currentView !== 'undefined' && currentView !== 'ai') return 0;
+  const spacerEl = document.getElementById('ai-turn-spacer');
+  if (!spacerEl) return 0;
+
+  if (!aiIsGenerating) {
+    spacerEl.style.height = '0px';
+    syncAIDockClearance();
     if (typeof window.refreshSmoothScroll === 'function') {
       window.refreshSmoothScroll();
     }
+    return 0;
+  }
+
+  // Luôn đảm bảo khoảng đệm dock được tính toán chính xác trước khi đo document height
+  syncAIDockClearance();
+
+  const userRows = document.querySelectorAll('.ai-msg-row.user');
+  const lastUserRow = userRows[userRows.length - 1];
+  if (!lastUserRow) {
+    spacerEl.style.height = '0px';
+    return 0;
+  }
+
+  const headerEl = document.querySelector('.ai-chat-header');
+  const headerH = headerEl ? headerEl.offsetHeight : 64;
+  const rect = lastUserRow.getBoundingClientRect();
+  const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
+  const targetY = customTargetY !== null ? customTargetY : Math.max(0, Math.round(scrollY + rect.top - headerH - 7));
+
+  // Đo chiều cao document hiện tại và trừ đi độ cao spacer đã có
+  const currentScrollH = Math.max(
+    document.documentElement.scrollHeight,
+    document.body ? document.body.scrollHeight : 0
+  );
+  const currentSpacerH = spacerEl.offsetHeight || parseFloat(spacerEl.style.height) || 0;
+  const scrollH0 = currentScrollH - currentSpacerH;
+
+  // Khoảng trống vừa vặn để maxScrollY đúng bằng targetY (không thừa 1px để lướt)
+  const neededSpacer = Math.max(0, Math.round(targetY + window.innerHeight - scrollH0));
+  spacerEl.style.height = `${neededSpacer}px`;
+
+  // Báo ngay lập tức cho Locomotive/Lenis cập nhật scroll limit mới mà không bị trễ frame
+  if (typeof window.refreshSmoothScroll === 'function') {
+    window.refreshSmoothScroll();
+  }
+
+  return neededSpacer;
+}
+window.updateAITurnSpacerHeight = updateAITurnSpacerHeight;
+
+function scrollUserMessageToTop() {
+  if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
+
+  function doScroll() {
+    if (typeof currentView !== 'undefined' && currentView !== 'ai') return;
     const userRows = document.querySelectorAll('.ai-msg-row.user');
     const lastUserRow = userRows[userRows.length - 1];
-    if (lastUserRow) {
-      const headerEl = document.querySelector('.ai-chat-header');
-      const headerH = headerEl ? headerEl.offsetHeight : 64;
-      const rect = lastUserRow.getBoundingClientRect();
-      const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-      const targetY = Math.max(0, scrollY + rect.top - headerH - 10);
-      if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
-        window.locomotiveScroll.scrollTo(targetY, { duration: 0.65 });
-      } else {
-        window.scrollTo({
-          top: targetY,
-          behavior: 'smooth'
-        });
-      }
+    if (!lastUserRow) return;
+
+    const headerEl = document.querySelector('.ai-chat-header');
+    const headerH = headerEl ? headerEl.offsetHeight : 64;
+    const rect = lastUserRow.getBoundingClientRect();
+    const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
+    const targetY = Math.max(0, Math.round(scrollY + rect.top - headerH - 7));
+
+    // Cập nhật độ cao spacer tức thì theo targetY
+    updateAITurnSpacerHeight(targetY);
+
+    const lenis = (window.locomotiveScroll && window.locomotiveScroll.lenisInstance) || null;
+    if (lenis && typeof lenis.scrollTo === 'function') {
+      try {
+        if (typeof lenis.resize === 'function') lenis.resize();
+        lenis.scrollTo(targetY, { duration: 0.65, force: true, lock: false });
+      } catch (_) { }
+    } else if (window.locomotiveScroll && typeof window.locomotiveScroll.scrollTo === 'function') {
+      try {
+        window.locomotiveScroll.scrollTo(targetY, { duration: 0.65, force: true });
+      } catch (_) { }
     }
-  }, 40);
+    // Luôn đảm bảo native scroll hoạt động song song để chống trượt
+    window.scrollTo({
+      top: targetY,
+      behavior: 'smooth'
+    });
+  }
+
+  // Đảm bảo DOM đã paint trước khi đo và cuộn (chống trượt khi có nhiều tin nhắn trước đó)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      doScroll();
+      setTimeout(doScroll, 80);
+    });
+  });
 }
 
 function scrollAIChatToBottom(smooth = true) {
