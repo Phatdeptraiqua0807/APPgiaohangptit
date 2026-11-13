@@ -1096,8 +1096,8 @@ function dbmRenderAiAuditModalShell() {
         <div class="dbm-audit-engine-row">
           <div class="dbm-audit-engine-badge ${configured ? 'ok' : 'local'}">
             ${configured
-              ? `🟢 API AI đã sẵn sàng: <strong>${escapeHtml(providerBadge)}</strong>`
-              : `🧠 Đang dùng <strong>Chuyên gia AI Nội bộ</strong> (chạy ngay không cần Key • có thể gắn thêm Gemini/OpenRouter API nếu muốn)`}
+      ? ` API AI đã sẵn sàng: <strong>${escapeHtml(providerBadge)}</strong>`
+      : `🧠 Đang dùng <strong>Chuyên gia AI Nội bộ</strong> (chạy ngay không cần Key • có thể gắn thêm Gemini/OpenRouter API nếu muốn)`}
           </div>
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <select id="dbm-audit-engine-select" class="db-select-box" style="padding:5px 10px; font-size:12px;" onchange="dbmAuditState.engineMode = this.value">
@@ -1197,7 +1197,7 @@ async function dbmRunAiAudit(forceMode = null) {
     for (let start = 0; start < records.length; start += batchSize) {
       const batch = records.slice(start, start + batchSize);
       if (records.length > batchSize) {
-        st.progressText = `Đang phân tích bằng AI LLM (${ Math.min(records.length, start + batch.length) }/${records.length} ${DBM_AUDIT_ENTITY_META[st.entityType].plural})...`;
+        st.progressText = `Đang phân tích bằng AI LLM (${Math.min(records.length, start + batch.length)}/${records.length} ${DBM_AUDIT_ENTITY_META[st.entityType].plural})...`;
         dbmRefreshAuditDynamicDOM();
       }
       const { systemPrompt, userPrompt } = dbmAuditBuildLLMPrompts(st.entityType, batch, ctx, st.focusNote);
@@ -1448,7 +1448,7 @@ async function dbmAuditCommitCardChanges(card, entityType) {
         });
         fetchedImgSrc = imgRes.localPath || imgRes.originalUrl || null;
         if (fetchedImgSrc) DB.addLibraryImage({ name: patch.name || existing.name, src: fetchedImgSrc });
-      } catch (_) {}
+      } catch (_) { }
       delete patch.autoFetchImage;
     }
 

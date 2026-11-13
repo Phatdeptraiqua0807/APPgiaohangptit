@@ -852,7 +852,7 @@ function renderDbmAITab() {
       <div class="dbm-panel-title">✨ Nhờ AI tạo mặt hàng hàng loạt</div>
       <div class="dbm-ai-status ${configured ? 'ok' : 'warn'}">
         ${configured
-      ? `🟢 Đang dùng API: <strong>${escapeHtml(providerLabel)}</strong>`
+      ? ` Đang dùng API: <strong>${escapeHtml(providerLabel)}</strong>`
       : '⚠️ Chưa cấu hình API AI. Cần có API key (Gemini, OpenRouter, Groq, NVIDIA/Custom...) để AI tạo hàng.'}
         <button type="button" class="db-inline-link-btn" onclick="openAISettingsModal()">⚙️ Cài đặt API</button>
       </div>
@@ -1138,8 +1138,8 @@ function dbmAiReviewHtml(job) {
       </div>
       <div class="dbm-review-grid">
         ${r.items.map((it, idx) => {
-          const hInfo = dbmGetItemHealthy({ ...it, category: it.categoryName });
-          return `
+    const hInfo = dbmGetItemHealthy({ ...it, category: it.categoryName });
+    return `
           <div class="dbm-ai-card ${it.saved ? 'saved' : ''} ${it.include ? '' : 'excluded'}"
                ondragover="dbmCardDragOver(event)" ondragleave="dbmCardDragLeave(event)" ondrop="dbmAiCardDrop(event, '${jid}', ${idx})">
             <div class="dbm-ai-card-img">
@@ -1171,7 +1171,7 @@ function dbmAiReviewHtml(job) {
               </div>
             </div>
           </div>`;
-        }).join('')}
+  }).join('')}
       </div>
       ${saved ? '' : `
         <div class="dbm-review-footer">

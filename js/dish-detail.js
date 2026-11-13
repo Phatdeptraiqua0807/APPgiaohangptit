@@ -777,7 +777,7 @@ function renderDishDetailView() {
 
             <div class="pdp-info-body">
               <div class="pdp-store-row">
-                <div class="pdp-store-link" onclick="openSearchView('${escapeHtml(store ? store.name : dish.restaurantName)}')">
+                <div class="pdp-store-link" onclick="${store && store.id ? `openStoreDetailView(${store.id}, 'for-you', 'dish-detail')` : `openStoreDetailByName('${escapeHtml(dish.restaurantName)}')`}">
                   <span>${FluentIcons.shop} ${escapeHtml(store ? store.name : dish.restaurantName)}</span>
                   <span>• ${escapeHtml(store?.distanceText || '0.6 km')} (${escapeHtml(store?.deliveryTime || '15 - 20 phút')}) →</span>
                 </div>

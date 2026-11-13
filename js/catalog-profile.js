@@ -2428,7 +2428,7 @@ function renderFavoritesSectionContent(favDishes, favStores) {
                     <div class="fav-dish-name" title="${escapeHtml(dish.name)}">${escapeHtml(dish.name)}</div>
                     <button type="button"
                       class="fav-dish-store-link"
-                      onclick="event.stopPropagation(); openSearchView('${escapeHtml(store.name)}')"
+                      onclick="event.stopPropagation(); openStoreDetailView(${store.id}, 'for-you', 'favorites')"
                       title="${escapeHtml(store.name)}"
                     >
                       ${FluentIcons.shop} <span>${escapeHtml(store.name)}</span>
@@ -2479,7 +2479,7 @@ function renderFavoritesSectionContent(favDishes, favStores) {
                 <article class="fav-store-card"
                   data-fav-card-type="store"
                   data-fav-card-id="${r.id}"
-                  onclick="openSearchView('${escapeHtml(r.name)}')"
+                  onclick="openStoreDetailView(${r.id}, 'for-you', 'favorites')"
                 >
                   <div class="fav-store-img-wrap">
                     <img class="fav-store-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">

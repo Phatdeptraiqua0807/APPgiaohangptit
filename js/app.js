@@ -474,6 +474,8 @@ function render(options = { replace: false }) {
     renderSearchView();
   } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
     renderDishDetailView();
+  } else if (currentView === 'store-detail' && typeof renderStoreDetailView === 'function') {
+    renderStoreDetailView();
   } else if (currentView === 'dish-safety-nutrition' && typeof renderDishSafetyNutritionView === 'function') {
     renderDishSafetyNutritionView();
   } else if (currentView === 'activity') {
@@ -731,7 +733,7 @@ function renderHomeView() {
         return `
           <div class="featured-store-card res-detail-card">
             <!-- Restaurant Main Header Info (Không hiển thị giá món ở header) -->
-            <div class="res-main-info" onclick="openSearchView('${escapeHtml(r.name)}')">
+            <div class="res-main-info" onclick="openStoreDetailView(${r.id}, 'for-you', 'home')">
               <div class="res-main-img-wrap">
                 <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 ${r.badge ? `<span class="res-badge-partner ${scoreBadgeClass}">${escapeHtml(r.badge)}</span>` : ''}
@@ -1620,7 +1622,7 @@ function renderRestaurantDetailCard(r) {
   return `
     <div class="res-detail-card">
       <!-- Restaurant Main Header Info -->
-      <div class="res-main-info">
+      <div class="res-main-info" onclick="openStoreDetailView(${r.id}, 'for-you', 'search')" style="cursor:pointer;">
         <div class="res-main-img-wrap">
           <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
           ${r.badge ? `<span class="res-badge-partner">${escapeHtml(r.badge)}</span>` : ''}
@@ -1629,7 +1631,7 @@ function renderRestaurantDetailCard(r) {
         <div class="res-details-col">
           <div class="res-name-row">
             <div class="res-name-title">${escapeHtml(r.name)}</div>
-            <span class="res-fav-btn ${r.fav ? 'active' : ''}" onclick="toggleFav(${r.id})" title="Lưu quán yêu thích">
+            <span class="res-fav-btn ${r.fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${r.id})" title="Lưu quán yêu thích">
               ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
             </span>
           </div>
@@ -5474,9 +5476,9 @@ function toggleFav(id) {
     modalFavBtn.classList.add('anim-heart-pop');
   }
 
-  // 3. Nút yêu thích trên topbar trang Chi Tiết Món Ăn (dish-detail) nếu đang xem quán này
-  if (currentView === 'dish-detail') {
-    const detailFavBtns = document.querySelectorAll('.product-detail-topbar button[onclick*="toggleFav"], .res-detail-top-fav-btn');
+  // 3. Nút yêu thích trên topbar trang Chi Tiết Món Ăn (dish-detail) hoặc Xem Cửa Hàng (store-detail)
+  if (currentView === 'dish-detail' || currentView === 'store-detail') {
+    const detailFavBtns = document.querySelectorAll('.product-detail-topbar button[onclick*="toggleFav"], .res-detail-top-fav-btn, .pdp-store-fav-pill');
     detailFavBtns.forEach(detailFavBtn => {
       detailFavBtn.innerHTML = favIconHtml;
       detailFavBtn.classList.toggle('active', isFav);
@@ -5642,25 +5644,92 @@ function switchNavTab(el, tab) {
 }
 
 
-// ── Toast Notifications ──
+// ── Toast Notifications (iPhone iOS Banner Style) ──
+function getToastSemanticMeta(icon) {
+  const key = String(icon || '').toLowerCase();
+  if (key.includes('heart')) {
+    return { tone: 'rose', label: 'Yêu thích' };
+  }
+  if (key.includes('alert') || key.includes('warning') || key.includes('dismiss') || key.includes('error')) {
+    return { tone: 'amber', label: 'Lưu ý' };
+  }
+  if (key.includes('cart') || key.includes('bag')) {
+    return { tone: 'emerald', label: 'Giỏ hàng' };
+  }
+  if (key.includes('sparkle') || key.includes('ai')) {
+    return { tone: 'indigo', label: 'Trợ lý AI' };
+  }
+  if (key.includes('gift') || key.includes('tag')) {
+    return { tone: 'orange', label: 'Ưu đãi' };
+  }
+  if (key.includes('check') || key.includes('success')) {
+    return { tone: 'emerald', label: 'Thành công' };
+  }
+  return { tone: 'emerald', label: 'Thông báo' };
+}
+
+function dismissIosToast(toast) {
+  if (!toast || toast.dataset.closing === '1') return;
+  toast.dataset.closing = '1';
+  toast.classList.add('is-leaving');
+  setTimeout(() => {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+  }, 280);
+}
+
 function showToast(icon, message) {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
+  // Giới hạn tối đa 2 thông báo cùng lúc để gọn như iOS Banner
+  const existing = container.querySelectorAll('.toast:not(.is-leaving)');
+  if (existing.length >= 2) {
+    dismissIosToast(existing[0]);
+  }
+
+  const meta = getToastSemanticMeta(icon);
   const toast = document.createElement('div');
-  toast.className = 'toast';
+  toast.className = `toast ios-toast tone-${meta.tone}`;
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+
   const iconContent = (typeof FluentIcons !== 'undefined' && FluentIcons[icon])
-    ? `<span class="toast-icon-svg">${FluentIcons[icon]}</span>`
-    : `<span class="toast-icon">${icon}</span>`;
-  toast.innerHTML = `${iconContent}<span>${message}</span>`;
+    ? FluentIcons[icon]
+    : (icon || (typeof FluentIcons !== 'undefined' ? FluentIcons.sparkleFilled : '🔔'));
+
+  toast.innerHTML = `
+    <div class="ios-toast-main">
+      <div class="ios-toast-app-icon" aria-hidden="true">${iconContent}</div>
+      <div class="ios-toast-content">
+        <div class="ios-toast-head">
+          <span class="ios-toast-app-name">PTITNgon • ${meta.label}</span>
+          <span class="ios-toast-time">bây giờ</span>
+        </div>
+        <div class="ios-toast-msg">${message}</div>
+      </div>
+    </div>
+    <div class="ios-toast-grabber" aria-hidden="true"></div>
+  `;
+
+  // Chạm hoặc vuốt lên để đóng nhanh giống iPhone
+  let touchStartY = 0;
+  toast.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches[0]) touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  toast.addEventListener('touchmove', (e) => {
+    if (!e.touches || !e.touches[0]) return;
+    const dy = e.touches[0].clientY - touchStartY;
+    if (dy < -18) {
+      dismissIosToast(toast);
+    }
+  }, { passive: true });
+  toast.addEventListener('click', () => dismissIosToast(toast));
+
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(-20px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 2400);
+    dismissIosToast(toast);
+  }, 2700);
 }
 
 // ── Banner Handlers ──

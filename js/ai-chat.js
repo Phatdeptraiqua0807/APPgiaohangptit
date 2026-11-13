@@ -828,7 +828,7 @@ function updateGlobalAIChromeStatus() {
     ? `${aiConfig.profileName}`
     : `${providerInfo.badge} (${aiConfig.model})`;
   const apiStatusText = apiConnected
-    ? `🟢 ${displayProfLabel}`
+    ? ` ${displayProfLabel}`
     : `⚡ AI Thông minh • Quản lý Profile`;
 
   // Cập nhật tất cả nút trạng thái AI trong header (Chat AI, Dish Detail, v.v.)
@@ -889,7 +889,7 @@ function updateAISettingsSheetInPlace(targetProf, bannerHtml = '') {
         <div class="ai-active-card-details">
           <div class="ai-active-card-name">
             <span>${escapeHtml(aiConfig.profileName || defaultProfileNameForConfig(aiConfig))}</span>
-            <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+            <span class="ai-prof-active-pill"> Đang sử dụng</span>
           </div>
           <div class="ai-active-card-sub">
             ${escapeHtml(pPreset.badge || aiConfig.provider)} • <strong>${escapeHtml(aiConfig.model)}</strong> • Key: ${escapeHtml(maskApiKey(aiConfig.apiKey))}
@@ -902,7 +902,7 @@ function updateAISettingsSheetInPlace(targetProf, bannerHtml = '') {
         <div class="ai-active-card-details">
           <div class="ai-active-card-name">
             <span>AI Thông minh Nội bộ</span>
-            <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+            <span class="ai-prof-active-pill"> Đang sử dụng</span>
           </div>
           <div class="ai-active-card-sub">
             Tự động phân tích món ăn quanh PTIT, giỏ hàng & đơn cũ • Hoàn toàn miễn phí
@@ -963,7 +963,7 @@ function updateAISettingsSheetInPlace(targetProf, bannerHtml = '') {
       if (isThisActive && !pill) {
         const newPill = document.createElement('span');
         newPill.className = 'ai-prof-active-pill';
-        newPill.textContent = '🟢 Đang dùng';
+        newPill.textContent = ' Đang dùng';
         nameEl.appendChild(newPill);
       } else if (!isThisActive && pill) {
         pill.remove();
@@ -1044,7 +1044,7 @@ function switchActiveAIProfile(profileId, fromModal = false) {
     tempModalDraft = { ...aiConfig };
     const bannerHtml = `
       <div class="ai-test-banner ok">
-        🟢 Đã kích hoạt Profile <strong>${escapeHtml(target.profileName)}</strong> (${escapeHtml(target.model)})!
+         Đã kích hoạt Profile <strong>${escapeHtml(target.profileName)}</strong> (${escapeHtml(target.model)})!
       </div>
     `;
     const sheet = document.getElementById('modal-bottom-sheet');
@@ -1134,7 +1134,7 @@ function renderAIChatView() {
     ? `${aiConfig.profileName}`
     : `${providerInfo.badge} (${aiConfig.model})`;
   const apiStatusText = apiConnected
-    ? `🟢 ${displayProfLabel}`
+    ? ` ${displayProfLabel}`
     : `⚡ AI Thông minh • Quản lý Profile`;
 
   const savedProfiles = Array.isArray(aiProfilesState?.profiles) ? aiProfilesState.profiles : [];
@@ -1818,6 +1818,10 @@ function quickAddMultipleFromAI(msgIdx) {
 }
 
 function openStoreSearchFromAI(storeName) {
+  if (typeof openStoreDetailByName === 'function') {
+    openStoreDetailByName(storeName);
+    return;
+  }
   openSearchView(storeName);
 }
 
@@ -4587,7 +4591,7 @@ function getProxyStatusBadgeHtml() {
   if (localProxyStatus.online) {
     return `
       <div id="ai-proxy-live-badge" class="ai-test-banner ok" style="margin-bottom:12px; font-size:12px; padding:8px 12px;">
-        🟢 <strong>Đang kết nối Local Server (${escapeHtml(localProxyStatus.baseUrl)})</strong>
+         <strong>Đang kết nối Local Server (${escapeHtml(localProxyStatus.baseUrl)})</strong>
       </div>
     `;
   }
@@ -4667,7 +4671,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
             <div class="ai-active-card-details">
               <div class="ai-active-card-name">
                 <span>${escapeHtml(aiConfig.profileName || defaultProfileNameForConfig(aiConfig))}</span>
-                <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+                <span class="ai-prof-active-pill"> Đang sử dụng</span>
               </div>
               <div class="ai-active-card-sub">
                 ${escapeHtml(AI_PROVIDER_PRESETS[aiConfig.provider]?.badge || aiConfig.provider)} • <strong>${escapeHtml(aiConfig.model)}</strong> • Key: ${escapeHtml(maskApiKey(aiConfig.apiKey))}
@@ -4678,7 +4682,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
             <div class="ai-active-card-details">
               <div class="ai-active-card-name">
                 <span>AI Thông minh Nội bộ</span>
-                <span class="ai-prof-active-pill">🟢 Đang sử dụng</span>
+                <span class="ai-prof-active-pill"> Đang sử dụng</span>
               </div>
               <div class="ai-active-card-sub">
                 Tự động phân tích món ăn quanh PTIT, giỏ hàng & đơn cũ • Hoàn toàn miễn phí
@@ -4746,7 +4750,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
                   <div class="ai-profile-card-info" onclick="switchActiveAIProfile('${escapeHtml(prof.id)}', true)" role="button" tabindex="0" aria-pressed="${isCurrentActive}" onkeydown="if(event.key==='Enter'||event.key===' ')switchActiveAIProfile('${escapeHtml(prof.id)}', true)" style="cursor:pointer;">
                     <div class="ai-profile-card-name">
                       <span>${escapeHtml(prof.profileName)}</span>
-                      ${isCurrentActive ? `<span class="ai-prof-active-pill">🟢 Đang dùng</span>` : ''}
+                      ${isCurrentActive ? `<span class="ai-prof-active-pill"> Đang dùng</span>` : ''}
                     </div>
                     <div class="ai-profile-card-sub">
                       ${escapeHtml(pPreset.badge)} • <strong>${escapeHtml(prof.model)}</strong> • Key: ${escapeHtml(maskApiKey(prof.apiKey))}${personaHint}

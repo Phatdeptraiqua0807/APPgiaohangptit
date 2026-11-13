@@ -222,6 +222,14 @@
         }
       }
 
+      // 6d. Nếu đang ở Store Detail: quay lại trang nguồn
+      if (current === 'store-detail') {
+        if (typeof backFromStoreDetailView === 'function') {
+          backFromStoreDetailView();
+          return;
+        }
+      }
+
       // 7. Mặc định cho Cart, Activity, AI, Profile, Search: về Home
       if (typeof openHomeView === 'function') {
         openHomeView();
@@ -275,6 +283,14 @@
             targetPath = '/favorites';
             if (typeof favoritesActiveTab !== 'undefined' && favoritesActiveTab && favoritesActiveTab !== 'all') {
               targetQuery = { tab: favoritesActiveTab };
+            }
+            break;
+          case 'store-detail':
+            targetPath = (typeof viewingStoreDetailId !== 'undefined' && viewingStoreDetailId)
+              ? `/store/${viewingStoreDetailId}`
+              : '/home';
+            if (typeof storeDetailActiveTab !== 'undefined' && storeDetailActiveTab && storeDetailActiveTab !== 'for-you') {
+              targetQuery = { tab: storeDetailActiveTab };
             }
             break;
           case 'catalog':
@@ -452,6 +468,15 @@
       if (path === '/favorites') {
         if (typeof openFavoritesView === 'function') {
           openFavoritesView(query && query.tab ? query.tab : 'all');
+        }
+        return;
+      }
+
+      // 6c. Store Detail: /store/:id
+      const storeMatch = path.match(/^\/store\/(\d+)$/i);
+      if (storeMatch) {
+        if (typeof openStoreDetailView === 'function') {
+          openStoreDetailView(Number(storeMatch[1]), query && query.tab ? query.tab : 'for-you');
         }
         return;
       }

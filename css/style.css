@@ -1736,43 +1736,53 @@ textarea {
   height: 92px;
 }
 
-/* ── Toast ── */
+/* ── Toast (iPhone iOS Banner Notification Style) ── */
 .toast-container {
   position: fixed;
-  top: 20px;
+  top: calc(10px + env(safe-area-inset-top, 0px));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3000;
+  z-index: 3500;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  width: 100%;
-  max-width: var(--app-max-width);
-  padding: 0 var(--safe-padding);
+  width: calc(100% - 20px);
+  max-width: 396px;
+  padding: 0;
   pointer-events: none;
 }
 
-.toast {
-  background: var(--gray-800);
-  color: var(--white);
-  border-radius: var(--r-lg);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: var(--shadow-lg);
-  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-size: 13px;
-  font-weight: 500;
-  pointer-events: auto;
-  width: 100%;
+@media (min-width: 768px) {
+  .toast-container {
+    top: auto;
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    transform: none;
+    width: calc(100vw - 48px);
+    max-width: 380px;
+    align-items: flex-end;
+  }
+
+  body.view-ai-active .toast-container {
+    bottom: max(132px, calc(var(--ai-dock-clearance, 108px) + 28px));
+    right: 40px;
+  }
+
+  .toast.ios-toast {
+    animation: ios-toast-in-pc 0.36s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+  }
+
+  .toast.ios-toast.is-leaving {
+    transform: translateY(20px) scale(0.95);
+  }
 }
 
-@keyframes toast-in {
+@keyframes ios-toast-in-pc {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(24px) scale(0.95);
   }
 
   to {
@@ -1781,9 +1791,136 @@ textarea {
   }
 }
 
-.toast-icon {
-  font-size: 1.1rem;
+.toast.ios-toast {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(26px) saturate(190%);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  color: #0f172a;
+  border-radius: 22px;
+  padding: 10px 14px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
+  animation: ios-toast-in 0.42s cubic-bezier(0.22, 1.24, 0.36, 1) forwards;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 1, 1), opacity 0.24s ease;
+}
+
+.toast.ios-toast.is-leaving {
+  opacity: 0;
+  transform: translateY(-115%) scale(0.94);
+  pointer-events: none;
+}
+
+.ios-toast-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.ios-toast-app-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  color: #ffffff;
+  font-size: 17px;
+  background: linear-gradient(145deg, #10b981, #059669);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.28);
+}
+
+.ios-toast-app-icon .fluent-icon {
+  width: 19px;
+  height: 19px;
+  color: #ffffff;
+}
+
+.toast.ios-toast.tone-rose .ios-toast-app-icon {
+  background: linear-gradient(145deg, #fb7185, #e11d48);
+  box-shadow: 0 4px 10px rgba(225, 29, 72, 0.26);
+}
+
+.toast.ios-toast.tone-amber .ios-toast-app-icon {
+  background: linear-gradient(145deg, #fbbf24, #d97706);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.26);
+}
+
+.toast.ios-toast.tone-indigo .ios-toast-app-icon {
+  background: linear-gradient(145deg, #818cf8, #4f46e5);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.26);
+}
+
+.toast.ios-toast.tone-orange .ios-toast-app-icon {
+  background: linear-gradient(145deg, #fb923c, #ea580c);
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.26);
+}
+
+.ios-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ios-toast-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 1px;
+}
+
+.ios-toast-app-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ios-toast-time {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.ios-toast-msg {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.32;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ios-toast-grabber {
+  width: 34px;
+  height: 3.5px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.16);
+  margin: 6px auto 0;
+}
+
+@keyframes ios-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-110%) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ── Scrollbar (Thanh trượt/cuộn) toàn hệ thống: Nền trong suốt đồng màu, Cục nắm bo tròn tự ẩn sau 5s ── */
@@ -1864,6 +2001,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 .cart-view-container.fade-in,
 .checkout-view-container.fade-in,
 .product-detail-page.fade-in,
+.store-detail-view-container.fade-in,
 .favorites-view-container.fade-in,
 .catalog-view-container.fade-in {
   animation: fade-opacity-only 0.25s ease-out both;
@@ -17306,4 +17444,721 @@ button.res-fav-btn {
   font-weight: 750;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0, 177, 79, 0.25);
+}
+
+/* =========================================================
+   TRANG XEM CỬA HÀNG (.store-detail-view-container)
+   ========================================================= */
+.store-detail-view-container {
+  padding: 0 0 90px;
+  min-height: 100vh;
+  background: var(--gray-50);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .store-detail-view-container {
+    padding: 24px 36px 60px !important;
+    background: transparent;
+  }
+}
+
+.store-detail-content {
+  padding: 12px var(--safe-padding) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .store-detail-content {
+    padding: 0;
+    gap: 22px;
+  }
+}
+
+.store-hero-card {
+  background: #ffffff;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.store-hero-main {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.store-hero-img-wrap {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--gray-100);
+}
+
+@media (min-width: 768px) {
+  .store-hero-img-wrap {
+    width: 112px;
+    height: 112px;
+  }
+}
+
+.store-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.store-hero-badge {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #ffffff;
+}
+
+.store-hero-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.store-hero-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 850;
+  color: var(--gray-900);
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .store-hero-title {
+    font-size: 22px;
+  }
+}
+
+.store-hero-desc {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.store-hero-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.store-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 9999px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.store-meta-pill .fluent-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.store-meta-pill.rating .fluent-icon {
+  color: #f59e0b;
+}
+
+.store-meta-pill.freeship {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.store-hero-address {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--gray-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.store-hero-address .fluent-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--green-600);
+  flex-shrink: 0;
+}
+
+.store-hero-vouchers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--gray-200);
+}
+
+/* Tabs điều hướng cửa hàng */
+.store-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.store-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.store-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--gray-200);
+  background: #ffffff;
+  color: var(--gray-700);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.store-nav-tab .fluent-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.store-nav-tab.active {
+  background: var(--green-500);
+  border-color: var(--green-500);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 177, 79, 0.22);
+}
+
+.store-section {
+  width: 100%;
+  min-width: 0;
+}
+
+.store-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.store-section-title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gray-900);
+}
+
+.store-section-title .fluent-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--green-600);
+}
+
+.store-section-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.store-inline-link-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  color: var(--green-600);
+  font-size: 12.5px;
+  font-weight: 750;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* Lưới món ăn trong cửa hàng */
+.store-dishes-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .store-dishes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+.store-dish-card {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 16px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.store-dish-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--green-400);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.store-dish-img-wrap {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--gray-100);
+}
+
+.store-dish-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.store-dish-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.store-dish-reason-pill {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 750;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #fef3c7;
+  color: #b45309;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.store-dish-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.store-dish-desc {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.store-dish-footer {
+  margin-top: auto;
+  padding-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.store-dish-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green-600);
+  white-space: nowrap;
+}
+
+.store-dish-add-btn {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: none;
+  background: var(--green-500);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Toolbar tìm & lọc thực đơn */
+.store-menu-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.store-menu-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--gray-200);
+  background: #ffffff;
+}
+
+.store-menu-search-box .fluent-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+
+.store-menu-search-box input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--gray-900);
+  background: transparent;
+}
+
+.store-menu-clear-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.store-menu-tag-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.store-menu-tag-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.store-tag-chip {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--gray-200);
+  background: #ffffff;
+  color: var(--gray-700);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.store-tag-chip.active {
+  background: var(--green-50);
+  border-color: var(--green-500);
+  color: var(--green-700, #15803d);
+}
+
+/* Đánh giá chung cửa hàng */
+.store-reviews-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 18px;
+  margin-bottom: 14px;
+}
+
+.store-reviews-score-col {
+  text-align: center;
+  min-width: 92px;
+}
+
+.store-reviews-big-num {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--gray-900);
+  line-height: 1.1;
+}
+
+.store-reviews-stars-row {
+  display: inline-flex;
+  gap: 2px;
+  color: #f59e0b;
+  margin: 4px 0;
+}
+
+.store-reviews-stars-row .fluent-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.store-reviews-count-lbl {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.store-reviews-bars-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.store-rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--gray-600);
+}
+
+.store-rating-bar-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--gray-100);
+  overflow: hidden;
+}
+
+.store-rating-bar-fill {
+  height: 100%;
+  background: #f59e0b;
+  border-radius: 9999px;
+}
+
+.store-rating-bar-cnt {
+  min-width: 16px;
+  text-align: right;
+}
+
+.store-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.store-review-card {
+  background: #ffffff;
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.store-review-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.store-review-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.store-review-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: var(--gray-100);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.store-review-name {
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--gray-900);
+}
+
+.store-review-meta {
+  font-size: 11px;
+  color: var(--gray-500);
+}
+
+.store-review-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.store-review-stars .fluent-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.store-review-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--gray-700);
+  line-height: 1.45;
+}
+
+/* Gợi ý quán khác theo từ khóa */
+.store-similar-section {
+  padding-top: 8px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.store-suggest-kw-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.store-similar-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.store-similar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.store-similar-card {
+  width: 210px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.store-similar-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--green-400);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.store-similar-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 112px;
+  overflow: hidden;
+  background: var(--gray-100);
+}
+
+.store-similar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.store-similar-body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.store-similar-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.store-similar-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--gray-600);
+}
+
+.store-similar-meta .fluent-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.store-similar-sub {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--green-600);
 }
