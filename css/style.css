@@ -1872,10 +1872,20 @@ textarea {
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.28);
 }
 
-.ios-toast-app-icon .fluent-icon {
+.ios-toast-app-icon .fluent-icon,
+.toast .fluent-icon,
+.toast-container .fluent-icon {
   width: 19px;
   height: 19px;
-  color: #ffffff;
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+.ios-toast-app-icon .fluent-icon path,
+.toast .fluent-icon path,
+.toast-container .fluent-icon path {
+  fill: #ffffff !important;
+  color: #ffffff !important;
 }
 
 .toast.ios-toast.tone-rose .ios-toast-app-icon {

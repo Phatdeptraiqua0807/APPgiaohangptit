@@ -1,14 +1,14 @@
 /* ptitngon Service Worker - PWA & Offline Cache */
-const CACHE_NAME = 'ptitngon-cache-v6';
+const CACHE_NAME = 'ptitngon-cache-v7';
 const CORE_SHELL_URLS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/style.css?v=8.79',
+  './css/style.css?v=8.80',
   './js/fluent-icons.js?v=2.6',
   './js/food-data.js',
   './js/database.js?v=1.2',
-  './js/app.js?v=9.20',
+  './js/app.js?v=9.21',
   './js/catalog-profile.js?v=5.10',
   './js/ai-chat.js?v=7.8',
   './js/dish-detail.js?v=6.14',

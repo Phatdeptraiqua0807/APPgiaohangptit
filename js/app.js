@@ -7033,9 +7033,15 @@ function showToast(icon, message) {
     toast.setAttribute('aria-live', 'polite');
   }
 
-  const iconContent = (typeof FluentIcons !== 'undefined' && FluentIcons[icon])
+  let iconContent = (typeof FluentIcons !== 'undefined' && FluentIcons[icon])
     ? FluentIcons[icon]
     : (icon || (typeof FluentIcons !== 'undefined' ? FluentIcons.sparkleFilled : '🔔'));
+  if (typeof iconContent === 'string' && iconContent.includes('<svg')) {
+    iconContent = iconContent.replace(/style="[^"]*"/i, 'style="color: #ffffff;"');
+    if (!iconContent.includes('style=')) {
+      iconContent = iconContent.replace('<svg ', '<svg style="color: #ffffff;" ');
+    }
+  }
 
   toast.innerHTML = `
     <div class="ios-toast-main">
