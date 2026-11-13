@@ -1907,7 +1907,17 @@ function handleAIChatKeydown(e) {
 
 // ── Tối ưu vị trí & độ cao thanh AI Composer Dock riêng cho điện thoại khi bật bàn phím ảo ──
 function syncAIMobileKeyboardViewport() {
-  if (typeof currentView === 'undefined' || currentView !== 'ai') return;
+  if (typeof currentView === 'undefined' || currentView !== 'ai') {
+    document.body.classList.remove('ai-keyboard-open');
+    document.documentElement.style.removeProperty('--ai-keyboard-offset');
+    return;
+  }
+
+  if (typeof window.syncMobileKeyboardViewport === 'function') {
+    window.syncMobileKeyboardViewport();
+    return;
+  }
+
   const isMobile = window.innerWidth <= 768;
   if (!isMobile) {
     document.body.classList.remove('ai-keyboard-open');
@@ -1917,11 +1927,11 @@ function syncAIMobileKeyboardViewport() {
 
   const input = document.getElementById('ai-chat-input');
   const isFocused = input && document.activeElement === input;
+  const layoutH = (document.documentElement && document.documentElement.clientHeight) || window.innerHeight || 0;
 
   if (window.visualViewport) {
     const vv = window.visualViewport;
-    // Chênh lệch giữa innerHeight và chiều cao thực tế nhìn thấy khi có bàn phím ảo
-    const diff = Math.max(0, window.innerHeight - (vv.height + Math.round(vv.offsetTop)));
+    const diff = Math.max(0, Math.round(layoutH - (vv.height + vv.offsetTop)));
     const isKeyboardActive = diff > 60 || isFocused;
 
     if (isKeyboardActive) {
@@ -1932,13 +1942,8 @@ function syncAIMobileKeyboardViewport() {
       document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
     }
   } else {
-    if (isFocused) {
-      document.body.classList.add('ai-keyboard-open');
-      document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
-    } else {
-      document.body.classList.remove('ai-keyboard-open');
-      document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
-    }
+    document.body.classList.toggle('ai-keyboard-open', Boolean(isFocused));
+    document.documentElement.style.setProperty('--ai-keyboard-offset', '0px');
   }
   if (typeof syncAIDockClearance === 'function') {
     syncAIDockClearance();
@@ -2166,10 +2171,19 @@ function syncAIDockClearance() {
   const container = document.querySelector('.ai-chat-view-container');
   if (!dock) return 0;
 
-  // Đo khoảng cách thực tế từ đỉnh dock tới đáy màn hình (bao gồm cả bottom offset, safe area, quick prompts, multiline...)
-  const rect = dock.getBoundingClientRect();
-  const dockOffsetFromBottom = Math.max(0, Math.round(window.innerHeight - rect.top));
-  // Thêm 12px đệm thở để phần tử cuối không dính sát sạt vào mép trên của dock
+  // Tính khoảng trống đáy không phụ thuộc CSS transition lag khi bàn phím vừa bật/tắt
+  const metrics = typeof window.getMobileKeyboardMetrics === 'function'
+    ? window.getMobileKeyboardMetrics()
+    : { layoutH: (document.documentElement && document.documentElement.clientHeight) || window.innerHeight || 0, kbOffset: 0 };
+  const layoutH = metrics.layoutH || 0;
+  const rect = typeof dock.getBoundingClientRect === 'function' ? dock.getBoundingClientRect() : null;
+  const dockHeight = Math.round(dock.offsetHeight || (rect ? rect.height : 0));
+  const computedBottom = (typeof getComputedStyle === 'function' ? parseFloat(getComputedStyle(dock).bottom) : 0) || 0;
+  const isKbOpen = Boolean(document.body && document.body.classList.contains('ai-keyboard-open'));
+  const targetBottom = isKbOpen ? Math.max(computedBottom, (metrics.kbOffset || 0) + 6) : computedBottom;
+  const measuredFromRect = rect && rect.top > 0 ? Math.max(0, Math.round(layoutH - rect.top)) : 0;
+  const dockOffsetFromBottom = Math.max(measuredFromRect, dockHeight > 0 ? Math.round(dockHeight + targetBottom) : 0);
+  // Thêm 12px đệm thở để phần tử cuối không dính sát mép trên của dock
   const clearance = dockOffsetFromBottom > 0 ? (dockOffsetFromBottom + 12) : 110;
 
   document.documentElement.style.setProperty('--ai-dock-clearance', `${clearance}px`);

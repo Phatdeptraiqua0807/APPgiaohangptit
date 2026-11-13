@@ -8926,6 +8926,7 @@ body.view-ai-active .app {
   border-radius: 0 !important;
   box-shadow: none !important;
   min-height: 100vh !important;
+  min-height: 100dvh !important;
   background: #f8fafc !important;
   overflow: visible !important;
 }
@@ -8935,6 +8936,7 @@ body.view-ai-active .ai-chat-view-container {
   max-width: 100% !important;
   margin: 0 !important;
   min-height: 100vh !important;
+  min-height: 100dvh !important;
   padding: 0 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -9005,7 +9007,7 @@ body.view-ai-active .ai-chat-view-container {
 
   /* Khung soạn thảo bám sát ngay trên đỉnh bàn phím ảo, không bị đội thêm 80px của bottom nav */
   body.view-ai-active.ai-keyboard-open .ai-composer-dock {
-    bottom: calc(var(--ai-keyboard-offset, 0px) + 6px) !important;
+    bottom: calc(max(var(--ai-keyboard-offset, var(--mobile-keyboard-offset, 0px)), env(safe-area-inset-bottom, 0px)) + 6px) !important;
     left: 8px !important;
     right: 8px !important;
     border-radius: 16px !important;
@@ -19289,4 +19291,118 @@ body.view-ai-active .spa-view.active {
   font-weight: 800;
   font-size: 14.5px;
   letter-spacing: -0.2px;
+}
+
+/* ============================================================
+   Mobile Input Auto-Zoom Prevention & Virtual Keyboard Layout
+   ============================================================ */
+@media (max-width: 768px), (pointer: coarse) {
+  html {
+    scroll-padding-bottom: calc(var(--mobile-keyboard-offset, 0px) + 96px);
+  }
+
+  /* Giữ kích thước tối thiểu 1rem (16px) để trình duyệt điện thoại không tự zoom khi chạm vào ô nhập */
+  :is(#app, #modal-overlay, #search-filter-overlay, #pdp-order-drawer, body > dialog)
+    :is(
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
+      textarea,
+      select
+    ),
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: max(1rem, 1em) !important;
+  }
+
+  .search-bar input,
+  .search-view-input-box input,
+  .store-menu-search-box input,
+  .db-search-input-wrap input,
+  .ai-models-search-input,
+  .cart-voucher-input,
+  .sn-ai-input-bar input {
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .un-stepper-field input,
+  .un-height-mini input,
+  .filter-price-input {
+    min-width: 56px;
+    padding-left: 6px;
+    padding-right: 6px;
+    line-height: 1.3;
+  }
+
+  .floating-cart-bar {
+    bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Ẩn thanh điều hướng/thanh dính đáy trên mọi màn hình khi bàn phím ảo đang mở */
+  body.mobile-keyboard-open .bottom-nav,
+  body.mobile-keyboard-open .bottom-spacer,
+  body.mobile-keyboard-open .floating-cart-bar,
+  body.mobile-keyboard-open .cart-bottom-bar,
+  body.mobile-keyboard-open .pdp-mobile-sticky-bar,
+  body.mobile-keyboard-open .ptr-indicator {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Giữ dock AI bám mượt theo visualViewport mà không trễ do CSS transition bottom */
+  body.view-ai-active.mobile-keyboard-open .ai-composer-dock {
+    transition: left 0.18s ease,
+      right 0.18s ease,
+      border-radius 0.18s ease,
+      box-shadow 0.18s ease !important;
+  }
+
+  /* Đẩy các modal / bottom-sheet / bộ lọc lên phía trên bàn phím ảo */
+  body.mobile-keyboard-open dialog.modal-overlay.active,
+  body.mobile-keyboard-open .modal-overlay.active,
+  body.mobile-keyboard-open #search-filter-overlay.active {
+    padding-bottom: var(--mobile-keyboard-offset, 0px) !important;
+    align-items: flex-end !important;
+  }
+
+  body.mobile-keyboard-open .modal-overlay.active .bottom-sheet,
+  body.mobile-keyboard-open dialog.modal-overlay.active .bottom-sheet,
+  body.mobile-keyboard-open #search-filter-overlay.active .search-filter-bottom-sheet,
+  body.mobile-keyboard-open .modal-overlay.active .bottom-sheet:has(.dbm-modal-shell),
+  body.mobile-keyboard-open .modal-overlay.active .dbm-modal-shell {
+    max-height: calc(var(--vvh, 100dvh) - 12px) !important;
+    scroll-padding-bottom: 28px;
+  }
+
+  .dish-modal-body,
+  .delivery-modal-body,
+  #search-filter-bottom-sheet,
+  .dbm-modal-shell {
+    scroll-padding-bottom: calc(var(--mobile-keyboard-offset, 0px) + 28px);
+  }
+
+  body.mobile-keyboard-open .dish-modal-header {
+    height: 112px !important;
+  }
+
+  body.mobile-keyboard-open .delivery-modal-header {
+    padding: 12px 16px !important;
+  }
+
+  body.mobile-keyboard-open .delivery-modal-footer {
+    padding: 10px 16px !important;
+  }
+
+  body.mobile-keyboard-open #pdp-order-drawer.mobile-open {
+    bottom: var(--mobile-keyboard-offset, 0px) !important;
+    max-height: calc(var(--vvh, 100dvh) - 12px) !important;
+  }
+
+  body.mobile-keyboard-open #pdp-order-drawer.mobile-open .pdp-order-card {
+    max-height: calc(var(--vvh, 100dvh) - 24px) !important;
+    overflow-y: auto !important;
+  }
 }

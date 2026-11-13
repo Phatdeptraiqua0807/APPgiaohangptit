@@ -1012,6 +1012,7 @@ function initMobilePullToRefresh() {
 
   document.addEventListener('touchstart', (e) => {
     if (refreshing || !e.touches || e.touches.length !== 1) return;
+    if (document.body && document.body.classList.contains('mobile-keyboard-open')) return;
     if ((window.scrollY || document.documentElement.scrollTop || 0) > 2) return;
     if (typeof currentView !== 'undefined' && currentView === 'ai') return;
     if (document.querySelector('dialog[open]')) return;
@@ -1175,6 +1176,9 @@ function render(options = { replace: false }) {
       document.body.classList.remove('view-ai-active');
       document.body.classList.remove('ai-keyboard-open');
       document.documentElement.style.removeProperty('--ai-keyboard-offset');
+    }
+    if (typeof syncMobileKeyboardViewport === 'function') {
+      syncMobileKeyboardViewport();
     }
 
     // Sync Bottom Nav visibility: visible on main navigation views
@@ -7143,6 +7147,149 @@ document.addEventListener('pointerdown', (e) => {
   }
 }, { passive: true });
 
+const NON_KEYBOARD_INPUT_TYPES = new Set([
+  'checkbox', 'radio', 'range', 'color', 'file', 'button', 'submit', 'reset', 'hidden', 'image'
+]);
+
+function isEditableKeyboardControl(el) {
+  if (!el || el.disabled || el.readOnly) return false;
+  const tag = (el.tagName || '').toUpperCase();
+  if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  if (tag === 'INPUT') {
+    const type = String(el.type || 'text').toLowerCase();
+    return !NON_KEYBOARD_INPUT_TYPES.has(type);
+  }
+  return Boolean(el.isContentEditable || (typeof el.getAttribute === 'function' && el.getAttribute('contenteditable') === 'true'));
+}
+
+function getMobileKeyboardMetrics() {
+  const docEl = document.documentElement;
+  const layoutH = (docEl && docEl.clientHeight) || window.innerHeight || 0;
+  const vv = window.visualViewport;
+  const vvh = vv ? Math.max(120, Math.round(vv.height)) : layoutH;
+  const vvOffsetTop = vv ? Math.max(0, Math.round(vv.offsetTop)) : 0;
+  const kbOffset = vv ? Math.max(0, Math.round(layoutH - (vv.height + vv.offsetTop))) : 0;
+  return { layoutH, vvh, vvOffsetTop, kbOffset };
+}
+
+function isMobileKeyboardDevice() {
+  if (window.innerWidth <= 768) return true;
+  if (typeof window.matchMedia === 'function') {
+    return window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 1024;
+  }
+  return false;
+}
+
+function ensureFocusedControlVisible(el) {
+  if (!isEditableKeyboardControl(el) || el.id === 'ai-chat-input') return;
+  if (typeof el.getBoundingClientRect !== 'function' || typeof el.scrollIntoView !== 'function') return;
+  const rect = el.getBoundingClientRect();
+  const vv = window.visualViewport;
+  const visibleTop = vv ? vv.offsetTop + 12 : 12;
+  const visibleBottom = vv ? vv.offsetTop + vv.height - 20 : (window.innerHeight || 0) - 20;
+  if (rect.bottom > visibleBottom || rect.top < visibleTop) {
+    try {
+      el.scrollIntoView({ block: 'center', behavior: 'smooth', inline: 'nearest' });
+    } catch (_) {
+      el.scrollIntoView(true);
+    }
+  }
+}
+
+function syncMobileKeyboardViewport() {
+  const rootStyle = document.documentElement && document.documentElement.style;
+  if (!document.body || !rootStyle) return null;
+
+  if (!isMobileKeyboardDevice()) {
+    document.body.classList.remove('mobile-keyboard-open', 'ai-keyboard-open');
+    rootStyle.removeProperty('--vvh');
+    rootStyle.removeProperty('--vv-offset-top');
+    rootStyle.removeProperty('--mobile-keyboard-offset');
+    rootStyle.removeProperty('--ai-keyboard-offset');
+    return { isKeyboardActive: false, layoutH: window.innerHeight || 0, vvh: window.innerHeight || 0, vvOffsetTop: 0, kbOffset: 0 };
+  }
+
+  const metrics = getMobileKeyboardMetrics();
+  const activeEl = document.activeElement;
+  const isFocused = isEditableKeyboardControl(activeEl);
+  const isTouchLike = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+    (typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches);
+  // Chỉ gắn trạng thái mở bàn phím khi thiết bị hỗ trợ cảm ứng hoặc khi visualViewport thực sự thu hẹp > 60px
+  const isKeyboardActive = metrics.kbOffset > 60 || (isFocused && isTouchLike);
+  const effectiveKbOffset = isKeyboardActive ? metrics.kbOffset : 0;
+
+  rootStyle.setProperty('--vvh', `${metrics.vvh}px`);
+  rootStyle.setProperty('--vv-offset-top', `${metrics.vvOffsetTop}px`);
+  rootStyle.setProperty('--mobile-keyboard-offset', `${effectiveKbOffset}px`);
+  document.body.classList.toggle('mobile-keyboard-open', isKeyboardActive);
+
+  if (typeof currentView !== 'undefined' && currentView === 'ai') {
+    const aiFocused = Boolean(activeEl && activeEl.id === 'ai-chat-input');
+    const aiKeyboardActive = metrics.kbOffset > 60 || aiFocused;
+    document.body.classList.toggle('ai-keyboard-open', aiKeyboardActive);
+    rootStyle.setProperty('--ai-keyboard-offset', `${aiKeyboardActive ? metrics.kbOffset : 0}px`);
+    if (typeof syncAIDockClearance === 'function') {
+      syncAIDockClearance();
+    }
+  } else {
+    document.body.classList.remove('ai-keyboard-open');
+    rootStyle.removeProperty('--ai-keyboard-offset');
+  }
+
+  return { isKeyboardActive, ...metrics };
+}
+
+let __mobileKbListenersBound = false;
+function initMobileKeyboardViewportSync() {
+  if (__mobileKbListenersBound) return;
+  __mobileKbListenersBound = true;
+
+  let blurTimer = null;
+  let scrollEnsureTimer = null;
+
+  document.addEventListener('focusin', (e) => {
+    if (blurTimer) {
+      clearTimeout(blurTimer);
+      blurTimer = null;
+    }
+    const target = e.target;
+    if (!isEditableKeyboardControl(target)) return;
+    syncMobileKeyboardViewport();
+    if (!isMobileKeyboardDevice()) return;
+    if (scrollEnsureTimer) clearTimeout(scrollEnsureTimer);
+    scrollEnsureTimer = setTimeout(() => {
+      syncMobileKeyboardViewport();
+      if (document.activeElement === target) {
+        ensureFocusedControlVisible(target);
+      }
+    }, 260);
+  }, true);
+
+  document.addEventListener('focusout', () => {
+    if (blurTimer) clearTimeout(blurTimer);
+    // Đợi 140ms để giữ ổn định giao diện khi người dùng bấm nút Gửi/Xóa hoặc chuyển giữa các ô
+    blurTimer = setTimeout(() => {
+      syncMobileKeyboardViewport();
+    }, 140);
+  }, true);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', syncMobileKeyboardViewport);
+    window.visualViewport.addEventListener('scroll', syncMobileKeyboardViewport);
+  }
+  window.addEventListener('resize', syncMobileKeyboardViewport);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(syncMobileKeyboardViewport, 120);
+  });
+
+  syncMobileKeyboardViewport();
+}
+
+window.isEditableKeyboardControl = isEditableKeyboardControl;
+window.getMobileKeyboardMetrics = getMobileKeyboardMetrics;
+window.syncMobileKeyboardViewport = syncMobileKeyboardViewport;
+window.initMobileKeyboardViewportSync = initMobileKeyboardViewportSync;
+
 // ── Init (Khởi tạo Database JSON thống nhất trước khi render UI) ──
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof setupNativeDialogModalSync === 'function') {
@@ -7173,6 +7320,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (typeof initMobilePullToRefresh === 'function') {
     initMobilePullToRefresh();
+  }
+  if (typeof initMobileKeyboardViewportSync === 'function') {
+    initMobileKeyboardViewportSync();
   }
 
   if (typeof prewarmCatalogImages === 'function') {
