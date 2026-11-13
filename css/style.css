@@ -1755,39 +1755,10 @@ textarea {
 
 @media (min-width: 768px) {
   .toast-container {
-    top: auto;
-    bottom: 24px;
-    right: 24px;
-    left: auto;
-    transform: none;
-    width: calc(100vw - 48px);
-    max-width: 380px;
-    align-items: flex-end;
-  }
-
-  body.view-ai-active .toast-container {
-    bottom: max(132px, calc(var(--ai-dock-clearance, 108px) + 28px));
-    right: 40px;
-  }
-
-  .toast.ios-toast {
-    animation: ios-toast-in-pc 0.36s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-  }
-
-  .toast.ios-toast.is-leaving {
-    transform: translateY(20px) scale(0.95);
-  }
-}
-
-@keyframes ios-toast-in-pc {
-  from {
-    opacity: 0;
-    transform: translateY(24px) scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    top: 16px;
+    left: calc(50% + var(--sidebar-width, 270px) / 2);
+    transform: translateX(-50%);
+    max-width: 410px;
   }
 }
 
