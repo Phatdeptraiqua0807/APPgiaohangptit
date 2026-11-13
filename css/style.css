@@ -609,7 +609,6 @@ textarea {
   padding: 0 12px 0 4px;
   border-radius: var(--r-full, 9999px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.68);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   box-sizing: border-box;
 }
@@ -8981,8 +8980,8 @@ body.view-ai-active .ai-chat-header {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.78) 100%) !important;
-  backdrop-filter: blur(28px) saturate(150%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.58) 100%) !important;
+  backdrop-filter: blur(8px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
   box-sizing: border-box !important;
@@ -9674,19 +9673,50 @@ body.view-ai-active .ai-chat-view-container {
   }
 }
 
-/* Hiệu ứng hiện tin nhắn: bong bóng, từng từ & thẻ gợi ý */
+/* Hiệu ứng hiện tin nhắn: bong bóng mở rộng từ trên xuống, từng từ hiện ra & thẻ gợi ý */
 .ai-fade-bubble {
-  animation: aiBubbleFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: aiBubbleFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Riêng tin nhắn của assistant: mở rộng từ trên xuống dưới nhẹ nhàng, mượt mà */
+.ai-msg-bubble.assistant.ai-fade-bubble {
+  transform-origin: top left;
+  will-change: clip-path, transform, opacity;
+  animation: aiAssistantBubbleExpand var(--ai-bubble-expand-duration, 0.52s) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes aiAssistantBubbleExpand {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 6px 20px 20px 20px);
+    transform: translateY(-8px) scaleY(0.92);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  99.9% {
+    clip-path: inset(0 0 0 0 round 6px 20px 20px 20px);
+  }
+
+  100% {
+    opacity: 1;
+    clip-path: none;
+    transform: translateY(0) scaleY(1);
+  }
 }
 
 .ai-word-fade {
+  display: inline-block;
   opacity: 0;
-  animation: aiWordFade 0.45s ease forwards;
+  will-change: opacity, transform, filter;
+  animation: aiWordFade 0.16s cubic-bezier(0.2, 0.9, 0.4, 1) forwards;
 }
 
 .ai-fade-late {
   opacity: 0;
-  animation: aiBubbleFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: aiBubbleFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes aiBubbleFade {
@@ -9704,12 +9734,41 @@ body.view-ai-active .ai-chat-view-container {
 @keyframes aiWordFade {
   from {
     opacity: 0;
-    filter: blur(3px);
+    transform: translateY(3px);
+    filter: blur(2px);
   }
 
   to {
     opacity: 1;
+    transform: translateY(0);
     filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ai-fade-bubble,
+  .ai-msg-bubble.assistant.ai-fade-bubble,
+  .ai-word-fade,
+  .ai-fade-late {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-fade-bubble,
+  .ai-msg-bubble.assistant.ai-fade-bubble,
+  .ai-word-fade,
+  .ai-fade-late {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
   }
 }
 
@@ -9736,12 +9795,21 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex-wrap: nowrap;
   margin-bottom: 10px;
   font-size: 12px;
   font-weight: 800;
   color: #065f46;
+  min-width: 0;
+}
+
+.ai-visual-header-row > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .ai-add-all-combo-btn {
@@ -14673,8 +14741,12 @@ body.view-ai-active .ai-chat-view-container {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   list-style: none;
   user-select: none;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .ai-agent-trace-box summary::-webkit-details-marker {
@@ -14686,15 +14758,31 @@ body.view-ai-active .ai-chat-view-container {
 }
 
 .ai-trace-summary-left {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ai-trace-summary-left > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .ai-trace-toggle-hint {
   font-size: 11px;
   font-weight: 600;
+  color: #059669;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
   color: #059669;
   white-space: nowrap;
 }
@@ -15567,6 +15655,91 @@ body.view-ai-active .ai-chat-view-container {
   /* Không cần nút mũi tên cuộn ngang trên điện thoại (vuốt tay) */
   .scroll-arrow-controls {
     display: none !important;
+  }
+
+  /* ai-visual-header-row và ai-agent-trace-box cố định chỉ hiển thị đúng 1 dòng trên điện thoại */
+  .ai-visual-dishes-block {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-visual-header-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-visual-header-row > span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .ai-visual-header-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    flex-shrink: 0 !important;
+    gap: 6px !important;
+  }
+
+  .ai-add-all-combo-btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ai-agent-trace-box {
+    border-radius: 16px !important;
+    margin-bottom: 8px !important;
+    max-width: 100% !important;
+  }
+
+  .ai-agent-trace-box summary {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .ai-trace-summary-left {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .ai-trace-summary-left > span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-width: 0 !important;
+  }
+
+  .ai-trace-toggle-hint {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 10.5px !important;
   }
 
   /* Thẻ đơn hàng thu nhỏ trong chat AI trên màn hình điện thoại: chống tràn triệt để */
@@ -17002,6 +17175,7 @@ body:not(.view-ai-active) .ai-aura {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   html,
   .categories-scroll,
   .restaurants-scroll,
@@ -17084,6 +17258,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
   }
+
   to {
     opacity: 0.35;
     transform: translate3d(-32px, 0, 0) scale(0.988);
@@ -17095,6 +17270,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 0;
     transform: translate3d(48px, 0, 0);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -17106,6 +17282,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
+
   to {
     opacity: 0;
     transform: translate3d(48px, 0, 0);
@@ -17117,6 +17294,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 0.4;
     transform: translate3d(-32px, 0, 0) scale(0.988);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
@@ -17128,6 +17306,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
   }
+
   to {
     opacity: 0;
     transform: translate3d(0, -14px, 0) scale(0.985);
@@ -17139,6 +17318,7 @@ html.vt-transitioning .bottom-nav:not(.nav-hidden) {
     opacity: 0;
     transform: translate3d(0, 20px, 0) scale(0.988);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
@@ -17220,6 +17400,7 @@ html.vt-dir-tab::view-transition-new(root) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   html.vt-dir-forward::view-transition-old(root),
   html.vt-dir-forward::view-transition-new(root),
   html.vt-dir-back::view-transition-old(root),
@@ -17280,8 +17461,7 @@ button.delivery-tag-btn {
 }
 
 /* Horizontal Scroll Snap + Touch action cho toàn bộ các dải cuộn ngang */
-:is(
-  .search-tags,
+:is(.search-tags,
   .categories-scroll,
   .food-categories-section .food-categories-grid,
   .home-featured-dishes-scroll,
@@ -17305,18 +17485,15 @@ button.delivery-tag-btn {
   .store-menu-tag-chips,
   .store-similar-scroll,
   .dbm-strip-row,
-  .dbm-bulk-bar.active .dbm-bulk-actions
-) {
+  .dbm-bulk-bar.active .dbm-bulk-actions) {
   scroll-snap-type: x proximity;
   scroll-padding-inline: 16px;
   touch-action: manipulation;
 }
 
-:is(
-  .categories-scroll,
+:is(.categories-scroll,
   .home-featured-dishes-scroll,
-  .restaurants-scroll.featured-stores-scroll
-) {
+  .restaurants-scroll.featured-stores-scroll) {
   scroll-padding-inline: var(--safe-padding, 16px);
 }
 
@@ -17334,8 +17511,7 @@ button.delivery-tag-btn {
   }
 }
 
-:is(
-  .search-tags,
+:is(.search-tags,
   .categories-scroll,
   .food-categories-section .food-categories-grid,
   .home-featured-dishes-scroll,
@@ -17359,8 +17535,7 @@ button.delivery-tag-btn {
   .store-menu-tag-chips,
   .store-similar-scroll,
   .dbm-strip-row,
-  .dbm-bulk-bar.active .dbm-bulk-actions
-) > * {
+  .dbm-bulk-bar.active .dbm-bulk-actions)>* {
   scroll-snap-align: start;
 }
 
@@ -17390,9 +17565,9 @@ button.delivery-tag-btn {
 }
 
 @supports (animation-timeline: scroll()) and (mask: linear-gradient(black, black) no-clip subtract) {
+
   /* Dải chip/tab/thẻ gọn: fade 20px ở hai đầu khi có nội dung cuộn tiếp */
-  :is(
-    .search-tags,
+  :is(.search-tags,
     .categories-scroll,
     .food-categories-section .food-categories-grid,
     .home-featured-dishes-scroll,
@@ -17417,8 +17592,7 @@ button.delivery-tag-btn {
     .store-menu-tag-chips,
     .store-similar-scroll,
     .dbm-strip-row,
-    .dbm-bulk-bar.active .dbm-bulk-actions
-  ) {
+    .dbm-bulk-bar.active .dbm-bulk-actions) {
     --fade-size: 20px;
     --fade-dir: right;
     --fade-start-pos: 0;
@@ -17434,23 +17608,19 @@ button.delivery-tag-btn {
   }
 
   /* Carousel card lớn trên Home/Search/Store/AI: fade 28px */
-  :is(
-    .home-featured-dishes-scroll,
+  :is(.home-featured-dishes-scroll,
     .restaurants-scroll.featured-stores-scroll,
     .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
     .visual-suggestions-scroll,
     .ai-prompt-grid,
     .ai-dish-cards-strip,
-    .store-similar-scroll
-  ) {
+    .store-similar-scroll) {
     --fade-size: 28px;
   }
 
-  :is(
-    .categories-scroll,
+  :is(.categories-scroll,
     .home-featured-dishes-scroll,
-    .restaurants-scroll.featured-stores-scroll
-  ) {
+    .restaurants-scroll.featured-stores-scroll) {
     scroll-padding-inline: max(var(--safe-padding, 16px), var(--fade-size));
   }
 
@@ -18912,7 +19082,8 @@ button.res-fav-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 /* =========================================================
@@ -18969,8 +19140,15 @@ body.view-ai-active .spa-view.active {
 }
 
 @keyframes emptyCartFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -19098,8 +19276,13 @@ body.view-ai-active .spa-view.active {
 }
 
 @keyframes ptitSkeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ==========================================================================
@@ -19310,6 +19493,7 @@ body.view-ai-active .spa-view.active {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+
   .food-categories-section .food-categories-grid,
   .category-restaurants-section .restaurants-scroll.category-restaurants-scroll {
     scroll-behavior: smooth;
@@ -19339,18 +19523,16 @@ body.view-ai-active .spa-view.active {
 /* ============================================================
    Mobile Input Auto-Zoom Prevention & Virtual Keyboard Layout
    ============================================================ */
-@media (max-width: 768px), (pointer: coarse) {
+@media (max-width: 768px),
+(pointer: coarse) {
   html {
     scroll-padding-bottom: calc(var(--mobile-keyboard-offset, 0px) + 96px);
   }
 
   /* Giữ kích thước tối thiểu 1rem (16px) để trình duyệt điện thoại không tự zoom khi chạm vào ô nhập */
-  :is(#app, #modal-overlay, #search-filter-overlay, #pdp-order-drawer, body > dialog)
-    :is(
-      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
-      textarea,
-      select
-    ),
+  :is(#app, #modal-overlay, #search-filter-overlay, #pdp-order-drawer, body > dialog) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
+    textarea,
+    select),
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
   textarea,
   select {

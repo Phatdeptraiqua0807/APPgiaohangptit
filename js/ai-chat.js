@@ -2449,7 +2449,7 @@ async function executeAIResponseGeneration(text) {
   }
 }
 
-// ── Hiệu ứng hiện tin nhắn mới: bong bóng fade, từng từ hiện dần, thẻ gợi ý hiện sau cùng ──
+// ── Hiệu ứng hiện tin nhắn mới: bong bóng fade/mở rộng, từng từ hiện dần, thẻ gợi ý hiện sau cùng ──
 function revealLastAIMessage(role) {
   const rows = document.querySelectorAll(`.ai-msg-row.${role}`);
   const row = rows[rows.length - 1];
@@ -2464,6 +2464,11 @@ function revealLastAIMessage(role) {
   }
   if (role !== 'assistant') return;
 
+  const prefersReduced = typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
   const textEl = bubble.querySelector('.ai-msg-formatted-text');
   let totalMs = 0;
   if (textEl) {
@@ -2472,7 +2477,8 @@ function revealLastAIMessage(role) {
     while (walker.nextNode()) textNodes.push(walker.currentNode);
 
     const wordCount = textNodes.reduce((n, t) => n + (t.nodeValue.match(/\S+/g) || []).length, 0);
-    const step = Math.max(8, Math.min(32, 1800 / Math.max(1, wordCount)));
+    // Nhịp từng chữ từ 14ms đến 36ms mượt mà và tự nhiên
+    const step = Math.max(14, Math.min(36, 2000 / Math.max(1, wordCount)));
     let idx = 0;
 
     textNodes.forEach(node => {
@@ -2496,10 +2502,17 @@ function revealLastAIMessage(role) {
     totalMs = Math.round(idx * step);
   }
 
+  // Điều chỉnh thời gian mở rộng bong bóng tương xứng với tốc độ hiện chữ
+  const expandDuration = Math.min(Math.max(460, Math.round(totalMs * 0.72)), 1500);
+  bubble.style.setProperty('--ai-bubble-expand-duration', `${expandDuration}ms`);
+  bubble.addEventListener('animationend', () => {
+    try { bubble.style.clipPath = 'none'; } catch (_) { }
+  }, { once: true });
+
   Array.from(col.children).forEach(child => {
     if (child === bubble) return;
     child.classList.add('ai-fade-late');
-    child.style.animationDelay = `${Math.min(totalMs, 2000) + 150}ms`;
+    child.style.animationDelay = `${Math.min(totalMs, 2000) + 120}ms`;
   });
 }
 
