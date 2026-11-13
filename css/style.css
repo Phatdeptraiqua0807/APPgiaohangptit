@@ -14783,9 +14783,6 @@ body.view-ai-active .ai-chat-view-container {
   white-space: nowrap;
   flex-shrink: 0;
 }
-  color: #059669;
-  white-space: nowrap;
-}
 
 .ai-agent-trace-body {
   padding: 8px 11px 10px;
