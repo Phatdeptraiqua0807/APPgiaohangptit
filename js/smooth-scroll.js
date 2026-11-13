@@ -39,12 +39,19 @@
     window.scrollTo({ top: y, behavior: 'instant' });
   }
 
+  window.setPageScrollImmediate = function (y) {
+    const target = Math.max(0, Number(y) || 0);
+    applyOnce(target);
+  };
+
   window.setPageScroll = function (y) {
     const target = Math.max(0, Number(y) || 0);
     applyOnce(target);
     requestAnimationFrame(() => {
+      if (document.documentElement.classList.contains('vt-transitioning')) return;
       applyOnce(target);
       requestAnimationFrame(() => {
+        if (document.documentElement.classList.contains('vt-transitioning')) return;
         applyOnce(target);
         if (typeof window.updateHeaderScrolledState === 'function') window.updateHeaderScrolledState();
         if (typeof window.updateFloatingTopBar === 'function') window.updateFloatingTopBar();

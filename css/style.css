@@ -16999,10 +16999,40 @@ body:not(.view-ai-active) .ai-aura {
 }
 
 /* View Transitions mượt cho chuyển view SPA */
+#app:focus {
+  outline: none;
+}
+
+html.vt-transitioning #app .fade-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 180ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Shared-element morph cho ảnh món ăn giữa trang danh sách & PDP */
+::view-transition-group(ptit-hero-media) {
+  z-index: 30;
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-image-pair(ptit-hero-media) {
+  isolation: isolate;
+}
+
+::view-transition-old(ptit-hero-media),
+::view-transition-new(ptit-hero-media) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 /* Giữ margin chuẩn khi dùng semantic heading h1/h2 trên Home */

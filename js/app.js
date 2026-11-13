@@ -119,6 +119,8 @@ function saveCurrentViewScroll() {
   }
 }
 
+let pendingTransitionScroll = null;
+
 function restoreViewScroll(targetView, fallbackY = 0) {
   const target = targetView || currentView;
   const savedY = (target && typeof globalViewScrollPositions[target] === 'number')
@@ -129,11 +131,18 @@ function restoreViewScroll(targetView, fallbackY = 0) {
 }
 
 // Đặt vị trí cuộn tức thì (an toàn với Locomotive Scroll; dự phòng khi smooth-scroll.js chưa tải)
-function applyPageScroll(y) {
-  if (typeof window.setPageScroll === 'function') {
-    window.setPageScroll(y);
+function applyPageScroll(y, immediateOnly = false) {
+  const val = Math.max(0, Number(y) || 0);
+  if (pendingTransitionScroll && !immediateOnly) {
+    pendingTransitionScroll.y = val;
+    return;
+  }
+  if (immediateOnly && typeof window.setPageScrollImmediate === 'function') {
+    window.setPageScrollImmediate(val);
+  } else if (typeof window.setPageScroll === 'function' && !immediateOnly) {
+    window.setPageScroll(val);
   } else {
-    window.scrollTo({ top: y || 0, behavior: 'instant' });
+    window.scrollTo({ top: val, behavior: 'instant' });
   }
 }
 
@@ -449,6 +458,7 @@ let lastRenderedView = null;
 // ── Main Render Router ──
 function render(options = { replace: false }) {
   const isViewChange = lastRenderedView !== null && lastRenderedView !== currentView;
+  const fromRouterNav = Boolean(typeof window !== 'undefined' && window.Router && window.Router.isNavigatingFromRouter);
 
   const applyViewDOMUpdate = () => {
     // Sync active view state for AI chat (full-bleed layout)
@@ -515,6 +525,9 @@ function render(options = { replace: false }) {
     }
 
     // Cập nhật trạng thái scrolled cho header sau khi view mới được kết xuất
+    if (typeof options?.scrollTop === 'number') {
+      applyPageScroll(options.scrollTop, true);
+    }
     if (typeof requestAnimationFrame === 'function') {
       requestAnimationFrame(updateHeaderScrolledState);
     } else if (typeof updateHeaderScrolledState === 'function') {
@@ -522,7 +535,7 @@ function render(options = { replace: false }) {
     }
 
     // Đồng bộ hóa URL thanh địa chỉ (Hash Router SPA)
-    if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    if (!fromRouterNav && typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
       window.Router.syncUrl(options);
     }
 
@@ -537,6 +550,25 @@ function render(options = { replace: false }) {
     }
   };
 
+  const clearHeroViewTransitionTags = () => {
+    document.querySelectorAll('[data-vt-active]').forEach(el => {
+      el.style.viewTransitionName = '';
+      el.removeAttribute('data-vt-active');
+    });
+  };
+
+  const isElVisiblyOnScreen = (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 10 && r.height > 10 && r.bottom > 56 && r.top < (window.innerHeight - 24) && r.right > 0 && r.left < window.innerWidth;
+  };
+
+  const findSingleVisibleDishThumb = (dishId) => {
+    if (!dishId || typeof CSS === 'undefined' || typeof CSS.escape !== 'function') return null;
+    const matches = Array.from(document.querySelectorAll(`[data-vt-dish="${CSS.escape(String(dishId))}"]`));
+    return matches.find(isElVisiblyOnScreen) || null;
+  };
+
   const reducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasOpenDialog = Boolean(document.querySelector('dialog[open]'));
   const canUseTransition =
@@ -547,15 +579,83 @@ function render(options = { replace: false }) {
     typeof document.startViewTransition === 'function';
 
   if (canUseTransition) {
-    const transition = document.startViewTransition(() => {
+    clearHeroViewTransitionTags();
+    let vtDishId = null;
+
+    if (currentView === 'dish-detail' && typeof modalDish !== 'undefined' && modalDish && modalDish.id != null) {
+      const sourceThumb = findSingleVisibleDishThumb(modalDish.id);
+      if (sourceThumb) {
+        vtDishId = String(modalDish.id);
+        sourceThumb.style.viewTransitionName = 'ptit-hero-media';
+        sourceThumb.setAttribute('data-vt-active', '1');
+      }
+    } else if (lastRenderedView === 'dish-detail') {
+      const heroEl = document.querySelector('.pdp-hero-img[data-vt-dish]');
+      if (isElVisiblyOnScreen(heroEl)) {
+        vtDishId = heroEl.getAttribute('data-vt-dish');
+        heroEl.style.viewTransitionName = 'ptit-hero-media';
+        heroEl.setAttribute('data-vt-active', '1');
+      }
+    }
+
+    pendingTransitionScroll = { y: (typeof options?.scrollTop === 'number') ? options.scrollTop : null };
+    document.documentElement.classList.add('vt-transitioning');
+
+    const transition = document.startViewTransition(async () => {
+      const scrollSlot = pendingTransitionScroll;
+      pendingTransitionScroll = null;
+
       applyViewDOMUpdate();
+
+      // Tắt fade-in nội bộ của các khối khi chuyển trang để View Transition không chụp trạng thái opacity: 0 rồi chạy lại 2 lần
+      document.querySelectorAll('#app .fade-in').forEach(el => {
+        el.classList.remove('fade-in', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3', 'fade-in-delay-4', 'fade-in-delay-5');
+      });
+
+      if (scrollSlot && typeof scrollSlot.y === 'number') {
+        applyPageScroll(scrollSlot.y, true);
+      }
+
+      clearHeroViewTransitionTags();
+
+      if (vtDishId) {
+        const targetEl = currentView === 'dish-detail'
+          ? document.querySelector('.pdp-hero-img[data-vt-dish]')
+          : findSingleVisibleDishThumb(vtDishId);
+        if (targetEl && isElVisiblyOnScreen(targetEl)) {
+          targetEl.loading = 'eager';
+          targetEl.decoding = 'sync';
+          targetEl.style.viewTransitionName = 'ptit-hero-media';
+          targetEl.setAttribute('data-vt-active', '1');
+          if (!targetEl.complete && typeof targetEl.decode === 'function') {
+            await Promise.race([
+              targetEl.decode().catch(() => {}),
+              new Promise(resolve => setTimeout(resolve, 60))
+            ]);
+          }
+        }
+      }
+
+      if (typeof updateHeaderScrolledState === 'function') {
+        updateHeaderScrolledState();
+      }
     });
-    if (transition && transition.finished && typeof transition.finished.then === 'function') {
-      transition.finished.then(focusMainContainer, focusMainContainer);
-    } else {
+
+    const finalizeTransition = () => {
+      pendingTransitionScroll = null;
+      clearHeroViewTransitionTags();
+      document.documentElement.classList.remove('vt-transitioning');
       focusMainContainer();
+    };
+    if (transition && transition.finished && typeof transition.finished.then === 'function') {
+      transition.finished.then(finalizeTransition, finalizeTransition);
+    } else {
+      finalizeTransition();
     }
   } else {
+    pendingTransitionScroll = null;
+    document.documentElement.classList.remove('vt-transitioning');
+    clearHeroViewTransitionTags();
     applyViewDOMUpdate();
     focusMainContainer();
   }
@@ -5490,9 +5590,14 @@ function onDesktopSearchClick() {
   openSearchView(input ? input.value : '');
 }
 
-function openHomeView() {
+function openHomeView(opts = {}) {
   saveCurrentViewScroll();
-  if (typeof dbmRollHomeShuffleSeed === 'function') {
+  const returningFromDetail =
+    currentView === 'dish-detail' ||
+    currentView === 'store-detail' ||
+    currentView === 'dish-safety-nutrition' ||
+    Boolean(window.Router && window.Router.isNavigatingFromRouter);
+  if (!opts.preserveOrder && !returningFromDetail && typeof dbmRollHomeShuffleSeed === 'function') {
     dbmRollHomeShuffleSeed();
   }
   currentView = 'home';

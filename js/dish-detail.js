@@ -595,7 +595,7 @@ function renderHomeFeaturedDishesSection() {
     return `
             <div class="home-feat-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
               <div class="home-feat-dish-img-wrap">
-                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
                 <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
@@ -783,8 +783,7 @@ function openDishDetailView(dish, restaurant, navOptions = { replace: false }) {
     globalViewScrollPositions['dish-safety-nutrition'] = 0;
   }
   currentView = 'dish-detail';
-  render(navOptions && navOptions.replace ? { replace: true } : undefined);
-  applyPageScroll(0);
+  render({ replace: Boolean(navOptions && navOptions.replace), scrollTop: 0 });
 }
 
 function renderDishDetailView() {
@@ -853,6 +852,7 @@ function renderDishDetailView() {
             <div class="pdp-hero-img-wrap">
               <img
                 class="pdp-hero-img"
+                data-vt-dish="${escapeHtml(String(dish.id))}"
                 src="${escapeHtml(dish.image)}"
                 alt="${escapeHtml(dish.name)}"
                 onerror="this.src='assets/images/hung_chien_gion.jpg'"
