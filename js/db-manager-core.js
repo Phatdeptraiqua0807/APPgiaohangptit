@@ -753,9 +753,9 @@ function renderHomeCategoryRestaurantSections() {
         : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(it.id) : false);
       const dishIdEsc = escapeHtml(String(it.id));
       return `
-        <div class="restaurant-card" onclick="openDishDetailById('${dishIdEsc}')">
+        <div class="restaurant-card" role="button" tabindex="0" onclick="openDishDetailById('${dishIdEsc}')">
           <div class="restaurant-card-img-wrapper">
-            <img class="restaurant-card-img" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <img class="restaurant-card-img" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
             <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
             <button type="button"
               class="restaurant-card-fav ${isDishFav ? 'active' : ''}"
@@ -784,7 +784,7 @@ function renderHomeCategoryRestaurantSections() {
     return `
       <div class="restaurants-section category-restaurants-section fade-in">
         <div class="section-head">
-          <div class="section-title">${cat.icon} ${escapeHtml(cat.name)}</div>
+          <h2 class="section-title">${cat.icon} ${escapeHtml(cat.name)}</h2>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="scroll-arrow-controls">
               <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('${scrollId}', -280)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
@@ -794,7 +794,7 @@ function renderHomeCategoryRestaurantSections() {
                 ${FluentIcons.chevronRight}
               </button>
             </div>
-            <span class="section-see-all" onclick="openSearchView('${kw}')">Xem tất cả</span>
+            <button type="button" class="section-see-all" onclick="openSearchView('${kw}')">Xem tất cả</button>
           </div>
         </div>
         <div class="restaurants-scroll category-restaurants-scroll" id="${scrollId}">

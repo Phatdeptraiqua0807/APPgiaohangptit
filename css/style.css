@@ -102,6 +102,7 @@ body {
   color: var(--gray-800);
   line-height: 1.5;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: clip;
 }
 
@@ -128,6 +129,28 @@ button {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 9999;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  background: var(--green-600);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 input,
@@ -344,6 +367,7 @@ textarea {
   margin: 0 auto;
   background: var(--white);
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
 }
@@ -1736,11 +1760,10 @@ textarea {
   height: 92px;
 }
 
-/* ── Toast (iPhone iOS Banner Notification Stack Style) ── */
+/* ── Toast (iPhone iOS Banner Notification Stack Style, Top Layer popover="manual") ── */
 .toast-container {
   position: fixed;
-  top: calc(10px + env(safe-area-inset-top, 0px));
-  left: 50%;
+  inset: calc(10px + env(safe-area-inset-top, 0px)) auto auto 50%;
   transform: translateX(-50%);
   z-index: 3500;
   display: grid;
@@ -1749,14 +1772,26 @@ textarea {
   justify-items: center;
   width: calc(100% - 20px);
   max-width: 396px;
+  margin: 0;
   padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
   pointer-events: none;
+}
+
+.toast-container[popover]:not(:popover-open) {
+  display: none;
+}
+
+.toast-container[popover]:popover-open {
+  display: grid;
 }
 
 @media (min-width: 768px) {
   .toast-container {
-    top: 16px;
-    left: calc(50% + var(--sidebar-width, 270px) / 2);
+    inset: 16px auto auto calc(50% + var(--sidebar-width, 270px) / 2);
     transform: translateX(-50%);
     max-width: 410px;
   }
@@ -1935,43 +1970,45 @@ body.scrollbar-idle * {
   scrollbar-color: transparent transparent;
 }
 
-::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
 
-/* Nền các thanh slide bar được tối ưu cho gần như đồng màu và ẩn đi */
-::-webkit-scrollbar-track {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
+  /* Nền các thanh slide bar được tối ưu cho gần như đồng màu và ẩn đi */
+  ::-webkit-scrollbar-track {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
 
-/* Cục để nắm vào di chuyển (scrollbar thumb) */
-::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.6);
-  border-radius: 9999px;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  /* Cục để nắm vào di chuyển (scrollbar thumb) */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.6);
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 116, 139, 0.85);
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.85);
+  }
 
-/* Cục nắm tự động ẩn đi sau 5 giây không cuộn */
-html.scrollbar-idle ::-webkit-scrollbar-thumb,
-body.scrollbar-idle ::-webkit-scrollbar-thumb {
-  background-color: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
+  /* Cục nắm tự động ẩn đi sau 5 giây không cuộn */
+  html.scrollbar-idle ::-webkit-scrollbar-thumb,
+  body.scrollbar-idle ::-webkit-scrollbar-thumb {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
 
-/* Khi người dùng rê chuột vào khu vực thanh cuộn thì hiện lại */
-html.scrollbar-idle ::-webkit-scrollbar-thumb:hover,
-body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(148, 163, 184, 0.75) !important;
+  /* Khi người dùng rê chuột vào khu vực thanh cuộn thì hiện lại */
+  html.scrollbar-idle ::-webkit-scrollbar-thumb:hover,
+  body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.75) !important;
+  }
 }
 
 @media (min-width: 481px) {
@@ -2976,6 +3013,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   color: var(--white);
   border-radius: var(--r-xl);
   padding: 12px 18px;
+  text-align: left;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 10px 25px rgba(0, 177, 79, 0.35);
@@ -3087,15 +3125,71 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: inherit;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
   z-index: 2200;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  display: flex;
   align-items: flex-end;
   justify-content: center;
+}
+
+dialog.modal-overlay {
+  background: transparent;
+  backdrop-filter: none;
+  transition-property: opacity, display, overlay;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  transition-behavior: allow-discrete;
+}
+
+dialog.modal-overlay:not([open]) {
+  display: none;
+}
+
+dialog.modal-overlay[open],
+div.modal-overlay {
+  display: flex;
+}
+
+dialog.modal-overlay:modal {
+  overscroll-behavior: contain;
+}
+
+dialog.modal-overlay::backdrop {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  transition-property: background-color, backdrop-filter, display, overlay;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  transition-behavior: allow-discrete;
+}
+
+dialog.modal-overlay.active::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  dialog.modal-overlay.active {
+    opacity: 0;
+  }
+
+  dialog.modal-overlay.active::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
 }
 
 .modal-overlay.active {
@@ -3107,6 +3201,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
   width: 100%;
   max-width: var(--app-max-width);
   max-height: 90vh;
+  max-height: 90dvh;
   background: var(--white);
   border-radius: 24px 24px 0 0;
   overflow: hidden;
@@ -5629,6 +5724,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 
   /* Brand in Sidebar */
   .sidebar-brand {
+    width: 100%;
+    text-align: left;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -5683,6 +5780,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 
   /* Location Card in Sidebar (Tinh tế, đồng bộ với Header) */
   .sidebar-loc-card {
+    width: 100%;
+    text-align: left;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -5903,6 +6002,8 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
 
   /* Student / User Footer Card */
   .sidebar-student-card {
+    width: 100%;
+    text-align: left;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -6680,6 +6781,7 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     max-width: 580px !important;
     border-radius: 24px !important;
     max-height: 88vh !important;
+    max-height: 88dvh !important;
     transform: scale(0.95) translateY(20px) !important;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25) !important;
     border: 1.5px solid var(--gray-200) !important;
@@ -6878,28 +6980,30 @@ body.scrollbar-idle ::-webkit-scrollbar-thumb:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
   }
 
-  /* Modern Desktop Scrollbar */
-  ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
-  }
+  /* Modern Desktop Scrollbar fallback */
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
 
-  ::-webkit-scrollbar-track {
-    background: transparent !important;
-  }
+    ::-webkit-scrollbar-track {
+      background: transparent !important;
+    }
 
-  ::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.6);
-    border-radius: 9999px;
-  }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.6);
+      border-radius: 9999px;
+    }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 116, 139, 0.85);
-  }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.85);
+    }
 
-  html.scrollbar-idle ::-webkit-scrollbar-thumb,
-  body.scrollbar-idle ::-webkit-scrollbar-thumb {
-    background: transparent !important;
+    html.scrollbar-idle ::-webkit-scrollbar-thumb,
+    body.scrollbar-idle ::-webkit-scrollbar-thumb {
+      background: transparent !important;
+    }
   }
 }
 
@@ -10061,7 +10165,11 @@ body.view-ai-active .ai-chat-view-container {
   outline: none;
   background: #f8fafc;
   color: var(--gray-900);
+  field-sizing: content;
+  height: auto;
+  min-block-size: 42px;
   max-height: 110px;
+  max-block-size: 110px;
   transition: border-color 0.2s, background 0.2s;
 }
 
@@ -15546,13 +15654,34 @@ body.view-ai-active .ai-chat-view-container {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 10050;
-  display: flex;
   align-items: flex-end;
   justify-content: center;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease;
+}
+
+dialog.search-filter-overlay {
+  visibility: visible;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition-property: opacity, display, overlay;
+  transition-duration: 0.28s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-behavior: allow-discrete;
+}
+
+dialog.search-filter-overlay[open],
+div.search-filter-overlay {
+  display: flex;
+}
+
+dialog.search-filter-overlay.active::backdrop {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .search-filter-overlay.active {
@@ -15566,6 +15695,7 @@ body.view-ai-active .ai-chat-view-container {
   width: 100%;
   max-width: 580px;
   max-height: 88vh;
+  max-height: 88dvh;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.16);
   display: flex;
@@ -16827,9 +16957,215 @@ body:not(.view-ai-active) .ai-aura {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-aura-wave {
+  html,
+  .categories-scroll,
+  .restaurants-scroll,
+  .restaurants-scroll.featured-stores-scroll,
+  .home-featured-dishes-scroll,
+  .ai-quick-prompts-bar {
+    scroll-behavior: auto !important;
+  }
+
+  .ai-aura-wave,
+  .fade-in,
+  .floating-cart-bar {
     animation: none !important;
   }
+
+  .modal-overlay,
+  dialog.modal-overlay::backdrop,
+  .bottom-sheet,
+  .search-filter-overlay,
+  .search-filter-bottom-sheet,
+  .toast.ios-toast,
+  .pdp-order-drawer-backdrop,
+  .product-detail-order-col {
+    transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* View Transitions mượt cho chuyển view SPA */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Giữ margin chuẩn khi dùng semantic heading h1/h2 trên Home */
+h1.greeting-hello {
+  margin-top: 0;
+}
+
+h2.section-title {
+  margin: 0;
+}
+
+/* Đảm bảo focus ring rõ nét cho thành phần có role="button" và button chuẩn */
+[role="button"][tabindex="0"]:focus-visible,
+.delivery-preset-chip:focus-visible,
+.delivery-tag-btn:focus-visible,
+.section-see-all:focus-visible,
+.food-cat-item:focus-visible,
+.restaurant-card:focus-visible,
+.home-feat-dish-card:focus-visible,
+.category-chip:focus-visible,
+.quick-option:focus-visible {
+  outline: 2px solid var(--green-600, #008f3d);
+  outline-offset: 2px;
+}
+
+button.section-see-all {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+button.search-tag,
+button.category-chip,
+button.delivery-preset-chip,
+button.delivery-tag-btn {
+  font-family: inherit;
+}
+
+/* Horizontal Scroll Snap + Touch action cho các dải cuộn ngang */
+.categories-scroll,
+.home-featured-dishes-scroll,
+.restaurants-scroll.featured-stores-scroll,
+.ai-quick-prompts-bar {
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--safe-padding, 16px);
+  touch-action: manipulation;
+}
+
+@media (max-width: 767px) {
+  .restaurants-scroll {
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--safe-padding, 16px);
+    touch-action: manipulation;
+  }
+}
+
+.categories-scroll > .category-chip,
+.home-featured-dishes-scroll > .home-feat-dish-card,
+.restaurants-scroll > .restaurant-card,
+.restaurants-scroll > .featured-store-card,
+.ai-quick-prompts-bar > .ai-quick-chip {
+  scroll-snap-align: start;
+}
+
+/* Scrollability Affordance Fade (Progressive enhancement bằng CSS @property + Scroll-driven animations) */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes reveal-fade-start {
+  to {
+    --fade-start: var(--fade-size);
+  }
+}
+
+@keyframes hide-fade-end {
+  from {
+    --fade-end: var(--fade-size);
+  }
+}
+
+@supports (animation-timeline: scroll()) and (mask: linear-gradient(black, black) no-clip subtract) {
+  .categories-scroll,
+  .home-featured-dishes-scroll,
+  .restaurants-scroll.featured-stores-scroll,
+  .ai-quick-prompts-bar {
+    --fade-size: 28px;
+    --fade-dir: right;
+    --fade-start-pos: 0;
+    --fade-end-pos: 100%;
+    scroll-padding-inline: max(var(--safe-padding, 16px), var(--fade-size));
+    mask:
+      linear-gradient(black, black) no-clip subtract,
+      linear-gradient(to var(--fade-dir), black, transparent) var(--fade-start-pos) 0 / var(--fade-start) 100% no-repeat no-clip,
+      linear-gradient(to var(--fade-dir), transparent, black) var(--fade-end-pos) 0 / var(--fade-end) 100% no-repeat no-clip;
+    animation: reveal-fade-start linear both, hide-fade-end linear both;
+    animation-timeline: scroll(self inline);
+    animation-range: 0 var(--fade-size), calc(100% - var(--fade-size)) 100%;
+  }
+
+  .ai-quick-prompts-bar {
+    --fade-size: 20px;
+    scroll-padding-inline: 20px;
+  }
+
+  @media (max-width: 767px) {
+    .restaurants-scroll {
+      --fade-size: 28px;
+      --fade-dir: right;
+      --fade-start-pos: 0;
+      --fade-end-pos: 100%;
+      scroll-padding-inline: max(var(--safe-padding, 16px), var(--fade-size));
+      mask:
+        linear-gradient(black, black) no-clip subtract,
+        linear-gradient(to var(--fade-dir), black, transparent) var(--fade-start-pos) 0 / var(--fade-start) 100% no-repeat no-clip,
+        linear-gradient(to var(--fade-dir), transparent, black) var(--fade-end-pos) 0 / var(--fade-end) 100% no-repeat no-clip;
+      animation: reveal-fade-start linear both, hide-fade-end linear both;
+      animation-timeline: scroll(self inline);
+      animation-range: 0 var(--fade-size), calc(100% - var(--fade-size)) 100%;
+    }
+  }
+}
+
+/* Form giao hàng: gợi ý định dạng + feedback lỗi sau tương tác (:user-invalid / :user-valid) */
+.delivery-input-hint {
+  font-size: 11.5px;
+  color: var(--gray-500, #64748b);
+  line-height: 1.35;
+}
+
+.delivery-field-error {
+  display: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.delivery-input-field:user-invalid,
+.delivery-input-field.is-invalid {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.delivery-input-field:user-valid {
+  border-color: var(--green-500, #00B14F);
+}
+
+.delivery-input-group:has(.delivery-input-field:user-invalid) .delivery-field-error,
+.delivery-input-group.has-error .delivery-field-error {
+  display: block;
+}
+
+.delivery-input-group:has(.delivery-input-field:user-invalid) .delivery-input-label,
+.delivery-input-group.has-error .delivery-input-label {
+  color: #b91c1c;
+}
+
+/* Trì hoãn render các thẻ quán dài nằm ngoài màn hình đầu (below the fold) */
+.featured-store-card.res-detail-card:nth-child(n+3) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 340px;
 }
 
 /* =========================================================

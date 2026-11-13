@@ -431,81 +431,133 @@ function formatVND(num) {
   return (num || 0).toLocaleString('vi-VN') + 'đ';
 }
 
+if (typeof window !== 'undefined' && !window.__roleButtonKeyDelegateBound) {
+  window.__roleButtonKeyDelegateBound = true;
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const target = e.target;
+    if (!target || target.matches('input, textarea, select, button, a, [contenteditable="true"]')) return;
+    const roleBtn = target.closest('[role="button"][tabindex="0"]');
+    if (!roleBtn || roleBtn !== target) return;
+    if (e.key === ' ') e.preventDefault();
+    roleBtn.click();
+  });
+}
+
+let lastRenderedView = null;
+
 // ── Main Render Router ──
 function render(options = { replace: false }) {
-  // Sync active view state for AI chat (full-bleed layout)
-  if (currentView === 'ai') {
-    document.body.classList.add('view-ai-active');
-  } else {
-    document.body.classList.remove('view-ai-active');
-    document.body.classList.remove('ai-keyboard-open');
-    document.documentElement.style.removeProperty('--ai-keyboard-offset');
-  }
+  const isViewChange = lastRenderedView !== null && lastRenderedView !== currentView;
 
-  // Sync Bottom Nav visibility: visible on main navigation views
-  const navEl = document.querySelector('.bottom-nav');
-  if (navEl) {
-    if (
-      currentView === 'home' ||
-      currentView === 'search' ||
-      currentView === 'activity' ||
-      currentView === 'cart' ||
-      currentView === 'profile' ||
-      currentView === 'favorites' ||
-      currentView === 'catalog' ||
-      currentView === 'ai'
-    ) {
-      navEl.classList.remove('nav-hidden');
-      navEl.style.display = 'flex';
+  const applyViewDOMUpdate = () => {
+    // Sync active view state for AI chat (full-bleed layout)
+    if (currentView === 'ai') {
+      document.body.classList.add('view-ai-active');
     } else {
-      navEl.classList.add('nav-hidden');
-      navEl.style.display = 'none';
+      document.body.classList.remove('view-ai-active');
+      document.body.classList.remove('ai-keyboard-open');
+      document.documentElement.style.removeProperty('--ai-keyboard-offset');
     }
-  }
 
-  // Update Bottom Nav & Sidebar active indicators
-  updateBottomNavIconsAndState();
+    // Sync Bottom Nav visibility: visible on main navigation views
+    const navEl = document.querySelector('.bottom-nav');
+    if (navEl) {
+      if (
+        currentView === 'home' ||
+        currentView === 'search' ||
+        currentView === 'activity' ||
+        currentView === 'cart' ||
+        currentView === 'profile' ||
+        currentView === 'favorites' ||
+        currentView === 'catalog' ||
+        currentView === 'ai'
+      ) {
+        navEl.classList.remove('nav-hidden');
+        navEl.style.display = 'flex';
+      } else {
+        navEl.classList.add('nav-hidden');
+        navEl.style.display = 'none';
+      }
+    }
 
-  updateFloatingCartBar();
+    // Update Bottom Nav & Sidebar active indicators
+    updateBottomNavIconsAndState();
 
-  if (currentView === 'home') {
-    renderHomeView();
-  } else if (currentView === 'search') {
-    renderSearchView();
-  } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
-    renderDishDetailView();
-  } else if (currentView === 'store-detail' && typeof renderStoreDetailView === 'function') {
-    renderStoreDetailView();
-  } else if (currentView === 'dish-safety-nutrition' && typeof renderDishSafetyNutritionView === 'function') {
-    renderDishSafetyNutritionView();
-  } else if (currentView === 'activity') {
-    renderActivityView();
-  } else if (currentView === 'cart') {
-    renderCartView();
-  } else if (currentView === 'checkout') {
-    renderCheckoutView();
-  } else if (currentView === 'ai' && typeof renderAIChatView === 'function') {
-    renderAIChatView();
-  } else if (currentView === 'profile' && typeof renderProfileView === 'function') {
-    renderProfileView();
-  } else if (currentView === 'favorites' && typeof renderFavoritesView === 'function') {
-    renderFavoritesView();
-  } else if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
-    renderCatalogManagerView();
-  } else if (currentView === 'order-success') {
-    renderOrderSuccessView();
-  }
+    updateFloatingCartBar();
 
-  // Cập nhật trạng thái scrolled cho header sau khi view mới được kết xuất
-  if (typeof requestAnimationFrame === 'function') {
-    requestAnimationFrame(updateHeaderScrolledState);
-  } else if (typeof updateHeaderScrolledState === 'function') {
-    updateHeaderScrolledState();
-  }
+    if (currentView === 'home') {
+      renderHomeView();
+    } else if (currentView === 'search') {
+      renderSearchView();
+    } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
+      renderDishDetailView();
+    } else if (currentView === 'store-detail' && typeof renderStoreDetailView === 'function') {
+      renderStoreDetailView();
+    } else if (currentView === 'dish-safety-nutrition' && typeof renderDishSafetyNutritionView === 'function') {
+      renderDishSafetyNutritionView();
+    } else if (currentView === 'activity') {
+      renderActivityView();
+    } else if (currentView === 'cart') {
+      renderCartView();
+    } else if (currentView === 'checkout') {
+      renderCheckoutView();
+    } else if (currentView === 'ai' && typeof renderAIChatView === 'function') {
+      renderAIChatView();
+    } else if (currentView === 'profile' && typeof renderProfileView === 'function') {
+      renderProfileView();
+    } else if (currentView === 'favorites' && typeof renderFavoritesView === 'function') {
+      renderFavoritesView();
+    } else if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
+      renderCatalogManagerView();
+    } else if (currentView === 'order-success') {
+      renderOrderSuccessView();
+    }
 
-  // Đồng bộ hóa URL thanh địa chỉ (Hash Router SPA)
-  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
-    window.Router.syncUrl(options);
+    // Cập nhật trạng thái scrolled cho header sau khi view mới được kết xuất
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(updateHeaderScrolledState);
+    } else if (typeof updateHeaderScrolledState === 'function') {
+      updateHeaderScrolledState();
+    }
+
+    // Đồng bộ hóa URL thanh địa chỉ (Hash Router SPA)
+    if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+      window.Router.syncUrl(options);
+    }
+
+    lastRenderedView = currentView;
+  };
+
+  const focusMainContainer = () => {
+    if (!isViewChange) return;
+    const mainEl = document.getElementById('app');
+    if (mainEl && (!document.activeElement || !mainEl.contains(document.activeElement))) {
+      mainEl.focus({ preventScroll: true });
+    }
+  };
+
+  const reducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasOpenDialog = Boolean(document.querySelector('dialog[open]'));
+  const canUseTransition =
+    isViewChange &&
+    !options?.skipTransition &&
+    !reducedMotion &&
+    !hasOpenDialog &&
+    typeof document.startViewTransition === 'function';
+
+  if (canUseTransition) {
+    const transition = document.startViewTransition(() => {
+      applyViewDOMUpdate();
+    });
+    if (transition && transition.finished && typeof transition.finished.then === 'function') {
+      transition.finished.then(focusMainContainer, focusMainContainer);
+    } else {
+      focusMainContainer();
+    }
+  } else {
+    applyViewDOMUpdate();
+    focusMainContainer();
   }
 }
 
@@ -569,7 +621,7 @@ function renderHomeView() {
           src="https://static.vinwonders.com/production/vietnamese-food-top-banner.jpg"
           onerror="this.onerror=null; this.src='assets/images/vietnamese-food-top-banner.jpg';"
           alt=""
-          loading="eager"
+          fetchpriority="high"
         />
         <div class="home-hero-top-vignette"></div>
         <div class="home-hero-backdrop-fade"></div>
@@ -577,7 +629,7 @@ function renderHomeView() {
 
       <!-- Location -->
       <div class="location-row fade-in">
-        <div class="location-left" onclick="openDeliveryInfoModal()" title="Thay đổi địa chỉ giao hàng">
+        <div class="location-left" role="button" tabindex="0" onclick="openDeliveryInfoModal()" title="Thay đổi địa chỉ giao hàng">
           <div class="location-icon">${FluentIcons.locationFilled}</div>
           <div class="location-text-wrap">
             <span class="location-label">${escapeHtml(userDeliveryInfo.label || 'Giao đến')}:</span>
@@ -605,14 +657,14 @@ function renderHomeView() {
 
       <!-- Greeting (To hơn, nổi bật hơn làm tâm điểm) -->
       <div class="greeting fade-in fade-in-delay-1">
-        <div class="greeting-hello">Xin chào, ${escapeHtml(userDeliveryInfo.name || 'Bạn')}! 👋</div>
+        <h1 class="greeting-hello">Xin chào, ${escapeHtml(userDeliveryInfo.name || 'Bạn')}! 👋</h1>
         <div class="greeting-question">Hôm nay bạn muốn ăn gì? <span class="wave">🍽️</span></div>
       </div>
 
       <!-- Search Bar on Home -->
-      <div class="search-bar fade-in fade-in-delay-2" onclick="openSearchView()">
+      <div class="search-bar fade-in fade-in-delay-2" role="button" tabindex="0" onclick="openSearchView()">
         <span class="search-bar-icon">${FluentIcons.searchRegular}</span>
-        <input type="text" placeholder="Tìm món ăn, quán ăn, loại mặt hàng..." readonly style="cursor: pointer;">
+        <input type="text" placeholder="Tìm món ăn, quán ăn, loại mặt hàng..." readonly aria-label="Tìm món ăn, quán ăn, loại mặt hàng" style="cursor: pointer;">
         <button type="button" class="search-filter-btn" onclick="event.stopPropagation(); openSearchFilterModal();" aria-label="Bộ lọc">
           ${FluentIcons.filterRegular}
         </button>
@@ -621,13 +673,14 @@ function renderHomeView() {
       <!-- Quick Search Suggestions -->
       <div class="search-tags fade-in fade-in-delay-2">
         ${quickSearchCats.map(cat => `
-          <span
+          <button
+            type="button"
             class="search-tag"
             style="${cat.keyword === 'Hùng chiên giòn'
       ? 'background: #fff1f0; border-color: #ffa39e; color: #cf1322; font-weight: 700;'
       : ''}"
             onclick="openSearchView('${escapeHtml(cat.keyword)}')"
-          >${cat.icon} ${escapeHtml(cat.name)}</span>
+          >${cat.icon} ${escapeHtml(cat.name)}</button>
         `).join('')}
       </div>
     </div>
@@ -636,7 +689,7 @@ function renderHomeView() {
     <div class="quick-options fade-in fade-in-delay-3">
       <div class="quick-options-grid">
         ${quickOptions.map((opt, i) => `
-          <div class="quick-option" onclick="handleQuickOptionClick(${i})">
+          <div class="quick-option" role="button" tabindex="0" onclick="handleQuickOptionClick(${i})">
             <div class="quick-option-icon ${opt.color}">
               ${FluentIcons[opt.iconKey]}
               ${opt.promo ? `<span class="promo-dot">${opt.promo}</span>` : ''}
@@ -650,7 +703,7 @@ function renderHomeView() {
     <!-- Categories Filter Chips -->
     <div class="categories-section fade-in fade-in-delay-4">
       <div class="section-head">
-        <div class="section-title">Khám phá nhanh</div>
+        <h2 class="section-title">Khám phá nhanh</h2>
         <div class="scroll-arrow-controls">
           <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-categories-scroll', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
             ${FluentIcons.chevronLeft}
@@ -662,10 +715,10 @@ function renderHomeView() {
       </div>
       <div class="categories-scroll" id="home-categories-scroll">
         ${filterChips.map((chip, idx) => `
-          <div class="category-chip ${chip.active ? 'active' : ''}" onclick="selectHomeFilterChip(${idx})">
+          <button type="button" class="category-chip ${chip.active ? 'active' : ''}" aria-pressed="${chip.active ? 'true' : 'false'}" onclick="selectHomeFilterChip(${idx})">
             <span class="category-chip-icon">${FluentIcons[chip.iconKey]}</span>
             ${chip.label}
-          </div>
+          </button>
         `).join('')}
       </div>
     </div>
@@ -673,7 +726,7 @@ function renderHomeView() {
     <!-- Food Category Grid (2 dòng gọn đẹp trên cả máy tính và điện thoại) -->
     <div class="food-categories-section fade-in">
       <div class="section-head">
-        <div class="section-title">Danh mục món ăn</div>
+        <h2 class="section-title">Danh mục món ăn</h2>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
             <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('food-categories-scroll', -320)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
@@ -683,12 +736,12 @@ function renderHomeView() {
               ${FluentIcons.chevronRight}
             </button>
           </div>
-          <span class="section-see-all" onclick="openSearchView()">Xem tất cả</span>
+          <button type="button" class="section-see-all" onclick="openSearchView()">Xem tất cả</button>
         </div>
       </div>
       <div class="food-categories-grid" id="food-categories-scroll">
         ${homeCats.map(cat => `
-          <div class="food-cat-item" onclick="openSearchView('${escapeHtml(cat.keyword)}')">
+          <div class="food-cat-item" role="button" tabindex="0" onclick="openSearchView('${escapeHtml(cat.keyword)}')">
             <div class="food-cat-icon">${cat.icon}</div>
             <div class="food-cat-name">${escapeHtml(cat.name)}</div>
           </div>
@@ -705,7 +758,7 @@ function renderHomeView() {
     <!-- Popular Restaurants & Highlight Dishes with Convenient '+' Button -->
     <div class="restaurants-section featured-stores-section fade-in">
       <div class="section-head">
-        <div class="section-title">Quán ăn nổi bật gần bạn</div>
+        <h2 class="section-title">Quán ăn nổi bật gần bạn</h2>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
             <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('restaurants-scroll', -420)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
@@ -715,7 +768,7 @@ function renderHomeView() {
               ${FluentIcons.chevronRight}
             </button>
           </div>
-          <span class="section-see-all" onclick="openSearchView()">Xem tất cả</span>
+          <button type="button" class="section-see-all" onclick="openSearchView()">Xem tất cả</button>
         </div>
       </div>
       <div class="restaurants-scroll featured-stores-scroll" id="restaurants-scroll">
@@ -733,16 +786,16 @@ function renderHomeView() {
         return `
           <div class="featured-store-card res-detail-card">
             <!-- Restaurant Main Header Info (Không hiển thị giá món ở header) -->
-            <div class="res-main-info" onclick="openStoreDetailView(${r.id}, 'for-you', 'home')">
+            <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'home')">
               <div class="res-main-img-wrap">
-                <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 ${r.badge ? `<span class="res-badge-partner ${scoreBadgeClass}">${escapeHtml(r.badge)}</span>` : ''}
               </div>
 
               <div class="res-details-col">
                 <div class="res-name-row">
                   <div class="res-name-title">${escapeHtml(r.name)}</div>
-                  <span class="res-fav-btn ${r.fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${r.id})" title="Lưu quán yêu thích">
+                  <span class="res-fav-btn ${r.fav ? 'active' : ''}" role="button" tabindex="0" aria-label="Lưu quán yêu thích" onclick="event.stopPropagation(); toggleFav(${r.id})" title="Lưu quán yêu thích">
                     ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
                   </span>
                 </div>
@@ -788,9 +841,9 @@ function renderHomeView() {
           const isOut = dish.inStock === false;
           const isDishFav = (typeof dish.fav === 'boolean') ? dish.fav : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(dish.id) : false);
           return `
-                      <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
+                      <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                         <div class="dish-card-img-wrap">
-                          <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                          <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                           <button type="button"
                             class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                             data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -1493,9 +1546,9 @@ function renderSearchView() {
           ${visualSuggestions.map(item => {
     const isSelected = selectedVisualSuggestion === item.keyword;
     return `
-              <div class="visual-card ${isSelected ? 'active' : ''}" onclick="selectVisualSuggestion('${escapeHtml(item.keyword)}')">
+              <div class="visual-card ${isSelected ? 'active' : ''}" role="button" tabindex="0" onclick="selectVisualSuggestion('${escapeHtml(item.keyword)}')">
                 <div class="visual-card-img-wrap">
-                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 </div>
                 <span class="visual-card-label">${escapeHtml(item.name)}</span>
               </div>
@@ -1622,9 +1675,9 @@ function renderRestaurantDetailCard(r) {
   return `
     <div class="res-detail-card">
       <!-- Restaurant Main Header Info -->
-      <div class="res-main-info" onclick="openStoreDetailView(${r.id}, 'for-you', 'search')" style="cursor:pointer;">
+      <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'search')" style="cursor:pointer;">
         <div class="res-main-img-wrap">
-          <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+          <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
           ${r.badge ? `<span class="res-badge-partner">${escapeHtml(r.badge)}</span>` : ''}
         </div>
 
@@ -1693,9 +1746,9 @@ function renderRestaurantDetailCard(r) {
     const isOut = dish.inStock === false;
     const isDishFav = (typeof dish.fav === 'boolean') ? dish.fav : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(dish.id) : false);
     return `
-              <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
+              <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                 <div class="dish-card-img-wrap">
-                  <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                   <button type="button"
                     class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                     data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -1838,6 +1891,79 @@ function closeModalOnBackdrop(event) {
       setTimeout(() => closeBtn.classList.remove('close-btn-nudge'), 600);
     }
   }
+}
+
+const nativeDialogCloseTimers = new WeakMap();
+
+/**
+ * Đồng bộ trạng thái Top Layer (<dialog>.showModal / .close) theo class .active
+ * để tương thích với mọi module đang mở/đóng #modal-overlay và #search-filter-overlay.
+ */
+function syncNativeDialogWithActiveClass(dialogEl) {
+  if (!dialogEl || typeof dialogEl.showModal !== 'function') return;
+
+  const isActive = dialogEl.classList.contains('active');
+  const prevTimer = nativeDialogCloseTimers.get(dialogEl);
+  if (prevTimer) {
+    clearTimeout(prevTimer);
+    nativeDialogCloseTimers.delete(dialogEl);
+  }
+
+  if (isActive) {
+    if (!dialogEl.open) {
+      try {
+        dialogEl.showModal();
+      } catch (_) { }
+    }
+    return;
+  }
+
+  if (dialogEl.open) {
+    const reduceMotion = typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const delay = reduceMotion ? 0 : 340;
+    const timer = setTimeout(() => {
+      nativeDialogCloseTimers.delete(dialogEl);
+      if (!dialogEl.classList.contains('active') && dialogEl.open) {
+        try {
+          dialogEl.close();
+        } catch (_) { }
+      }
+    }, delay);
+    nativeDialogCloseTimers.set(dialogEl, timer);
+  }
+}
+
+function setupNativeDialogModalSync() {
+  const modalMappings = [
+    { id: 'modal-overlay', closeFn: () => typeof closeModal === 'function' && closeModal() },
+    { id: 'search-filter-overlay', closeFn: () => typeof closeSearchFilterModal === 'function' && closeSearchFilterModal() }
+  ];
+
+  modalMappings.forEach(({ id, closeFn }) => {
+    const dialogEl = document.getElementById(id);
+    if (!dialogEl || dialogEl.tagName !== 'DIALOG') return;
+
+    dialogEl.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeFn();
+    });
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.attributeName === 'class') {
+          syncNativeDialogWithActiveClass(dialogEl);
+          break;
+        }
+      }
+    });
+    observer.observe(dialogEl, { attributes: true, attributeFilter: ['class'] });
+
+    // Nếu modal được mở trước DOMContentLoaded thì đồng bộ ngay
+    if (dialogEl.classList.contains('active')) {
+      syncNativeDialogWithActiveClass(dialogEl);
+    }
+  });
 }
 
 function calculateModalTotalPrice() {
@@ -2340,26 +2466,28 @@ function openDeliveryInfoModal() {
       </button>
     </div>
 
-    <div class="delivery-modal-body">
+    <form id="delivery-info-form" class="delivery-modal-body" onsubmit="event.preventDefault(); saveDeliveryInfo();" novalidate>
       <!-- Quick Switch Remembered User Profiles -->
       ${rememberedUsers.length > 0 ? `
         <div class="delivery-input-group">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <label class="delivery-input-label" style="margin-bottom:0;">Người dùng đã ghi nhớ (${rememberedUsers.length}):</label>
+            <span class="delivery-input-label" style="margin-bottom:0;">Người dùng đã ghi nhớ (${rememberedUsers.length}):</span>
             <button type="button" class="db-inline-link-btn" onclick="openAccountSwitcherModal();">
               Quản lý hồ sơ →
             </button>
           </div>
           <div class="delivery-presets-row">
             ${rememberedUsers.map(u => `
-              <div
+              <button
+                type="button"
                 class="delivery-preset-chip ${activeUser && activeUser.id === u.id ? 'active' : ''}"
+                aria-pressed="${activeUser && activeUser.id === u.id ? 'true' : 'false'}"
                 onclick="switchUserInDeliveryModal('${escapeHtml(u.id)}')"
                 title="SĐT: ${escapeHtml(u.phone)} • ${(u.orders || []).length} đơn đã đặt"
               >
                 <span>${u.avatar || '🧑‍🎓'}</span>
                 <span>${escapeHtml(u.name)} (${escapeHtml(u.phone)})</span>
-              </div>
+              </button>
             `).join('')}
           </div>
         </div>
@@ -2368,16 +2496,18 @@ function openDeliveryInfoModal() {
       <!-- Address presets of active user -->
       ${savedAddressPresets.length > 0 ? `
         <div class="delivery-input-group">
-          <label class="delivery-input-label">Sổ địa chỉ của ${escapeHtml(userDeliveryInfo.name)} (Chọn 1 chạm):</label>
+          <span class="delivery-input-label">Sổ địa chỉ của ${escapeHtml(userDeliveryInfo.name)} (Chọn 1 chạm):</span>
           <div class="delivery-presets-row">
             ${savedAddressPresets.map((p, idx) => `
-              <div 
-                class="delivery-preset-chip ${userDeliveryInfo.address === p.address ? 'active' : ''}" 
+              <button
+                type="button"
+                class="delivery-preset-chip ${userDeliveryInfo.address === p.address ? 'active' : ''}"
+                aria-pressed="${userDeliveryInfo.address === p.address ? 'true' : 'false'}"
                 onclick="selectAddressPreset(${idx})"
               >
                 <span>${p.icon || '📍'}</span>
                 <span>${escapeHtml(p.label)}</span>
-              </div>
+              </button>
             `).join('')}
           </div>
         </div>
@@ -2385,44 +2515,60 @@ function openDeliveryInfoModal() {
 
       <!-- Recipient Name -->
       <div class="delivery-input-group">
-        <label class="delivery-input-label">Họ và tên người nhận món:</label>
+        <label class="delivery-input-label" for="delivery-input-name">Họ và tên người nhận món (*):</label>
         <input 
           type="text" 
           id="delivery-input-name" 
+          name="name"
+          autocomplete="name"
+          required
           class="delivery-input-field" 
           placeholder="Nhập họ tên người nhận" 
           value="${escapeHtml(userDeliveryInfo.name)}"
         >
+        <span class="delivery-field-error" id="delivery-name-error"></span>
       </div>
 
       <!-- Recipient Phone -->
       <div class="delivery-input-group">
-        <label class="delivery-input-label">Số điện thoại liên hệ giao hàng (*):</label>
+        <label class="delivery-input-label" for="delivery-input-phone">Số điện thoại liên hệ giao hàng (*):</label>
+        <span class="delivery-input-hint" id="delivery-phone-hint">Gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09.</span>
         <input 
           type="tel" 
           id="delivery-input-phone" 
+          name="tel"
+          autocomplete="tel"
+          inputmode="tel"
+          required
+          aria-describedby="delivery-phone-hint"
           class="delivery-input-field" 
           placeholder="Nhập số điện thoại (VD: 0901 234 567)" 
           value="${escapeHtml(userDeliveryInfo.phone)}"
         >
+        <span class="delivery-field-error" id="delivery-phone-error"></span>
       </div>
 
       <!-- Recipient Email -->
       <div class="delivery-input-group">
-        <label class="delivery-input-label">Email liên hệ / Mã sinh viên (Tùy chọn):</label>
+        <label class="delivery-input-label" for="delivery-input-email">Email liên hệ / Mã sinh viên (Tùy chọn):</label>
+        <span class="delivery-input-hint" id="delivery-email-hint">Dùng để nhận hóa đơn hoặc khôi phục hồ sơ khi cần.</span>
         <input 
           type="email" 
           id="delivery-input-email" 
+          name="email"
+          autocomplete="email"
+          aria-describedby="delivery-email-hint"
           class="delivery-input-field" 
           placeholder="VD: sinhvien@stu.ptit.edu.vn" 
           value="${escapeHtml(userDeliveryInfo.email || (activeUser ? activeUser.email || '' : ''))}"
         >
+        <span class="delivery-field-error" id="delivery-email-error"></span>
       </div>
 
       <!-- Detail Address with Actions (Lấy vị trí GPS & Mở bản đồ) -->
       <div class="delivery-input-group">
         <div class="delivery-address-head">
-          <label class="delivery-input-label" style="margin-bottom:0;">Địa chỉ nhận hàng chi tiết (*):</label>
+          <label class="delivery-input-label" for="delivery-input-address" style="margin-bottom:0;">Địa chỉ nhận hàng chi tiết (*):</label>
           <div class="delivery-loc-actions-group">
             <button type="button" class="db-location-detect-btn" id="delivery-detect-gps-btn" onclick="autoDetectDeliveryAddress()" title="Tự động lấy vị trí hiện tại từ GPS">
               📍 Lấy vị trí hiện tại
@@ -2434,10 +2580,14 @@ function openDeliveryInfoModal() {
         </div>
         <textarea 
           id="delivery-input-address" 
+          name="street-address"
+          autocomplete="street-address"
+          required
           class="delivery-input-field" 
           rows="2" 
           placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
         >${escapeHtml(userDeliveryInfo.address)}</textarea>
+        <span class="delivery-field-error" id="delivery-address-error"></span>
       </div>
 
       <!-- Interactive Map Picker (Mặc định ẩn - Chỉ hiện ra khi người dùng muốn chọn vị trí) -->
@@ -2472,50 +2622,52 @@ function openDeliveryInfoModal() {
 
       <!-- Address Label Tags -->
       <div class="delivery-input-group">
-        <label class="delivery-input-label">Loại địa chỉ:</label>
+        <span class="delivery-input-label">Loại địa chỉ:</span>
         <div class="delivery-tag-selector">
-          <div class="delivery-tag-btn ${tempDeliveryLabel === 'PTIT Hà Đông' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'PTIT Hà Đông')">
+          <button type="button" class="delivery-tag-btn ${tempDeliveryLabel === 'PTIT Hà Đông' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'PTIT Hà Đông')">
             🎓 PTIT Hà Đông
-          </div>
-          <div class="delivery-tag-btn ${tempDeliveryLabel === 'KTX PTIT' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'KTX PTIT')">
+          </button>
+          <button type="button" class="delivery-tag-btn ${tempDeliveryLabel === 'KTX PTIT' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'KTX PTIT')">
             🏢 KTX PTIT
-          </div>
-          <div class="delivery-tag-btn ${tempDeliveryLabel === 'Nhà riêng' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'Nhà riêng')">
+          </button>
+          <button type="button" class="delivery-tag-btn ${tempDeliveryLabel === 'Nhà riêng' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'Nhà riêng')">
             🏠 Nhà riêng
-          </div>
-          <div class="delivery-tag-btn ${tempDeliveryLabel === 'Văn phòng' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'Văn phòng')">
+          </button>
+          <button type="button" class="delivery-tag-btn ${tempDeliveryLabel === 'Văn phòng' ? 'active' : ''}" onclick="setDeliveryLabel(this, 'Văn phòng')">
             💼 Văn phòng
-          </div>
+          </button>
         </div>
       </div>
 
       <!-- Delivery Building Note -->
       <div class="delivery-input-group">
-        <label class="delivery-input-label">Ghi chú địa chỉ (Tòa nhà, số tầng...):</label>
+        <label class="delivery-input-label" for="delivery-input-note">Ghi chú địa chỉ (Tòa nhà, số tầng...):</label>
         <input 
           type="text" 
           id="delivery-input-note" 
+          name="address-note"
           class="delivery-input-field" 
           placeholder="VD: Giao sảnh nhà A2, gọi trước 5 phút..." 
           value="${escapeHtml(userDeliveryInfo.note || '')}"
         >
       </div>
 
-      <label class="db-checkbox-row">
+      <label class="db-checkbox-row" for="delivery-create-new-profile">
         <input type="checkbox" id="delivery-create-new-profile">
         <span>Tạo & ghi nhớ thành hồ sơ người dùng mới (nếu dùng SĐT mới)</span>
       </label>
-    </div>
+    </form>
 
     <!-- Modal Sticky Bottom Footer -->
     <div class="delivery-modal-footer">
-      <button type="button" class="btn-primary-large" onclick="saveDeliveryInfo()" style="flex: 1; width: 100%;">
+      <button type="submit" form="delivery-info-form" class="btn-primary-large" style="flex: 1; width: 100%;">
         ${FluentIcons.saveFilled} Lưu & Áp Dụng Thông Tin
       </button>
     </div>
   `;
 
   overlay.classList.add('active');
+  setupDeliveryFormValidation();
 }
 
 function toggleDeliveryMapPicker(force) {
@@ -3022,26 +3174,126 @@ function autoDetectDeliveryAddress() {
   });
 }
 
+function getDeliveryFieldErrorMessage(field) {
+  if (!field) return '';
+  const val = field.value.trim();
+  if (field.id === 'delivery-input-name') {
+    return val ? '' : 'Vui lòng nhập họ tên người nhận.';
+  }
+  if (field.id === 'delivery-input-phone') {
+    if (!val) return 'Vui lòng nhập số điện thoại liên hệ.';
+    if (typeof isValidPhoneNumber === 'function' && !isValidPhoneNumber(val)) {
+      return 'Số điện thoại chưa đúng định dạng (10 số, bắt đầu bằng 03, 05, 07, 08, 09).';
+    }
+    return '';
+  }
+  if (field.id === 'delivery-input-email') {
+    if (val && typeof isValidEmail === 'function' && !isValidEmail(val)) {
+      return 'Định dạng Email chưa hợp lệ (VD: user@stu.ptit.edu.vn).';
+    }
+    return '';
+  }
+  if (field.id === 'delivery-input-address') {
+    return val ? '' : 'Vui lòng nhập địa chỉ nhận hàng chi tiết.';
+  }
+  return '';
+}
+
+function syncDeliveryFieldValidation(field, forceDisplay = false) {
+  if (!field) return true;
+  const errMsg = getDeliveryFieldErrorMessage(field);
+  field.setCustomValidity(errMsg);
+
+  const group = field.closest('.delivery-input-group');
+  const mapIds = {
+    'delivery-input-name': { hintId: '', errId: 'delivery-name-error' },
+    'delivery-input-phone': { hintId: 'delivery-phone-hint', errId: 'delivery-phone-error' },
+    'delivery-input-email': { hintId: 'delivery-email-hint', errId: 'delivery-email-error' },
+    'delivery-input-address': { hintId: '', errId: 'delivery-address-error' }
+  };
+  const cfg = mapIds[field.id] || {};
+  const errEl = cfg.errId ? document.getElementById(cfg.errId) : null;
+
+  const isInteracted = field.dataset.interacted === 'true' || forceDisplay;
+  const showInvalid = Boolean(errMsg && isInteracted);
+
+  if (errEl) {
+    errEl.textContent = showInvalid ? errMsg : '';
+  }
+  if (group) {
+    group.classList.toggle('has-error', showInvalid);
+  }
+  field.classList.toggle('is-invalid', showInvalid);
+
+  if (showInvalid) {
+    field.setAttribute('aria-invalid', 'true');
+  } else {
+    field.removeAttribute('aria-invalid');
+  }
+
+  const describedBy = [cfg.hintId, showInvalid ? cfg.errId : ''].filter(Boolean).join(' ');
+  if (describedBy) {
+    field.setAttribute('aria-describedby', describedBy);
+  } else {
+    field.removeAttribute('aria-describedby');
+  }
+
+  return !errMsg;
+}
+
+function setupDeliveryFormValidation() {
+  const form = document.getElementById('delivery-info-form');
+  if (!form) return;
+  const fields = form.querySelectorAll('#delivery-input-name, #delivery-input-phone, #delivery-input-email, #delivery-input-address');
+  fields.forEach(field => {
+    field.addEventListener('blur', () => {
+      if (field.value.trim() !== '' || field.hasAttribute('required')) {
+        field.dataset.interacted = 'true';
+      }
+      syncDeliveryFieldValidation(field, false);
+    });
+    field.addEventListener('input', () => {
+      if (field.dataset.interacted === 'true') {
+        syncDeliveryFieldValidation(field, false);
+      } else {
+        field.setCustomValidity(getDeliveryFieldErrorMessage(field));
+      }
+    });
+  });
+}
+
 function saveDeliveryInfo() {
-  const name = document.getElementById('delivery-input-name')?.value.trim() || 'Khách hàng';
-  const phone = document.getElementById('delivery-input-phone')?.value.trim() || '0901 234 567';
-  const email = document.getElementById('delivery-input-email')?.value.trim() || '';
-  const address = document.getElementById('delivery-input-address')?.value.trim() || 'Học viện CNBCVT, Hà Đông, Hà Nội';
+  const nameEl = document.getElementById('delivery-input-name');
+  const phoneEl = document.getElementById('delivery-input-phone');
+  const emailEl = document.getElementById('delivery-input-email');
+  const addressEl = document.getElementById('delivery-input-address');
+
+  const validatedFields = [nameEl, phoneEl, emailEl, addressEl].filter(Boolean);
+  let firstInvalid = null;
+  let firstErrMsg = '';
+  validatedFields.forEach(f => {
+    f.dataset.interacted = 'true';
+    const ok = syncDeliveryFieldValidation(f, true);
+    if (!ok && !firstInvalid) {
+      firstInvalid = f;
+      firstErrMsg = getDeliveryFieldErrorMessage(f);
+    }
+  });
+
+  if (firstInvalid) {
+    firstInvalid.focus();
+    if (typeof showToast === 'function') {
+      showToast('dismissCircleRegular', firstErrMsg || 'Vui lòng kiểm tra lại thông tin giao hàng!');
+    }
+    return;
+  }
+
+  const name = nameEl?.value.trim() || 'Khách hàng';
+  const phone = phoneEl?.value.trim() || '0901 234 567';
+  const email = emailEl?.value.trim() || '';
+  const address = addressEl?.value.trim() || 'Học viện CNBCVT, Hà Đông, Hà Nội';
   const note = document.getElementById('delivery-input-note')?.value.trim() || '';
   const createNewProfile = document.getElementById('delivery-create-new-profile')?.checked;
-
-  if (typeof isValidPhoneNumber === 'function' && !isValidPhoneNumber(phone)) {
-    if (typeof showToast === 'function') {
-      showToast('dismissCircleRegular', 'Số điện thoại không đúng định dạng (10 số, bắt đầu bằng 03, 05, 07, 08, 09)!');
-    }
-    return;
-  }
-  if (email && typeof isValidEmail === 'function' && !isValidEmail(email)) {
-    if (typeof showToast === 'function') {
-      showToast('dismissCircleRegular', 'Định dạng Email không hợp lệ (VD: user@ptit.edu.vn hoặc user@gmail.com)!');
-    }
-    return;
-  }
 
   if (typeof DB !== 'undefined' && DB.isReady) {
     const curUser = DB.getCurrentUser();
@@ -5670,6 +5922,19 @@ function getToastSemanticMeta(icon) {
 
 let iosToastStackTimer = null;
 
+function syncToastPopoverLayer(container) {
+  if (!container || typeof container.showPopover !== 'function') return;
+  const hasToasts = container.querySelectorAll('.toast.ios-toast').length > 0;
+  try {
+    const isOpen = container.matches(':popover-open');
+    if (hasToasts && !isOpen) {
+      container.showPopover();
+    } else if (!hasToasts && isOpen && typeof container.hidePopover === 'function') {
+      container.hidePopover();
+    }
+  } catch (_) { }
+}
+
 function dismissIosToast(toast) {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -5683,6 +5948,7 @@ function dismissIosToast(toast) {
     el.classList.add('is-leaving');
     setTimeout(() => {
       if (el.parentNode) el.parentNode.removeChild(el);
+      syncToastPopoverLayer(container);
     }, 260 + idx * 25);
   });
 }
@@ -5711,8 +5977,11 @@ function showToast(icon, message) {
   const toast = document.createElement('div');
   toast.className = `toast ios-toast tone-${meta.tone} is-pre-enter`;
   toast.setAttribute('data-stack-depth', '0');
-  toast.setAttribute('role', 'status');
-  toast.setAttribute('aria-live', 'polite');
+
+  if (typeof document.ariaNotify !== 'function') {
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+  }
 
   const iconContent = (typeof FluentIcons !== 'undefined' && FluentIcons[icon])
     ? FluentIcons[icon]
@@ -5747,7 +6016,15 @@ function showToast(icon, message) {
   toast.addEventListener('click', () => dismissIosToast(toast));
 
   container.appendChild(toast);
+  syncToastPopoverLayer(container);
   void toast.offsetWidth;
+
+  if (typeof document.ariaNotify === 'function') {
+    const plainMsg = String(toast.querySelector('.ios-toast-msg')?.textContent || '').trim();
+    if (plainMsg) {
+      try { document.ariaNotify(plainMsg); } catch (_) { }
+    }
+  }
 
   requestAnimationFrame(() => {
     toast.classList.remove('is-pre-enter');
@@ -5879,6 +6156,9 @@ document.addEventListener('pointerdown', (e) => {
 
 // ── Init (Khởi tạo Database JSON thống nhất trước khi render UI) ──
 document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof setupNativeDialogModalSync === 'function') {
+    setupNativeDialogModalSync();
+  }
   if (typeof DB !== 'undefined') {
     await DB.init();
   }

@@ -573,17 +573,17 @@ function renderHomeFeaturedDishesSection() {
   return `
     <div class="restaurants-section home-featured-section fade-in">
       <div class="section-head">
-        <div class="section-title">Mặt hàng nổi bật • Đạt chuẩn Dinh dưỡng & ATTP</div>
+        <h2 class="section-title">Mặt hàng nổi bật • Đạt chuẩn Dinh dưỡng & ATTP</h2>
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="scroll-arrow-controls">
-            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', -260)" title="Cuộn sang trái">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', -260)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
               ${FluentIcons.chevronLeft}
             </button>
-            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', 260)" title="Cuộn sang phải">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-featured-dishes-scroll', 260)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
               ${FluentIcons.chevronRight}
             </button>
           </div>
-          <span class="section-see-all" onclick="openSearchView()">Khám phá thêm</span>
+          <button type="button" class="section-see-all" onclick="openSearchView()">Khám phá thêm</button>
         </div>
       </div>
 
@@ -593,9 +593,9 @@ function renderHomeFeaturedDishesSection() {
       || DB.data.restaurants.find(r => Number(r.id) === Number(item.restaurantId));
     const prof = getDishNutritionAndSafetyProfile(item, store);
     return `
-            <div class="home-feat-dish-card" onclick="openDishDetailById('${escapeHtml(item.id)}')">
+            <div class="home-feat-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
               <div class="home-feat-dish-img-wrap">
-                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
                 <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
@@ -633,23 +633,96 @@ function openDishDetailById(itemId) {
 }
 
 let pdpMobileDrawerOpen = false;
+let pdpPrevFocusedEl = null;
+
+function syncPDPMobileDrawerA11y() {
+  const drawer = document.getElementById('pdp-order-drawer');
+  if (!drawer) return;
+  const isMobile = window.innerWidth < 768;
+  const isModalOpen = isMobile && pdpMobileDrawerOpen;
+
+  const bgTargets = [
+    document.querySelector('.product-detail-main-col'),
+    document.querySelector('.product-detail-topbar'),
+    document.querySelector('.pdp-mobile-sticky-bar'),
+    document.querySelector('.bottom-nav'),
+    document.querySelector('.desktop-sidebar'),
+    document.querySelector('.floating-cart-bar')
+  ].filter(Boolean);
+
+  bgTargets.forEach(el => {
+    el.inert = isModalOpen;
+  });
+
+  if (isModalOpen) {
+    drawer.inert = false;
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-modal', 'true');
+    drawer.setAttribute('aria-labelledby', 'pdp-order-card-title');
+    drawer.setAttribute('tabindex', '-1');
+  } else {
+    drawer.inert = isMobile;
+    drawer.removeAttribute('role');
+    drawer.removeAttribute('aria-modal');
+    drawer.removeAttribute('aria-labelledby');
+    drawer.removeAttribute('tabindex');
+  }
+}
+
+function handlePDPMobileDrawerKeydown(e) {
+  if (e.key === 'Escape' && pdpMobileDrawerOpen) {
+    e.preventDefault();
+    closePDPMobileOrderDrawer();
+  }
+}
+
+if (typeof window !== 'undefined' && !window.__pdpDrawerResizeBound) {
+  window.__pdpDrawerResizeBound = true;
+  window.addEventListener('resize', () => {
+    if (typeof syncPDPMobileDrawerA11y === 'function') {
+      syncPDPMobileDrawerA11y();
+    }
+  });
+}
 
 function openPDPMobileOrderDrawer(intent = 'cart') {
+  if (!pdpPrevFocusedEl || !pdpPrevFocusedEl.isConnected) {
+    pdpPrevFocusedEl = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  }
   pdpMobileDrawerOpen = true;
   const drawer = document.getElementById('pdp-order-drawer');
   const backdrop = document.getElementById('pdp-order-drawer-backdrop');
   if (drawer) drawer.classList.add('mobile-open');
   if (backdrop) backdrop.classList.add('active');
   document.body.classList.add('pdp-drawer-active');
+  syncPDPMobileDrawerA11y();
+  document.addEventListener('keydown', handlePDPMobileDrawerKeydown);
+
+  if (drawer && window.innerWidth < 768) {
+    const focusTarget = drawer.querySelector('.pdp-order-drawer-close-btn') || drawer;
+    requestAnimationFrame(() => {
+      if (focusTarget && typeof focusTarget.focus === 'function') {
+        focusTarget.focus({ preventScroll: true });
+      }
+    });
+  }
 }
 
 function closePDPMobileOrderDrawer() {
+  const wasOpen = pdpMobileDrawerOpen;
   pdpMobileDrawerOpen = false;
   const drawer = document.getElementById('pdp-order-drawer');
   const backdrop = document.getElementById('pdp-order-drawer-backdrop');
   if (drawer) drawer.classList.remove('mobile-open', 'modal-shake-prompt');
   if (backdrop) backdrop.classList.remove('active');
   document.body.classList.remove('pdp-drawer-active');
+  document.removeEventListener('keydown', handlePDPMobileDrawerKeydown);
+  syncPDPMobileDrawerA11y();
+
+  if (wasOpen && pdpPrevFocusedEl && pdpPrevFocusedEl.isConnected && typeof pdpPrevFocusedEl.focus === 'function') {
+    pdpPrevFocusedEl.focus({ preventScroll: true });
+  }
+  pdpPrevFocusedEl = null;
 }
 
 function handlePDPMobileBackdropClick(e) {
@@ -967,7 +1040,7 @@ function renderDishDetailView() {
         <div class="product-detail-order-col ${pdpMobileDrawerOpen ? 'mobile-open' : ''}" id="pdp-order-drawer">
           <div class="pdp-order-card">
             <div class="pdp-order-card-title">
-              <span>🛒 Tùy chỉnh phần ăn của bạn</span>
+              <span id="pdp-order-card-title">🛒 Tùy chỉnh phần ăn của bạn</span>
               <button type="button" class="pdp-order-drawer-close-btn" onclick="closePDPMobileOrderDrawer()" aria-label="Đóng">
                 ${FluentIcons.dismiss}
               </button>
@@ -1126,6 +1199,7 @@ function renderDishDetailView() {
   if (typeof updateHeaderScrolledState === 'function') {
     updateHeaderScrolledState();
   }
+  syncPDPMobileDrawerA11y();
 }
 
 function scrollToReviewsSection() {

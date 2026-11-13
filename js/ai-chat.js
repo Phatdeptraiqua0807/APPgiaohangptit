@@ -1883,6 +1883,9 @@ function sendAIPromptChip(promptText) {
 function handleAIChatInputResize(el) {
   if (!el) return;
   aiDraftInput = el.value;
+  if (typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('field-sizing', 'content')) {
+    return;
+  }
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 110) + 'px';
 }
@@ -1895,6 +1898,9 @@ function handleAIChatKeydown(e) {
   }
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
+    if (e.isComposing || e.keyCode === 229) {
+      return;
+    }
     submitAIChatMessage();
   }
 }
