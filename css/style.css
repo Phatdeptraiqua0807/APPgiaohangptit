@@ -16961,8 +16961,16 @@ body:not(.view-ai-active) .ai-aura {
   .categories-scroll,
   .restaurants-scroll,
   .restaurants-scroll.featured-stores-scroll,
+  .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
+  .food-categories-section .food-categories-grid,
   .home-featured-dishes-scroll,
-  .ai-quick-prompts-bar {
+  .res-dishes-scroll,
+  .visual-suggestions-scroll,
+  .store-similar-scroll,
+  .ai-quick-prompts-bar,
+  .ai-dish-cards-strip,
+  .ai-prompt-grid,
+  .sn-ai-chips-scroll-container {
     scroll-behavior: auto !important;
   }
 
@@ -17034,13 +17042,50 @@ button.delivery-tag-btn {
   font-family: inherit;
 }
 
-/* Horizontal Scroll Snap + Touch action cho các dải cuộn ngang */
-.categories-scroll,
-.home-featured-dishes-scroll,
-.restaurants-scroll.featured-stores-scroll,
-.ai-quick-prompts-bar {
+/* Horizontal Scroll Snap + Touch action cho toàn bộ các dải cuộn ngang */
+:is(
+  .search-tags,
+  .categories-scroll,
+  .food-categories-section .food-categories-grid,
+  .home-featured-dishes-scroll,
+  .restaurants-scroll.featured-stores-scroll,
+  .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
+  .res-dishes-scroll,
+  .visual-suggestions-scroll,
+  .distance-chips-row,
+  .filter-pills-row,
+  .active-filters-scroll,
+  .activity-tabs-bar,
+  .desktop-header-tags,
+  .db-subtabs-bar,
+  .preset-thumbs-row,
+  .ai-dish-cards-strip,
+  .ai-quick-prompts-bar,
+  .delivery-presets-row,
+  .delivery-hotspots-scroll,
+  .fav-filter-tabs-row,
+  .store-tabs-bar,
+  .store-menu-tag-chips,
+  .store-similar-scroll,
+  .dbm-strip-row,
+  .dbm-bulk-bar.active .dbm-bulk-actions
+) {
   scroll-snap-type: x proximity;
+  scroll-padding-inline: 16px;
+  touch-action: manipulation;
+}
+
+:is(
+  .categories-scroll,
+  .home-featured-dishes-scroll,
+  .restaurants-scroll.featured-stores-scroll
+) {
   scroll-padding-inline: var(--safe-padding, 16px);
+}
+
+.ai-prompt-grid,
+.sn-ai-chips-scroll-container {
+  scroll-padding-inline: 16px;
   touch-action: manipulation;
 }
 
@@ -17052,11 +17097,33 @@ button.delivery-tag-btn {
   }
 }
 
-.categories-scroll > .category-chip,
-.home-featured-dishes-scroll > .home-feat-dish-card,
-.restaurants-scroll > .restaurant-card,
-.restaurants-scroll > .featured-store-card,
-.ai-quick-prompts-bar > .ai-quick-chip {
+:is(
+  .search-tags,
+  .categories-scroll,
+  .food-categories-section .food-categories-grid,
+  .home-featured-dishes-scroll,
+  .restaurants-scroll,
+  .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
+  .res-dishes-scroll,
+  .visual-suggestions-scroll,
+  .distance-chips-row,
+  .filter-pills-row,
+  .active-filters-scroll,
+  .activity-tabs-bar,
+  .desktop-header-tags,
+  .db-subtabs-bar,
+  .preset-thumbs-row,
+  .ai-dish-cards-strip,
+  .ai-quick-prompts-bar,
+  .delivery-presets-row,
+  .delivery-hotspots-scroll,
+  .fav-filter-tabs-row,
+  .store-tabs-bar,
+  .store-menu-tag-chips,
+  .store-similar-scroll,
+  .dbm-strip-row,
+  .dbm-bulk-bar.active .dbm-bulk-actions
+) > * {
   scroll-snap-align: start;
 }
 
@@ -17086,15 +17153,40 @@ button.delivery-tag-btn {
 }
 
 @supports (animation-timeline: scroll()) and (mask: linear-gradient(black, black) no-clip subtract) {
-  .categories-scroll,
-  .home-featured-dishes-scroll,
-  .restaurants-scroll.featured-stores-scroll,
-  .ai-quick-prompts-bar {
-    --fade-size: 28px;
+  /* Dải chip/tab/thẻ gọn: fade 20px ở hai đầu khi có nội dung cuộn tiếp */
+  :is(
+    .search-tags,
+    .categories-scroll,
+    .food-categories-section .food-categories-grid,
+    .home-featured-dishes-scroll,
+    .restaurants-scroll.featured-stores-scroll,
+    .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
+    .res-dishes-scroll,
+    .visual-suggestions-scroll,
+    .distance-chips-row,
+    .filter-pills-row,
+    .active-filters-scroll,
+    .desktop-header-tags,
+    .db-subtabs-bar,
+    .preset-thumbs-row,
+    .ai-prompt-grid,
+    .ai-dish-cards-strip,
+    .ai-quick-prompts-bar,
+    .sn-ai-chips-scroll-container,
+    .delivery-presets-row,
+    .delivery-hotspots-scroll,
+    .fav-filter-tabs-row,
+    .store-tabs-bar,
+    .store-menu-tag-chips,
+    .store-similar-scroll,
+    .dbm-strip-row,
+    .dbm-bulk-bar.active .dbm-bulk-actions
+  ) {
+    --fade-size: 20px;
     --fade-dir: right;
     --fade-start-pos: 0;
     --fade-end-pos: 100%;
-    scroll-padding-inline: max(var(--safe-padding, 16px), var(--fade-size));
+    scroll-padding-inline: 20px;
     mask:
       linear-gradient(black, black) no-clip subtract,
       linear-gradient(to var(--fade-dir), black, transparent) var(--fade-start-pos) 0 / var(--fade-start) 100% no-repeat no-clip,
@@ -17104,9 +17196,25 @@ button.delivery-tag-btn {
     animation-range: 0 var(--fade-size), calc(100% - var(--fade-size)) 100%;
   }
 
-  .ai-quick-prompts-bar {
-    --fade-size: 20px;
-    scroll-padding-inline: 20px;
+  /* Carousel card lớn trên Home/Search/Store/AI: fade 28px */
+  :is(
+    .home-featured-dishes-scroll,
+    .restaurants-scroll.featured-stores-scroll,
+    .category-restaurants-section .restaurants-scroll.category-restaurants-scroll,
+    .visual-suggestions-scroll,
+    .ai-prompt-grid,
+    .ai-dish-cards-strip,
+    .store-similar-scroll
+  ) {
+    --fade-size: 28px;
+  }
+
+  :is(
+    .categories-scroll,
+    .home-featured-dishes-scroll,
+    .restaurants-scroll.featured-stores-scroll
+  ) {
+    scroll-padding-inline: max(var(--safe-padding, 16px), var(--fade-size));
   }
 
   @media (max-width: 767px) {
