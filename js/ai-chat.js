@@ -1215,27 +1215,37 @@ function renderAIChatView() {
 
       <!-- Khung soạn thảo: tách hẳn ra ngoài container, cố định (fixed) ở đáy màn hình -->
       <div class="ai-composer-dock">
-        <div class="ai-quick-prompts-bar" id="ai-quick-prompts-bar">
-          ${messages.length >= 2 && !aiIsGenerating ? `
-            <button
-              type="button"
-              class="ai-quick-chip ai-retry-chip"
-              onclick="retryAIChatMessage()"
-              title="Hỏi lại câu hỏi gần nhất"
-            >
-              ${FluentIcons.sync}
+        <div class="ai-quick-prompts-wrap">
+          <div class="ai-quick-prompts-bar" id="ai-quick-prompts-bar">
+            ${messages.length >= 2 && !aiIsGenerating ? `
+              <button
+                type="button"
+                class="ai-quick-chip ai-retry-chip"
+                onclick="retryAIChatMessage()"
+                title="Hỏi lại câu hỏi gần nhất"
+              >
+                ${FluentIcons.sync}
+              </button>
+            ` : ''}
+            ${AI_QUICK_BAR_PROMPTS.map((qp, idx) => `
+              <button
+                type="button"
+                class="ai-quick-chip"
+                onclick="handleQuickBarPrompt(${idx})"
+                ${aiIsGenerating ? 'disabled' : ''}
+              >
+                ${escapeHtml(qp.label)}
+              </button>
+            `).join('')}
+          </div>
+          <div class="scroll-arrow-controls ai-smart-scroll-controls" data-scroll-target="ai-quick-prompts-bar">
+            <button type="button" class="scroll-arrow-btn small" data-scroll-dir="left" onclick="scrollHorizontally('ai-quick-prompts-bar', -220)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+              ${FluentIcons.chevronLeft}
             </button>
-          ` : ''}
-          ${AI_QUICK_BAR_PROMPTS.map((qp, idx) => `
-            <button
-              type="button"
-              class="ai-quick-chip"
-              onclick="handleQuickBarPrompt(${idx})"
-              ${aiIsGenerating ? 'disabled' : ''}
-            >
-              ${escapeHtml(qp.label)}
+            <button type="button" class="scroll-arrow-btn small" data-scroll-dir="right" onclick="scrollHorizontally('ai-quick-prompts-bar', 220)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+              ${FluentIcons.chevronRight}
             </button>
-          `).join('')}
+          </div>
         </div>
 
         <div class="ai-input-box-row">
@@ -1286,6 +1296,49 @@ function renderAIChatView() {
     syncAIDockClearance();
     initAIDockObserver();
   }
+  if (typeof initAISmartScrollControls === 'function') {
+    initAISmartScrollControls();
+  }
+}
+
+let aiSmartScrollResizeBound = false;
+
+function syncAISmartScrollControls() {
+  document.querySelectorAll('.ai-smart-scroll-controls[data-scroll-target]').forEach((ctrl) => {
+    const targetId = ctrl.getAttribute('data-scroll-target');
+    const target = targetId ? document.getElementById(targetId) : null;
+    if (!target) return;
+
+    const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
+    if (maxScroll <= 2) {
+      ctrl.classList.add('is-non-scrollable');
+      return;
+    }
+
+    ctrl.classList.remove('is-non-scrollable');
+    const leftBtn = ctrl.querySelector('[data-scroll-dir="left"]');
+    const rightBtn = ctrl.querySelector('[data-scroll-dir="right"]');
+    if (leftBtn) leftBtn.disabled = target.scrollLeft <= 2;
+    if (rightBtn) rightBtn.disabled = target.scrollLeft >= maxScroll - 2;
+  });
+}
+
+function initAISmartScrollControls() {
+  document.querySelectorAll('.ai-smart-scroll-controls[data-scroll-target]').forEach((ctrl) => {
+    const targetId = ctrl.getAttribute('data-scroll-target');
+    const target = targetId ? document.getElementById(targetId) : null;
+    if (target && !target.dataset.smartScrollBound) {
+      target.dataset.smartScrollBound = '1';
+      target.addEventListener('scroll', syncAISmartScrollControls, { passive: true });
+    }
+  });
+
+  if (!aiSmartScrollResizeBound) {
+    aiSmartScrollResizeBound = true;
+    window.addEventListener('resize', syncAISmartScrollControls, { passive: true });
+  }
+
+  requestAnimationFrame(syncAISmartScrollControls);
 }
 
 function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
@@ -1305,8 +1358,18 @@ function renderAIWelcomeScreen(activeUser, itemsCount, catsCount, ordersCount) {
         <span class="ai-ctx-pill link" onclick="openAISettingsModal()">🔌 Hỗ trợ gắn API Key riêng</span>
       </div>
 
-      <div class="ai-prompt-section-label">💡 Gợi ý câu hỏi dành cho bạn (Chạm để hỏi ngay):</div>
-      <div class="ai-prompt-grid">
+      <div class="ai-prompt-section-head">
+        <div class="ai-prompt-section-label">💡 Gợi ý câu hỏi dành cho bạn (Chạm để hỏi ngay):</div>
+        <div class="scroll-arrow-controls ai-smart-scroll-controls" data-scroll-target="ai-prompt-grid">
+          <button type="button" class="scroll-arrow-btn small" data-scroll-dir="left" onclick="scrollHorizontally('ai-prompt-grid', -280)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+            ${FluentIcons.chevronLeft}
+          </button>
+          <button type="button" class="scroll-arrow-btn small" data-scroll-dir="right" onclick="scrollHorizontally('ai-prompt-grid', 280)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+            ${FluentIcons.chevronRight}
+          </button>
+        </div>
+      </div>
+      <div class="ai-prompt-grid" id="ai-prompt-grid">
         ${getAIWelcomePromptOrder().map((idx) => {
     const card = AI_WELCOME_PROMPT_CARDS[idx];
     return `
@@ -1424,10 +1487,7 @@ function renderAIMessageList(messages, activeUser) {
                 ${!isUser && msg.agentTrace ? renderAIAgentTraceBox(msg.agentTrace) : ''}
                 <div class="ai-msg-formatted-text">${isUser ? escapeHtml(msg.content) : formatAIMarkdown(msg.content)}</div>
                 ${!isUser && msg.sourceBadge ? `
-                  <div class="ai-msg-meta-foot">
-                    <span>${escapeHtml(msg.sourceBadge)}</span>
-                    ${msg.time ? `<span>• ${escapeHtml(msg.time)}</span>` : ''}
-                  </div>
+
                 ` : ''}
               </div>
 
@@ -2406,7 +2466,7 @@ function revealLastAIMessage(role) {
 //    - Giai đoạn 2..N: AI tự động nới lỏng bộ lọc nếu 0 kết quả, hoặc tổng hợp câu trả lời
 // =========================================================================
 
-const MAX_AGENT_TOOL_ROUNDS = 3;
+const MAX_AGENT_TOOL_ROUNDS = 5;
 
 function buildAgenticSystemPrompt() {
   const user = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCurrentUser() : null;
@@ -2439,7 +2499,7 @@ Bộ công cụ được chia làm 2 nhóm rõ rệt:
 2. "get_catalog_overview": Lấy thống kê tổng số mặt hàng, tồn kho, tầm giá min/max/trung bình và số món từng danh mục.
 3. "get_item_details": Lấy chi tiết kích cỡ, danh sách topping, voucher quán cho các mã món cụ thể: { "itemIds": ["item_1_1", ...] }.
 4. "search_stores": Tra cứu danh sách cửa hàng, khoảng cách, phí ship, thực đơn mẫu.
-5. "get_user_context": Đọc dữ liệu cá nhân của khách trên trình duyệt (giỏ hàng, đơn cũ, mục tiêu kcal): { "includeCart": true, "includeOrders": true, "includeNutrition": true }.
+5. "get_user_context": Đọc dữ liệu cá nhân của khách trên trình duyệt (giỏ hàng, đơn cũ, mục tiêu kcal): { "includeCart": true, "includeOrders": true, "includeNutrition": true, "orderStatus": "all"|"delivering"|"completed"|"cancelled" (tùy chọn lọc đơn theo trạng thái) }.
 6. "track_order": Tra cứu chi tiết hành trình di chuyển, vị trí shipper, lộ trình và tiến độ của đơn hàng đang giao. Params: { "orderId": "mã_đơn" (để trống "" để tra cứu đơn đang giao gần nhất) }.
 7. "user_profile_action": Xem thông tin cài đặt & hồ sơ hiện tại của người dùng. Params: { "action": "view" }.
 
@@ -2845,16 +2905,23 @@ async function executeSoftwareToolCall(toolName, rawParams = {}) {
     }
 
     if (includeOrders) {
-      const orders = (user && Array.isArray(user.orders)) ? user.orders : [];
-      resultObj.orders = orders.slice(0, 8).map(o => ({
+      const rawOrders = (user && Array.isArray(user.orders))
+        ? user.orders
+        : (typeof ordersList !== 'undefined' && Array.isArray(ordersList) ? ordersList : []);
+      const statusFilter = typeof params.orderStatus === 'string' ? params.orderStatus.trim().toLowerCase() : 'all';
+      const filteredOrders = (statusFilter && statusFilter !== 'all')
+        ? rawOrders.filter(o => String(o.categoryStatus || '').toLowerCase() === statusFilter)
+        : rawOrders;
+
+      resultObj.orders = filteredOrders.map(o => ({
         orderId: o.orderId,
         statusText: o.statusText,
         categoryStatus: o.categoryStatus,
         orderTime: o.orderTime,
-        restaurantName: o.restaurantName,
+        restaurantName: o.restaurantName || o.resName,
         totalAmount: o.totalAmount,
         items: Array.isArray(o.items)
-          ? o.items.map(it => `${it.qty || 1}x ${it.name} (${it.unitPrice || 0}đ)`)
+          ? o.items.map(it => `${it.qty || it.quantity || 1}x ${it.name || it.dishName} (${it.unitPrice || 0}đ)`)
           : [o.itemsSummary || '']
       }));
     }
@@ -3937,10 +4004,13 @@ async function callExternalLLMAPI(conversationMessages) {
         content: turnRes.text
       });
 
-      const isLastAllowedToolRound = (round === MAX_AGENT_TOOL_ROUNDS - 1);
-      const nextInstruction = isLastAllowedToolRound
-        ? 'Đây là dữ liệu từ phần mềm. Nếu người dùng có yêu cầu thực hiện công việc (như thêm vào giỏ hàng, áp voucher...), bạn có thể gọi Action Tool ở lượt cuối này với mã id thật đã xác thực, hoặc tổng hợp câu trả lời chi tiết cho người dùng kèm khối <<<RECOMMEND_JSON ... RECOMMEND_JSON>>> ở cuối.'
-        : 'Nếu kết quả trả về "totalMatched": 0 do điều kiện quá hẹp, bạn có thể xuất 1 lượt <<<TOOL_CALL>>> nới lỏng điều kiện lọc. Ngược lại, nếu đã có dữ liệu phù hợp: nếu người dùng có yêu cầu thực hiện công việc, bạn có thể thực hiện hành động đó ở lượt này với mã itemId thật đã xác thực, hoặc viết câu trả lời tư vấn kèm khối <<<RECOMMEND_JSON ... RECOMMEND_JSON>>>.';
+      const isFinalAnswerOnlyNext = (round === MAX_AGENT_TOOL_ROUNDS - 1);
+      const isLastToolCallNext = (round === MAX_AGENT_TOOL_ROUNDS - 2);
+      const nextInstruction = isFinalAnswerOnlyNext
+        ? 'Đây là dữ liệu cuối cùng từ phần mềm. Lượt tiếp theo chỉ dùng để tổng hợp câu trả lời cuối cùng cho người dùng (KHÔNG xuất thêm <<<TOOL_CALL>>> nữa, kèm khối <<<RECOMMEND_JSON ... RECOMMEND_JSON>>> ở cuối nếu phù hợp). Tuyệt đối chỉ xác nhận đã thêm/hủy/đặt món nếu trong <<<TOOL_RESULTS>>> ở trên đã thực sự có kết quả thành công của Action Tool tương ứng.'
+        : isLastToolCallNext
+          ? 'Đây là dữ liệu từ phần mềm. Nếu người dùng có yêu cầu thực hiện công việc (như thêm vào giỏ hàng, hủy đơn, áp voucher...), hãy gọi Action Tool ở lượt tiếp theo này với mã id thật đã xác thực, hoặc tổng hợp câu trả lời chi tiết cho người dùng kèm khối <<<RECOMMEND_JSON ... RECOMMEND_JSON>>> ở cuối.'
+          : 'Nếu kết quả trả về "totalMatched": 0 do điều kiện quá hẹp, bạn có thể xuất 1 lượt <<<TOOL_CALL>>> nới lỏng điều kiện lọc. Ngược lại, nếu đã có dữ liệu phù hợp: nếu người dùng có yêu cầu thực hiện công việc, bạn có thể thực hiện hành động đó ở lượt này với mã itemId thật đã xác thực, hoặc viết câu trả lời tư vấn kèm khối <<<RECOMMEND_JSON ... RECOMMEND_JSON>>>.';
 
       workingTurns.push({
         role: 'user',

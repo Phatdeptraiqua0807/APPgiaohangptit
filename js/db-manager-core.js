@@ -748,15 +748,24 @@ function renderHomeCategoryRestaurantSections() {
       const hInfo = dbmGetItemHealthy(it);
       const scoreNum = Number(hInfo.score) || 0;
       const scoreBadgeClass = scoreNum >= 8.0 ? 'score-high' : (scoreNum >= 6.5 ? 'score-mid' : 'score-low');
+      const isDishFav = (typeof it.fav === 'boolean')
+        ? it.fav
+        : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(it.id) : false);
+      const dishIdEsc = escapeHtml(String(it.id));
       return `
-        <div class="restaurant-card" onclick="openDishDetailById('${escapeHtml(it.id)}')">
+        <div class="restaurant-card" onclick="openDishDetailById('${dishIdEsc}')">
           <div class="restaurant-card-img-wrapper">
             <img class="restaurant-card-img" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
             <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
-            ${r.id ? `
-              <button type="button" class="restaurant-card-fav ${r.fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(${r.id})">
-                ${r.fav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
-              </button>` : ''}
+            <button type="button"
+              class="restaurant-card-fav ${isDishFav ? 'active' : ''}"
+              data-fav-dish-id="${dishIdEsc}"
+              onclick="event.stopPropagation(); toggleDishFav('${dishIdEsc}', ${Number(r.id) || 1})"
+              title="Lưu món yêu thích"
+              aria-label="Lưu món yêu thích"
+            >
+              ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+            </button>
           </div>
           <div class="restaurant-card-body">
             <div class="restaurant-card-name">${escapeHtml(it.name)}</div>

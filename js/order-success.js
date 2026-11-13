@@ -16,9 +16,6 @@ function openOrderSuccessView(order) {
   }
   if (typeof saveCurrentViewScroll === 'function') saveCurrentViewScroll();
   currentView = 'order-success';
-  if (typeof Router !== 'undefined') {
-    Router.wasInOrderSuccess = true;
-  }
   render({ replace: true });
   applyPageScroll(0);
 }
@@ -33,47 +30,50 @@ function viewPlacedOrderFromSuccess() {
   applyPageScroll(0);
 }
 
-function backHomeFromOrderSuccess() {
-  destroyOrderSuccessLottie();
-  if (typeof Router !== 'undefined') {
-    Router.wasInOrderSuccess = false;
-  }
-  openHomeView();
-}
-
 function backFromOrderSuccess() {
   destroyOrderSuccessLottie();
 
-  if (typeof Router !== 'undefined') {
-    Router.wasInOrderSuccess = false;
+  const curStep = (window.history.state && typeof window.history.state.step === 'number') ? window.history.state.step : 0;
+  const origin = window._orderFlowOrigin;
+
+  // Nếu có lịch sử bước trước đó trong phiên (VD: từ Thông tin mặt hàng -> Giỏ hàng / Thanh toán -> Thành công)
+  if (origin && typeof origin.step === 'number' && curStep > origin.step) {
+    const delta = origin.step - curStep;
+    if (delta < 0 && window.history.length > Math.abs(delta)) {
+      window._orderFlowOrigin = null;
+      window.history.go(delta);
+      return;
+    }
   }
 
-  const target = (typeof previousViewBeforeCart === 'string' && previousViewBeforeCart) ? previousViewBeforeCart : 'home';
-  const dish = (typeof previousDishBeforeCart !== 'undefined') ? previousDishBeforeCart : null;
+  window._orderFlowOrigin = null;
 
-  const state = window.history.state;
-  const step = (state && typeof state.step === 'number') ? state.step : 0;
-
-  // Lùi 2 bước qua cả giỏ hàng và checkout nếu trong session có đủ lịch sử
-  if (step >= 2 && window.history.length > 2) {
-    window.history.go(-2);
+  // Fallback nếu F5 hoặc không có history delta hợp lệ: ưu tiên mở lại Thông tin mặt hàng (replace để không đẩy đè lên #/order-success gây vòng lặp)
+  if (origin && origin.view === 'dish-detail' && origin.dish && typeof openDishDetailView === 'function') {
+    openDishDetailView(origin.dish, null, { replace: true, previousView: 'home' });
     return;
   }
 
-  // Fallback nếu không có đủ bước: mở trực tiếp view trước giỏ hàng
-  if (target === 'ai' && typeof openAIChatView === 'function') {
-    openAIChatView();
-  } else if (target === 'dish-detail' && dish && typeof openDishDetailView === 'function') {
-    openDishDetailView(dish);
-  } else if (target === 'search' && typeof openSearchView === 'function') {
-    openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
-  } else if (target === 'activity' && typeof openActivityView === 'function') {
-    openActivityView();
-  } else if (target === 'profile' && typeof openProfileView === 'function') {
-    openProfileView();
-  } else {
+  if (typeof lastPlacedOrder !== 'undefined' && lastPlacedOrder && Array.isArray(lastPlacedOrder.items) && lastPlacedOrder.items.length > 0) {
+    const firstItem = lastPlacedOrder.items[0];
+    const dishId = firstItem.dishId || firstItem.id;
+    const dish = (typeof window.Router !== 'undefined' && typeof window.Router.findDishById === 'function')
+      ? window.Router.findDishById(dishId)
+      : null;
+    if (dish && typeof openDishDetailView === 'function') {
+      openDishDetailView(dish, null, { replace: true, previousView: 'home' });
+      return;
+    }
+  }
+
+  if (typeof openHomeView === 'function') {
     openHomeView();
   }
+}
+
+function backHomeFromOrderSuccess() {
+  destroyOrderSuccessLottie();
+  openHomeView();
 }
 
 function destroyOrderSuccessLottie() {
@@ -241,7 +241,7 @@ function renderOrderSuccessView() {
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Đặt hàng thành công</div>
-        <div style="width:40px;"></div>
+        <div class="page-nav-spacer"></div>
       </div>
 
       <div class="osv-layout">

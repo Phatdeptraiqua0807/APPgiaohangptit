@@ -661,13 +661,13 @@ function handleMobilePDPAction(isBuyNow) {
   closePDPMobileOrderDrawer();
 }
 
-function openDishDetailView(dish, restaurant) {
+function openDishDetailView(dish, restaurant, navOptions = { replace: false }) {
   if (!dish) return;
   closeModal();
   closePDPMobileOrderDrawer();
 
   if (currentView !== 'dish-detail' && currentView !== 'dish-safety-nutrition') {
-    previousViewBeforeDish = currentView || 'home';
+    previousViewBeforeDish = (navOptions && navOptions.previousView) ? navOptions.previousView : (currentView || 'home');
     if (typeof saveCurrentViewScroll === 'function') {
       saveCurrentViewScroll();
     }
@@ -689,7 +689,7 @@ function openDishDetailView(dish, restaurant) {
     globalViewScrollPositions['dish-safety-nutrition'] = 0;
   }
   currentView = 'dish-detail';
-  render();
+  render(navOptions && navOptions.replace ? { replace: true } : undefined);
   applyPageScroll(0);
 }
 
@@ -722,6 +722,9 @@ function renderDishDetailView() {
     : [];
 
   const scorePct = Math.min(100, Math.round(profile.healthyScore * 10));
+  const isDishFav = (typeof dish.fav === 'boolean')
+    ? dish.fav
+    : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(dish.id) : false);
 
   app.innerHTML = `
     <div class="product-detail-page fade-in">
@@ -733,11 +736,13 @@ function renderDishDetailView() {
         <div class="page-nav-title">Thông Tin Sản Phẩm</div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button"
-            class="page-back-icon-btn res-detail-top-fav-btn ${(store && store.fav) ? 'active' : ''}"
-            onclick="toggleFav(${store ? store.id : 1})"
-            title="Lưu quán yêu thích"
+            class="page-back-icon-btn res-detail-top-fav-btn ${isDishFav ? 'active' : ''}"
+            data-fav-dish-id="${escapeHtml(String(dish.id))}"
+            onclick="toggleDishFav('${escapeHtml(String(dish.id))}', ${store ? store.id : 1})"
+            title="Lưu món yêu thích"
+            aria-label="Lưu món yêu thích"
           >
-            ${(store && store.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+            ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
           </button>
           <button type="button" class="ai-header-icon-btn cart-pill" onclick="openCartView()" title="Giỏ hàng">
             ${FluentIcons.cartRegular} <span>${cartCount}</span>
@@ -771,9 +776,21 @@ function renderDishDetailView() {
             </div>
 
             <div class="pdp-info-body">
-              <div class="pdp-store-link" onclick="openSearchView('${escapeHtml(store ? store.name : dish.restaurantName)}')">
-                <span>${FluentIcons.shop} ${escapeHtml(store ? store.name : dish.restaurantName)}</span>
-                <span>• ${escapeHtml(store?.distanceText || '0.6 km')} (${escapeHtml(store?.deliveryTime || '15 - 20 phút')}) →</span>
+              <div class="pdp-store-row">
+                <div class="pdp-store-link" onclick="openSearchView('${escapeHtml(store ? store.name : dish.restaurantName)}')">
+                  <span>${FluentIcons.shop} ${escapeHtml(store ? store.name : dish.restaurantName)}</span>
+                  <span>• ${escapeHtml(store?.distanceText || '0.6 km')} (${escapeHtml(store?.deliveryTime || '15 - 20 phút')}) →</span>
+                </div>
+                ${store ? `
+                  <button type="button"
+                    class="pdp-store-fav-pill ${(store && store.fav) ? 'active' : ''}"
+                    onclick="event.stopPropagation(); toggleFav(${store.id})"
+                    title="Lưu quán yêu thích"
+                    aria-label="Lưu quán yêu thích"
+                  >
+                    ${(store && store.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+                  </button>
+                ` : ''}
               </div>
               ${(dish.location || store?.address) ? `
                 <div class="pdp-location-line">${FluentIcons.locationFilled} ${escapeHtml(dish.location || store.address)}</div>

@@ -261,6 +261,7 @@ const DB = {
         addressNote: 'Giao sảnh nhà A2',
         savedAddresses: [],
         favoriteRestaurantIds: [],
+        favoriteItemIds: [],
         cart: [],
         orders: []
       });
@@ -274,6 +275,7 @@ const DB = {
     this.data.users.forEach(u => {
       if (!Array.isArray(u.savedAddresses)) u.savedAddresses = [];
       if (!Array.isArray(u.favoriteRestaurantIds)) u.favoriteRestaurantIds = [];
+      if (!Array.isArray(u.favoriteItemIds)) u.favoriteItemIds = [];
       if (!Array.isArray(u.cart)) u.cart = [];
       if (!Array.isArray(u.orders)) u.orders = [];
       if (!u.avatar) u.avatar = '🧑‍🎓';
@@ -362,6 +364,7 @@ const DB = {
     // 3. Active User
     const activeUser = this.getCurrentUser();
     const favSet = new Set(activeUser ? activeUser.favoriteRestaurantIds : []);
+    const favItemSet = new Set((activeUser && Array.isArray(activeUser.favoriteItemIds) ? activeUser.favoriteItemIds : []).map(id => String(id)));
 
     // 4. Restaurants hydrated with items from db.items
     restaurants = this.data.restaurants
@@ -372,6 +375,7 @@ const DB = {
           fav: favSet.has(r.id),
           relatedDishes: resItems.map(it => ({
             ...it,
+            fav: favItemSet.has(String(it.id)),
             priceFormatted: it.priceFormatted || formatPriceVND(it.price)
           }))
         };
@@ -953,6 +957,7 @@ const DB = {
         }
       ],
       favoriteRestaurantIds: [],
+      favoriteItemIds: [],
       cart: [],
       orders: [],
       healthProfile: {
@@ -1278,6 +1283,7 @@ const DB = {
   toggleFavoriteRestaurant(resId) {
     const user = this.getCurrentUser();
     if (!user) return false;
+    if (!Array.isArray(user.favoriteRestaurantIds)) user.favoriteRestaurantIds = [];
     const idx = user.favoriteRestaurantIds.indexOf(resId);
     let isFav = false;
     if (idx > -1) {
@@ -1289,6 +1295,32 @@ const DB = {
     }
     this.syncToGlobals();
     this.save('toggle_favorite_restaurant');
+    return isFav;
+  },
+
+  isItemFavorite(itemId) {
+    const user = this.getCurrentUser();
+    if (!user || !Array.isArray(user.favoriteItemIds)) return false;
+    const key = String(itemId);
+    return user.favoriteItemIds.some(x => String(x) === key);
+  },
+
+  toggleFavoriteItem(itemId) {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    if (!Array.isArray(user.favoriteItemIds)) user.favoriteItemIds = [];
+    const key = String(itemId);
+    const idx = user.favoriteItemIds.findIndex(x => String(x) === key);
+    let isFav = false;
+    if (idx > -1) {
+      user.favoriteItemIds.splice(idx, 1);
+      isFav = false;
+    } else {
+      user.favoriteItemIds.push(key);
+      isFav = true;
+    }
+    this.syncToGlobals();
+    this.save('toggle_favorite_item');
     return isFav;
   },
 

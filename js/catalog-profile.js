@@ -1396,6 +1396,9 @@ function renderProfileView() {
           <button type="button" class="profile-action-btn primary" onclick="openUserProfileModal('${escapeHtml(activeUser.id)}')">
             ✏️ Chỉnh sửa hồ sơ
           </button>
+          <button type="button" class="profile-action-btn fav-entry-btn" onclick="openFavoritesView('all', 'profile')">
+            ${FluentIcons.heartFilled} Yêu thích (${(Array.isArray(activeUser.favoriteItemIds) ? activeUser.favoriteItemIds.length : 0) + (Array.isArray(activeUser.favoriteRestaurantIds) ? activeUser.favoriteRestaurantIds.length : 0)})
+          </button>
           <button type="button" class="profile-action-btn accent" onclick="openAccountSwitcherModal()">
             ${FluentIcons.sync} Chuyển tài khoản (${allUsers.length})
           </button>
@@ -1469,339 +1472,9 @@ function renderProfileView() {
         ` : ''}
       </div>
 
-      <!-- Cấu hình Nhà cung cấp Bản đồ & Định vị (Google Maps / OpenStreetMap) -->
-      ${typeof renderProfileMapSettingsCard === 'function' ? renderProfileMapSettingsCard() : ''}
-      ${typeof renderProfileHapticSettingsCard === 'function' ? renderProfileHapticSettingsCard() : ''}
-
       <div class="bottom-spacer"></div>
     </div>
   `;
-}
-
-// ── Cấu hình Bản đồ & Định vị Google Maps / OpenStreetMap trong Hồ Sơ Tài Khoản ──
-function renderProfileMapSettingsCard() {
-  const cfg = (typeof MapService !== 'undefined') ? MapService.getConfig() : {
-    provider: 'osm',
-    googleApiKey: '',
-    mapType: 'roadmap',
-    autoReverseGeocode: true,
-    enableTraffic: false
-  };
-
-  const isGoogle = cfg.provider === 'google';
-  const hasKey = Boolean(cfg.googleApiKey && cfg.googleApiKey.trim());
-
-  return `
-    <div class="profile-map-settings-card" id="profile-map-settings-card">
-      <div class="profile-map-header">
-        <div class="profile-map-title-wrap">
-          <span class="profile-map-icon">🗺️</span>
-          <div>
-            <div class="profile-map-title">Cấu hình Bản đồ &amp; Định vị (Map API)</div>
-            <div class="profile-map-sub">Tùy chỉnh nhà cung cấp bản đồ số, chuyển đổi Google Maps API để định vị &amp; theo dõi đơn hàng</div>
-          </div>
-        </div>
-        <span class="profile-map-badge ${isGoogle && hasKey ? 'google' : 'osm'}" id="profile-map-status-badge">
-          ${isGoogle && hasKey ? '🗺️ Google Maps API' : '🌐 OpenStreetMap (Leaflet)'}
-        </span>
-      </div>
-
-      <!-- Lựa chọn Nhà cung cấp Bản đồ -->
-      <div class="map-provider-grid">
-        <div 
-          class="map-provider-card ${!isGoogle ? 'active' : ''}" 
-          id="provider-card-osm"
-          onclick="selectProfileMapProvider('osm')"
-        >
-          <div class="map-provider-radio">
-            <span class="radio-dot ${!isGoogle ? 'checked' : ''}"></span>
-          </div>
-          <div class="map-provider-content">
-            <div class="map-provider-name">
-              <span>🌐 OpenStreetMap (Mặc định)</span>
-              <span class="provider-tag free">Miễn phí 100%</span>
-            </div>
-            <div class="map-provider-desc">
-              Sử dụng Leaflet mã nguồn mở. Không cần API Key, không giới hạn lượt dùng, hoạt động ổn định và tức thì quanh khu vực PTIT.
-            </div>
-          </div>
-        </div>
-
-        <div 
-          class="map-provider-card ${isGoogle ? 'active google-selected' : ''}" 
-          id="provider-card-google"
-          onclick="selectProfileMapProvider('google')"
-        >
-          <div class="map-provider-radio">
-            <span class="radio-dot ${isGoogle ? 'checked' : ''}"></span>
-          </div>
-          <div class="map-provider-content">
-            <div class="map-provider-name">
-              <span>🗺️ Google Maps JavaScript API</span>
-              <span class="provider-tag google">Độ chính xác cao</span>
-            </div>
-            <div class="map-provider-desc">
-              Bản đồ Google Maps chính hãng với ảnh vệ tinh độ nét cao, định vị Geocoding chi tiết đến từng số nhà, ngõ ngách tại Việt Nam.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Khu vực Cấu hình Google Maps (Hiển thị khi chọn Google Maps hoặc tuỳ chỉnh) -->
-      <div class="google-maps-config-box ${isGoogle ? 'open' : ''}" id="google-maps-config-box">
-        <div class="google-config-title">
-          <span>🔑 Cài đặt Google Maps API Key</span>
-        </div>
-
-        <div class="google-input-group">
-          <label class="google-input-label" for="profile-google-api-key">
-            Google Maps API Key (*):
-          </label>
-          <div class="google-api-key-wrap">
-            <input 
-              type="password" 
-              id="profile-google-api-key" 
-              class="google-api-key-input" 
-              placeholder="Dán API Key (bắt đầu bằng AIzaSy...)"
-              value="${escapeHtml(cfg.googleApiKey || '')}"
-              autocomplete="off"
-            >
-            <button type="button" class="btn-toggle-key-eye" onclick="toggleProfileApiKeyVisibility()" title="Hiện/Ẩn API Key" aria-label="Hiện/Ẩn API Key">
-              👁️
-            </button>
-          </div>
-          <div class="google-input-hint">
-            💡 Khóa API cần kích hoạt <strong>Maps JavaScript API</strong> và <strong>Geocoding API</strong> trên Google Cloud Console.
-          </div>
-        </div>
-
-        <div class="google-options-grid">
-          <div class="google-option-item">
-            <label class="google-input-label" for="profile-google-map-type">Chế độ hiển thị bản đồ mặc định:</label>
-            <select id="profile-google-map-type" class="google-select-field">
-              <option value="roadmap" ${cfg.mapType === 'roadmap' ? 'selected' : ''}>Đường phố (Roadmap)</option>
-              <option value="hybrid" ${cfg.mapType === 'hybrid' ? 'selected' : ''}>Vệ tinh có chú thích (Hybrid)</option>
-              <option value="satellite" ${cfg.mapType === 'satellite' ? 'selected' : ''}>Vệ tinh thuần (Satellite)</option>
-              <option value="terrain" ${cfg.mapType === 'terrain' ? 'selected' : ''}>Địa hình (Terrain)</option>
-            </select>
-          </div>
-
-          <div class="google-option-item" style="display:flex; flex-direction:column; justify-content:flex-end;">
-            <label class="db-checkbox-row" style="margin-bottom:0;">
-              <input type="checkbox" id="profile-google-traffic" ${cfg.enableTraffic ? 'checked' : ''}>
-              <span>Hiển thị lớp giao thông thời gian thực (Traffic Layer)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Hộp thông báo kết quả kiểm tra API -->
-        <div class="google-test-result" id="google-test-result" style="display:none;"></div>
-
-        <!-- Các nút thao tác kiểm tra & lưu -->
-        <div class="google-config-actions">
-          <button type="button" class="btn-test-api" id="btn-test-google-api" onclick="testProfileGoogleMapsKey()">
-            🧪 Kiểm tra kết nối API
-          </button>
-          <button type="button" class="btn-save-map-cfg" onclick="saveProfileMapSettings()">
-            ${FluentIcons.saveFilled} Lưu cấu hình
-          </button>
-          <button type="button" class="btn-reset-map-cfg" onclick="resetProfileMapSettings()">
-            ${FluentIcons.reset} Đặt lại OpenStreetMap
-          </button>
-        </div>
-
-        <!-- Hướng dẫn cách lấy API Key miễn phí -->
-        <details class="google-help-accordion">
-          <summary>📖 Hướng dẫn lấy Google Maps API Key miễn phí (Google tặng $200 tín dụng/tháng)</summary>
-          <ol style="margin: 8px 0 0 18px; padding: 0; font-size: 11.5px; color: var(--gray-600); line-height: 1.6;">
-            <li>Truy cập <a href="https://console.cloud.google.com/" target="_blank" rel="noopener" style="color:var(--primary-blue); font-weight:700;">Google Cloud Console</a> và tạo 1 Project mới.</li>
-            <li>Vào mục <strong>APIs &amp; Services &gt; Library</strong>, tìm và bấm <strong>Enable</strong> cho:
-              <ul style="margin: 2px 0 2px 14px;">
-                <li><code>Maps JavaScript API</code> (hiển thị bản đồ giao diện web)</li>
-                <li><code>Geocoding API</code> (dịch tọa độ GPS ra tên đường, số nhà Việt Nam)</li>
-              </ul>
-            </li>
-            <li>Vào mục <strong>Credentials &gt; Create Credentials &gt; API Key</strong>.</li>
-            <li>Copy chuỗi khóa API vừa tạo dán vào ô trên, bấm <strong>Kiểm tra kết nối API</strong> rồi bấm <strong>Lưu cấu hình</strong>.</li>
-          </ol>
-        </details>
-      </div>
-    </div>
-  `;
-}
-
-function selectProfileMapProvider(provider) {
-  const osmCard = document.getElementById('provider-card-osm');
-  const googleCard = document.getElementById('provider-card-google');
-  const configBox = document.getElementById('google-maps-config-box');
-  const badge = document.getElementById('profile-map-status-badge');
-
-  if (provider === 'osm') {
-    if (osmCard) osmCard.classList.add('active');
-    if (googleCard) {
-      googleCard.classList.remove('active');
-      googleCard.classList.remove('google-selected');
-    }
-    const osmDot = osmCard?.querySelector('.radio-dot');
-    const googleDot = googleCard?.querySelector('.radio-dot');
-    if (osmDot) osmDot.classList.add('checked');
-    if (googleDot) googleDot.classList.remove('checked');
-
-    if (configBox) configBox.classList.remove('open');
-    if (badge) {
-      badge.className = 'profile-map-badge osm';
-      badge.textContent = '🌐 OpenStreetMap (Leaflet)';
-    }
-
-    if (typeof MapService !== 'undefined') {
-      MapService.saveConfig({ provider: 'osm' });
-    }
-    if (typeof showToast === 'function') {
-      showToast('checkmarkFilled', 'Đã chuyển sang sử dụng OpenStreetMap (Leaflet)!');
-    }
-  } else if (provider === 'google') {
-    if (osmCard) osmCard.classList.remove('active');
-    if (googleCard) {
-      googleCard.classList.add('active');
-      googleCard.classList.add('google-selected');
-    }
-    const osmDot = osmCard?.querySelector('.radio-dot');
-    const googleDot = googleCard?.querySelector('.radio-dot');
-    if (osmDot) osmDot.classList.remove('checked');
-    if (googleDot) googleDot.classList.add('checked');
-
-    if (configBox) configBox.classList.add('open');
-
-    const keyInput = document.getElementById('profile-google-api-key');
-    if (badge) {
-      const hasKey = keyInput && keyInput.value.trim();
-      badge.className = `profile-map-badge ${hasKey ? 'google' : 'osm'}`;
-      badge.textContent = hasKey ? '🗺️ Google Maps API' : '🗺️ Google Maps (Chờ nhập Key)';
-    }
-
-    if (keyInput && !keyInput.value) {
-      keyInput.focus();
-    }
-  }
-}
-
-function toggleProfileApiKeyVisibility() {
-  const input = document.getElementById('profile-google-api-key');
-  if (!input) return;
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
-
-async function testProfileGoogleMapsKey() {
-  const keyInput = document.getElementById('profile-google-api-key');
-  const resultBox = document.getElementById('google-test-result');
-  const testBtn = document.getElementById('btn-test-google-api');
-  if (!keyInput || !resultBox) return;
-
-  const key = keyInput.value.trim();
-  if (!key) {
-    resultBox.style.display = 'block';
-    resultBox.className = 'google-test-result error';
-    resultBox.innerHTML = '⚠️ Vui lòng nhập API Key Google Maps trước khi kiểm tra!';
-    keyInput.focus();
-    return;
-  }
-
-  if (testBtn) {
-    testBtn.disabled = true;
-    testBtn.innerHTML = '⏳ Đang kiểm tra kết nối...';
-  }
-
-  resultBox.style.display = 'block';
-  resultBox.className = 'google-test-result';
-  resultBox.style.background = '#f1f5f9';
-  resultBox.style.color = '#334155';
-  resultBox.innerHTML = `${FluentIcons.sync} Đang gửi request kiểm tra API Key với máy chủ Google Maps...`;
-
-  try {
-    const res = await MapService.testGoogleApiKey(key);
-    if (res.ok) {
-      resultBox.className = 'google-test-result success';
-      resultBox.innerHTML = `✅ <strong>${escapeHtml(res.message)}</strong>`;
-      if (typeof showToast === 'function') {
-        showToast('checkmarkFilled', 'Khóa Google Maps API hợp lệ!');
-      }
-    } else {
-      resultBox.className = 'google-test-result error';
-      resultBox.innerHTML = `❌ <strong>Kiểm tra thất bại:</strong> ${escapeHtml(res.message)}`;
-      if (typeof showToast === 'function') {
-        showToast('dismissCircleRegular', 'API Key không hợp lệ hoặc bị chặn!');
-      }
-    }
-  } catch (e) {
-    resultBox.className = 'google-test-result error';
-    resultBox.innerHTML = `❌ <strong>Lỗi:</strong> ${escapeHtml(e.message || 'Không thể liên lạc Google Maps')}`;
-  } finally {
-    if (testBtn) {
-      testBtn.disabled = false;
-      testBtn.innerHTML = '🧪 Kiểm tra kết nối API';
-    }
-  }
-}
-
-function saveProfileMapSettings() {
-  const googleCard = document.getElementById('provider-card-google');
-  const isGoogle = googleCard && googleCard.classList.contains('active');
-  const keyInput = document.getElementById('profile-google-api-key');
-  const mapTypeSelect = document.getElementById('profile-google-map-type');
-  const trafficCheck = document.getElementById('profile-google-traffic');
-
-  const googleApiKey = keyInput ? keyInput.value.trim() : '';
-  const mapType = mapTypeSelect ? mapTypeSelect.value : 'roadmap';
-  const enableTraffic = trafficCheck ? trafficCheck.checked : false;
-
-  if (isGoogle && !googleApiKey) {
-    if (typeof showToast === 'function') {
-      showToast('alertRegular', 'Vui lòng nhập Google Maps API Key để kích hoạt!');
-    }
-    if (keyInput) keyInput.focus();
-    return;
-  }
-
-  const newConfig = {
-    provider: isGoogle ? 'google' : 'osm',
-    googleApiKey,
-    mapType,
-    enableTraffic
-  };
-
-  MapService.saveConfig(newConfig);
-
-  // Nếu chuyển sang Google Maps và có key, nạp sẵn SDK
-  if (isGoogle && googleApiKey) {
-    MapService.loadGoogleMaps(googleApiKey);
-  }
-
-  const badge = document.getElementById('profile-map-status-badge');
-  if (badge) {
-    badge.className = `profile-map-badge ${isGoogle && googleApiKey ? 'google' : 'osm'}`;
-    badge.textContent = isGoogle && googleApiKey ? '🗺️ Google Maps API' : '🌐 OpenStreetMap (Leaflet)';
-  }
-
-  if (typeof showToast === 'function') {
-    showToast('checkmarkFilled', `Đã lưu cấu hình Bản đồ thành công (${newConfig.provider === 'google' ? 'Google Maps' : 'OpenStreetMap'})!`);
-  }
-}
-
-function resetProfileMapSettings() {
-  if (typeof MapService !== 'undefined') {
-    MapService.saveConfig({
-      provider: 'osm',
-      googleApiKey: '',
-      mapType: 'roadmap',
-      enableTraffic: false
-    });
-  }
-  if (typeof renderProfileView === 'function') {
-    renderProfileView();
-  }
-  if (typeof showToast === 'function') {
-    showToast('checkmarkFilled', 'Đã đặt lại cấu hình Bản đồ về OpenStreetMap mặc định!');
-  }
 }
 
 function renderRememberedUsersTab(allUsers, activeUser) {
@@ -2624,78 +2297,334 @@ function submitSavedAddressModal(editAddrId) {
   render();
 }
 
+// =====================================================================
+// TRANG YÊU THÍCH (MẶT HÀNG & QUÁN / SHOP)
+// =====================================================================
 
+var favoritesActiveTab = 'all'; // 'all' | 'dishes' | 'stores'
+var favoritesSourceView = 'home';
 
-// ── Cấu hình Rung phản hồi điện thoại (Haptic Feedback) trong Hồ Sơ Tài Khoản ──
-function renderProfileHapticSettingsCard() {
-  const enabled = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
-  const isSupported = (typeof navigator !== 'undefined' && 'vibrate' in navigator);
+function getFavoritesSnapshot() {
+  const user = (typeof DB !== 'undefined' && DB.isReady && typeof DB.getCurrentUser === 'function')
+    ? DB.getCurrentUser()
+    : null;
+  const favStoreIds = new Set(
+    (user && Array.isArray(user.favoriteRestaurantIds) ? user.favoriteRestaurantIds : []).map(id => Number(id))
+  );
+  const favItemIds = new Set(
+    (user && Array.isArray(user.favoriteItemIds) ? user.favoriteItemIds : []).map(id => String(id))
+  );
 
-  return `
-    <div class="profile-map-settings-card" id="profile-haptic-settings-card" style="margin-top: 14px;">
-      <div class="profile-map-header">
-        <div class="profile-map-title-wrap">
-          <span class="profile-map-icon">📳</span>
-          <div>
-            <div class="profile-map-title">Rung phản hồi điện thoại (Haptic Feedback)</div>
-            <div class="profile-map-sub">Kích hoạt rung xúc giác trên điện thoại khi đặt hàng thành công, chạm ra ngoài modal-overlay hoặc khi AI bắt đầu bong bóng chat.</div>
+  const list = Array.isArray(restaurants) ? restaurants : [];
+  const favStores = [];
+  const favDishes = [];
+
+  list.forEach(r => {
+    const isStoreFav = favStoreIds.has(Number(r.id)) || !!r.fav;
+    if (isStoreFav) {
+      favStores.push(r);
+    }
+    const dishes = Array.isArray(r.relatedDishes) ? r.relatedDishes : [];
+    dishes.forEach((dish, originalIdx) => {
+      const isDishFav = favItemIds.has(String(dish.id)) || !!dish.fav;
+      if (isDishFav) {
+        favDishes.push({ dish, store: r, originalIdx });
+      }
+    });
+  });
+
+  return { favStores, favDishes };
+}
+
+function openFavoritesView(tab = 'all', sourceView = null) {
+  if (typeof saveCurrentViewScroll === 'function') {
+    saveCurrentViewScroll();
+  }
+  const normalizedTab = (tab === 'dishes' || tab === 'stores') ? tab : 'all';
+  favoritesActiveTab = normalizedTab;
+  if (sourceView) {
+    favoritesSourceView = sourceView;
+  } else if (typeof currentView === 'string' && currentView !== 'favorites') {
+    favoritesSourceView = currentView;
+  }
+  currentView = 'favorites';
+  render();
+  if (typeof restoreViewScroll === 'function') {
+    restoreViewScroll();
+  } else {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+}
+
+function backFromFavoritesView() {
+  if (favoritesSourceView === 'profile' && typeof openProfileView === 'function') {
+    openProfileView();
+    return;
+  }
+  if (typeof openHomeView === 'function') {
+    openHomeView();
+  } else {
+    currentView = 'home';
+    render();
+  }
+}
+
+function renderFavoritesSectionContent(favDishes, favStores) {
+  const showDishes = favoritesActiveTab === 'all' || favoritesActiveTab === 'dishes';
+  const showStores = favoritesActiveTab === 'all' || favoritesActiveTab === 'stores';
+  const totalCount = favDishes.length + favStores.length;
+
+  if (totalCount === 0) {
+    return `
+      <div class="fav-empty-state">
+        <div class="fav-empty-icon">${FluentIcons.heartRegular}</div>
+        <div class="fav-empty-title">Chưa có món ăn hay quán yêu thích nào</div>
+        <div class="fav-empty-sub">Hãy chạm vào biểu tượng trái tim trên món ăn hoặc quán bạn thích để lưu lại thưởng thức sau nhé!</div>
+        <button type="button" class="fav-empty-cta" onclick="openHomeView()">Khám phá món ngon ngay</button>
+      </div>
+    `;
+  }
+
+  let html = '';
+
+  if (showDishes) {
+    html += `
+      <section class="fav-section" id="fav-dishes-section">
+        <div class="fav-section-header">
+          <div class="fav-section-title">
+            <span class="fav-section-icon dish">${FluentIcons.sparkleFilled}</span>
+            <span>Món ăn yêu thích</span>
+            <span class="fav-section-badge" id="fav-section-dish-count">${favDishes.length}</span>
           </div>
         </div>
-        <span class="profile-map-badge ${enabled ? 'google' : 'osm'}">
-          ${enabled ? 'BẬT' : 'TẮT'}
-        </span>
-      </div>
+        ${favDishes.length === 0 ? `
+          <div class="fav-section-empty">
+            <span>Bạn chưa lưu món ăn nào. Chạm tim trên từng món ăn để lưu lại nhanh!</span>
+          </div>
+        ` : `
+          <div class="fav-dishes-grid" id="fav-dishes-grid">
+            ${favDishes.map(({ dish, store, originalIdx }) => {
+              const isOut = dish.inStock === false;
+              const dishIdEsc = escapeHtml(String(dish.id));
+              return `
+                <article class="fav-dish-card ${isOut ? 'dish-out-of-stock' : ''}"
+                  data-fav-card-type="dish"
+                  data-fav-card-id="${dishIdEsc}"
+                  onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishDetailView(${store.id}, ${originalIdx})`}"
+                >
+                  <div class="fav-dish-img-wrap">
+                    <img class="fav-dish-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <button type="button"
+                      class="fav-card-heart-btn active"
+                      data-fav-dish-id="${dishIdEsc}"
+                      onclick="event.stopPropagation(); toggleDishFav('${dishIdEsc}', ${store.id})"
+                      title="Bỏ khỏi Yêu thích"
+                      aria-label="Bỏ khỏi Yêu thích"
+                    >
+                      ${FluentIcons.heartFilled}
+                    </button>
+                  </div>
+                  <div class="fav-dish-body">
+                    <div class="fav-dish-name" title="${escapeHtml(dish.name)}">${escapeHtml(dish.name)}</div>
+                    <button type="button"
+                      class="fav-dish-store-link"
+                      onclick="event.stopPropagation(); openSearchView('${escapeHtml(store.name)}')"
+                      title="${escapeHtml(store.name)}"
+                    >
+                      ${FluentIcons.shop} <span>${escapeHtml(store.name)}</span>
+                    </button>
+                    <div class="fav-dish-footer">
+                      <span class="fav-dish-price">${dish.priceFormatted || formatVND(dish.price)}</span>
+                      ${isOut ? `
+                        <span class="fav-dish-out-badge">Hết hàng</span>
+                      ` : `
+                        <button type="button"
+                          class="fav-dish-add-btn"
+                          onclick="event.stopPropagation(); openDishOptionModalByIndices(${store.id}, ${originalIdx})"
+                          title="Chọn tuỳ chọn & thêm vào giỏ"
+                        >
+                          + Đặt món
+                        </button>
+                      `}
+                    </div>
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </section>
+    `;
+  }
 
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 16px; background: #f8fafc; border-radius: 12px; margin-top: 10px; border: 1px solid var(--gray-200);">
-        <div>
-          <div style="font-size: 13px; font-weight: 700; color: var(--gray-800);">Trạng thái Rung cảm ứng (Vibration API)</div>
-          <div style="font-size: 12px; color: var(--gray-500); margin-top: 2px;">
-            ${isSupported ? '✅ Thiết bị &amp; Trình duyệt hỗ trợ Web Vibration' : 'ℹ️ Thiết bị hoặc trình duyệt hiện tại không hỗ trợ Web Vibration (hệ thống sẽ tự động bỏ qua)'}
+  if (showStores) {
+    html += `
+      <section class="fav-section" id="fav-stores-section">
+        <div class="fav-section-header">
+          <div class="fav-section-title">
+            <span class="fav-section-icon store">${FluentIcons.shop}</span>
+            <span>Quán / Shop yêu thích</span>
+            <span class="fav-section-badge" id="fav-section-store-count">${favStores.length}</span>
           </div>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button type="button" class="btn-reset-map-cfg" style="padding: 7px 15px; font-size: 12px; font-weight: 600; border-radius: 9px; background: #fff; border: 1px solid var(--gray-300); cursor: pointer;" onclick="toggleProfileHapticSetting()">
-            ${enabled ? 'Tắt rung' : 'Bật rung'}
-          </button>
-          <button type="button" class="btn-save-map-cfg" style="padding: 7px 15px; font-size: 12px; font-weight: 700; border-radius: 9px; background: var(--primary); color: #fff; border: none; cursor: pointer;" onclick="testProfileHaptic()">
-            Thử rung ngay
-          </button>
-        </div>
+        ${favStores.length === 0 ? `
+          <div class="fav-section-empty">
+            <span>Bạn chưa lưu quán ăn nào. Chạm tim trên thẻ quán hoặc trong chi tiết món để lưu quán quen!</span>
+          </div>
+        ` : `
+          <div class="fav-stores-grid" id="fav-stores-grid">
+            ${favStores.map(r => {
+              const dishesCount = Array.isArray(r.relatedDishes) ? r.relatedDishes.length : 0;
+              return `
+                <article class="fav-store-card"
+                  data-fav-card-type="store"
+                  data-fav-card-id="${r.id}"
+                  onclick="openSearchView('${escapeHtml(r.name)}')"
+                >
+                  <div class="fav-store-img-wrap">
+                    <img class="fav-store-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    ${r.badge ? `<span class="fav-store-badge">${escapeHtml(r.badge)}</span>` : ''}
+                  </div>
+                  <div class="fav-store-body">
+                    <div class="fav-store-top">
+                      <div class="fav-store-name" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+                      <button type="button"
+                        class="res-fav-btn active"
+                        onclick="event.stopPropagation(); toggleFav(${r.id})"
+                        title="Bỏ lưu quán yêu thích"
+                        aria-label="Bỏ lưu quán yêu thích"
+                      >
+                        ${FluentIcons.heartFilled}
+                      </button>
+                    </div>
+                    <div class="fav-store-meta">
+                      <span class="fav-store-rating">${FluentIcons.starFilled} <strong>${r.rating}</strong> (${r.reviewCount || '100+'})</span>
+                      <span class="restaurant-card-dot"></span>
+                      <span>${FluentIcons.locationRegular} ${escapeHtml(r.distanceText || '0.5 km')}</span>
+                      <span class="restaurant-card-dot"></span>
+                      <span>${FluentIcons.clockRegular} ${escapeHtml(r.deliveryTime || '15 - 20 phút')}</span>
+                    </div>
+                    <div class="fav-store-bottom">
+                      <span class="fav-store-tags">${escapeHtml((r.tags && r.tags.length ? r.tags.slice(0, 2).join(' • ') : (r.address || 'Quán ngon quanh PTIT')))}</span>
+                      <span class="fav-store-menu-pill">${dishesCount} món →</span>
+                    </div>
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </section>
+    `;
+  }
+
+  return html;
+}
+
+function switchFavoritesTab(tab) {
+  const normalized = (tab === 'dishes' || tab === 'stores') ? tab : 'all';
+  if (favoritesActiveTab === normalized) return;
+  favoritesActiveTab = normalized;
+
+  // Cập nhật nút tab tại chỗ
+  document.querySelectorAll('.fav-filter-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-fav-tab') === normalized);
+  });
+
+  // Cập nhật nội dung danh sách tại chỗ không reload toàn trang
+  const bodyEl = document.getElementById('favorites-view-body');
+  if (bodyEl) {
+    const { favStores, favDishes } = getFavoritesSnapshot();
+    bodyEl.innerHTML = renderFavoritesSectionContent(favDishes, favStores);
+  }
+
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
+}
+
+function handleFavoriteRemovedInPlace(type, id) {
+  const key = String(id);
+  const card = document.querySelector(`[data-fav-card-type="${type}"][data-fav-card-id="${CSS && CSS.escape ? CSS.escape(key) : key}"]`);
+  const { favStores, favDishes } = getFavoritesSnapshot();
+
+  // Cập nhật số đếm tab & section tại chỗ
+  const totalCount = favDishes.length + favStores.length;
+  const elAll = document.getElementById('fav-count-all');
+  const elDishes = document.getElementById('fav-count-dishes');
+  const elStores = document.getElementById('fav-count-stores');
+  const elSecDish = document.getElementById('fav-section-dish-count');
+  const elSecStore = document.getElementById('fav-section-store-count');
+  if (elAll) elAll.textContent = totalCount;
+  if (elDishes) elDishes.textContent = favDishes.length;
+  if (elStores) elStores.textContent = favStores.length;
+  if (elSecDish) elSecDish.textContent = favDishes.length;
+  if (elSecStore) elSecStore.textContent = favStores.length;
+
+  const finalizeEmptyCheck = () => {
+    const bodyEl = document.getElementById('favorites-view-body');
+    if (!bodyEl) return;
+    if (totalCount === 0 || (type === 'dish' && favDishes.length === 0) || (type === 'store' && favStores.length === 0)) {
+      bodyEl.innerHTML = renderFavoritesSectionContent(favDishes, favStores);
+    }
+  };
+
+  if (card) {
+    card.classList.add('fav-card-removing');
+    setTimeout(() => {
+      if (card.parentNode) card.parentNode.removeChild(card);
+      finalizeEmptyCheck();
+    }, 170);
+  } else {
+    finalizeEmptyCheck();
+  }
+}
+
+function renderFavoritesView() {
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  const { favStores, favDishes } = getFavoritesSnapshot();
+  const totalCount = favDishes.length + favStores.length;
+
+  app.innerHTML = `
+    <div class="favorites-view-container fade-in">
+      <div class="page-nav-header">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+          ${FluentIcons.arrowLeft}
+        </button>
+        <div class="page-nav-title">Yêu thích của tôi</div>
+        <div class="page-nav-spacer"></div>
       </div>
+
+      <div class="fav-filter-tabs-row" role="tablist" aria-label="Lọc danh sách yêu thích">
+        <button type="button" class="fav-filter-tab ${favoritesActiveTab === 'all' ? 'active' : ''}" data-fav-tab="all" onclick="switchFavoritesTab('all')">
+          <span>Tất cả</span>
+          <span class="fav-tab-count" id="fav-count-all">${totalCount}</span>
+        </button>
+        <button type="button" class="fav-filter-tab ${favoritesActiveTab === 'dishes' ? 'active' : ''}" data-fav-tab="dishes" onclick="switchFavoritesTab('dishes')">
+          <span>Món ăn</span>
+          <span class="fav-tab-count" id="fav-count-dishes">${favDishes.length}</span>
+        </button>
+        <button type="button" class="fav-filter-tab ${favoritesActiveTab === 'stores' ? 'active' : ''}" data-fav-tab="stores" onclick="switchFavoritesTab('stores')">
+          <span>Quán / Shop</span>
+          <span class="fav-tab-count" id="fav-count-stores">${favStores.length}</span>
+        </button>
+      </div>
+
+      <div id="favorites-view-body" class="favorites-view-body">
+        ${renderFavoritesSectionContent(favDishes, favStores)}
+      </div>
+
+      <div class="bottom-spacer"></div>
     </div>
   `;
 }
 
-function toggleProfileHapticSetting() {
-  const current = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
-  if (typeof setHapticEnabled === 'function') {
-    setHapticEnabled(!current);
-  }
-  if (!current && typeof triggerHaptic === 'function') {
-    triggerHaptic('success');
-  }
-  if (typeof renderProfileView === 'function') {
-    renderProfileView();
-  }
-  if (typeof showToast === 'function') {
-    showToast('sparkleRegular', !current ? 'Đã bật rung phản hồi xúc giác điện thoại!' : 'Đã tắt rung phản hồi xúc giác');
-  }
-}
+window.openFavoritesView = openFavoritesView;
+window.renderFavoritesView = renderFavoritesView;
+window.switchFavoritesTab = switchFavoritesTab;
+window.backFromFavoritesView = backFromFavoritesView;
+window.handleFavoriteRemovedInPlace = handleFavoriteRemovedInPlace;
 
-function testProfileHaptic() {
-  const enabled = (typeof isHapticEnabled === 'function') ? isHapticEnabled() : true;
-  if (!enabled) {
-    if (typeof showToast === 'function') showToast('alertRegular', 'Rung đang bị tắt. Hãy bấm "Bật rung" trước nhé!');
-    return;
-  }
-  const ok = (typeof triggerHaptic === 'function') ? triggerHaptic('success') : false;
-  if (ok) {
-    if (typeof showToast === 'function') showToast('checkmarkFilled', 'Đang rung thử nhịp thành công trên điện thoại!');
-  } else {
-    if (typeof showToast === 'function') showToast('sparkleRegular', 'Đã kích hoạt lệnh rung (nếu trên điện thoại hỗ trợ)!');
-  }
-}
 
-window.renderProfileHapticSettingsCard = renderProfileHapticSettingsCard;
-window.toggleProfileHapticSetting = toggleProfileHapticSetting;
-window.testProfileHaptic = testProfileHaptic;

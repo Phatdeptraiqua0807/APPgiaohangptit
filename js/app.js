@@ -10,7 +10,7 @@ const quickOptions = [
   { iconKey: 'navigationRegular', label: 'Gần bạn', color: 'green', promo: null, action: () => openSearchView('', 'near') },
   { iconKey: 'truckRegular', label: 'Freeship', color: 'blue', promo: null, action: () => openSearchView('', 'freeship') },
   { iconKey: 'tagRegular', label: 'Khuyến mãi', color: 'orange', promo: 'HOT', action: () => openSearchView('', 'voucher') },
-  { iconKey: 'starRegular', label: 'Yêu thích', color: 'yellow', promo: null, action: () => openSearchView('', 'rating45') },
+  { iconKey: 'heartFilled', label: 'Yêu thích', color: 'red', promo: null, action: () => openFavoritesView('all', 'home') },
   { iconKey: 'sparkleRegular', label: 'Mới nhất', color: 'purple', promo: null, action: () => showToast('sparkleRegular', 'Danh sách quán ngon quanh PTIT mới cập nhật hôm nay!') },
   { iconKey: 'flameRegular', label: 'Bán chạy', color: 'red', promo: null, action: () => openSearchView('Phở') },
   { iconKey: 'walletRegular', label: 'Giá sinh viên', color: 'teal', promo: null, action: () => openSearchView('', 'budget') },
@@ -451,6 +451,7 @@ function render(options = { replace: false }) {
       currentView === 'activity' ||
       currentView === 'cart' ||
       currentView === 'profile' ||
+      currentView === 'favorites' ||
       currentView === 'catalog' ||
       currentView === 'ai'
     ) {
@@ -485,6 +486,8 @@ function render(options = { replace: false }) {
     renderAIChatView();
   } else if (currentView === 'profile' && typeof renderProfileView === 'function') {
     renderProfileView();
+  } else if (currentView === 'favorites' && typeof renderFavoritesView === 'function') {
+    renderFavoritesView();
   } else if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
     renderCatalogManagerView();
   } else if (currentView === 'order-success') {
@@ -583,6 +586,9 @@ function renderHomeView() {
           </div>
         </div>
         <div class="header-actions">
+          <button type="button" class="header-btn header-fav-btn" onclick="openFavoritesView('all', 'home')" title="Món ăn & Quán yêu thích" aria-label="Yêu thích">
+            ${FluentIcons.heartRegular}
+          </button>
           <button type="button" class="header-btn" onclick="openAIChatView()" title="Chat AI tư vấn & gợi ý món ăn" aria-label="Chat AI">
             ✨
           </button>
@@ -778,9 +784,21 @@ function renderHomeView() {
                 <div class="res-dishes-scroll" id="${dishesScrollId}">
                   ${indexedDishes.map(({ dish, originalIdx }) => {
           const isOut = dish.inStock === false;
+          const isDishFav = (typeof dish.fav === 'boolean') ? dish.fav : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(dish.id) : false);
           return `
                       <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
-                        <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                        <div class="dish-card-img-wrap">
+                          <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                          <button type="button"
+                            class="dish-fav-btn ${isDishFav ? 'active' : ''}"
+                            data-fav-dish-id="${escapeHtml(String(dish.id))}"
+                            onclick="event.stopPropagation(); toggleDishFav('${escapeHtml(String(dish.id))}', ${r.id})"
+                            title="Lưu món yêu thích"
+                            aria-label="Lưu món yêu thích"
+                          >
+                            ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+                          </button>
+                        </div>
                         <div class="dish-card-info">
                           <div class="dish-card-name" title="${escapeHtml(dish.name)}">${escapeHtml(dish.name)}</div>
                           <div class="dish-card-bottom">
@@ -1671,9 +1689,21 @@ function renderRestaurantDetailCard(r) {
         <div class="res-dishes-scroll" id="res-dishes-scroll-${r.id}">
           ${indexedDishes.map(({ dish, originalIdx }) => {
     const isOut = dish.inStock === false;
+    const isDishFav = (typeof dish.fav === 'boolean') ? dish.fav : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(dish.id) : false);
     return `
               <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
-                <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <div class="dish-card-img-wrap">
+                  <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <button type="button"
+                    class="dish-fav-btn ${isDishFav ? 'active' : ''}"
+                    data-fav-dish-id="${escapeHtml(String(dish.id))}"
+                    onclick="event.stopPropagation(); toggleDishFav('${escapeHtml(String(dish.id))}', ${r.id})"
+                    title="Lưu món yêu thích"
+                    aria-label="Lưu món yêu thích"
+                  >
+                    ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+                  </button>
+                </div>
                 <div class="dish-card-info">
                   <div class="dish-card-name" title="${escapeHtml(dish.name)}">${escapeHtml(dish.name)}</div>
                   <div class="dish-card-bottom">
@@ -1837,6 +1867,9 @@ function renderDishOptionModal() {
   const sizes = modalDish.sizes || [{ name: 'Phần Tiêu Chuẩn', extraPrice: 0 }];
   const toppings = modalDish.toppings || [];
   const noteSuggestions = modalDish.noteSuggestions || ['Không hành', 'Nhiều ớt', 'Giao nóng', 'Để riêng nước'];
+  const isDishFav = (typeof modalDish.fav === 'boolean')
+    ? modalDish.fav
+    : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(modalDish.id) : false);
 
   sheet.innerHTML = `
     <!-- Modal Dish Header Image -->
@@ -1845,8 +1878,14 @@ function renderDishOptionModal() {
       <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
       </button>
-      <button type="button" class="dish-modal-fav-btn ${(modalRestaurant && modalRestaurant.fav) ? 'active' : ''}" onclick="toggleFav(${modalRestaurant ? modalRestaurant.id : 1})" title="Yêu thích">
-        ${(modalRestaurant && modalRestaurant.fav) ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+      <button type="button"
+        class="dish-modal-fav-btn ${isDishFav ? 'active' : ''}"
+        data-fav-dish-id="${escapeHtml(String(modalDish.id))}"
+        onclick="toggleDishFav('${escapeHtml(String(modalDish.id))}', ${modalRestaurant ? modalRestaurant.id : 1})"
+        title="Lưu món yêu thích"
+        aria-label="Lưu món yêu thích"
+      >
+        ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
       </button>
     </div>
 
@@ -3130,18 +3169,20 @@ function updateFloatingCartBar() {
 // 5. CART VIEW (Giao diện giỏ hàng đẹp mắt)
 // ========================================
 
-let previousViewBeforeCart = 'home';
-let previousDishBeforeCart = null;
+function captureOrderFlowOriginIfNeeded() {
+  if (typeof window.Router !== 'undefined' && window.Router.isNavigatingFromRouter) return;
+  if (typeof currentView === 'string' && currentView !== 'cart' && currentView !== 'checkout' && currentView !== 'order-success') {
+    const step = (window.history.state && typeof window.history.state.step === 'number') ? window.history.state.step : 0;
+    window._orderFlowOrigin = {
+      view: currentView,
+      step: step,
+      dish: (typeof modalDish !== 'undefined' && modalDish) ? modalDish : null
+    };
+  }
+}
 
 function openCartView() {
-  if (currentView !== 'cart' && currentView !== 'checkout' && currentView !== 'order-success') {
-    previousViewBeforeCart = currentView || 'home';
-    if (typeof modalDish !== 'undefined' && modalDish) {
-      previousDishBeforeCart = modalDish;
-    } else {
-      previousDishBeforeCart = null;
-    }
-  }
+  captureOrderFlowOriginIfNeeded();
   saveCurrentViewScroll();
   currentView = 'cart';
   render();
@@ -3532,6 +3573,7 @@ function openCheckoutView() {
     showToast('cartRegular', 'Giỏ hàng đang trống');
     return;
   }
+  captureOrderFlowOriginIfNeeded();
   if (typeof getOrCreatePendingCheckoutOrderId === 'function') {
     getOrCreatePendingCheckoutOrderId();
   }
@@ -3539,6 +3581,38 @@ function openCheckoutView() {
   currentView = 'checkout';
   render();
   restoreViewScroll('checkout', 0);
+}
+
+function backFromCheckout() {
+  const curStep = (window.history.state && typeof window.history.state.step === 'number') ? window.history.state.step : 0;
+  const origin = window._orderFlowOrigin;
+
+  if (origin && origin.view === 'dish-detail') {
+    if (typeof origin.step === 'number' && curStep > origin.step) {
+      const delta = origin.step - curStep;
+      if (delta < 0 && window.history.length > Math.abs(delta)) {
+        window._orderFlowOrigin = null;
+        window.history.go(delta);
+        return;
+      }
+    }
+    if (origin.dish && typeof openDishDetailView === 'function') {
+      window._orderFlowOrigin = null;
+      openDishDetailView(origin.dish, null, { replace: true, previousView: 'home' });
+      return;
+    }
+  }
+
+  window._orderFlowOrigin = null;
+
+  if (curStep > 0 && window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+
+  if (typeof openCartView === 'function') {
+    openCartView();
+  }
 }
 
 function renderCheckoutView() {
@@ -3553,7 +3627,7 @@ function renderCheckoutView() {
     <div class="checkout-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="window.goBack(backFromCheckout)" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Xác Nhận Đơn Hàng</div>
@@ -4755,67 +4829,6 @@ function renderSingleOrderDetailView(o) {
             </div>
           ` : ''}
 
-          <!-- Live Simulated Order Tracking Map -->
-          ${isDelivering ? `
-            <div class="order-live-tracking-card" id="order-live-tracking-card">
-              <div class="live-tracking-header">
-                <div class="live-tracking-title">
-                  <span class="live-pulse-radar"></span>
-                  <div>
-                    <div class="tracking-title-main">BẢN ĐỒ THEO DÕI HỎA TỐC THỜI GIAN THỰC</div>
-                    <div class="tracking-title-sub">Giả lập vị trí tài xế từ quán đến cổng trường PTIT</div>
-                  </div>
-                </div>
-                <span class="tracking-service-badge">${FluentIcons.truckRegular} PTIT Express Siêu Tốc</span>
-              </div>
-
-              <!-- Map Container -->
-              <div class="live-tracking-map-wrap">
-                <div id="order-live-map" class="order-live-map-canvas"></div>
-              </div>
-
-              <!-- Live Simulation HUD & Status Board -->
-              <div class="tracking-hud-card">
-                <div class="tracking-hud-grid">
-                  <div class="tracking-hud-metric">
-                    <span class="tracking-hud-label">Quãng đường còn lại</span>
-                    <span class="tracking-hud-val highlighted" id="tracking-hud-dist">1.8 km</span>
-                  </div>
-                  <div class="tracking-hud-metric">
-                    <span class="tracking-hud-label">Dự kiến nhận món</span>
-                    <span class="tracking-hud-val" id="tracking-hud-eta">8 phút nữa</span>
-                  </div>
-                  <div class="tracking-hud-metric">
-                    <span class="tracking-hud-label">Vận tốc shipper</span>
-                    <span class="tracking-hud-val" id="tracking-hud-speed">28 km/h</span>
-                  </div>
-                  <div class="tracking-hud-metric">
-                    <span class="tracking-hud-label">Phương tiện giao</span>
-                    <span class="tracking-hud-val">${escapeHtml(o.driver ? o.driver.vehicle : 'Wave Alpha')}</span>
-                  </div>
-                </div>
-
-                <!-- Live Status Banner -->
-                <div class="tracking-hud-status-banner" id="tracking-hud-status">
-                  ${FluentIcons.truckRegular} Tài xế ${escapeHtml(o.driver ? o.driver.name : 'Nguyễn Văn Tài')} đã nhận món và đang di chuyển về phía bạn...
-                </div>
-
-                <!-- Simulation Controls -->
-                <div class="tracking-sim-controls">
-                  <button type="button" class="tracking-ctrl-btn primary" id="tracking-btn-speed" onclick="toggleTrackingSpeed()">
-                    ${FluentIcons.flashFilled} Tăng tốc mô phỏng (x3)
-                  </button>
-                  <button type="button" class="tracking-ctrl-btn" id="tracking-btn-pause" onclick="toggleTrackingPause()">
-                    ⏸️ Tạm dừng
-                  </button>
-                  <button type="button" class="tracking-ctrl-btn" onclick="restartTrackingSimulation()">
-                    ${FluentIcons.sync} Chạy lại từ đầu
-                  </button>
-                </div>
-              </div>
-            </div>
-          ` : ''}
-
           <!-- 2. Theo dõi tình trạng giao hàng (Live Delivery Stepper) -->
           ${!isCancelled ? `
             <div class="delivery-stepper-card">
@@ -5143,331 +5156,8 @@ function renderSingleOrderDetailView(o) {
     </div>
   `;
 
-  if (isDelivering) {
-    setTimeout(() => initOrderLiveTracking(o), 80);
-  } else {
-    stopLiveTrackingSimulation();
-  }
-
   if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
     window.Router.syncUrl();
-  }
-}
-
-
-// ==========================================================================
-// LIVE SIMULATED ORDER TRACKING ENGINE (MAP & DISTANCE DECREMENT)
-// ==========================================================================
-
-let liveTrackingMapInstance = null;
-let liveTrackingShipperMarker = null;
-let liveTrackingRouteLine = null;
-let liveTrackingTraversedLine = null;
-let trackingSimTimer = null;
-let trackingSimSpeed = 1;
-let trackingSimPaused = false;
-let trackingWaypoints = [];
-let trackingCurrentIdx = 0;
-let trackingActiveOrder = null;
-
-function stopLiveTrackingSimulation() {
-  if (trackingSimTimer) {
-    clearInterval(trackingSimTimer);
-    trackingSimTimer = null;
-  }
-  if (liveTrackingMapInstance) {
-    try {
-      liveTrackingMapInstance.remove();
-    } catch (_) { }
-    liveTrackingMapInstance = null;
-    liveTrackingShipperMarker = null;
-    liveTrackingRouteLine = null;
-    liveTrackingTraversedLine = null;
-  }
-}
-
-function initOrderLiveTracking(order) {
-  stopLiveTrackingSimulation();
-  trackingActiveOrder = order;
-  const container = document.getElementById('order-live-map');
-  if (!container) return;
-
-  // 1. Resolve shop coords
-  const matchedRes = restaurants.find(r => r.name === order.resName || (order.items && order.items[0] && Number(r.id) === Number(order.items[0].restaurantId)));
-  const shopLat = (matchedRes && matchedRes.lat) ? matchedRes.lat : 20.9822;
-  const shopLng = (matchedRes && matchedRes.lng) ? matchedRes.lng : 105.7888;
-
-  // 2. Resolve user destination coords
-  const userLat = userDeliveryInfo.lat || 20.9806;
-  const userLng = userDeliveryInfo.lng || 105.7878;
-
-  // 3. Generate realistic street waypoints between shop and user
-  trackingWaypoints = generateDeliveryRouteWaypoints(shopLat, shopLng, userLat, userLng);
-  trackingCurrentIdx = 0;
-  trackingSimPaused = false;
-
-  // 4. Try Leaflet rendering
-  if (typeof L !== 'undefined' && L.map) {
-    try {
-      liveTrackingMapInstance = L.map('order-live-map', {
-        zoomControl: false,
-        attributionControl: false
-      });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-      }).addTo(liveTrackingMapInstance);
-
-      // Shop Pin
-      const resShort = (order.resName || 'Quán ăn').split('-')[0].trim();
-      const shopIcon = L.divIcon({
-        className: 'custom-shop-pin-wrap',
-        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge" style="border-color:#e11d48; color:#be123c;">Quán: ${escapeHtml(resShort)}</span><span class="custom-map-pin-icon">${FluentIcons.buildingShopRegular}</span></div>`,
-        iconSize: [110, 50],
-        iconAnchor: [55, 48]
-      });
-      L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(liveTrackingMapInstance);
-
-      // User Destination Pin
-      const userIcon = L.divIcon({
-        className: 'custom-user-dest-wrap',
-        html: `<div class="custom-map-pin"><span class="custom-map-pin-badge">Điểm nhận (PTIT)</span><span class="custom-map-pin-icon">📍</span></div>`,
-        iconSize: [95, 50],
-        iconAnchor: [47, 48]
-      });
-      L.marker([userLat, userLng], { icon: userIcon }).addTo(liveTrackingMapInstance);
-
-      // Moving Shipper Marker
-      const driverIcon = L.divIcon({
-        className: 'custom-driver-marker-wrap',
-        html: `<div class="custom-driver-pin" title="Tài xế ${escapeHtml(order.driver?.name || 'PTIT Express')}">${FluentIcons.truckRegular}</div>`,
-        iconSize: [44, 44],
-        iconAnchor: [22, 22]
-      });
-      liveTrackingShipperMarker = L.marker([shopLat, shopLng], { icon: driverIcon }).addTo(liveTrackingMapInstance);
-
-      // Route lines
-      liveTrackingRouteLine = L.polyline(trackingWaypoints, {
-        color: '#16a34a',
-        weight: 4,
-        opacity: 0.45,
-        dashArray: '6, 8'
-      }).addTo(liveTrackingMapInstance);
-
-      liveTrackingTraversedLine = L.polyline([[shopLat, shopLng]], {
-        color: '#15803d',
-        weight: 5,
-        opacity: 0.95
-      }).addTo(liveTrackingMapInstance);
-
-      const bounds = L.latLngBounds([[shopLat, shopLng], [userLat, userLng]]);
-      liveTrackingMapInstance.fitBounds(bounds, { padding: [45, 45] });
-
-      setTimeout(() => {
-        if (liveTrackingMapInstance) liveTrackingMapInstance.invalidateSize();
-      }, 200);
-
-    } catch (e) {
-      console.warn('Leaflet tracking error, falling back to SVG:', e);
-      renderVectorTrackingFallback(container, shopLat, shopLng, userLat, userLng, order);
-    }
-  } else {
-    renderVectorTrackingFallback(container, shopLat, shopLng, userLat, userLng, order);
-  }
-
-  startTrackingSimulationLoop();
-}
-
-function generateDeliveryRouteWaypoints(sLat, sLng, uLat, uLng) {
-  const steps = 18;
-  const pts = [];
-  const midLat = (sLat + uLat) / 2 + 0.0003;
-  const midLng = (sLng + uLng) / 2 - 0.0004;
-
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const lat = Math.pow(1 - t, 2) * sLat + 2 * (1 - t) * t * midLat + Math.pow(t, 2) * uLat;
-    const lng = Math.pow(1 - t, 2) * sLng + 2 * (1 - t) * t * midLng + Math.pow(t, 2) * uLng;
-    pts.push([lat, lng]);
-  }
-  return pts;
-}
-
-function startTrackingSimulationLoop() {
-  if (trackingSimTimer) clearInterval(trackingSimTimer);
-
-  const intervalMs = Math.round(1400 / trackingSimSpeed);
-  trackingSimTimer = setInterval(() => {
-    if (trackingSimPaused) return;
-    if (trackingCurrentIdx < trackingWaypoints.length - 1) {
-      trackingCurrentIdx++;
-      updateLiveTrackingFrame();
-    } else {
-      onDriverArrivedAtDestination();
-    }
-  }, intervalMs);
-
-  updateLiveTrackingFrame();
-}
-
-function updateLiveTrackingFrame() {
-  if (!trackingWaypoints || trackingWaypoints.length === 0) return;
-  const currentPos = trackingWaypoints[trackingCurrentIdx];
-  const userPos = trackingWaypoints[trackingWaypoints.length - 1];
-
-  // Move Leaflet marker
-  if (liveTrackingShipperMarker && liveTrackingMapInstance) {
-    liveTrackingShipperMarker.setLatLng(currentPos);
-    const traversed = trackingWaypoints.slice(0, trackingCurrentIdx + 1);
-    if (liveTrackingTraversedLine) liveTrackingTraversedLine.setLatLngs(traversed);
-  }
-
-  // Move SVG marker if fallback active
-  updateVectorShipperPos(trackingCurrentIdx / (trackingWaypoints.length - 1));
-
-  // Compute remaining distance
-  const remainingDist = calculateHaversineKm(currentPos[0], currentPos[1], userPos[0], userPos[1]);
-  const progressRatio = trackingCurrentIdx / (trackingWaypoints.length - 1);
-
-  // Update HUD
-  const distEl = document.getElementById('tracking-hud-dist');
-  const etaEl = document.getElementById('tracking-hud-eta');
-  const speedEl = document.getElementById('tracking-hud-speed');
-  const statusEl = document.getElementById('tracking-hud-status');
-
-  if (distEl) {
-    if (remainingDist <= 0.08) {
-      distEl.textContent = '50 m (Đã tới nơi!)';
-      distEl.style.color = '#16a34a';
-    } else {
-      distEl.textContent = `${remainingDist.toFixed(1)} km`;
-    }
-  }
-
-  if (etaEl) {
-    if (remainingDist <= 0.08) {
-      etaEl.textContent = 'Đang gọi nhận món';
-    } else {
-      const etaMin = Math.max(1, Math.round(remainingDist * 4.2));
-      etaEl.textContent = `${etaMin} phút nữa`;
-    }
-  }
-
-  if (speedEl) {
-    const curSpeed = remainingDist <= 0.08 ? 0 : (28 + Math.floor((Math.random() - 0.5) * 6));
-    speedEl.textContent = `${curSpeed} km/h`;
-  }
-
-  if (statusEl) {
-    const driverName = trackingActiveOrder?.driver?.name || 'Nguyễn Văn Tài';
-    if (progressRatio <= 0.2) {
-      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế <strong>${escapeHtml(driverName)}</strong> đã lấy món từ <strong>${escapeHtml(trackingActiveOrder?.resName || 'Quán')}</strong>, đang rẽ ra phố Ao Sen.`;
-    } else if (progressRatio <= 0.5) {
-      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế <strong>${escapeHtml(driverName)}</strong> đang lưu thông trên trục đường Trần Phú, hướng về trường PTIT.`;
-    } else if (progressRatio <= 0.8) {
-      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế đang qua nút giao trước cổng Học viện PTIT, giảm tốc độ chuẩn bị rẽ vào điểm hẹn.`;
-    } else if (progressRatio < 1) {
-      statusEl.innerHTML = `${FluentIcons.truckRegular} Tài xế đã tới cổng chính PTIT, đang tiến vào sảnh nhà A2...`;
-    } else {
-      statusEl.innerHTML = `${FluentIcons.checkmarkFilled} <strong>Tài xế đã tới sảnh nhà A2 PTIT!</strong> Vui lòng chuẩn bị nhận món thơm ngon.`;
-    }
-  }
-}
-
-function onDriverArrivedAtDestination() {
-  if (trackingSimTimer) {
-    clearInterval(trackingSimTimer);
-    trackingSimTimer = null;
-  }
-  showToast('checkmarkFilled', 'Shipper đã giao tới sảnh A2 PTIT! Chúc bạn ngon miệng.');
-}
-
-function toggleTrackingSpeed() {
-  trackingSimSpeed = trackingSimSpeed === 1 ? 3 : 1;
-  const btn = document.getElementById('tracking-btn-speed');
-  if (btn) {
-    btn.innerHTML = trackingSimSpeed === 3 ? `${FluentIcons.flashFilled} Tốc độ x3 (Đang bật)` : `${FluentIcons.flashFilled} Tăng tốc mô phỏng (x3)`;
-  }
-  startTrackingSimulationLoop();
-}
-
-function toggleTrackingPause() {
-  trackingSimPaused = !trackingSimPaused;
-  const btn = document.getElementById('tracking-btn-pause');
-  if (btn) {
-    btn.textContent = trackingSimPaused ? '▶️ Tiếp tục' : '⏸️ Tạm dừng';
-  }
-}
-
-function restartTrackingSimulation() {
-  trackingCurrentIdx = 0;
-  trackingSimPaused = false;
-  const pauseBtn = document.getElementById('tracking-btn-pause');
-  if (pauseBtn) pauseBtn.textContent = '⏸️ Tạm dừng';
-  startTrackingSimulationLoop();
-  showToast('locationRegular', 'Đã bắt đầu lại mô phỏng hành trình giao hàng.');
-}
-
-function renderVectorTrackingFallback(container, sLat, sLng, uLat, uLng, order) {
-  container.innerHTML = `
-    <div style="width:100%; height:100%; position:relative; background:#f8fafc; overflow:hidden;">
-      <svg width="100%" height="100%" viewBox="0 0 500 280" style="position:absolute; inset:0;">
-        <rect width="500" height="280" fill="#f1f5f9"/>
-        <!-- Streets -->
-        <path d="M 0 140 Q 250 80 500 140" stroke="#cbd5e1" stroke-width="14" fill="none"/>
-        <text x="30" y="130" font-size="11" font-weight="bold" fill="#64748b">TRẦN PHÚ - HÀ ĐÔNG</text>
-        <line x1="250" y1="0" x2="250" y2="280" stroke="#cbd5e1" stroke-width="10"/>
-        <text x="260" y="40" font-size="10" font-weight="bold" fill="#64748b">PHỐ AO SEN</text>
-
-        <!-- Route Polyline -->
-        <path id="svg-route-bg" d="M 90 90 Q 250 110 410 180" stroke="#16a34a" stroke-width="4" stroke-dasharray="6,8" opacity="0.5" fill="none"/>
-        <path id="svg-route-active" d="M 90 90 Q 250 110 410 180" stroke="#15803d" stroke-width="5" fill="none" stroke-dasharray="400" stroke-dashoffset="400"/>
-
-        <!-- Shop Node -->
-        <circle cx="90" cy="90" r="14" fill="#fee2e2" stroke="#e11d48" stroke-width="2"/>
-        <text x="90" y="95" text-anchor="middle" font-size="14">🍜</text>
-        <text x="90" y="70" text-anchor="middle" font-size="10" font-weight="bold" fill="#9f1239">${escapeHtml(order.resName.split('-')[0].trim())}</text>
-
-        <!-- User Node -->
-        <circle cx="410" cy="180" r="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-        <text x="410" y="185" text-anchor="middle" font-size="14">📍</text>
-        <text x="410" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532d">Điểm nhận PTIT (A2)</text>
-      </svg>
-
-      <!-- Animated SVG Shipper Marker -->
-      <div id="svg-shipper-marker" style="position:absolute; left:90px; top:90px; transform:translate(-50%, -50%); z-index:3; transition:all 0.4s ease;">
-        <div class="custom-driver-pin">🛵</div>
-      </div>
-    </div>
-  `;
-
-  if (typeof updateFloatingTopBar === 'function') {
-    updateFloatingTopBar();
-  }
-  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
-    window.Router.syncUrl({ replace: true });
-  }
-}
-
-function updateVectorShipperPos(ratio) {
-  const marker = document.getElementById('svg-shipper-marker');
-  const routeActive = document.getElementById('svg-route-active');
-  if (!marker) return;
-
-  const startX = 90, startY = 90;
-  const midX = 250, midY = 110;
-  const endX = 410, endY = 180;
-
-  const t = Math.max(0, Math.min(1, ratio));
-  const x = Math.pow(1 - t, 2) * startX + 2 * (1 - t) * t * midX + Math.pow(t, 2) * endX;
-  const y = Math.pow(1 - t, 2) * startY + 2 * (1 - t) * t * midY + Math.pow(t, 2) * endY;
-
-  marker.style.left = x + 'px';
-  marker.style.top = y + 'px';
-
-  if (routeActive) {
-    const totalLen = 400;
-    routeActive.style.strokeDashoffset = (totalLen * (1 - t)).toString();
   }
 }
 
@@ -5796,10 +5486,88 @@ function toggleFav(id) {
     });
   }
 
+  // 3. Nếu đang ở trang Yêu thích và bỏ lưu quán -> cập nhật danh sách tại chỗ không reload
+  if (currentView === 'favorites' && !isFav && typeof handleFavoriteRemovedInPlace === 'function') {
+    handleFavoriteRemovedInPlace('store', String(numId));
+  }
+
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('light');
+  }
+
   if (typeof showToast === 'function') {
     showToast(isFav ? 'heartFilled' : 'heartRegular', isFav ? `Đã lưu ${resName} vào Yêu thích ❤️` : `Đã bỏ lưu ${resName}`);
   }
 }
+
+function toggleDishFav(itemId, fallbackResId) {
+  const key = String(itemId);
+  let foundDish = null;
+  let foundRes = null;
+  const list = Array.isArray(restaurants) ? restaurants : [];
+
+  for (const r of list) {
+    if (!Array.isArray(r.relatedDishes)) continue;
+    const d = r.relatedDishes.find(x => String(x.id) === key);
+    if (d) {
+      foundDish = d;
+      foundRes = r;
+      break;
+    }
+  }
+
+  if (!foundDish && typeof DB !== 'undefined' && DB.data && Array.isArray(DB.data.items)) {
+    foundDish = DB.data.items.find(x => String(x.id) === key) || null;
+  }
+  if (!foundDish && typeof modalDish !== 'undefined' && modalDish && String(modalDish.id) === key) {
+    foundDish = modalDish;
+  }
+
+  const dishName = foundDish ? foundDish.name : 'Món ăn';
+  let isFav = false;
+
+  if (typeof DB !== 'undefined' && DB.isReady && typeof DB.toggleFavoriteItem === 'function') {
+    isFav = DB.toggleFavoriteItem(key);
+  } else if (foundDish) {
+    foundDish.fav = !foundDish.fav;
+    isFav = foundDish.fav;
+  } else {
+    isFav = true;
+  }
+
+  // Đồng bộ trạng thái in-memory
+  if (foundDish) {
+    foundDish.fav = isFav;
+  }
+  if (typeof modalDish !== 'undefined' && modalDish && String(modalDish.id) === key) {
+    modalDish.fav = isFav;
+  }
+
+  // Cập nhật DOM tại chỗ cho tất cả nút yêu thích của món này (Home, Search, Modal, Dish Detail, Favorites)
+  const favIconHtml = isFav ? FluentIcons.heartFilled : FluentIcons.heartRegular;
+  document.querySelectorAll('[data-fav-dish-id]').forEach(btn => {
+    if (btn.getAttribute('data-fav-dish-id') === key) {
+      btn.innerHTML = favIconHtml;
+      btn.classList.toggle('active', isFav);
+      btn.classList.remove('anim-heart-pop');
+      void btn.offsetWidth;
+      btn.classList.add('anim-heart-pop');
+    }
+  });
+
+  if (currentView === 'favorites' && !isFav && typeof handleFavoriteRemovedInPlace === 'function') {
+    handleFavoriteRemovedInPlace('dish', key);
+  }
+
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('light');
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(isFav ? 'heartFilled' : 'heartRegular', isFav ? `Đã lưu "${dishName}" vào Yêu thích ❤️` : `Đã bỏ lưu "${dishName}"`);
+  }
+}
+window.toggleDishFav = toggleDishFav;
 
 const AI_SPARKLE_ICON_REGULAR = `<svg class="fluent-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2.75a.75.75 0 0 1 .68.434l1.79 3.848a1.75 1.75 0 0 0 .848.848l3.848 1.79a.75.75 0 0 1 0 1.36l-3.848 1.79a1.75 1.75 0 0 0-.848.848l-1.79 3.848a.75.75 0 0 1-1.36 0l-1.79-3.848a1.75 1.75 0 0 0-.848-.848l-3.848-1.79a.75.75 0 0 1 0-1.36l3.848-1.79a1.75 1.75 0 0 0 .848-.848l1.79-3.848a.75.75 0 0 1 .68-.434Zm0 2.752-1.106 2.378a3.25 3.25 0 0 1-1.574 1.574L6.442 10.56l2.378 1.106a3.25 3.25 0 0 1 1.574 1.574l1.106 2.378 1.106-2.378a3.25 3.25 0 0 1 1.574-1.574l2.378-1.106-2.378-1.106a3.25 3.25 0 0 1-1.574-1.574L11.5 5.502Zm7.25 9.748a.5.5 0 0 1 .453.289l.698 1.49a.75.75 0 0 0 .362.362l1.49.698a.5.5 0 0 1 0 .906l-1.49.698a.75.75 0 0 0-.362.362l-.698 1.49a.5.5 0 0 1-.906 0l-.698-1.49a.75.75 0 0 0-.362-.362l-1.49-.698a.5.5 0 0 1 0-.906l1.49-.698a.75.75 0 0 0 .362-.362l.698-1.49a.5.5 0 0 1 .453-.289Z"/></svg>`;
 const AI_SPARKLE_ICON_FILLED = `<svg class="fluent-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10.822 2.502a.75.75 0 0 1 1.356 0l1.96 4.185a2.25 2.25 0 0 0 1.085 1.085l4.185 1.96a.75.75 0 0 1 0 1.356l-4.185 1.96a2.25 2.25 0 0 0-1.085 1.085l-1.96 4.185a.75.75 0 0 1-1.356 0l-1.96-4.185a2.25 2.25 0 0 0-1.085-1.085l-4.185-1.96a.75.75 0 0 1 0-1.356l4.185-1.96a2.25 2.25 0 0 0 1.085-1.085l1.96-4.185ZM18.372 15.32a.5.5 0 0 1 .906 0l.698 1.49a.75.75 0 0 0 .362.362l1.49.698a.5.5 0 0 1 0 .906l-1.49.698a.75.75 0 0 0-.362.362l-.698 1.49a.5.5 0 0 1-.906 0l-.698-1.49a.75.75 0 0 0-.362-.362l-1.49-.698a.5.5 0 0 1 0-.906l1.49-.698a.75.75 0 0 0 .362-.362l.698-1.49Z"/></svg>`;

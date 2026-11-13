@@ -11,7 +11,6 @@
 
   const Router = {
     isNavigatingFromRouter: false,
-    wasInOrderSuccess: false,
     currentPath: '',
     currentQuery: {},
 
@@ -207,10 +206,18 @@
         }
       }
 
-      // 6b. Nếu đang ở Order Success: quay về trang trước giỏ hàng
+      // 6b. Nếu đang ở Order Success: về lại trang nguồn trước khi đặt hàng (VD: Thông tin mặt hàng)
       if (current === 'order-success') {
         if (typeof backFromOrderSuccess === 'function') {
           backFromOrderSuccess();
+          return;
+        }
+      }
+
+      // 6c. Nếu đang ở Favorites: quay lại trang nguồn (Profile hoặc Home)
+      if (current === 'favorites') {
+        if (typeof backFromFavoritesView === 'function') {
+          backFromFavoritesView();
           return;
         }
       }
@@ -262,6 +269,12 @@
             targetPath = '/profile';
             if (typeof profileActiveSubTab !== 'undefined' && profileActiveSubTab) {
               targetQuery = { tab: profileActiveSubTab };
+            }
+            break;
+          case 'favorites':
+            targetPath = '/favorites';
+            if (typeof favoritesActiveTab !== 'undefined' && favoritesActiveTab && favoritesActiveTab !== 'all') {
+              targetQuery = { tab: favoritesActiveTab };
             }
             break;
           case 'catalog':
@@ -405,12 +418,6 @@
 
       // 3. Cart
       if (path === '/cart') {
-        if (this.wasInOrderSuccess && (!cart || cart.length === 0)) {
-          this.wasInOrderSuccess = false;
-          window.history.back();
-          return;
-        }
-        this.wasInOrderSuccess = false;
         if (typeof openCartView === 'function') {
           openCartView();
         }
@@ -419,12 +426,6 @@
 
       // 4. Checkout
       if (path === '/checkout') {
-        if (this.wasInOrderSuccess && (!cart || cart.length === 0)) {
-          this.wasInOrderSuccess = false;
-          window.history.back();
-          return;
-        }
-        this.wasInOrderSuccess = false;
         if (typeof openCheckoutView === 'function') {
           openCheckoutView();
         }
@@ -443,6 +444,14 @@
       if (path === '/profile') {
         if (typeof openProfileView === 'function') {
           openProfileView(query ? query.tab : null);
+        }
+        return;
+      }
+
+      // 6b. Favorites
+      if (path === '/favorites') {
+        if (typeof openFavoritesView === 'function') {
+          openFavoritesView(query && query.tab ? query.tab : 'all');
         }
         return;
       }
@@ -482,7 +491,6 @@
 
       // 10. Order Success
       if (path === '/order-success') {
-        this.wasInOrderSuccess = true;
         let order = null;
         if (query && query.orderId && typeof ordersList !== 'undefined') {
           order = ordersList.find(o => o.orderId === query.orderId);
