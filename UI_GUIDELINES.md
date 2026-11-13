@@ -126,12 +126,13 @@ Các màn hình có danh sách/nội dung dài kết hợp bảng tóm tắt ho�
 1. **Chạm ra ngoài không bị thoát (Static Backdrop):**
    - Dùng `onclick="closeModalOnBackdrop(event)"` (hoặc hàm tương đương cho modal riêng).
    - Khi người dùng bấm ra vùng nền mờ `.modal-overlay` bên ngoài `.bottom-sheet`, **không đóng modal** (tránh mất dữ liệu form/lựa chọn món đang làm dở).
-   - Thay vào đó, kích hoạt phản hồi trực quan:
-     - Thêm/replay class `.modal-shake-prompt` trên `.bottom-sheet` (rung nhẹ viền đỏ).
-     - Thêm/replay class `.close-btn-nudge` trên nút đóng để chỉ dẫn vị trí đóng modal (xem `closeModalOnBackdrop` trong [js/app.js](js/app.js)).
-2. **Nút đóng rõ ràng, nổi bật sắc đỏ:**
-   - Đặt nút đóng cố định ở góc header của modal (`.dish-modal-close-btn`, `.dbm-close-btn` hoặc `.modal-close-btn`).
-   - Style khuyến nghị: nút tròn `34px–36px`, dễ bấm, có trạng thái nhấn mạnh màu đỏ (`background: #fee2e2; color: #dc2626;` khi hover/active, hoặc nổi đỏ `linear-gradient(135deg, #ef4444, #dc2626)` chữ trắng với modal cần cảnh báo/thoát rõ ràng) để người dùng nhận ra ngay nút thoát hợp lệ sau khi bị chặn chạm nền ngoài.
+   - Thay vào đó, kích hoạt phản hồi trực quan đồng bộ:
+     - Thêm/replay class `.modal-shake-prompt` trên `.bottom-sheet` (rung nẩy kèm `box-shadow` viền đỏ `rgba(235, 20, 20, 0.22)`), và gỡ bỏ sau `400ms`.
+     - Thêm/replay class `.close-btn-nudge` trên nút đóng (nẩy to `1.22x` + vòng halo đỏ `0 0 0 4px rgba(235, 20, 20, 0.25)` + nền đỏ `#fee2e2` / chữ `#dc2626`), và gỡ bỏ sau `600ms`.
+     - **Lưu ý khi tạo modal/drawer riêng:** Nút đóng bắt buộc phải nằm trong danh sách selector `.close-btn-nudge` ở [css/style.css](css/style.css) (hoặc tái sử dụng `.dish-modal-close-btn` / `.close-btn`) thì hiệu ứng chỉ dẫn đỏ mới chạy khớp.
+2. **Nút đóng đồng nhất, chuyển sắc đỏ khi tương tác:**
+   - Đặt nút đóng cố định ở góc header của modal (`.dish-modal-close-btn`, `.dbm-close-btn`, `.pdp-order-drawer-close-btn` hoặc `.modal-close-btn`).
+   - Style chuẩn của app: nút tròn `34px–36px`, bình thường nền nhẹ `var(--gray-100)` (`#f1f5f9`), chữ `var(--gray-800)` (nằm gọn bên phải header với `margin-left: auto`); khi `:hover`, `:active` hoặc `.close-btn-nudge` thì chuyển sang sắc đỏ `#fee2e2` / `#dc2626` nổi bật để chỉ dẫn người dùng thoát hợp lệ sau khi bị chặn chạm nền ngoài.
 3. **Luôn tách vùng Footer cố định cho Button (`.delivery-modal-footer` / `.modal-footer`):**
    - Cấu trúc modal 3 phần theo trục dọc Flex (`display: flex; flex-direction: column; max-height: 90vh;` trên Mobile / `88vh` trên Desktop):
      1. **Header** (`flex-shrink: 0`): tiêu đề + nút đóng.

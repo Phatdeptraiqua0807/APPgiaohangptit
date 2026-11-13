@@ -647,9 +647,30 @@ function closePDPMobileOrderDrawer() {
   pdpMobileDrawerOpen = false;
   const drawer = document.getElementById('pdp-order-drawer');
   const backdrop = document.getElementById('pdp-order-drawer-backdrop');
-  if (drawer) drawer.classList.remove('mobile-open');
+  if (drawer) drawer.classList.remove('mobile-open', 'modal-shake-prompt');
   if (backdrop) backdrop.classList.remove('active');
   document.body.classList.remove('pdp-drawer-active');
+}
+
+function handlePDPMobileBackdropClick(e) {
+  if (e && e.target !== e.currentTarget) return;
+  const drawer = document.getElementById('pdp-order-drawer');
+  const closeBtn = drawer ? drawer.querySelector('.pdp-order-drawer-close-btn') : null;
+  if (drawer) {
+    drawer.classList.remove('modal-shake-prompt');
+    void drawer.offsetWidth;
+    drawer.classList.add('modal-shake-prompt');
+    setTimeout(() => drawer.classList.remove('modal-shake-prompt'), 400);
+  }
+  if (closeBtn) {
+    closeBtn.classList.remove('close-btn-nudge');
+    void closeBtn.offsetWidth;
+    closeBtn.classList.add('close-btn-nudge');
+    setTimeout(() => closeBtn.classList.remove('close-btn-nudge'), 600);
+  }
+  if (typeof triggerHaptic === 'function') {
+    triggerHaptic('light');
+  }
 }
 
 function handleMobilePDPAction(isBuyNow) {
@@ -939,10 +960,10 @@ function renderDishDetailView() {
           ` : ''}
         </div>
 
-        <!-- BACKDROP CHO MOBILE DRAWER -->
-        <div class="pdp-order-drawer-backdrop ${pdpMobileDrawerOpen ? 'active' : ''}" id="pdp-order-drawer-backdrop" onclick="closePDPMobileOrderDrawer()"></div>
+        <!-- BACKDROP CHO MOBILE MODAL-OVERLAY (Static Backdrop) -->
+        <div class="pdp-order-drawer-backdrop ${pdpMobileDrawerOpen ? 'active' : ''}" id="pdp-order-drawer-backdrop" onclick="handlePDPMobileBackdropClick(event)"></div>
 
-        <!-- CỘT PHẢI (DRAWER TRÊN MOBILE, STICKY TRÊN DESKTOP): TÙY CHỈNH KÍCH CỠ, TOPPING, GHI CHÚ & ĐẶT MÓN -->
+        <!-- CỘT PHẢI (MODAL-OVERLAY BOTTOM SHEET TRÊN MOBILE, STICKY TRÊN DESKTOP): TÙY CHỈNH KÍCH CỠ, TOPPING, GHI CHÚ & ĐẶT MÓN -->
         <div class="product-detail-order-col ${pdpMobileDrawerOpen ? 'mobile-open' : ''}" id="pdp-order-drawer">
           <div class="pdp-order-card">
             <div class="pdp-order-card-title">
@@ -951,6 +972,8 @@ function renderDishDetailView() {
                 ${FluentIcons.dismiss}
               </button>
             </div>
+
+            <div class="pdp-order-card-body">
 
             <!-- Chọn Kích cỡ -->
             <div class="pdp-opt-block">
@@ -1026,6 +1049,7 @@ function renderDishDetailView() {
             <div class="pdp-live-kcal-notice" onclick="openDishSafetyNutritionView('nutrition')">
               <span>🥗 Năng lượng ước tính cho lựa chọn này: <strong>~${dynNutri.calories * modalQty} kcal</strong></span>
               <span style="color:var(--green-600); font-weight:700;">Chi tiết →</span>
+            </div>
             </div>
 
             <!-- Action Bar cố định -->

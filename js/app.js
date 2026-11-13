@@ -3215,9 +3215,9 @@ function renderCartView() {
 
       ${cart.length === 0 ? `
         <!-- Empty Cart State -->
-        <div class="search-empty-state" style="padding-top: 80px;">
-          <div class="search-empty-icon" style="color: var(--gray-400); display: flex; justify-content: center;">
-            ${FluentIcons.cartRegular}
+        <div class="search-empty-state" style="padding-top: 64px;">
+          <div class="search-empty-icon empty-cart-graphic">
+            <img src="assets/images/empty-cart.png" alt="Giỏ hàng trống" class="empty-cart-img" />
           </div>
           <div class="search-empty-title">Giỏ hàng của bạn đang trống</div>
           <div class="search-empty-sub">Hãy khám phá các món ăn ngon lành và thêm vào giỏ nhé!</div>
