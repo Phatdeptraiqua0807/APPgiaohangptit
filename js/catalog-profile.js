@@ -149,14 +149,19 @@ function readAndCompressImageFile(file, maxWidth = 480, quality = 0.78) {
 // PHẦN A: GIAO DIỆN QUẢN LÝ MẶT HÀNG & LOẠI MẶT HÀNG TÙY CHỈNH (DATABASE .JSON)
 // =========================================================================
 
-function openCatalogManagerView(tab = 'items', catFilter = 'all') {
+function openCatalogManagerView(tab = 'items', catFilter = 'all', options = {}) {
   if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
   }
   currentView = 'catalog';
-  catalogActiveTab = tab;
-  if (catFilter) catalogCategoryFilter = catFilter;
-  render();
+  if (typeof profileTabSubView !== 'undefined') {
+    profileTabSubView = 'catalog';
+  }
+  if (!options || !options.restoreFromTab) {
+    if (tab) catalogActiveTab = tab;
+    if (catFilter) catalogCategoryFilter = catFilter;
+  }
+  render(options);
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('catalog');
   } else {
@@ -169,6 +174,31 @@ function openCatalogManagerView(tab = 'items', catFilter = 'all') {
       }
     }).catch(() => {});
   }
+}
+
+function closeCatalogManagerView() {
+  if (typeof profileTabSubView !== 'undefined') {
+    profileTabSubView = null;
+  }
+  const prevRoute = (typeof window.Router !== 'undefined' && typeof window.Router.getPreviousStepRoute === 'function')
+    ? window.Router.getPreviousStepRoute()
+    : null;
+  if (prevRoute && prevRoute.path === '/profile') {
+    const state = window.history.state;
+    const step = (state && typeof state.step === 'number') ? state.step : 0;
+    if (step > 0 && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+  }
+  if (typeof saveCurrentViewScroll === 'function') {
+    saveCurrentViewScroll();
+  }
+  currentView = 'profile';
+  const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['profile'] === 'number')
+    ? globalViewScrollPositions['profile']
+    : 0;
+  render({ vtMode: 'back', scrollTop: savedY, replace: true });
 }
 
 function switchCatalogTab(tab) {
@@ -206,7 +236,7 @@ function renderCatalogManagerView() {
     app.innerHTML = `
       <div class="catalog-view-container">
         <div class="page-nav-header">
-          <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
+          <button type="button" class="page-back-icon-btn" onclick="closeCatalogManagerView()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
           <div class="page-nav-title">Quản Lý Cơ Sở Dữ Liệu</div>
           <div style="width:42px;"></div>
         </div>
@@ -217,6 +247,9 @@ function renderCatalogManagerView() {
         </div>
       </div>
     `;
+    if (typeof markKeepAliveRendered === 'function') {
+      markKeepAliveRendered('catalog');
+    }
     window.AppAssetLoader.loadCatalogManager().then(() => {
       if (currentView === 'catalog' && window.__dbmAssetsReady && typeof renderCatalogManagerView === 'function') {
         renderCatalogManagerView();
@@ -239,7 +272,7 @@ function renderCatalogManagerView() {
     <div class="catalog-view-container fade-in">
       <!-- Header -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">
+        <button type="button" class="page-back-icon-btn" onclick="closeCatalogManagerView()" title="Quay lại" aria-label="Quay lại">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Quản Lý Mặt Hàng & Database</div>
@@ -309,6 +342,9 @@ function renderCatalogManagerView() {
       <div class="bottom-spacer"></div>
     </div>
   `;
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('catalog');
+  }
 }
 
 function renderCatalogItemsTab(allCats) {
@@ -443,6 +479,9 @@ function updateCatalogItemsListDOM() {
   const container = document.getElementById('catalog-items-list-container');
   if (container) {
     container.innerHTML = renderCatalogItemsGridHtml(getFilteredCatalogItems());
+  }
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('catalog');
   }
 }
 
@@ -1234,6 +1273,9 @@ function openProfileView(subTab = null) {
   if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
   }
+  if (typeof profileTabSubView !== 'undefined') {
+    profileTabSubView = null;
+  }
   currentView = 'profile';
   if (subTab) profileActiveTab = subTab;
   render();
@@ -1506,6 +1548,9 @@ function renderProfileView() {
       <div class="bottom-spacer"></div>
     </div>
   `;
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('catalog');
+  }
 }
 
 function renderRememberedUsersTab(allUsers, activeUser) {
@@ -2654,6 +2699,9 @@ function renderFavoritesView() {
       <div class="bottom-spacer"></div>
     </div>
   `;
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('catalog');
+  }
 }
 
 window.openFavoritesView = openFavoritesView;

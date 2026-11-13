@@ -13,6 +13,20 @@
     isNavigatingFromRouter: false,
     currentPath: '',
     currentQuery: {},
+    stepPaths: {},
+
+    recordStepPath(step, rawHash) {
+      if (typeof step !== 'number' || !rawHash) return;
+      this.stepPaths[step] = this.parseHash(rawHash);
+    },
+
+    getPreviousStepRoute() {
+      const curStep = (window.history.state && typeof window.history.state.step === 'number')
+        ? window.history.state.step
+        : 0;
+      if (curStep <= 0) return null;
+      return this.stepPaths[curStep - 1] || null;
+    },
 
     /**
      * Chuẩn hóa hash từ URL (ví dụ "#/activity?filter=delivering" -> { path: "/activity", query: { filter: "delivering" } })
@@ -51,9 +65,11 @@
       try {
         const curState = window.history.state;
         const initialHash = window.location.hash || '#/home';
+        const step = (curState && typeof curState.step === 'number') ? curState.step : 0;
         if (!curState || typeof curState.step !== 'number') {
           window.history.replaceState({ step: 0, path: initialHash }, '', initialHash);
         }
+        this.recordStepPath(step, initialHash);
       } catch (_) {}
 
       // 2. Lắng nghe sự kiện popstate / hashchange của trình duyệt
@@ -344,22 +360,25 @@
       }
 
       const targetHash = '#' + targetPath + queryString;
+      const curStep = (window.history.state && typeof window.history.state.step === 'number')
+        ? window.history.state.step
+        : 0;
 
       if (window.location.hash !== targetHash) {
-        const curStep = (window.history.state && typeof window.history.state.step === 'number')
-          ? window.history.state.step
-          : 0;
-
         try {
           if (options && options.replace) {
             window.history.replaceState({ step: curStep, path: targetHash }, '', targetHash);
+            this.recordStepPath(curStep, targetHash);
           } else {
             const nextStep = curStep + 1;
             window.history.pushState({ step: nextStep, path: targetHash }, '', targetHash);
+            this.recordStepPath(nextStep, targetHash);
           }
         } catch (_) {
           window.location.hash = targetHash;
         }
+      } else {
+        this.recordStepPath(curStep, targetHash);
       }
 
       this.currentPath = targetPath;
@@ -370,7 +389,13 @@
      * Xử lý điều hướng khi người dùng gõ URL, nhấn F5 hoặc bấm nút Back / Forward
      */
     handleRouteChange(rawHash) {
-      const { path, query } = this.parseHash(rawHash);
+      const effectiveHash = rawHash || window.location.hash;
+      const curStep = (window.history.state && typeof window.history.state.step === 'number')
+        ? window.history.state.step
+        : 0;
+      this.recordStepPath(curStep, effectiveHash);
+
+      const { path, query } = this.parseHash(effectiveHash);
 
       // Nếu path và query giống với trạng thái hiện tại, bỏ qua
       if (this.currentPath === path && JSON.stringify(this.currentQuery) === JSON.stringify(query)) {
@@ -569,6 +594,7 @@
       if (options && options.replace) {
         try {
           window.history.replaceState({ step: curStep, path: target }, '', target);
+          this.recordStepPath(curStep, target);
         } catch (_) {
           window.location.hash = target;
         }
@@ -576,6 +602,7 @@
         try {
           const nextStep = curStep + 1;
           window.history.pushState({ step: nextStep, path: target }, '', target);
+          this.recordStepPath(nextStep, target);
         } catch (_) {
           window.location.hash = target;
         }
@@ -587,8 +614,9 @@
      * Quay lại trang trước một cách thông minh (Smart Hybrid Back)
      * - Ưu tiên 1: Đóng modal/drawer nếu đang mở (không rời trang)
      * - Ưu tiên 2: Thực thi customFallback nếu người gọi chỉ định
-     * - Ưu tiên 3: Nếu trong app session đã có bước điều hướng (step > 0): gọi window.history.back()
-     * - Ưu tiên 4: Nếu là trang đầu tiên vào web (step === 0): chạy executeFallbackNavigation() để không bị văng ra khỏi web
+     * - Ưu tiên 3: Nếu đang ở view con được khôi phục từ chuyển tab (vd: Chi tiết đơn hàng từ AI -> Hoạt động, hoặc Catalog từ AI -> Tài khoản), lùi về trang gốc của tab đó thay vì nhảy về tab trước
+     * - Ưu tiên 4: Nếu trong app session đã có bước điều hướng (step > 0): gọi window.history.back()
+     * - Ưu tiên 5: Nếu là trang đầu tiên vào web (step === 0): chạy executeFallbackNavigation() để không bị văng ra khỏi web
      */
     back(customFallback = null) {
       // 1. Đóng modal hoặc drawer đang mở
@@ -602,7 +630,27 @@
         return;
       }
 
-      // 3. Kiểm tra step trong app session
+      // 3. Kiểm tra điều kiện view con thuộc tab (Activity Detail / Profile Catalog)
+      const cur = (typeof currentView === 'string') ? currentView : 'home';
+      const prevRoute = this.getPreviousStepRoute();
+      if (cur === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+        if (!prevRoute || (prevRoute.path !== '/activity' && prevRoute.path !== '/orders')) {
+          if (typeof closeOrderDetail === 'function') {
+            closeOrderDetail();
+            return;
+          }
+        }
+      }
+      if (cur === 'catalog') {
+        if (!prevRoute || prevRoute.path !== '/profile') {
+          if (typeof closeCatalogManagerView === 'function') {
+            closeCatalogManagerView();
+            return;
+          }
+        }
+      }
+
+      // 4. Kiểm tra step trong app session
       const state = window.history.state;
       const step = (state && typeof state.step === 'number') ? state.step : 0;
 
@@ -611,7 +659,7 @@
         return;
       }
 
-      // 4. Fallback logic nội bộ app
+      // 5. Fallback logic nội bộ app
       this.executeFallbackNavigation();
     }
   };

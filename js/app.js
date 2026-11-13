@@ -170,7 +170,10 @@ function restoreHorizontalScrolls(viewName) {
 function saveCurrentViewScroll() {
   if (typeof currentView === 'string' && currentView) {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-    globalViewScrollPositions[currentView] = scrollY;
+    const scrollKey = (currentView === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId)
+      ? 'activity:detail'
+      : currentView;
+    globalViewScrollPositions[scrollKey] = scrollY;
     saveHorizontalScrolls(currentView);
   }
 }
@@ -599,6 +602,7 @@ let savedAddressPresets = [];
 // ── Activity & Orders State (Đồng bộ  theo từng User trong database.json) ──
 let activityFilter = 'all'; // 'all' | 'delivering' | 'completed' | 'cancelled'
 let viewingOrderDetailId = null; // null: show 4-tab list; string: show full tracking detail of specific order!
+let profileTabSubView = null; // null | 'catalog': ghi nhớ sub-view Catalog trong tab Tài khoản
 let userRatingScore = 5;
 let userRatingTags = ['Giao siêu nhanh ⚡', 'Món nóng hổi 🍲'];
 let userReviewInputText = '';
@@ -633,7 +637,7 @@ let modalQty = 1;
 const rootAppShell = document.getElementById('app');
 let app = rootAppShell;
 
-const KEEP_ALIVE_SPA_VIEWS = ['home', 'search', 'activity', 'ai', 'cart', 'profile'];
+const KEEP_ALIVE_SPA_VIEWS = ['home', 'search', 'activity', 'activity:detail', 'ai', 'cart', 'profile', 'catalog'];
 const TRANSIENT_SPA_PANEL_ID = 'spa-view-transient';
 const PTIT_RECENT_SEARCH_KEY = 'ptitngon_recent_searches';
 let searchFilterDebounceTimer = null;
@@ -646,9 +650,13 @@ function getSpaPanelLogicalView(viewName) {
   return v;
 }
 
+function getSpaPanelDomKey(logicalView) {
+  return String(logicalView || 'home').replace(/[^a-zA-Z0-9_-]+/g, '-');
+}
+
 function getSpaPanelIdForView(logicalView) {
   const v = logicalView || 'home';
-  return KEEP_ALIVE_SPA_VIEWS.includes(v) ? `spa-view-${v}` : TRANSIENT_SPA_PANEL_ID;
+  return KEEP_ALIVE_SPA_VIEWS.includes(v) ? `spa-view-${getSpaPanelDomKey(v)}` : TRANSIENT_SPA_PANEL_ID;
 }
 
 function ensureSpaPanelsMounted() {
@@ -661,7 +669,7 @@ function ensureSpaPanelsMounted() {
     [...KEEP_ALIVE_SPA_VIEWS, 'transient'].forEach((name) => {
       const panel = document.createElement('section');
       panel.className = 'spa-view inactive';
-      panel.id = `spa-view-${name}`;
+      panel.id = `spa-view-${getSpaPanelDomKey(name)}`;
       panel.dataset.spaView = name;
       panel.tabIndex = -1;
       panel.setAttribute('inert', '');
@@ -748,6 +756,16 @@ function computeKeepAliveSig(logicalView) {
     return `activity|${tab}|${ordersSig}|${rev}|${userEmail}`;
   }
 
+  if (logicalView === 'activity:detail') {
+    const oId = (typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) ? String(viewingOrderDetailId).trim() : '';
+    const ordersArr = (typeof ordersList !== 'undefined' && Array.isArray(ordersList)) ? ordersList : [];
+    const targetOrder = ordersArr.find(x => String(x.orderId || '').trim() === oId);
+    const orderState = targetOrder
+      ? `${targetOrder.categoryStatus}:${targetOrder.currentStep || 0}:${targetOrder.rating || 0}:${targetOrder.qrPayment?.isPaid ? '1' : '0'}`
+      : 'missing';
+    return `activity:detail|${oId}|${orderState}|${rev}|${userEmail}`;
+  }
+
   if (logicalView === 'ai') {
     return `ai|${userEmail}|${addrShort}`;
   }
@@ -763,6 +781,20 @@ function computeKeepAliveSig(logicalView) {
     const ordersArr = (typeof ordersList !== 'undefined' && Array.isArray(ordersList)) ? ordersList : [];
     const userName = (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name : '';
     return `profile|${userEmail}|${userName}|${addrShort}|${ordersArr.length}|${favSig}|${rev}`;
+  }
+
+  if (logicalView === 'catalog') {
+    const ready = (typeof window !== 'undefined' && window.__dbmAssetsReady) ? '1' : '0';
+    const tab = typeof catalogActiveTab !== 'undefined' ? catalogActiveTab : 'items';
+    const catF = typeof catalogCategoryFilter !== 'undefined' ? catalogCategoryFilter : 'all';
+    const stF = typeof catalogStatusFilter !== 'undefined' ? catalogStatusFilter : 'all';
+    const q = typeof catalogSearchQuery !== 'undefined' ? catalogSearchQuery : '';
+    const storeF = typeof dbmStoreFilter !== 'undefined' ? dbmStoreFilter : 'all';
+    const tagF = typeof dbmTagFilter !== 'undefined' ? dbmTagFilter : '';
+    const healthyF = typeof dbmHealthyFilter !== 'undefined' ? dbmHealthyFilter : 'all';
+    const missImg = (typeof dbmMissingImageOnly !== 'undefined' && dbmMissingImageOnly) ? '1' : '0';
+    const sortBy = typeof dbmSortBy !== 'undefined' ? dbmSortBy : 'newest';
+    return `catalog|${ready}|${tab}|${catF}|${stF}|${q}|${storeF}|${tagF}|${healthyF}|${missImg}|${sortBy}|${rev}|${userEmail}`;
   }
 
   return `${logicalView}|${rev}`;
@@ -874,7 +906,7 @@ window.AppAssetLoader = {
       const scriptsChain = this.loadScript('js/db-manager-editors.js?v=4.8')
         .then(() => this.loadScript('js/db-manager-ai.js?v=4.8'))
         .then(() => this.loadScript('js/db-manager-audit.js?v=4.8'))
-        .then(() => this.loadScript('js/db-manager-ui.js?v=4.8'));
+        .then(() => this.loadScript('js/db-manager-ui.js?v=4.9'));
       this._catalogPromise = Promise.all([cssTask, scriptsChain])
         .then(() => {
           window.__dbmAssetsReady = true;
@@ -5349,6 +5381,13 @@ function openActivityView() {
   saveCurrentViewScroll();
   currentView = 'activity';
   render();
+  if (typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+    const detailY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['activity:detail'] === 'number')
+      ? globalViewScrollPositions['activity:detail']
+      : 0;
+    applyPageScroll(detailY);
+    return;
+  }
   const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['activity_list'] === 'number')
     ? globalViewScrollPositions['activity_list']
     : null;
@@ -5411,7 +5450,13 @@ function viewOrderDetail(orderId) {
 }
 
 function closeOrderDetail() {
-  if (typeof window.Router !== 'undefined' && typeof window.Router.back === 'function') {
+  const prevRoute = (typeof window.Router !== 'undefined' && typeof window.Router.getPreviousStepRoute === 'function')
+    ? window.Router.getPreviousStepRoute()
+    : null;
+  const canPopHistoryToActivityList = Boolean(
+    prevRoute && (prevRoute.path === '/activity' || prevRoute.path === '/orders')
+  );
+  if (canPopHistoryToActivityList) {
     const state = window.history.state;
     const step = (state && typeof state.step === 'number') ? state.step : 0;
     if (step > 0 && window.history.length > 1) {
@@ -5421,8 +5466,13 @@ function closeOrderDetail() {
   }
   saveCurrentViewScroll();
   viewingOrderDetailId = null;
-  const savedY = globalViewScrollPositions['activity_list'] || 0;
-  render({ vtMode: 'back', scrollTop: savedY });
+  currentView = 'activity';
+  const savedY = (typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['activity_list'] === 'number')
+    ? globalViewScrollPositions['activity_list']
+    : ((typeof globalViewScrollPositions !== 'undefined' && typeof globalViewScrollPositions['activity'] === 'number')
+      ? globalViewScrollPositions['activity']
+      : 0);
+  render({ vtMode: 'back', scrollTop: savedY, replace: true });
 }
 
 function cancelActiveOrder(orderId) {
@@ -6065,7 +6115,7 @@ function renderSingleOrderDetailView(o) {
     <div class="activity-view-container fade-in">
       <!-- Header with Back to List -->
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" aria-label="Quay lại danh sách">
+        <button type="button" class="page-back-icon-btn" onclick="closeOrderDetail()" aria-label="Quay lại danh sách">
           ${FluentIcons.arrowLeft}
         </button>
         <div class="page-nav-title">Chi Tiết Đơn Hàng</div>
@@ -6425,6 +6475,9 @@ function renderSingleOrderDetailView(o) {
     </div>
   `;
 
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('activity:detail');
+  }
   if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
     window.Router.syncUrl();
   }
@@ -6925,7 +6978,11 @@ function switchNavTab(el, tab) {
   if (tab === 'home') {
     openHomeView();
   } else if (tab === 'activity' || tab === 'orders') {
-    openActivityView();
+    if (currentView === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+      closeOrderDetail();
+    } else {
+      openActivityView();
+    }
   } else if (tab === 'ai') {
     if (typeof openAIChatView === 'function') {
       openAIChatView();
@@ -6937,7 +6994,13 @@ function switchNavTab(el, tab) {
   } else if (tab === 'cart') {
     openCartView();
   } else if (tab === 'profile') {
-    if (typeof openProfileView === 'function') {
+    if (currentView === 'catalog' && typeof closeCatalogManagerView === 'function') {
+      closeCatalogManagerView();
+    } else if (currentView === 'favorites' && typeof favoritesSourceView === 'string' && favoritesSourceView === 'profile' && typeof backFromFavoritesView === 'function') {
+      backFromFavoritesView();
+    } else if (currentView !== 'profile' && typeof profileTabSubView !== 'undefined' && profileTabSubView === 'catalog' && typeof openCatalogManagerView === 'function') {
+      openCatalogManagerView(null, null, { restoreFromTab: true });
+    } else if (typeof openProfileView === 'function') {
       openProfileView();
     } else {
       openDeliveryInfoModal();

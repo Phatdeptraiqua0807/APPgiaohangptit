@@ -161,7 +161,7 @@ function renderCatalogManagerView() {
   app.innerHTML = `
     <div class="catalog-view-container dbm-container fade-in">
       <div class="page-nav-header">
-        <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
+        <button type="button" class="page-back-icon-btn" onclick="closeCatalogManagerView()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
         <div class="page-nav-title">Quản Lý Cơ Sở Dữ Liệu</div>
         <button type="button" class="db-quick-export-btn" onclick="DB.exportJsonFile(); showToast('checkmarkFilled', 'Đã xuất file database.json!')" title="Tải xuống file database.json">⬇️ .JSON</button>
       </div>
@@ -232,6 +232,7 @@ function renderCatalogManagerView() {
 
   if (catalogActiveTab === 'images') dbmBindLibraryDropzone();
   if (catalogActiveTab === 'ai' && typeof dbmAiAfterRender === 'function') dbmAiAfterRender();
+  if (typeof markKeepAliveRendered === 'function') markKeepAliveRendered('catalog');
 }
 
 function switchCatalogTab(tab) {
@@ -510,6 +511,7 @@ function updateCatalogItemsListDOM() {
   const container = document.getElementById('catalog-items-list-container');
   if (container) container.innerHTML = renderCatalogItemsGridHtml(getFilteredCatalogItems());
   if (typeof updateFloatingTopBar === 'function') updateFloatingTopBar();
+  if (typeof markKeepAliveRendered === 'function') markKeepAliveRendered('catalog');
 }
 
 function dbmToggleSelect(id, checked) {
