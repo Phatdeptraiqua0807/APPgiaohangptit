@@ -92,41 +92,149 @@ function orderSuccessFallbackCheckHtml() {
     </svg>`;
 }
 
+function clonePaymentSuccessAnimData() {
+  if (typeof window === 'undefined' || !window.PTITNGON_PAYMENT_SUCCESS_ANIM) return null;
+  try {
+    return JSON.parse(JSON.stringify(window.PTITNGON_PAYMENT_SUCCESS_ANIM));
+  } catch (_) {
+    return null;
+  }
+}
+
+function isOrderSuccessReducedMotion() {
+  return typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function scheduleOrderSuccessPlayback(instance, expectedBox) {
+  if (!instance || !expectedBox) return;
+
+  const startPlayback = () => {
+    if (orderSuccessLottieInstance !== instance) return;
+    if (typeof currentView !== 'undefined' && currentView !== 'order-success') return;
+    if (isOrderSuccessReducedMotion()) {
+      const endFrame = Math.max(0, Math.round(instance.totalFrames || 120) - 1);
+      instance.goToAndStop(endFrame, true);
+      return;
+    }
+    instance.goToAndPlay(0, true);
+  };
+
+  if (isOrderSuccessReducedMotion()) {
+    startPlayback();
+    return;
+  }
+
+  // Nếu View Transition đang trượt vào, đợi vừa kết thúc để người dùng xem trọn vẹn toàn bộ burst Lottie
+  if (typeof document !== 'undefined' && document.documentElement.classList.contains('vt-transitioning')) {
+    let started = false;
+    const runOnce = () => {
+      if (started) return;
+      started = true;
+      startPlayback();
+    };
+    if (typeof window.registerAfterViewTransitionCallback === 'function') {
+      window.registerAfterViewTransitionCallback(runOnce);
+    }
+    setTimeout(runOnce, 460);
+  } else {
+    startPlayback();
+  }
+}
+
+function replayOrderSuccessLottie() {
+  if (!orderSuccessLottieInstance || isOrderSuccessReducedMotion()) return;
+  try {
+    orderSuccessLottieInstance.goToAndPlay(0, true);
+  } catch (_) { }
+}
+window.replayOrderSuccessLottie = replayOrderSuccessLottie;
+
+let orderSuccessMountToken = 0;
+
 function mountOrderSuccessLottie() {
+  const token = ++orderSuccessMountToken;
   destroyOrderSuccessLottie();
   const box = document.getElementById('osv-lottie');
   if (!box) return;
 
   const showFallback = () => {
+    if (token !== orderSuccessMountToken) return;
     destroyOrderSuccessLottie();
     box.innerHTML = orderSuccessFallbackCheckHtml();
   };
 
-  if (typeof window.lottie === 'undefined' || typeof window.lottie.loadAnimation !== 'function') {
+  const hasLottie = typeof window.lottie !== 'undefined' && typeof window.lottie.loadAnimation === 'function';
+  if (!hasLottie) {
     if (typeof window.AppAssetLoader !== 'undefined' && typeof window.AppAssetLoader.loadLottie === 'function') {
-      showFallback();
-      window.AppAssetLoader.loadLottie().then(() => {
+      box.innerHTML = '';
+      const tasks = [window.AppAssetLoader.loadLottie()];
+      if (!window.PTITNGON_PAYMENT_SUCCESS_ANIM && typeof window.AppAssetLoader.loadScript === 'function') {
+        tasks.push(window.AppAssetLoader.loadScript('js/payment-success-data.js?v=1.0').catch(() => {}));
+      }
+      Promise.all(tasks).then(() => {
+        if (token !== orderSuccessMountToken) return;
         if (typeof currentView !== 'undefined' && currentView === 'order-success' && typeof window.lottie !== 'undefined') {
           mountOrderSuccessLottie();
+        } else {
+          showFallback();
         }
-      }).catch(() => {});
+      }).catch(showFallback);
     } else {
       showFallback();
     }
     return;
   }
 
-  try {
-    orderSuccessLottieInstance = window.lottie.loadAnimation({
-      container: box,
-      renderer: 'svg',
-      loop: false,
-      autoplay: true,
-      path: ORDER_SUCCESS_LOTTIE_PATH
-    });
-    orderSuccessLottieInstance.addEventListener('data_failed', showFallback);
-  } catch (_) {
-    showFallback();
+  const startMountWithAnimData = (animData) => {
+    if (token !== orderSuccessMountToken) return;
+    if (typeof currentView !== 'undefined' && currentView !== 'order-success') return;
+    const currentBox = document.getElementById('osv-lottie');
+    if (!currentBox) return;
+
+    currentBox.innerHTML = '';
+    try {
+      const config = {
+        container: currentBox,
+        renderer: 'svg',
+        loop: false,
+        autoplay: false
+      };
+      if (animData) {
+        config.animationData = animData;
+      } else {
+        config.path = ORDER_SUCCESS_LOTTIE_PATH;
+      }
+
+      const instance = window.lottie.loadAnimation(config);
+      orderSuccessLottieInstance = instance;
+      instance.addEventListener('data_failed', showFallback);
+
+      if (animData) {
+        scheduleOrderSuccessPlayback(instance, currentBox);
+      } else {
+        instance.addEventListener('DOMLoaded', () => {
+          scheduleOrderSuccessPlayback(instance, currentBox);
+        });
+      }
+    } catch (_) {
+      showFallback();
+    }
+  };
+
+  const inlineAnim = clonePaymentSuccessAnimData();
+  if (inlineAnim) {
+    startMountWithAnimData(inlineAnim);
+    return;
+  }
+
+  if (typeof window.AppAssetLoader !== 'undefined' && typeof window.AppAssetLoader.loadScript === 'function') {
+    window.AppAssetLoader.loadScript('js/payment-success-data.js?v=1.0')
+      .then(() => startMountWithAnimData(clonePaymentSuccessAnimData()))
+      .catch(() => startMountWithAnimData(null));
+  } else {
+    startMountWithAnimData(null);
   }
 }
 
@@ -258,7 +366,11 @@ function renderOrderSuccessView() {
         <div class="osv-main-col">
           <div class="osv-hero-card">
             <div class="osv-hero-glow" aria-hidden="true"></div>
-            <div class="osv-lottie" id="osv-lottie"></div>
+            <div class="osv-lottie" id="osv-lottie" role="button" tabindex="0"
+                 title="Chạm để phát lại hoạt ảnh"
+                 aria-label="Hoạt ảnh đặt hàng thành công, bấm để phát lại"
+                 onclick="replayOrderSuccessLottie()"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();replayOrderSuccessLottie();}"></div>
             <h2 class="osv-hero-title">Đặt hàng thành công!</h2>
             <p class="osv-hero-sub">${escapeHtml(subtitle)}</p>
             

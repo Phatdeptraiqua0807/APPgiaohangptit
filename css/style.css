@@ -2971,19 +2971,36 @@ body.scrollbar-idle * {
 }
 
 .empty-cart-graphic {
+  position: relative;
+  width: 172px;
+  height: 172px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
 }
 
-.empty-cart-img {
+.empty-cart-img,
+.empty-cart-freeze-canvas {
   width: 156px;
   height: 156px;
   object-fit: contain;
   display: block;
+  border-radius: 20px;
   user-select: none;
   pointer-events: none;
+}
+
+.empty-cart-freeze-canvas {
+  display: none;
+}
+
+.empty-cart-graphic.is-paused .empty-cart-img {
+  display: none;
+}
+
+.empty-cart-graphic.is-paused .empty-cart-freeze-canvas {
+  display: block;
 }
 
 .search-empty-title {
@@ -16295,6 +16312,22 @@ dialog.search-filter-overlay.active::backdrop {
   margin: 0 auto 6px;
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.osv-lottie:focus-visible {
+  outline: 2px solid var(--green-600);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.osv-lottie svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
 
 .osv-fallback-check {

@@ -819,9 +819,15 @@ window.AppAssetLoader = {
     if (typeof document === 'undefined') return Promise.resolve();
     if (this._scriptCache.has(src)) return this._scriptCache.get(src);
     const baseSrc = src.split('?')[0];
+    if (baseSrc.endsWith('lottie.min.js') && typeof window.lottie !== 'undefined') {
+      return Promise.resolve();
+    }
+    if (baseSrc.endsWith('payment-success-data.js') && typeof window.PTITNGON_PAYMENT_SUCCESS_ANIM !== 'undefined') {
+      return Promise.resolve();
+    }
     const existing = Array.from(document.querySelectorAll('script[src]'))
       .find(s => (s.getAttribute('src') || '').split('?')[0] === baseSrc);
-    if (existing && existing.dataset.loaded === '1') {
+    if (existing && (existing.dataset.loaded === '1' || existing.readyState === 'complete')) {
       const done = Promise.resolve();
       this._scriptCache.set(src, done);
       return done;
@@ -1444,6 +1450,15 @@ function render(options = { replace: false }) {
       }
     });
 
+    let afterTransitionCallbacks = window.__ptitAfterViewTransitionCallbacks;
+    if (!Array.isArray(afterTransitionCallbacks)) {
+      afterTransitionCallbacks = [];
+      window.__ptitAfterViewTransitionCallbacks = afterTransitionCallbacks;
+    }
+    window.registerAfterViewTransitionCallback = (fn) => {
+      if (typeof fn === 'function') afterTransitionCallbacks.push(fn);
+    };
+
     const finalizeTransition = () => {
       if (myToken !== activeViewTransitionToken) return;
       pendingTransitionScroll = null;
@@ -1451,6 +1466,10 @@ function render(options = { replace: false }) {
       clearViewTransitionRootClasses();
       restoreHorizontalScrolls(currentView);
       focusMainContainer();
+      const pendingFns = afterTransitionCallbacks.splice(0);
+      pendingFns.forEach((fn) => {
+        try { fn(); } catch (_) { }
+      });
     };
     if (transition && transition.finished && typeof transition.finished.then === 'function') {
       transition.finished.then(finalizeTransition, finalizeTransition);
@@ -4372,6 +4391,45 @@ function captureOrderFlowOriginIfNeeded() {
   }
 }
 
+function initEmptyCartMotionState(img) {
+  if (!img) return;
+  const wrap = img.closest('.empty-cart-graphic');
+  if (!wrap) return;
+  const prefersReduced = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    wrap.classList.remove('is-paused');
+    return;
+  }
+  const canvas = wrap.querySelector('.empty-cart-freeze-canvas');
+  if (canvas && img.complete && img.naturalWidth > 0) {
+    canvas.width = img.naturalWidth || 450;
+    canvas.height = img.naturalHeight || 450;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      try {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      } catch (_) { }
+    }
+  }
+  wrap.classList.add('is-paused');
+}
+
+function handleEmptyCartImgFallback(img) {
+  const wrap = img ? img.closest('.empty-cart-graphic') : null;
+  if (!wrap) return;
+  wrap.className = 'empty-cart-svg-wrap';
+  wrap.innerHTML = `
+    <svg width="78" height="78" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M18 26H25.5L31.5 52.5C32.1 55.1 34.4 57 37.1 57H57.5C60.1 57 62.3 55.2 63 52.7L66.8 38.2C67.4 35.9 65.7 33.6 63.3 33.6H28.5" stroke="#00B14F" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="38" cy="64" r="3.8" fill="#00B14F" />
+      <circle cx="55" cy="64" r="3.8" fill="#00B14F" />
+    </svg>`;
+}
+
+window.initEmptyCartMotionState = initEmptyCartMotionState;
+window.handleEmptyCartImgFallback = handleEmptyCartImgFallback;
+
 function openCartView() {
   captureOrderFlowOriginIfNeeded();
   saveCurrentViewScroll();
@@ -4404,17 +4462,16 @@ function renderCartView() {
       </div>
 
       ${cart.length === 0 ? `
-        <!-- Empty Cart State (Vector SVG nhẹ, thay cho ảnh GIF 1.19 MB) -->
+        <!-- Empty Cart State (Hoạt ảnh GIF giỏ hàng trống, tự dừng frame tĩnh khi prefers-reduced-motion) -->
         <div class="search-empty-state" style="padding-top: 64px;">
-          <div class="empty-cart-svg-wrap" aria-hidden="true">
-            <svg width="78" height="78" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="62" cy="18" r="3.5" fill="#86EFAC" />
-              <circle cx="17" cy="24" r="2.5" fill="#4ADE80" />
-              <path d="M18 26H25.5L31.5 52.5C32.1 55.1 34.4 57 37.1 57H57.5C60.1 57 62.3 55.2 63 52.7L66.8 38.2C67.4 35.9 65.7 33.6 63.3 33.6H28.5" stroke="#00B14F" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M35 42.5C37.2 44.8 40.5 46 44 46C47.5 46 50.8 44.8 53 42.5" stroke="#16A34A" stroke-width="2.6" stroke-linecap="round" />
-              <circle cx="38" cy="64" r="3.8" fill="#00B14F" />
-              <circle cx="55" cy="64" r="3.8" fill="#00B14F" />
-            </svg>
+          <div class="empty-cart-graphic">
+            <img src="assets/animation/shopping-cart-empty-animation-gif-download-11303261.gif"
+                 alt="Giỏ hàng của bạn đang trống"
+                 class="empty-cart-img"
+                 decoding="async"
+                 onload="if(typeof initEmptyCartMotionState==='function')initEmptyCartMotionState(this)"
+                 onerror="if(typeof handleEmptyCartImgFallback==='function')handleEmptyCartImgFallback(this)">
+            <canvas class="empty-cart-freeze-canvas" width="450" height="450" aria-hidden="true"></canvas>
           </div>
           <div class="search-empty-title">Giỏ hàng của bạn đang trống</div>
           <div class="search-empty-sub">Hãy khám phá các món ăn ngon lành và thêm vào giỏ nhé!</div>

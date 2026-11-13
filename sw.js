@@ -1,21 +1,24 @@
 /* ptitngon Service Worker - PWA & Offline Cache */
-const CACHE_NAME = 'ptitngon-cache-v4';
+const CACHE_NAME = 'ptitngon-cache-v6';
 const CORE_SHELL_URLS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/style.css?v=8.77',
+  './css/style.css?v=8.79',
   './js/fluent-icons.js?v=2.6',
   './js/food-data.js',
   './js/database.js?v=1.2',
-  './js/app.js?v=9.18',
+  './js/app.js?v=9.20',
   './js/catalog-profile.js?v=5.10',
   './js/ai-chat.js?v=7.8',
   './js/dish-detail.js?v=6.14',
   './js/store-detail.js?v=1.3',
   './js/db-manager-core.js?v=4.8',
-  './js/order-success.js?v=1.9',
+  './js/lottie.min.js',
+  './js/payment-success-data.js?v=1.0',
+  './js/order-success.js?v=2.0',
   './js/router.js?v=1.6',
+  './assets/animation/payment-success.json',
   './assets/images/hung_chien_gion.jpg',
   './assets/images/vietnamese-food-top-banner.jpg'
 ];
