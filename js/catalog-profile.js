@@ -361,7 +361,7 @@ function renderCatalogItemsGridHtml(itemsList) {
     return `
           <div class="db-item-card ${isOut ? 'out-of-stock' : ''}">
             <div class="db-item-img-wrap">
-              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
               <span class="db-item-sku">${escapeHtml(item.sku || 'SP')}</span>
               ${item.isCustom ? `<span class="db-item-custom-badge">Tùy chỉnh ${FluentIcons.sparkleFilled}</span>` : ''}
               ${isOut ? `<span class="db-item-out-overlay">TẠM HẾT</span>` : ''}
@@ -2408,12 +2408,14 @@ function renderFavoritesSectionContent(favDishes, favStores) {
               const dishIdEsc = escapeHtml(String(dish.id));
               return `
                 <article class="fav-dish-card ${isOut ? 'dish-out-of-stock' : ''}"
+                  role="button"
+                  tabindex="0"
                   data-fav-card-type="dish"
                   data-fav-card-id="${dishIdEsc}"
-                  onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishDetailView(${store.id}, ${originalIdx})`}"
+                  onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${store.id}, ${originalIdx})`}"
                 >
                   <div class="fav-dish-img-wrap">
-                    <img class="fav-dish-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <img class="fav-dish-img" data-vt-dish="${dishIdEsc}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                     <button type="button"
                       class="fav-card-heart-btn active"
                       data-fav-dish-id="${dishIdEsc}"
@@ -2482,7 +2484,7 @@ function renderFavoritesSectionContent(favDishes, favStores) {
                   onclick="openStoreDetailView(${r.id}, 'for-you', 'favorites')"
                 >
                   <div class="fav-store-img-wrap">
-                    <img class="fav-store-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <img class="fav-store-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                     ${r.badge ? `<span class="fav-store-badge">${escapeHtml(r.badge)}</span>` : ''}
                   </div>
                   <div class="fav-store-body">

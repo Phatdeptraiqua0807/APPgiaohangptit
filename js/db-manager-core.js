@@ -755,7 +755,7 @@ function renderHomeCategoryRestaurantSections() {
       return `
         <div class="restaurant-card" role="button" tabindex="0" onclick="openDishDetailById('${dishIdEsc}')">
           <div class="restaurant-card-img-wrapper">
-            <img class="restaurant-card-img" data-vt-dish="${dishIdEsc}" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <img class="restaurant-card-img" data-vt-dish="${dishIdEsc}" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
             <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
             <button type="button"
               class="restaurant-card-fav ${isDishFav ? 'active' : ''}"

@@ -57,8 +57,7 @@ function openStoreDetailView(storeId, tab = 'for-you', sourceView = null) {
   storeDetailSuggestKeyword = keywords.length > 0 ? keywords[0] : (store.category || '');
 
   currentView = 'store-detail';
-  render();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  render({ scrollTop: 0 });
 }
 
 function openStoreDetailByName(storeName, tab = 'for-you') {
@@ -309,10 +308,12 @@ function renderStoreDishRowCard(dish, storeId, originalIdx, badgeText = '') {
 
   return `
     <article class="store-dish-card ${isOut ? 'dish-out-of-stock' : ''}"
-      onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishDetailView(${storeId}, ${originalIdx})`}"
+      role="button"
+      tabindex="0"
+      onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${storeId}, ${originalIdx})`}"
     >
       <div class="store-dish-img-wrap">
-        <img class="store-dish-img" src="${escapeHtml(dish.image)}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+        <img class="store-dish-img" data-vt-dish="${dishIdEsc}" src="${escapeHtml(dish.image)}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
         <button type="button"
           class="dish-fav-btn ${isDishFav ? 'active' : ''}"
           data-fav-dish-id="${dishIdEsc}"
@@ -598,7 +599,7 @@ function renderStoreSimilarCardsHtml(suggestedStores) {
       ${suggestedStores.map(r => `
         <article class="store-similar-card" onclick="openStoreDetailView(${r.id}, 'for-you')">
           <div class="store-similar-img-wrap">
-            <img class="store-similar-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <img class="store-similar-img" data-vt-store="${r.id}" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
             <button type="button"
               class="restaurant-card-fav ${r.fav ? 'active' : ''}"
               onclick="event.stopPropagation(); toggleFav(${r.id})"
@@ -761,7 +762,7 @@ function renderStoreDetailView() {
         <div class="store-hero-card">
           <div class="store-hero-main">
             <div class="store-hero-img-wrap">
-              <img class="store-hero-img" src="${escapeHtml(store.image)}" alt="${escapeHtml(store.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+              <img class="store-hero-img" data-vt-store="${store.id}" src="${escapeHtml(store.image)}" alt="${escapeHtml(store.name)}" decoding="sync" onerror="this.src='assets/images/hung_chien_gion.jpg'">
               ${store.badge ? `<span class="store-hero-badge">${escapeHtml(store.badge)}</span>` : ''}
             </div>
             <div class="store-hero-info">

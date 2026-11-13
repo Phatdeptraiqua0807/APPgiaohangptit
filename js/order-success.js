@@ -16,7 +16,7 @@ function openOrderSuccessView(order) {
   }
   if (typeof saveCurrentViewScroll === 'function') saveCurrentViewScroll();
   currentView = 'order-success';
-  render({ replace: true });
+  render({ replace: true, vtMode: 'forward' });
   applyPageScroll(0);
 }
 

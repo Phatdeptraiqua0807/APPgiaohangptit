@@ -1098,7 +1098,6 @@ function openAIChatView(initialPrompt = null) {
   }
   currentView = 'ai';
   if (typeof shuffleAIWelcomePrompts === 'function') shuffleAIWelcomePrompts();
-  document.body.classList.add('view-ai-active');
   render();
 
   const messages = getActiveUserChatMessages();
@@ -1585,9 +1584,9 @@ function renderAIDishVisualCards(items, msgIdx) {
             <div class="ai-dish-card ${outStock ? 'out-of-stock' : ''}">
               <div class="ai-dish-card-img-wrap" onclick="openDishFromAI('${escapeHtml(item.id)}')">
                 <img
+                  data-vt-dish="${escapeHtml(String(item.id))}"
                   src="${escapeHtml(item.image)}"
                   alt="${escapeHtml(item.name)}"
-                  loading="lazy"
                   onerror="this.src='assets/images/hung_chien_gion.jpg'"
                 >
                 <span class="ai-dish-rating-pill">⭐ ${rating}</span>

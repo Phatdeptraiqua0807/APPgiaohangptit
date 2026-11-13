@@ -16998,7 +16998,7 @@ body:not(.view-ai-active) .ai-aura {
   }
 }
 
-/* View Transitions mượt cho chuyển view SPA */
+/* View Transitions mượt, có hướng rõ ràng cho toàn bộ màn hình SPA */
 #app:focus {
   outline: none;
 }
@@ -17009,30 +17009,192 @@ html.vt-transitioning #app .fade-in {
   transform: none !important;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 180ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+/* Khóa cố định Sidebar desktop & Bottom Nav thành lớp độc lập khi chuyển cảnh nội dung chính */
+html.vt-transitioning .desktop-sidebar {
+  view-transition-name: ptit-sidebar;
 }
 
-/* Shared-element morph cho ảnh món ăn giữa trang danh sách & PDP */
-::view-transition-group(ptit-hero-media) {
-  z-index: 30;
+html.vt-transitioning .bottom-nav:not(.nav-hidden) {
+  view-transition-name: ptit-bottom-nav;
+}
+
+::view-transition-group(ptit-sidebar),
+::view-transition-group(ptit-bottom-nav) {
+  z-index: 60;
   animation-duration: 240ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-::view-transition-image-pair(ptit-hero-media) {
+::view-transition-old(ptit-sidebar),
+::view-transition-new(ptit-sidebar),
+::view-transition-old(ptit-bottom-nav),
+::view-transition-new(ptit-bottom-nav) {
+  mix-blend-mode: normal;
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ptit-vt-slide-out-left {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0.35;
+    transform: translate3d(-32px, 0, 0) scale(0.988);
+  }
+}
+
+@keyframes ptit-vt-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translate3d(48px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes ptit-vt-slide-out-right {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(48px, 0, 0);
+  }
+}
+
+@keyframes ptit-vt-slide-in-left {
+  from {
+    opacity: 0.4;
+    transform: translate3d(-32px, 0, 0) scale(0.988);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes ptit-vt-tab-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0) scale(0.985);
+  }
+}
+
+@keyframes ptit-vt-tab-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.988);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+::view-transition-group(root) {
+  z-index: 1;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.vt-dir-forward::view-transition-old(root) {
+  z-index: 1;
+  animation: ptit-vt-slide-out-left 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.vt-dir-forward::view-transition-new(root) {
+  z-index: 2;
+  animation: ptit-vt-slide-in-right 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.vt-dir-back::view-transition-old(root) {
+  z-index: 2;
+  animation: ptit-vt-slide-out-right 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.vt-dir-back::view-transition-new(root) {
+  z-index: 1;
+  animation: ptit-vt-slide-in-left 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.vt-dir-tab::view-transition-old(root) {
+  z-index: 1;
+  animation: ptit-vt-tab-out 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.vt-dir-tab::view-transition-new(root) {
+  z-index: 2;
+  animation: ptit-vt-tab-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Shared-element morph cho ảnh món ăn & ảnh quán ăn */
+::view-transition-group(ptit-hero-media),
+::view-transition-group(ptit-store-media) {
+  z-index: 80;
+  animation-duration: 440ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-image-pair(ptit-hero-media),
+::view-transition-image-pair(ptit-store-media) {
   isolation: isolate;
 }
 
 ::view-transition-old(ptit-hero-media),
-::view-transition-new(ptit-hero-media) {
+::view-transition-new(ptit-hero-media),
+::view-transition-old(ptit-store-media),
+::view-transition-new(ptit-store-media) {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
   overflow: hidden;
+  mix-blend-mode: normal;
+  animation-duration: 440ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.vt-dir-forward::view-transition-old(root),
+  html.vt-dir-forward::view-transition-new(root),
+  html.vt-dir-back::view-transition-old(root),
+  html.vt-dir-back::view-transition-new(root),
+  html.vt-dir-tab::view-transition-old(root),
+  html.vt-dir-tab::view-transition-new(root),
+  ::view-transition-group(ptit-sidebar),
+  ::view-transition-group(ptit-bottom-nav),
+  ::view-transition-old(ptit-sidebar),
+  ::view-transition-new(ptit-sidebar),
+  ::view-transition-old(ptit-bottom-nav),
+  ::view-transition-new(ptit-bottom-nav),
+  ::view-transition-group(ptit-hero-media),
+  ::view-transition-group(ptit-store-media),
+  ::view-transition-old(ptit-hero-media),
+  ::view-transition-new(ptit-hero-media),
+  ::view-transition-old(ptit-store-media),
+  ::view-transition-new(ptit-store-media) {
+    animation: none !important;
+  }
 }
 
 /* Giữ margin chuẩn khi dùng semantic heading h1/h2 trên Home */
@@ -17300,8 +17462,8 @@ button.delivery-tag-btn {
   color: #b91c1c;
 }
 
-/* Trì hoãn render các thẻ quán dài nằm ngoài màn hình đầu (below the fold) */
-.featured-store-card.res-detail-card:nth-child(n+3) {
+/* Trì hoãn render các thẻ quán dài nằm ngoài màn hình đầu trong danh sách dọc Tìm kiếm */
+.search-results-list .res-detail-card:nth-child(n+4) {
   content-visibility: auto;
   contain-intrinsic-size: auto 340px;
 }

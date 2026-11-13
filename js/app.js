@@ -109,14 +109,189 @@ function getRestaurantDistance(r) {
 }
 let selectedVisualSuggestion = null;
 
-// ── Global View Scroll Persistence (Mỗi tab độc lập hoàn toàn, không liên kết scroll) ──
+// ── Global View Scroll Persistence (Mỗi tab độc lập hoàn toàn, cả cuộn dọc & cuộn ngang) ──
 const globalViewScrollPositions = {};
+const globalHorizontalScrollPositions = {};
+
+function getHorizontalScrollViewKey(viewName) {
+  const v = viewName || currentView || 'home';
+  if (v === 'store-detail' && typeof activeStoreDetailId !== 'undefined' && activeStoreDetailId != null) {
+    return `store-detail:${activeStoreDetailId}`;
+  }
+  return v;
+}
+
+function saveHorizontalScrolls(viewName) {
+  if (typeof document === 'undefined') return;
+  const appEl = document.getElementById('app');
+  if (!appEl) return;
+  const key = getHorizontalScrollViewKey(viewName);
+  const map = {};
+  appEl.querySelectorAll('[id]').forEach(el => {
+    if (el.scrollLeft > 0 || el.scrollWidth > el.clientWidth + 2) {
+      if (el.scrollLeft > 0) {
+        map[el.id] = el.scrollLeft;
+      }
+    }
+  });
+  globalHorizontalScrollPositions[key] = map;
+}
+
+function restoreHorizontalScrolls(viewName) {
+  if (typeof document === 'undefined') return;
+  const key = getHorizontalScrollViewKey(viewName);
+  const savedMap = globalHorizontalScrollPositions[key];
+  if (!savedMap || typeof savedMap !== 'object') return;
+  Object.entries(savedMap).forEach(([id, left]) => {
+    const el = document.getElementById(id);
+    if (el && left > 0) {
+      el.style.scrollBehavior = 'auto';
+      el.scrollLeft = left;
+      el.style.scrollBehavior = '';
+    }
+  });
+}
 
 function saveCurrentViewScroll() {
   if (typeof currentView === 'string' && currentView) {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
     globalViewScrollPositions[currentView] = scrollY;
+    saveHorizontalScrolls(currentView);
   }
+}
+
+// ── Image Bitmap Prewarmer & Zero-Flash Helper ──
+if (typeof window !== 'undefined' && !window.__ptitImagePrewarmInit) {
+  window.__ptitImagePrewarmInit = true;
+  window.__ptitLoadedImageUrls = window.__ptitLoadedImageUrls || new Set();
+  window.__ptitImgCache = window.__ptitImgCache || new Map();
+  window.__ptitHeroBannerSrc = window.__ptitHeroBannerSrc || 'https://static.vinwonders.com/production/vietnamese-food-top-banner.jpg';
+
+  document.addEventListener('load', (e) => {
+    const t = e && e.target;
+    if (t && t.tagName === 'IMG') {
+      const srcAttr = t.getAttribute('src');
+      if (srcAttr) window.__ptitLoadedImageUrls.add(srcAttr);
+      if (t.currentSrc) window.__ptitLoadedImageUrls.add(t.currentSrc);
+    }
+  }, true);
+}
+
+function prewarmSingleImageUrl(url) {
+  if (typeof window === 'undefined' || !url || typeof url !== 'string') return Promise.resolve();
+  if (window.__ptitImgCache && window.__ptitImgCache.has(url)) return Promise.resolve();
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+    if (window.__ptitImgCache) window.__ptitImgCache.set(url, img);
+    const done = () => {
+      if (img.naturalWidth > 0 && window.__ptitLoadedImageUrls) {
+        window.__ptitLoadedImageUrls.add(url);
+        if (img.currentSrc) window.__ptitLoadedImageUrls.add(img.currentSrc);
+      }
+      resolve();
+    };
+    img.onload = () => {
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => {}).finally(done);
+      } else {
+        done();
+      }
+    };
+    img.onerror = done;
+    img.src = url;
+  });
+}
+
+function prewarmCatalogImages() {
+  if (typeof window === 'undefined' || window.__ptitPrewarmStarted) return;
+  window.__ptitPrewarmStarted = true;
+
+  const urlSet = new Set([
+    'assets/images/hung_chien_gion.jpg',
+    'assets/images/vietnamese-food-top-banner.jpg',
+    'assets/animation/empty-cart.gif'
+  ]);
+  if (typeof restaurants !== 'undefined' && Array.isArray(restaurants)) {
+    restaurants.forEach(r => {
+      if (r && r.image) urlSet.add(r.image);
+      if (Array.isArray(r?.relatedDishes)) {
+        r.relatedDishes.forEach(d => {
+          if (d && d.image) urlSet.add(d.image);
+        });
+      }
+    });
+  }
+  if (typeof DB !== 'undefined' && DB.isReady && typeof DB.getItems === 'function') {
+    DB.getItems().forEach(it => {
+      if (it && it.image) urlSet.add(it.image);
+    });
+  }
+  if (typeof visualSuggestions !== 'undefined' && Array.isArray(visualSuggestions)) {
+    visualSuggestions.forEach(v => {
+      if (v && v.image) urlSet.add(v.image);
+    });
+  }
+
+  const urls = Array.from(urlSet).filter(Boolean);
+  let idx = 0;
+  const pumpBatch = () => {
+    const batch = urls.slice(idx, idx + 8);
+    idx += 8;
+    if (!batch.length) return;
+    Promise.all(batch.map(prewarmSingleImageUrl)).then(() => {
+      if (idx < urls.length) {
+        if (typeof requestIdleCallback === 'function') {
+          requestIdleCallback(pumpBatch, { timeout: 600 });
+        } else {
+          setTimeout(pumpBatch, 40);
+        }
+      }
+    });
+  };
+
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(pumpBatch, { timeout: 500 });
+  } else {
+    setTimeout(pumpBatch, 180);
+  }
+}
+
+function prepareViewImagesBeforeTransition(container) {
+  const root = container || (typeof document !== 'undefined' ? document.getElementById('app') : null);
+  if (!root || typeof window === 'undefined') return [];
+  const loadedSet = window.__ptitLoadedImageUrls;
+  const cacheMap = window.__ptitImgCache;
+  const imgs = Array.from(root.querySelectorAll('img'));
+  const priorityDecodeImgs = [];
+  const vh = window.innerHeight || 900;
+  const vw = window.innerWidth || 1200;
+
+  imgs.forEach(img => {
+    const src = img.getAttribute('src') || '';
+    const isCached = Boolean(
+      (loadedSet && (loadedSet.has(src) || (img.currentSrc && loadedSet.has(img.currentSrc)))) ||
+      (cacheMap && cacheMap.has(src))
+    );
+    const rect = img.getBoundingClientRect();
+    const nearViewport =
+      rect.width > 0 &&
+      rect.height > 0 &&
+      rect.bottom > -200 &&
+      rect.top < vh + 380 &&
+      rect.right > -240 &&
+      rect.left < vw + 320;
+
+    if (isCached || nearViewport) {
+      img.loading = 'eager';
+      img.decoding = 'sync';
+      if (nearViewport) {
+        priorityDecodeImgs.push(img);
+      }
+    }
+  });
+
+  return priorityDecodeImgs;
 }
 
 let pendingTransitionScroll = null;
@@ -454,11 +629,62 @@ if (typeof window !== 'undefined' && !window.__roleButtonKeyDelegateBound) {
 }
 
 let lastRenderedView = null;
+let lastRenderedViewKey = null;
+let activeViewTransitionToken = 0;
+
+function getRenderViewStateKey() {
+  const v = currentView || 'home';
+  if (v === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+    return 'activity:detail';
+  }
+  if (v === 'store-detail' && typeof activeStoreDetailId !== 'undefined' && activeStoreDetailId != null) {
+    return `store-detail:${activeStoreDetailId}`;
+  }
+  if (v === 'dish-detail' && typeof modalDish !== 'undefined' && modalDish && modalDish.id != null) {
+    return `dish-detail:${modalDish.id}`;
+  }
+  return v;
+}
+
+const VIEW_HIERARCHY_DEPTH = {
+  home: 0,
+  search: 0,
+  activity: 0,
+  ai: 0,
+  cart: 0,
+  profile: 0,
+  favorites: 1,
+  catalog: 1,
+  'store-detail': 1,
+  'dish-detail': 1,
+  checkout: 1,
+  'activity:detail': 1,
+  'dish-safety-nutrition': 2,
+  'order-success': 2
+};
 
 // ── Main Render Router ──
 function render(options = { replace: false }) {
-  const isViewChange = lastRenderedView !== null && lastRenderedView !== currentView;
+  const prevView = lastRenderedView;
+  const prevViewKey = lastRenderedViewKey;
+  const nextViewKey = getRenderViewStateKey();
+  const isViewChange =
+    (prevViewKey !== null && prevViewKey !== nextViewKey) ||
+    Boolean(options?.forceTransition);
   const fromRouterNav = Boolean(typeof window !== 'undefined' && window.Router && window.Router.isNavigatingFromRouter);
+
+  const prevDepth = VIEW_HIERARCHY_DEPTH[prevView] ?? 0;
+  const nextDepth = VIEW_HIERARCHY_DEPTH[currentView === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId ? 'activity:detail' : currentView] ?? 0;
+  let vtDirection = 'tab';
+  if (options?.vtMode === 'forward' || options?.vtMode === 'back' || options?.vtMode === 'tab') {
+    vtDirection = options.vtMode;
+  } else if (nextDepth > prevDepth) {
+    vtDirection = 'forward';
+  } else if (nextDepth < prevDepth) {
+    vtDirection = 'back';
+  } else if (prevView === currentView && nextViewKey !== prevViewKey) {
+    vtDirection = 'forward';
+  }
 
   const applyViewDOMUpdate = () => {
     // Sync active view state for AI chat (full-bleed layout)
@@ -524,6 +750,12 @@ function render(options = { replace: false }) {
       renderOrderSuccessView();
     }
 
+    // Phục hồi cuộn ngang ngay lập tức cho view vừa dựng (Home / Search / Store Detail...)
+    restoreHorizontalScrolls(currentView);
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => restoreHorizontalScrolls(currentView));
+    }
+
     // Cập nhật trạng thái scrolled cho header sau khi view mới được kết xuất
     if (typeof options?.scrollTop === 'number') {
       applyPageScroll(options.scrollTop, true);
@@ -540,6 +772,7 @@ function render(options = { replace: false }) {
     }
 
     lastRenderedView = currentView;
+    lastRenderedViewKey = nextViewKey;
   };
 
   const focusMainContainer = () => {
@@ -557,15 +790,19 @@ function render(options = { replace: false }) {
     });
   };
 
+  const clearViewTransitionRootClasses = () => {
+    document.documentElement.classList.remove('vt-transitioning', 'vt-dir-forward', 'vt-dir-back', 'vt-dir-tab');
+  };
+
   const isElVisiblyOnScreen = (el) => {
     if (!el) return false;
     const r = el.getBoundingClientRect();
     return r.width > 10 && r.height > 10 && r.bottom > 56 && r.top < (window.innerHeight - 24) && r.right > 0 && r.left < window.innerWidth;
   };
 
-  const findSingleVisibleDishThumb = (dishId) => {
-    if (!dishId || typeof CSS === 'undefined' || typeof CSS.escape !== 'function') return null;
-    const matches = Array.from(document.querySelectorAll(`[data-vt-dish="${CSS.escape(String(dishId))}"]`));
+  const findSingleVisibleAttrEl = (attrName, val) => {
+    if (val == null || val === '' || typeof CSS === 'undefined' || typeof CSS.escape !== 'function') return null;
+    const matches = Array.from(document.querySelectorAll(`[${attrName}="${CSS.escape(String(val))}"]`));
     return matches.find(isElVisiblyOnScreen) || null;
   };
 
@@ -581,15 +818,16 @@ function render(options = { replace: false }) {
   if (canUseTransition) {
     clearHeroViewTransitionTags();
     let vtDishId = null;
+    let vtStoreId = null;
 
     if (currentView === 'dish-detail' && typeof modalDish !== 'undefined' && modalDish && modalDish.id != null) {
-      const sourceThumb = findSingleVisibleDishThumb(modalDish.id);
-      if (sourceThumb) {
+      const sourceThumb = findSingleVisibleAttrEl('data-vt-dish', modalDish.id);
+      if (sourceThumb && !sourceThumb.classList.contains('pdp-hero-img')) {
         vtDishId = String(modalDish.id);
         sourceThumb.style.viewTransitionName = 'ptit-hero-media';
         sourceThumb.setAttribute('data-vt-active', '1');
       }
-    } else if (lastRenderedView === 'dish-detail') {
+    } else if (prevView === 'dish-detail') {
       const heroEl = document.querySelector('.pdp-hero-img[data-vt-dish]');
       if (isElVisiblyOnScreen(heroEl)) {
         vtDishId = heroEl.getAttribute('data-vt-dish');
@@ -598,8 +836,28 @@ function render(options = { replace: false }) {
       }
     }
 
+    if (currentView === 'store-detail' && typeof activeStoreDetailId !== 'undefined' && activeStoreDetailId != null) {
+      const sourceStoreThumb = findSingleVisibleAttrEl('data-vt-store', activeStoreDetailId);
+      if (sourceStoreThumb && !sourceStoreThumb.classList.contains('store-hero-img')) {
+        vtStoreId = String(activeStoreDetailId);
+        sourceStoreThumb.style.viewTransitionName = 'ptit-store-media';
+        sourceStoreThumb.setAttribute('data-vt-active', '1');
+      }
+    } else if (prevView === 'store-detail') {
+      const storeHeroEl = document.querySelector('.store-hero-img[data-vt-store]');
+      if (isElVisiblyOnScreen(storeHeroEl)) {
+        vtStoreId = storeHeroEl.getAttribute('data-vt-store');
+        storeHeroEl.style.viewTransitionName = 'ptit-store-media';
+        storeHeroEl.setAttribute('data-vt-active', '1');
+      }
+    }
+
+    const myToken = ++activeViewTransitionToken;
+    const appEl = document.getElementById('app');
+
     pendingTransitionScroll = { y: (typeof options?.scrollTop === 'number') ? options.scrollTop : null };
-    document.documentElement.classList.add('vt-transitioning');
+    clearViewTransitionRootClasses();
+    document.documentElement.classList.add('vt-transitioning', `vt-dir-${vtDirection}`);
 
     const transition = document.startViewTransition(async () => {
       const scrollSlot = pendingTransitionScroll;
@@ -615,25 +873,56 @@ function render(options = { replace: false }) {
       if (scrollSlot && typeof scrollSlot.y === 'number') {
         applyPageScroll(scrollSlot.y, true);
       }
+      restoreHorizontalScrolls(currentView);
 
       clearHeroViewTransitionTags();
+
+      const waitImagesToDecode = [];
 
       if (vtDishId) {
         const targetEl = currentView === 'dish-detail'
           ? document.querySelector('.pdp-hero-img[data-vt-dish]')
-          : findSingleVisibleDishThumb(vtDishId);
+          : findSingleVisibleAttrEl('data-vt-dish', vtDishId);
         if (targetEl && isElVisiblyOnScreen(targetEl)) {
           targetEl.loading = 'eager';
           targetEl.decoding = 'sync';
           targetEl.style.viewTransitionName = 'ptit-hero-media';
           targetEl.setAttribute('data-vt-active', '1');
-          if (!targetEl.complete && typeof targetEl.decode === 'function') {
-            await Promise.race([
-              targetEl.decode().catch(() => {}),
-              new Promise(resolve => setTimeout(resolve, 60))
-            ]);
-          }
+          waitImagesToDecode.push(targetEl);
         }
+      }
+
+      if (vtStoreId) {
+        const targetStoreEl = currentView === 'store-detail'
+          ? document.querySelector('.store-hero-img[data-vt-store]')
+          : findSingleVisibleAttrEl('data-vt-store', vtStoreId);
+        if (targetStoreEl && isElVisiblyOnScreen(targetStoreEl)) {
+          targetStoreEl.loading = 'eager';
+          targetStoreEl.decoding = 'sync';
+          targetStoreEl.style.viewTransitionName = 'ptit-store-media';
+          targetStoreEl.setAttribute('data-vt-active', '1');
+          waitImagesToDecode.push(targetStoreEl);
+        }
+      }
+
+      // Đưa toàn bộ ảnh đã cached & trong khung nhìn về sync decode trước khi Chrome chụp khung hình mới (hết nháy ảnh)
+      const nearViewportImgs = prepareViewImagesBeforeTransition(appEl);
+      nearViewportImgs.forEach(img => {
+        if (!waitImagesToDecode.includes(img)) {
+          waitImagesToDecode.push(img);
+        }
+      });
+
+      if (waitImagesToDecode.length > 0) {
+        const decodeTasks = waitImagesToDecode.slice(0, 28).map(img => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          if (typeof img.decode === 'function') return img.decode().catch(() => {});
+          return Promise.resolve();
+        });
+        await Promise.race([
+          Promise.allSettled(decodeTasks),
+          new Promise(resolve => setTimeout(resolve, 95))
+        ]);
       }
 
       if (typeof updateHeaderScrolledState === 'function') {
@@ -642,9 +931,11 @@ function render(options = { replace: false }) {
     });
 
     const finalizeTransition = () => {
+      if (myToken !== activeViewTransitionToken) return;
       pendingTransitionScroll = null;
       clearHeroViewTransitionTags();
-      document.documentElement.classList.remove('vt-transitioning');
+      clearViewTransitionRootClasses();
+      restoreHorizontalScrolls(currentView);
       focusMainContainer();
     };
     if (transition && transition.finished && typeof transition.finished.then === 'function') {
@@ -653,10 +944,12 @@ function render(options = { replace: false }) {
       finalizeTransition();
     }
   } else {
+    activeViewTransitionToken++;
     pendingTransitionScroll = null;
-    document.documentElement.classList.remove('vt-transitioning');
+    clearViewTransitionRootClasses();
     clearHeroViewTransitionTags();
     applyViewDOMUpdate();
+    prepareViewImagesBeforeTransition(document.getElementById('app'));
     focusMainContainer();
   }
 }
@@ -701,15 +994,33 @@ function renderHomeView() {
   const customCats = homeCats.filter(c => c.isCustom);
   const quickSearchCats = [...customCats, ...homeCats.filter(c => !c.isCustom)].slice(0, 6);
 
-  // Lưu trữ vị trí cuộn ngang hiện tại của các khu vực trượt ngang
-  const prevCatScrollLeft = document.getElementById('home-categories-scroll')?.scrollLeft || 0;
-  const prevFoodCatScrollLeft = document.getElementById('food-categories-scroll')?.scrollLeft || 0;
-  const prevResScrollLeft = document.getElementById('restaurants-scroll')?.scrollLeft || 0;
-  const prevFeatScrollLeft = document.getElementById('home-featured-dishes-scroll')?.scrollLeft || 0;
-  const prevCatSectionScrolls = {};
-  document.querySelectorAll('.category-restaurants-scroll[id]').forEach(el => {
-    if (el.scrollLeft > 0) prevCatSectionScrolls[el.id] = el.scrollLeft;
+  // Lưu trữ vị trí cuộn ngang hiện tại (gộp cả DOM hiện tại nếu đang ở Home và bộ nhớ toàn cục khi back về)
+  const savedHomeH = (typeof globalHorizontalScrollPositions === 'object' && globalHorizontalScrollPositions['home'])
+    ? { ...globalHorizontalScrollPositions['home'] }
+    : {};
+  [
+    'home-categories-scroll',
+    'food-categories-scroll',
+    'restaurants-scroll',
+    'home-featured-dishes-scroll'
+  ].forEach(id => {
+    const domEl = document.getElementById(id);
+    if (domEl) {
+      if (domEl.scrollLeft > 0) savedHomeH[id] = domEl.scrollLeft;
+      else if (document.querySelector('#home-categories-scroll')) delete savedHomeH[id];
+    }
   });
+  document.querySelectorAll('.category-restaurants-scroll[id], .res-dishes-scroll[id]').forEach(el => {
+    if (el.scrollLeft > 0) savedHomeH[el.id] = el.scrollLeft;
+    else delete savedHomeH[el.id];
+  });
+  if (typeof globalHorizontalScrollPositions === 'object') {
+    globalHorizontalScrollPositions['home'] = savedHomeH;
+  }
+
+  const heroBannerSrc = (typeof window !== 'undefined' && window.__ptitHeroBannerSrc)
+    ? window.__ptitHeroBannerSrc
+    : 'https://static.vinwonders.com/production/vietnamese-food-top-banner.jpg';
 
   app.innerHTML = `
     <!-- Header -->
@@ -718,10 +1029,11 @@ function renderHomeView() {
       <div class="home-hero-backdrop" aria-hidden="true">
         <img
           class="home-hero-backdrop-img"
-          src="https://static.vinwonders.com/production/vietnamese-food-top-banner.jpg"
-          onerror="this.onerror=null; this.src='assets/images/vietnamese-food-top-banner.jpg';"
+          src="${escapeHtml(heroBannerSrc)}"
+          onerror="window.__ptitHeroBannerSrc='assets/images/vietnamese-food-top-banner.jpg'; this.onerror=null; this.src=window.__ptitHeroBannerSrc;"
           alt=""
           fetchpriority="high"
+          decoding="sync"
         />
         <div class="home-hero-top-vignette"></div>
         <div class="home-hero-backdrop-fade"></div>
@@ -888,7 +1200,7 @@ function renderHomeView() {
             <!-- Restaurant Main Header Info (Không hiển thị giá món ở header) -->
             <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'home')">
               <div class="res-main-img-wrap">
-                <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 ${r.badge ? `<span class="res-badge-partner ${scoreBadgeClass}">${escapeHtml(r.badge)}</span>` : ''}
               </div>
 
@@ -943,7 +1255,7 @@ function renderHomeView() {
           return `
                       <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                         <div class="dish-card-img-wrap">
-                          <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                          <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                           <button type="button"
                             class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                             data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -988,27 +1300,10 @@ function renderHomeView() {
     <div class="bottom-spacer"></div>
   `;
 
-  // Phục hồi vị trí cuộn ngang mượt mà cho các dãy cuộn trên trang chủ
-  if (prevCatScrollLeft > 0) {
-    const el = document.getElementById('home-categories-scroll');
-    if (el) el.scrollLeft = prevCatScrollLeft;
+  // Phục hồi vị trí cuộn ngang tức thì (không bị kẹt bởi scroll-behavior: smooth) cho mọi dãy trượt trên trang chủ
+  if (typeof restoreHorizontalScrolls === 'function') {
+    restoreHorizontalScrolls('home');
   }
-  if (prevFoodCatScrollLeft > 0) {
-    const el = document.getElementById('food-categories-scroll');
-    if (el) el.scrollLeft = prevFoodCatScrollLeft;
-  }
-  if (prevResScrollLeft > 0) {
-    const el = document.getElementById('restaurants-scroll');
-    if (el) el.scrollLeft = prevResScrollLeft;
-  }
-  if (prevFeatScrollLeft > 0) {
-    const el = document.getElementById('home-featured-dishes-scroll');
-    if (el) el.scrollLeft = prevFeatScrollLeft;
-  }
-  Object.entries(prevCatSectionScrolls).forEach(([id, left]) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollLeft = left;
-  });
 }
 
 // ========================================
@@ -1648,7 +1943,7 @@ function renderSearchView() {
     return `
               <div class="visual-card ${isSelected ? 'active' : ''}" role="button" tabindex="0" onclick="selectVisualSuggestion('${escapeHtml(item.keyword)}')">
                 <div class="visual-card-img-wrap">
-                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 </div>
                 <span class="visual-card-label">${escapeHtml(item.name)}</span>
               </div>
@@ -1777,7 +2072,7 @@ function renderRestaurantDetailCard(r) {
       <!-- Restaurant Main Header Info -->
       <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'search')" style="cursor:pointer;">
         <div class="res-main-img-wrap">
-          <img class="res-main-img" src="${r.image}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+          <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
           ${r.badge ? `<span class="res-badge-partner">${escapeHtml(r.badge)}</span>` : ''}
         </div>
 
@@ -1848,7 +2143,7 @@ function renderRestaurantDetailCard(r) {
     return `
               <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                 <div class="dish-card-img-wrap">
-                  <img class="dish-card-img" src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                   <button type="button"
                     class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                     data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -4491,11 +4786,11 @@ function switchActivityFilter(filter) {
 }
 
 function viewOrderDetail(orderId) {
+  saveCurrentViewScroll();
   globalViewScrollPositions['activity_list'] = window.scrollY || 0;
   viewingOrderDetailId = orderId;
   currentView = 'activity';
-  renderActivityView();
-  applyPageScroll(0);
+  render({ vtMode: 'forward', scrollTop: 0 });
 }
 
 function closeOrderDetail() {
@@ -4507,13 +4802,10 @@ function closeOrderDetail() {
       return;
     }
   }
+  saveCurrentViewScroll();
   viewingOrderDetailId = null;
-  renderActivityView();
   const savedY = globalViewScrollPositions['activity_list'] || 0;
-  applyPageScroll(savedY);
-  requestAnimationFrame(() => {
-    applyPageScroll(savedY);
-  });
+  render({ vtMode: 'back', scrollTop: savedY });
 }
 
 function cancelActiveOrder(orderId) {
@@ -5592,17 +5884,21 @@ function onDesktopSearchClick() {
 
 function openHomeView(opts = {}) {
   saveCurrentViewScroll();
-  const returningFromDetail =
-    currentView === 'dish-detail' ||
-    currentView === 'store-detail' ||
-    currentView === 'dish-safety-nutrition' ||
+  const previousView = currentView;
+  const returningToHome =
+    previousView !== 'home' ||
     Boolean(window.Router && window.Router.isNavigatingFromRouter);
-  if (!opts.preserveOrder && !returningFromDetail && typeof dbmRollHomeShuffleSeed === 'function') {
+  if (!opts.preserveOrder && !returningToHome && typeof dbmRollHomeShuffleSeed === 'function') {
     dbmRollHomeShuffleSeed();
   }
   currentView = 'home';
   render();
-  restoreViewScroll('home');
+  if (previousView === 'home' && !opts.preserveScroll && !(window.Router && window.Router.isNavigatingFromRouter)) {
+    globalViewScrollPositions['home'] = 0;
+    applyPageScroll(0);
+  } else {
+    restoreViewScroll('home');
+  }
 }
 
 function onSearchInputChange(val) {
@@ -6282,6 +6578,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } else {
     render();
+  }
+
+  if (typeof prewarmCatalogImages === 'function') {
+    prewarmCatalogImages();
   }
 
   // Gentle auto-rotation for the top banner cushion on Home

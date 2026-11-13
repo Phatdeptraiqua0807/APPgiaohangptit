@@ -595,7 +595,7 @@ function renderHomeFeaturedDishesSection() {
     return `
             <div class="home-feat-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
               <div class="home-feat-dish-img-wrap">
-                <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+          <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
                 <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
@@ -756,7 +756,14 @@ function handleMobilePDPAction(isBuyNow) {
 }
 
 function openDishDetailView(dish, restaurant, navOptions = { replace: false }) {
-  if (!dish) return;
+  if (typeof dish === 'number' && typeof restaurant === 'number') {
+    const resolvedStore = (Array.isArray(restaurants) ? restaurants : []).find(x => String(x.id) === String(dish))
+      || (typeof DB !== 'undefined' && DB.getStoreById ? DB.getStoreById(dish) : null);
+    if (!resolvedStore || !Array.isArray(resolvedStore.relatedDishes) || !resolvedStore.relatedDishes[restaurant]) return;
+    dish = resolvedStore.relatedDishes[restaurant];
+    restaurant = resolvedStore;
+  }
+  if (!dish || typeof dish !== 'object') return;
   closeModal();
   closePDPMobileOrderDrawer();
 
@@ -1366,7 +1373,7 @@ function openDishSafetyNutritionView(tab = 'nutrition') {
   dishSafetyActiveTab = tab === 'safety' ? 'safety' : 'nutrition';
   dishAIQuestionsSeed = null; // Tạo mới ngẫu nhiên 2 dòng câu hỏi mỗi khi mở
   currentView = 'dish-safety-nutrition';
-  render();
+  render({ vtMode: 'forward', scrollTop: 0 });
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-safety-nutrition', 0);
   } else {
@@ -1421,7 +1428,7 @@ function backToProductDetailView() {
     saveCurrentViewScroll();
   }
   currentView = 'dish-detail';
-  render({ replace: true });
+  render({ replace: true, vtMode: 'back' });
   if (typeof restoreViewScroll === 'function') {
     restoreViewScroll('dish-detail', 0);
   } else {
