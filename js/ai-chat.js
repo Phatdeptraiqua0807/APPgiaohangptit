@@ -1546,18 +1546,32 @@ function renderAIMessageList(messages, activeUser) {
 // =========================================================================
 
 function renderAIDishVisualCards(items, msgIdx) {
+  const stripId = `ai-dish-strip-${msgIdx}`;
+  const validComboCount = items.filter(it => it.inStock !== false).slice(0, 3).length;
   return `
-    <div class="ai-visual-dishes-block">
+    <div class="ai-visual-dishes-block ai-fade-late">
       <div class="ai-visual-header-row">
         <span>🍽️ Món ăn gợi ý trực quan (${items.length} món)</span>
-        ${items.filter(it => it.inStock !== false).length >= 2 ? `
-          <button type="button" class="ai-add-all-combo-btn" onclick="quickAddMultipleFromAI(${msgIdx})">
-            ${FluentIcons.flashFilled} Thêm cả ${items.filter(it => it.inStock !== false).slice(0, 3).length} món vào giỏ
-          </button>
-        ` : ''}
+        <div class="ai-visual-header-actions">
+          ${validComboCount >= 2 ? `
+            <button type="button" class="ai-add-all-combo-btn" onclick="quickAddMultipleFromAI(${msgIdx})">
+              ${FluentIcons.flashFilled} Thêm cả ${validComboCount} món vào giỏ
+            </button>
+          ` : ''}
+          <div class="scroll-arrow-controls ai-smart-scroll-controls" data-scroll-target="${stripId}">
+            <button type="button" class="scroll-arrow-btn small" data-scroll-dir="left"
+              onclick="scrollHorizontally('${stripId}', -260)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+              ${FluentIcons.chevronLeft}
+            </button>
+            <button type="button" class="scroll-arrow-btn small" data-scroll-dir="right"
+              onclick="scrollHorizontally('${stripId}', 260)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+              ${FluentIcons.chevronRight}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="ai-dish-cards-strip">
+      <div class="ai-dish-cards-strip" id="${stripId}">
         ${items.map(item => {
     const store = DB.data.restaurants.find(r => Number(r.id) === Number(item.restaurantId));
     const isFreeship = store ? store.isFreeship : true;
@@ -1746,6 +1760,7 @@ function quickAddDishFromAI(itemId, customQuantity = 1, silentToast = false) {
     DB.saveCurrentUserCart(cart);
   }
   updateFloatingCartBar();
+  syncAIChatCartBadgeInPlace();
   if (!silentToast) {
     const curTotal = result.item ? result.item.totalPrice : (unitPrice * qty);
     const toastMsg = result.merged
@@ -1753,10 +1768,17 @@ function quickAddDishFromAI(itemId, customQuantity = 1, silentToast = false) {
       : `Đã thêm ${qty}x "${item.name}" (${formatVND(unitPrice * qty)}) vào giỏ hàng!`;
     showToast('cartFilled', toastMsg);
   }
-  if (currentView === 'ai' && !aiIsGenerating) {
-    renderAIChatView();
-  }
   return { name: item.name, quantity: qty, unitPrice, totalPrice: unitPrice * qty };
+}
+
+function syncAIChatCartBadgeInPlace() {
+  const totalCount = Array.isArray(cart) ? cart.reduce((s, x) => s + (x.quantity || 1), 0) : 0;
+  document.querySelectorAll('.ai-chat-header .cart-pill span, .floating-topbar-inner .cart-pill span').forEach(el => {
+    el.textContent = totalCount;
+  });
+  if (typeof updateBottomNavIconsAndState === 'function') {
+    updateBottomNavIconsAndState();
+  }
 }
 
 function quickAddMultipleFromAI(msgIdx) {
@@ -1813,8 +1835,8 @@ function quickAddMultipleFromAI(msgIdx) {
 
   DB.saveCurrentUserCart(cart);
   updateFloatingCartBar();
+  syncAIChatCartBadgeInPlace();
   showToast('cartFilled', `Đã thêm ${validItems.length} món (${formatVND(addedTotal)}) vào giỏ hàng!`);
-  if (currentView === 'ai') renderAIChatView();
 }
 
 function openStoreSearchFromAI(storeName) {

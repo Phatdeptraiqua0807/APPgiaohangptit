@@ -1736,17 +1736,17 @@ textarea {
   height: 92px;
 }
 
-/* ── Toast (iPhone iOS Banner Notification Style) ── */
+/* ── Toast (iPhone iOS Banner Notification Stack Style) ── */
 .toast-container {
   position: fixed;
   top: calc(10px + env(safe-area-inset-top, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 3500;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  justify-items: center;
   width: calc(100% - 20px);
   max-width: 396px;
   padding: 0;
@@ -1763,27 +1763,57 @@ textarea {
 }
 
 .toast.ios-toast {
+  grid-row: 1;
+  grid-column: 1;
+  position: relative;
+  z-index: 5;
   width: 100%;
-  background: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(26px) saturate(190%);
   -webkit-backdrop-filter: blur(26px) saturate(190%);
   color: #0f172a;
   border-radius: 22px;
   padding: 10px 14px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.82);
   box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
-  animation: ios-toast-in 0.42s cubic-bezier(0.22, 1.24, 0.36, 1) forwards;
   pointer-events: auto;
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
-  transition: transform 0.28s cubic-bezier(0.4, 0, 1, 1), opacity 0.24s ease;
+  transform-origin: center top;
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: transform 0.38s cubic-bezier(0.22, 1.24, 0.36, 1), opacity 0.28s ease, filter 0.28s ease, box-shadow 0.28s ease;
+}
+
+.toast.ios-toast.is-pre-enter {
+  opacity: 0;
+  transform: translateY(-110%) scale(0.92);
+}
+
+.toast.ios-toast[data-stack-depth="1"] {
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.88;
+  transform: translateY(9px) scale(0.94);
+  filter: brightness(0.96);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+}
+
+.toast.ios-toast[data-stack-depth="2"] {
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.56;
+  transform: translateY(16px) scale(0.88);
+  filter: brightness(0.92);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
 }
 
 .toast.ios-toast.is-leaving {
-  opacity: 0;
-  transform: translateY(-115%) scale(0.94);
+  opacity: 0 !important;
+  transform: translateY(-115%) scale(0.92) !important;
   pointer-events: none;
+  transition: transform 0.24s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease;
 }
 
 .ios-toast-main {
@@ -9545,11 +9575,16 @@ body.view-ai-active .ai-chat-view-container {
   overflow: hidden;
 }
 
+.ai-visual-dishes-block {
+  width: fit-content;
+  min-width: min(100%, 272px);
+}
+
 .ai-visual-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 10px;
   font-size: 12px;
@@ -18132,4 +18167,18 @@ button.res-fav-btn {
   font-size: 11px;
   font-weight: 650;
   color: var(--green-600);
+}
+
+.ai-visual-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ai-visual-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }

@@ -4705,9 +4705,9 @@ function renderActivityView() {
     const cleanId = rawId.replace(/^#+/, '');
     let order = (typeof ordersList !== 'undefined' && Array.isArray(ordersList))
       ? ordersList.find(x => {
-          const xId = String(x.orderId || '').trim();
-          return xId === rawId || xId === cleanId || xId.replace(/^#+/, '') === cleanId;
-        })
+        const xId = String(x.orderId || '').trim();
+        return xId === rawId || xId === cleanId || xId.replace(/^#+/, '') === cleanId;
+      })
       : null;
 
     if (!order && typeof DB !== 'undefined' && DB.isReady && DB.data && Array.isArray(DB.data.users)) {
@@ -5668,28 +5668,49 @@ function getToastSemanticMeta(icon) {
   return { tone: 'emerald', label: 'Thông báo' };
 }
 
+let iosToastStackTimer = null;
+
 function dismissIosToast(toast) {
-  if (!toast || toast.dataset.closing === '1') return;
-  toast.dataset.closing = '1';
-  toast.classList.add('is-leaving');
-  setTimeout(() => {
-    if (toast.parentNode) toast.parentNode.removeChild(toast);
-  }, 280);
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  if (iosToastStackTimer) {
+    clearTimeout(iosToastStackTimer);
+    iosToastStackTimer = null;
+  }
+  const all = Array.from(container.querySelectorAll('.toast.ios-toast:not(.is-leaving)'));
+  all.forEach((el, idx) => {
+    el.dataset.closing = '1';
+    el.classList.add('is-leaving');
+    setTimeout(() => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 260 + idx * 25);
+  });
+}
+
+function syncIosToastStack(container) {
+  const items = Array.from(container.querySelectorAll('.toast.ios-toast:not(.is-leaving)'));
+  const total = items.length;
+  items.forEach((el, idx) => {
+    const depth = total - 1 - idx; // 0 = mới nhất (trên cùng), 1, 2 = xếp chồng phía sau
+    el.setAttribute('data-stack-depth', String(Math.min(depth, 2)));
+  });
 }
 
 function showToast(icon, message) {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
-  // Giới hạn tối đa 2 thông báo cùng lúc để gọn như iOS Banner
-  const existing = container.querySelectorAll('.toast:not(.is-leaving)');
-  if (existing.length >= 2) {
-    dismissIosToast(existing[0]);
+  // Giữ tối đa 2 lớp cũ để tạo stack 3 lớp (1 chính + 2 mép xếp chồng phía dưới)
+  const existing = Array.from(container.querySelectorAll('.toast.ios-toast:not(.is-leaving)'));
+  while (existing.length >= 3) {
+    const oldest = existing.shift();
+    if (oldest && oldest.parentNode) oldest.parentNode.removeChild(oldest);
   }
 
   const meta = getToastSemanticMeta(icon);
   const toast = document.createElement('div');
-  toast.className = `toast ios-toast tone-${meta.tone}`;
+  toast.className = `toast ios-toast tone-${meta.tone} is-pre-enter`;
+  toast.setAttribute('data-stack-depth', '0');
   toast.setAttribute('role', 'status');
   toast.setAttribute('aria-live', 'polite');
 
@@ -5726,8 +5747,15 @@ function showToast(icon, message) {
   toast.addEventListener('click', () => dismissIosToast(toast));
 
   container.appendChild(toast);
+  void toast.offsetWidth;
 
-  setTimeout(() => {
+  requestAnimationFrame(() => {
+    toast.classList.remove('is-pre-enter');
+    syncIosToastStack(container);
+  });
+
+  if (iosToastStackTimer) clearTimeout(iosToastStackTimer);
+  iosToastStackTimer = setTimeout(() => {
     dismissIosToast(toast);
   }, 2700);
 }
@@ -5800,7 +5828,7 @@ function isHapticEnabled() {
 function setHapticEnabled(enabled) {
   try {
     localStorage.setItem('ptitngon_haptic_enabled', enabled ? 'true' : 'false');
-  } catch (_) {}
+  } catch (_) { }
 }
 
 function triggerHaptic(type = 'light') {
@@ -5891,7 +5919,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Hàm kiểm tra hàng loạt thuộc tính type="button" trên toàn bộ cây DOM
  * Mở F12 Console và gõ: checkAllButtonsType()
  */
-window.checkAllButtonsType = function() {
+window.checkAllButtonsType = function () {
   const allBtns = Array.from(document.querySelectorAll('button'));
   const missing = allBtns.filter(b => !b.getAttribute('type') || b.getAttribute('type') === '');
   console.group('🔍 [Audit Scanner] Báo cáo kiểm tra thẻ <button type="button">');
@@ -5910,7 +5938,7 @@ window.checkAllButtonsType = function() {
  * Hàm kiểm tra toàn diện thẻ <button type="button"> và thẻ <a> đóng vai trò nút bấm
  * Mở F12 Console và gõ: checkAllInteractiveElements()
  */
-window.checkAllInteractiveElements = function() {
+window.checkAllInteractiveElements = function () {
   const allBtns = Array.from(document.querySelectorAll('button'));
   const missingBtnType = allBtns.filter(b => !b.getAttribute('type') || b.getAttribute('type') === '');
   const allLinks = Array.from(document.querySelectorAll('a'));
