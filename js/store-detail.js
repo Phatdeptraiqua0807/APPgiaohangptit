@@ -721,7 +721,9 @@ function handleStoreSuggestKeywordChange(kw, syncInput = false) {
 }
 
 function renderStoreDetailView() {
-  const app = document.getElementById('app');
+  const app = (typeof syncAppTargetForView === 'function')
+    ? syncAppTargetForView('store-detail')
+    : document.getElementById('app');
   if (!app) return;
 
   const store = findStoreByIdOrName(viewingStoreDetailId);

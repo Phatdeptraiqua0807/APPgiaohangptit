@@ -794,6 +794,7 @@ function openDishDetailView(dish, restaurant, navOptions = { replace: false }) {
 }
 
 function renderDishDetailView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('dish-detail');
   if (!modalDish) {
     openHomeView();
     return;
@@ -1437,6 +1438,7 @@ function backToProductDetailView() {
 }
 
 function renderDishSafetyNutritionView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('dish-safety-nutrition');
   if (!modalDish) {
     openHomeView();
     return;

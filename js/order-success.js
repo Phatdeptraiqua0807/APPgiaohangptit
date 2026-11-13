@@ -103,7 +103,16 @@ function mountOrderSuccessLottie() {
   };
 
   if (typeof window.lottie === 'undefined' || typeof window.lottie.loadAnimation !== 'function') {
-    showFallback();
+    if (typeof window.AppAssetLoader !== 'undefined' && typeof window.AppAssetLoader.loadLottie === 'function') {
+      showFallback();
+      window.AppAssetLoader.loadLottie().then(() => {
+        if (typeof currentView !== 'undefined' && currentView === 'order-success' && typeof window.lottie !== 'undefined') {
+          mountOrderSuccessLottie();
+        }
+      }).catch(() => {});
+    } else {
+      showFallback();
+    }
     return;
   }
 
@@ -219,6 +228,7 @@ function osvRenderRecommendationCard({ item, reason }) {
 
 // ── Render trang chính ──
 function renderOrderSuccessView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('order-success');
   const order = lastPlacedOrder;
   if (!order) {
     openHomeView();

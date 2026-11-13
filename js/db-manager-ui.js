@@ -130,6 +130,7 @@ async function dbmImportDropped(dropped) {
 // ─────────────────────────────────────────────────────────────────────────
 
 function renderCatalogManagerView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('catalog');
   const prevSubtabsEl = document.getElementById('dbm-subtabs-scroll');
   const prevSubtabsScrollLeft = prevSubtabsEl ? prevSubtabsEl.scrollLeft : 0;
 

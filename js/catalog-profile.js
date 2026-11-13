@@ -162,6 +162,13 @@ function openCatalogManagerView(tab = 'items', catFilter = 'all') {
   } else {
     applyPageScroll(0);
   }
+  if (!window.__dbmAssetsReady && typeof window.AppAssetLoader !== 'undefined' && typeof window.AppAssetLoader.loadCatalogManager === 'function') {
+    window.AppAssetLoader.loadCatalogManager().then(() => {
+      if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
+        renderCatalogManagerView();
+      }
+    }).catch(() => {});
+  }
 }
 
 function switchCatalogTab(tab) {
@@ -194,6 +201,29 @@ function getFilteredCatalogItems() {
 }
 
 function renderCatalogManagerView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('catalog');
+  if (!window.__dbmAssetsReady && typeof window.AppAssetLoader !== 'undefined' && typeof window.AppAssetLoader.loadCatalogManager === 'function') {
+    app.innerHTML = `
+      <div class="catalog-view-container">
+        <div class="page-nav-header">
+          <button type="button" class="page-back-icon-btn" onclick="window.goBack()" title="Quay lại" aria-label="Quay lại">${FluentIcons.arrowLeft}</button>
+          <div class="page-nav-title">Quản Lý Cơ Sở Dữ Liệu</div>
+          <div style="width:42px;"></div>
+        </div>
+        <div class="catalog-lazy-skeleton" aria-busy="true" aria-label="Đang tải công cụ quản lý">
+          <div class="catalog-lazy-banner"></div>
+          <div class="catalog-lazy-banner" style="height:72px;"></div>
+          <div class="catalog-lazy-banner" style="height:220px;"></div>
+        </div>
+      </div>
+    `;
+    window.AppAssetLoader.loadCatalogManager().then(() => {
+      if (currentView === 'catalog' && window.__dbmAssetsReady && typeof renderCatalogManagerView === 'function') {
+        renderCatalogManagerView();
+      }
+    }).catch(() => {});
+    return;
+  }
   const allCats = DB.getCategories();
   const allItems = DB.getItems();
   const customCatsCount = allCats.filter(c => c.isCustom).length;
@@ -1314,6 +1344,7 @@ function toggleProfileHeroExpand() {
 }
 
 function renderProfileView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('profile');
   const activeUser = DB.getCurrentUser();
   const allUsers = DB.getUsers();
   if (!activeUser) return;
@@ -2583,7 +2614,9 @@ function handleFavoriteRemovedInPlace(type, id) {
 }
 
 function renderFavoritesView() {
-  const app = document.getElementById('app');
+  const app = (typeof syncAppTargetForView === 'function')
+    ? syncAppTargetForView('favorites')
+    : document.getElementById('app');
   if (!app) return;
 
   const { favStores, favDishes } = getFavoritesSnapshot();

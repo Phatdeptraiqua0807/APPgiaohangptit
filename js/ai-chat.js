@@ -1120,6 +1120,7 @@ function openAIChatView(initialPrompt = null) {
 }
 
 function renderAIChatView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('ai');
   const activeUser = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCurrentUser() : null;
   const allItems = (typeof DB !== 'undefined' && DB.isReady) ? DB.getItems() : [];
   const allCats = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCategories() : [];

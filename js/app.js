@@ -123,11 +123,17 @@ function getHorizontalScrollViewKey(viewName) {
 
 function saveHorizontalScrolls(viewName) {
   if (typeof document === 'undefined') return;
-  const appEl = document.getElementById('app');
-  if (!appEl) return;
+  const logicalView = (typeof getSpaPanelLogicalView === 'function')
+    ? getSpaPanelLogicalView(viewName)
+    : (viewName || currentView || 'home');
+  const panelId = (typeof getSpaPanelIdForView === 'function')
+    ? getSpaPanelIdForView(logicalView)
+    : null;
+  const scopeEl = (panelId && document.getElementById(panelId)) || document.getElementById('app');
+  if (!scopeEl) return;
   const key = getHorizontalScrollViewKey(viewName);
   const map = {};
-  appEl.querySelectorAll('[id]').forEach(el => {
+  scopeEl.querySelectorAll('[id]').forEach(el => {
     if (el.scrollLeft > 0 || el.scrollWidth > el.clientWidth + 2) {
       if (el.scrollLeft > 0) {
         map[el.id] = el.scrollLeft;
@@ -142,8 +148,17 @@ function restoreHorizontalScrolls(viewName) {
   const key = getHorizontalScrollViewKey(viewName);
   const savedMap = globalHorizontalScrollPositions[key];
   if (!savedMap || typeof savedMap !== 'object') return;
+  const logicalView = (typeof getSpaPanelLogicalView === 'function')
+    ? getSpaPanelLogicalView(viewName)
+    : (viewName || currentView || 'home');
+  const panelId = (typeof getSpaPanelIdForView === 'function')
+    ? getSpaPanelIdForView(logicalView)
+    : null;
+  const scopeEl = (panelId && document.getElementById(panelId)) || document;
   Object.entries(savedMap).forEach(([id, left]) => {
-    const el = document.getElementById(id);
+    const el = (scopeEl && typeof scopeEl.querySelector === 'function' && typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
+      ? (scopeEl.querySelector(`#${CSS.escape(id)}`) || document.getElementById(id))
+      : document.getElementById(id);
     if (el && left > 0) {
       el.style.scrollBehavior = 'auto';
       el.scrollLeft = left;
@@ -193,7 +208,7 @@ function prewarmSingleImageUrl(url) {
     };
     img.onload = () => {
       if (typeof img.decode === 'function') {
-        img.decode().catch(() => {}).finally(done);
+        img.decode().catch(() => { }).finally(done);
       } else {
         done();
       }
@@ -209,8 +224,7 @@ function prewarmCatalogImages() {
 
   const urlSet = new Set([
     'assets/images/hung_chien_gion.jpg',
-    'assets/images/vietnamese-food-top-banner.jpg',
-    'assets/animation/empty-cart.gif'
+    'assets/images/vietnamese-food-top-banner.jpg'
   ]);
   if (typeof restaurants !== 'undefined' && Array.isArray(restaurants)) {
     restaurants.forEach(r => {
@@ -326,16 +340,17 @@ let lastSyncedTopBarHtml = '';
 function updateFloatingTopBar() {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
+  const activeRoot = (typeof getActiveSpaPanel === 'function' ? getActiveSpaPanel() : null) || document;
   const floatingBar = document.getElementById('floating-page-topbar');
   const inner = document.getElementById('floating-topbar-inner');
-  const inPageHeader = document.querySelector('.page-nav-header');
+  const inPageHeader = activeRoot.querySelector('.page-nav-header');
 
   const scrollY = window.scrollY || window.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || 0;
 
   // ── Đồng bộ Floating Search Bar dạng viên thuốc nổi chỉ khi lướt qua search-view-header ──
   const floatingSearchBar = document.getElementById('floating-search-bar');
   const isSearchView = currentView === 'search';
-  const inPageSearchHeader = document.querySelector('.search-view-header');
+  const inPageSearchHeader = activeRoot.querySelector('.search-view-header');
 
   if (floatingSearchBar) {
     if (isSearchView && inPageSearchHeader && scrollY > 45) {
@@ -384,7 +399,7 @@ function updateFloatingTopBar() {
   }
 
   // Đổi chỗ mượt mà với dbm-bulk-bar khi được active trong cơ sở dữ liệu
-  const activeBulkBar = document.querySelector('.dbm-bulk-bar.active');
+  const activeBulkBar = activeRoot.querySelector('.dbm-bulk-bar.active');
   if (activeBulkBar) {
     if (floatingBar) {
       floatingBar.classList.remove('visible');
@@ -468,7 +483,8 @@ function initFloatingSearchBar() {
 
 function onFloatingSearchInputChange(val) {
   searchQuery = val;
-  const inPageInput = document.getElementById('search-view-input');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const inPageInput = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
   if (inPageInput && inPageInput.value !== val) {
     inPageInput.value = val;
   }
@@ -476,7 +492,9 @@ function onFloatingSearchInputChange(val) {
   if (clearBtn) {
     clearBtn.style.display = val ? 'flex' : 'none';
   }
-  const inPageClearBtn = document.querySelector('.search-view-header .search-clear-btn');
+  const inPageClearBtn = searchPanel
+    ? searchPanel.querySelector('.search-view-header .search-clear-btn')
+    : document.querySelector('.search-view-header .search-clear-btn');
   if (inPageClearBtn) {
     inPageClearBtn.style.display = val ? 'flex' : 'none';
   }
@@ -484,7 +502,11 @@ function onFloatingSearchInputChange(val) {
   if (desktopInput && desktopInput.value !== val) {
     desktopInput.value = val;
   }
-  updateSearchResultsOnly();
+  if (typeof scheduleSearchFilterUpdate === 'function') {
+    scheduleSearchFilterUpdate();
+  } else {
+    updateSearchResultsOnly();
+  }
 }
 
 // =========================================================================
@@ -607,8 +629,465 @@ let modalSelectedToppingIds = [];
 let modalKitchenNote = '';
 let modalQty = 1;
 
-// ── DOM References ──
-const app = document.getElementById('app');
+// ── DOM References & Keep-Alive SPA Panel Shell ──
+const rootAppShell = document.getElementById('app');
+let app = rootAppShell;
+
+const KEEP_ALIVE_SPA_VIEWS = ['home', 'search', 'activity', 'ai', 'cart', 'profile'];
+const TRANSIENT_SPA_PANEL_ID = 'spa-view-transient';
+const PTIT_RECENT_SEARCH_KEY = 'ptitngon_recent_searches';
+let searchFilterDebounceTimer = null;
+
+function getSpaPanelLogicalView(viewName) {
+  const v = viewName || (typeof currentView !== 'undefined' ? currentView : 'home') || 'home';
+  if (v === 'activity' && typeof viewingOrderDetailId !== 'undefined' && viewingOrderDetailId) {
+    return 'activity:detail';
+  }
+  return v;
+}
+
+function getSpaPanelIdForView(logicalView) {
+  const v = logicalView || 'home';
+  return KEEP_ALIVE_SPA_VIEWS.includes(v) ? `spa-view-${v}` : TRANSIENT_SPA_PANEL_ID;
+}
+
+function ensureSpaPanelsMounted() {
+  const shell = rootAppShell || (typeof document !== 'undefined' ? document.getElementById('app') : null);
+  if (!shell || typeof document === 'undefined') return null;
+
+  const hasPanels = Boolean(shell.querySelector(':scope > .spa-view'));
+  if (!hasPanels) {
+    shell.innerHTML = '';
+    [...KEEP_ALIVE_SPA_VIEWS, 'transient'].forEach((name) => {
+      const panel = document.createElement('section');
+      panel.className = 'spa-view inactive';
+      panel.id = `spa-view-${name}`;
+      panel.dataset.spaView = name;
+      panel.tabIndex = -1;
+      panel.setAttribute('inert', '');
+      panel.setAttribute('aria-hidden', 'true');
+      shell.appendChild(panel);
+    });
+  }
+  return shell;
+}
+
+function getActiveSpaPanel() {
+  const shell = rootAppShell || (typeof document !== 'undefined' ? document.getElementById('app') : null);
+  if (!shell) return (typeof document !== 'undefined' ? document : null);
+  return shell.querySelector(':scope > .spa-view.active') || shell;
+}
+
+function getSpaSearchPanel() {
+  if (typeof document === 'undefined') return null;
+  return document.getElementById('spa-view-search') || rootAppShell || document;
+}
+
+function syncAppTargetForView(viewName) {
+  const shell = ensureSpaPanelsMounted();
+  if (!shell) return app;
+  const logicalView = viewName || getSpaPanelLogicalView(typeof currentView !== 'undefined' ? currentView : 'home');
+  const targetId = getSpaPanelIdForView(logicalView);
+  const panels = shell.querySelectorAll(':scope > .spa-view');
+  let targetPanel = null;
+
+  panels.forEach((panel) => {
+    const isTarget = panel.id === targetId;
+    if (isTarget) {
+      targetPanel = panel;
+      panel.classList.remove('inactive');
+      panel.classList.add('active');
+      panel.removeAttribute('inert');
+      panel.setAttribute('aria-hidden', 'false');
+    } else {
+      panel.classList.remove('active');
+      panel.classList.add('inactive');
+      panel.setAttribute('inert', '');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  if (targetPanel) {
+    app = targetPanel;
+    return targetPanel;
+  }
+  return shell;
+}
+
+function computeKeepAliveSig(logicalView) {
+  const rev = (typeof window !== 'undefined' && window.__ptitDataRevision) ? window.__ptitDataRevision : 0;
+  const userEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
+  const addrShort = (typeof userDeliveryInfo !== 'undefined' && userDeliveryInfo)
+    ? `${userDeliveryInfo.shortAddress || ''}|${userDeliveryInfo.address || ''}`
+    : '';
+  const storeList = Array.isArray(restaurants) ? restaurants : [];
+  const favSig = storeList.map(r => (r.fav ? '1' : '0') + (r.relatedDishes || []).filter(d => d.fav).length).join(',');
+
+  if (logicalView === 'home') {
+    const chipsSig = Array.isArray(filterChips) ? filterChips.map(c => c.active ? '1' : '0').join('') : '';
+    const activeCat = (typeof window !== 'undefined' && window.dbmActiveHomeCat) ? window.dbmActiveHomeCat : '';
+    const ordersArr = (typeof ordersList !== 'undefined' && Array.isArray(ordersList)) ? ordersList : [];
+    const topOrder = ordersArr[0];
+    const reorderSig = `${ordersArr.length}:${topOrder ? `${topOrder.orderId}:${topOrder.categoryStatus}` : ''}`;
+    const bannerSig = typeof currentBannerIndex !== 'undefined' ? currentBannerIndex : 0;
+    return `home|${bannerSig}|${chipsSig}|${activeCat}|${reorderSig}|${addrShort}|${favSig}|${rev}|${userEmail}`;
+  }
+
+  if (logicalView === 'search') {
+    const dist = typeof distanceFilter !== 'undefined' ? String(distanceFilter) : 'null';
+    const vis = typeof selectedVisualSuggestion !== 'undefined' ? String(selectedVisualSuggestion || '') : '';
+    const filtersSig = typeof activeFilters !== 'undefined' ? JSON.stringify(activeFilters) : '';
+    const histSig = getSearchHistory().join('|');
+    return `search|${searchQuery || ''}|${dist}|${vis}|${filtersSig}|${histSig}|${favSig}|${rev}|${userEmail}`;
+  }
+
+  if (logicalView === 'activity') {
+    const ordersArr = (typeof ordersList !== 'undefined' && Array.isArray(ordersList)) ? ordersList : [];
+    const ordersSig = ordersArr.map(o => `${o.orderId}:${o.categoryStatus}:${o.currentStep || 0}:${o.rating || 0}`).join(';');
+    const tab = typeof activityFilter !== 'undefined' ? activityFilter : 'all';
+    return `activity|${tab}|${ordersSig}|${rev}|${userEmail}`;
+  }
+
+  if (logicalView === 'ai') {
+    return `ai|${userEmail}|${addrShort}`;
+  }
+
+  if (logicalView === 'cart') {
+    const cartArr = Array.isArray(cart) ? cart : [];
+    const itemsSig = cartArr.map(i => `${i.dishId}:${i.quantity}:${i.totalPrice}:${i.size?.name || ''}:${(i.toppings || []).map(t => t.name).join('+')}:${i.note || ''}`).join(';');
+    const vCode = (typeof appliedVoucher !== 'undefined' && appliedVoucher && appliedVoucher.code) ? appliedVoucher.code : '';
+    return `cart|${cartArr.length}|${itemsSig}|${vCode}|${addrShort}|${rev}|${userEmail}`;
+  }
+
+  if (logicalView === 'profile') {
+    const ordersArr = (typeof ordersList !== 'undefined' && Array.isArray(ordersList)) ? ordersList : [];
+    const userName = (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name : '';
+    return `profile|${userEmail}|${userName}|${addrShort}|${ordersArr.length}|${favSig}|${rev}`;
+  }
+
+  return `${logicalView}|${rev}`;
+}
+
+function markKeepAliveRendered(logicalView) {
+  if (!KEEP_ALIVE_SPA_VIEWS.includes(logicalView)) return;
+  const panel = typeof document !== 'undefined' ? document.getElementById(getSpaPanelIdForView(logicalView)) : null;
+  if (!panel) return;
+  panel.dataset.rendered = '1';
+  panel._keepAliveSig = computeKeepAliveSig(logicalView);
+}
+
+function invalidateKeepAliveView(logicalView) {
+  if (!KEEP_ALIVE_SPA_VIEWS.includes(logicalView)) return;
+  const panel = typeof document !== 'undefined' ? document.getElementById(getSpaPanelIdForView(logicalView)) : null;
+  if (!panel) return;
+  panel.dataset.rendered = '0';
+  panel._keepAliveSig = null;
+}
+
+// ── Lazy Asset Loader (CSS/JS chỉ tải khi mở Quản lý danh mục hoặc Lottie Thành công) ──
+window.AppAssetLoader = {
+  _cssCache: new Map(),
+  _scriptCache: new Map(),
+  _catalogPromise: null,
+  _lottiePromise: null,
+
+  loadCss(href) {
+    if (typeof document === 'undefined') return Promise.resolve();
+    if (this._cssCache.has(href)) return this._cssCache.get(href);
+    const baseHref = href.split('?')[0];
+    const existing = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .find(l => (l.getAttribute('href') || '').split('?')[0] === baseHref);
+    if (existing && existing.sheet) {
+      const done = Promise.resolve();
+      this._cssCache.set(href, done);
+      return done;
+    }
+    const p = new Promise((resolve) => {
+      const link = existing || document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      const finish = () => resolve();
+      link.addEventListener('load', finish, { once: true });
+      link.addEventListener('error', finish, { once: true });
+      if (!existing) document.head.appendChild(link);
+    });
+    this._cssCache.set(href, p);
+    return p;
+  },
+
+  loadScript(src) {
+    if (typeof document === 'undefined') return Promise.resolve();
+    if (this._scriptCache.has(src)) return this._scriptCache.get(src);
+    const baseSrc = src.split('?')[0];
+    const existing = Array.from(document.querySelectorAll('script[src]'))
+      .find(s => (s.getAttribute('src') || '').split('?')[0] === baseSrc);
+    if (existing && existing.dataset.loaded === '1') {
+      const done = Promise.resolve();
+      this._scriptCache.set(src, done);
+      return done;
+    }
+    const p = new Promise((resolve, reject) => {
+      const script = existing || document.createElement('script');
+      if (!existing) {
+        script.src = src;
+        script.async = false;
+        script.defer = true;
+      }
+      script.addEventListener('load', () => {
+        script.dataset.loaded = '1';
+        resolve();
+      }, { once: true });
+      script.addEventListener('error', () => {
+        this._scriptCache.delete(src);
+        reject(new Error(`Failed to load script: ${src}`));
+      }, { once: true });
+      if (!existing) document.body.appendChild(script);
+    });
+    this._scriptCache.set(src, p);
+    return p;
+  },
+
+  loadLottie() {
+    if (typeof window !== 'undefined' && typeof window.lottie !== 'undefined') {
+      return Promise.resolve();
+    }
+    if (!this._lottiePromise) {
+      this._lottiePromise = this.loadScript('js/lottie.min.js').catch(() => {
+        this._lottiePromise = null;
+      });
+    }
+    return this._lottiePromise;
+  },
+
+  loadCatalogManager() {
+    if (typeof window !== 'undefined' && window.__dbmAssetsReady) {
+      return Promise.resolve();
+    }
+    if (!this._catalogPromise) {
+      const cssTask = this.loadCss('css/db-manager.css?v=4.8');
+      const scriptsChain = this.loadScript('js/db-manager-editors.js?v=4.8')
+        .then(() => this.loadScript('js/db-manager-ai.js?v=4.8'))
+        .then(() => this.loadScript('js/db-manager-audit.js?v=4.8'))
+        .then(() => this.loadScript('js/db-manager-ui.js?v=4.8'));
+      this._catalogPromise = Promise.all([cssTask, scriptsChain])
+        .then(() => {
+          window.__dbmAssetsReady = true;
+        })
+        .catch((err) => {
+          this._catalogPromise = null;
+          console.error('[AppAssetLoader] Không thể tải module Quản lý danh mục:', err);
+        });
+    }
+    return this._catalogPromise;
+  }
+};
+
+// ── Smart Search (Chuẩn hóa tiếng Việt không dấu, Debounce 150ms & Lịch sử tìm kiếm) ──
+function normalizeSearchVi(str) {
+  return String(str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .trim();
+}
+
+function scheduleSearchFilterUpdate() {
+  if (searchFilterDebounceTimer) clearTimeout(searchFilterDebounceTimer);
+  searchFilterDebounceTimer = setTimeout(() => {
+    searchFilterDebounceTimer = null;
+    updateSearchResultsOnly();
+  }, 150);
+}
+
+function flushSearchFilterUpdate() {
+  if (searchFilterDebounceTimer) {
+    clearTimeout(searchFilterDebounceTimer);
+    searchFilterDebounceTimer = null;
+  }
+  updateSearchResultsOnly();
+}
+
+function getSearchHistory() {
+  try {
+    const raw = localStorage.getItem(PTIT_RECENT_SEARCH_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string' && s.trim().length > 0).slice(0, 8) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function recordSearchHistory(keyword) {
+  const clean = String(keyword || '').trim().slice(0, 48);
+  if (clean.length < 2) return;
+  const cleanNorm = normalizeSearchVi(clean);
+  const next = [clean, ...getSearchHistory().filter(item => normalizeSearchVi(item) !== cleanNorm)].slice(0, 8);
+  try {
+    localStorage.setItem(PTIT_RECENT_SEARCH_KEY, JSON.stringify(next));
+  } catch (_) { }
+  updateRecentSearchChipsDom();
+}
+
+function clearSearchHistory() {
+  try {
+    localStorage.removeItem(PTIT_RECENT_SEARCH_KEY);
+  } catch (_) { }
+  updateRecentSearchChipsDom();
+}
+
+function applyRecentSearch(keyword) {
+  searchQuery = keyword;
+  selectedVisualSuggestion = null;
+  recordSearchHistory(keyword);
+  const searchPanel = getSpaSearchPanel();
+  const inPageInput = searchPanel ? searchPanel.querySelector('#search-view-input') : document.getElementById('search-view-input');
+  if (inPageInput) inPageInput.value = keyword;
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput) floatingInput.value = keyword;
+  const desktopInput = document.getElementById('desktop-search-input');
+  if (desktopInput) desktopInput.value = keyword;
+  const inPageClearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
+  if (inPageClearBtn) inPageClearBtn.style.display = keyword ? 'flex' : 'none';
+  const floatingClear = document.getElementById('floating-search-clear-btn');
+  if (floatingClear) floatingClear.style.display = keyword ? 'flex' : 'none';
+  flushSearchFilterUpdate();
+}
+
+function renderSearchHistorySectionHtml() {
+  const hist = getSearchHistory();
+  if (!hist.length) return '';
+  return `
+    <div class="search-recent-section">
+      <div class="search-recent-header">
+        <span>Tìm kiếm gần đây</span>
+        <button type="button" class="search-recent-clear-btn" onclick="clearSearchHistory()">Xóa tất cả</button>
+      </div>
+      <div class="search-recent-chips">
+        ${hist.map((kw) => `
+          <button type="button" class="search-recent-chip" onclick="applyRecentSearch('${escapeHtml(kw).replace(/'/g, '&#39;')}')">
+            <span>🕒</span>
+            <span>${escapeHtml(kw)}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function updateRecentSearchChipsDom() {
+  const searchPanel = getSpaSearchPanel();
+  const slot = searchPanel ? searchPanel.querySelector('#search-recent-slot') : document.getElementById('search-recent-slot');
+  if (slot) {
+    slot.innerHTML = renderSearchHistorySectionHtml();
+  }
+}
+
+// ── Mobile Pull-to-Refresh ──
+function initMobilePullToRefresh() {
+  if (typeof window === 'undefined' || typeof document === 'undefined' || window.__ptitPtrBound) return;
+  window.__ptitPtrBound = true;
+
+  let indicator = document.getElementById('ptr-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'ptr-indicator';
+    indicator.className = 'ptr-indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    indicator.innerHTML = `<span class="ptr-arrow">↓</span><span class="ptr-label">Kéo để làm mới</span>`;
+    document.body.appendChild(indicator);
+  }
+
+  let tracking = false;
+  let startY = 0;
+  let startX = 0;
+  let ready = false;
+  let refreshing = false;
+
+  const hideIndicator = () => {
+    indicator.classList.remove('visible', 'ready');
+    indicator.style.transform = 'translate3d(-50%, -70px, 0)';
+  };
+
+  document.addEventListener('touchstart', (e) => {
+    if (refreshing || !e.touches || e.touches.length !== 1) return;
+    if ((window.scrollY || document.documentElement.scrollTop || 0) > 2) return;
+    if (typeof currentView !== 'undefined' && currentView === 'ai') return;
+    if (document.querySelector('dialog[open]')) return;
+    const target = e.target;
+    if (target && target.closest && target.closest('input, textarea, select, dialog, .leaflet-container')) return;
+    tracking = true;
+    ready = false;
+    startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!tracking || refreshing || !e.touches || e.touches.length !== 1) return;
+    if ((window.scrollY || document.documentElement.scrollTop || 0) > 2) {
+      tracking = false;
+      hideIndicator();
+      return;
+    }
+    const dy = e.touches[0].clientY - startY;
+    const dx = Math.abs(e.touches[0].clientX - startX);
+    if (dy <= 14 || dx > dy) {
+      if (dy < 0) hideIndicator();
+      return;
+    }
+    const pullPx = Math.min(82, (dy - 14) * 0.45);
+    const labelEl = indicator.querySelector('.ptr-label');
+    const arrowEl = indicator.querySelector('.ptr-arrow');
+    ready = dy >= 105;
+    indicator.classList.add('visible');
+    indicator.classList.toggle('ready', ready);
+    indicator.style.transform = `translate3d(-50%, ${Math.round(pullPx - 36)}px, 0)`;
+    if (arrowEl) arrowEl.textContent = ready ? '↻' : '↓';
+    if (labelEl) labelEl.textContent = ready ? 'Thả ra để làm mới' : 'Kéo để làm mới';
+  }, { passive: true });
+
+  const handleRelease = async () => {
+    if (!tracking) return;
+    const shouldRefresh = ready && !refreshing;
+    tracking = false;
+    ready = false;
+    if (!shouldRefresh) {
+      hideIndicator();
+      return;
+    }
+
+    refreshing = true;
+    const labelEl = indicator.querySelector('.ptr-label');
+    const arrowEl = indicator.querySelector('.ptr-arrow');
+    if (arrowEl) arrowEl.textContent = '⟳';
+    if (labelEl) labelEl.textContent = 'Đang cập nhật dữ liệu...';
+    indicator.style.transform = 'translate3d(-50%, 10px, 0)';
+
+    try {
+      if (typeof DB !== 'undefined' && typeof DB.checkServerUpdates === 'function') {
+        await DB.checkServerUpdates();
+      }
+      if (typeof render === 'function') {
+        render({ forceRender: true, skipTransition: true });
+      }
+      if (typeof showToast === 'function') {
+        showToast('checkmarkFilled', 'Đã làm mới dữ liệu quán ăn & đơn hàng');
+      }
+    } catch (_) {
+    } finally {
+      refreshing = false;
+      setTimeout(hideIndicator, 160);
+    }
+  };
+
+  document.addEventListener('touchend', handleRelease, { passive: true });
+  document.addEventListener('touchcancel', () => {
+    tracking = false;
+    ready = false;
+    if (!refreshing) hideIndicator();
+  }, { passive: true });
+}
 
 // ── Formatters ──
 function formatVND(num) {
@@ -687,6 +1166,8 @@ function render(options = { replace: false }) {
   }
 
   const applyViewDOMUpdate = () => {
+    ensureSpaPanelsMounted();
+
     // Sync active view state for AI chat (full-bleed layout)
     if (currentView === 'ai') {
       document.body.classList.add('view-ai-active');
@@ -722,32 +1203,58 @@ function render(options = { replace: false }) {
 
     updateFloatingCartBar();
 
-    if (currentView === 'home') {
-      renderHomeView();
-    } else if (currentView === 'search') {
-      renderSearchView();
-    } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
-      renderDishDetailView();
-    } else if (currentView === 'store-detail' && typeof renderStoreDetailView === 'function') {
-      renderStoreDetailView();
-    } else if (currentView === 'dish-safety-nutrition' && typeof renderDishSafetyNutritionView === 'function') {
-      renderDishSafetyNutritionView();
-    } else if (currentView === 'activity') {
-      renderActivityView();
-    } else if (currentView === 'cart') {
-      renderCartView();
-    } else if (currentView === 'checkout') {
-      renderCheckoutView();
-    } else if (currentView === 'ai' && typeof renderAIChatView === 'function') {
-      renderAIChatView();
-    } else if (currentView === 'profile' && typeof renderProfileView === 'function') {
-      renderProfileView();
-    } else if (currentView === 'favorites' && typeof renderFavoritesView === 'function') {
-      renderFavoritesView();
-    } else if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
-      renderCatalogManagerView();
-    } else if (currentView === 'order-success') {
-      renderOrderSuccessView();
+    const logicalView = getSpaPanelLogicalView(currentView);
+    const targetPanel = syncAppTargetForView(logicalView);
+    const isKeepAliveView = KEEP_ALIVE_SPA_VIEWS.includes(logicalView);
+    const nextSig = isKeepAliveView ? computeKeepAliveSig(logicalView) : null;
+    const isKeepAliveHit = Boolean(
+      isKeepAliveView &&
+      targetPanel &&
+      targetPanel.dataset.rendered === '1' &&
+      !options?.forceRender &&
+      targetPanel._keepAliveSig === nextSig
+    );
+
+    if (!isKeepAliveHit) {
+      if (currentView === 'home') {
+        renderHomeView();
+      } else if (currentView === 'search') {
+        renderSearchView();
+      } else if (currentView === 'dish-detail' && typeof renderDishDetailView === 'function') {
+        renderDishDetailView();
+      } else if (currentView === 'store-detail' && typeof renderStoreDetailView === 'function') {
+        renderStoreDetailView();
+      } else if (currentView === 'dish-safety-nutrition' && typeof renderDishSafetyNutritionView === 'function') {
+        renderDishSafetyNutritionView();
+      } else if (currentView === 'activity') {
+        renderActivityView();
+      } else if (currentView === 'cart') {
+        renderCartView();
+      } else if (currentView === 'checkout') {
+        renderCheckoutView();
+      } else if (currentView === 'ai' && typeof renderAIChatView === 'function') {
+        renderAIChatView();
+      } else if (currentView === 'profile' && typeof renderProfileView === 'function') {
+        renderProfileView();
+      } else if (currentView === 'favorites' && typeof renderFavoritesView === 'function') {
+        renderFavoritesView();
+      } else if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
+        renderCatalogManagerView();
+      } else if (currentView === 'order-success') {
+        renderOrderSuccessView();
+      }
+
+      if (logicalView === 'catalog' && !window.__dbmAssetsReady && typeof window.AppAssetLoader?.loadCatalogManager === 'function') {
+        window.AppAssetLoader.loadCatalogManager().then(() => {
+          if (currentView === 'catalog' && typeof renderCatalogManagerView === 'function') {
+            renderCatalogManagerView();
+          }
+        });
+      }
+
+      if (isKeepAliveView) {
+        markKeepAliveRendered(logicalView);
+      }
     }
 
     // Phục hồi cuộn ngang ngay lập tức cho view vừa dựng (Home / Search / Store Detail...)
@@ -777,9 +1284,9 @@ function render(options = { replace: false }) {
 
   const focusMainContainer = () => {
     if (!isViewChange) return;
-    const mainEl = document.getElementById('app');
-    if (mainEl && (!document.activeElement || !mainEl.contains(document.activeElement))) {
-      mainEl.focus({ preventScroll: true });
+    const focusEl = getActiveSpaPanel() || document.getElementById('app');
+    if (focusEl && (!document.activeElement || !focusEl.contains(document.activeElement))) {
+      focusEl.focus({ preventScroll: true });
     }
   };
 
@@ -800,9 +1307,10 @@ function render(options = { replace: false }) {
     return r.width > 10 && r.height > 10 && r.bottom > 56 && r.top < (window.innerHeight - 24) && r.right > 0 && r.left < window.innerWidth;
   };
 
-  const findSingleVisibleAttrEl = (attrName, val) => {
+  const findSingleVisibleAttrEl = (attrName, val, scopeEl) => {
     if (val == null || val === '' || typeof CSS === 'undefined' || typeof CSS.escape !== 'function') return null;
-    const matches = Array.from(document.querySelectorAll(`[${attrName}="${CSS.escape(String(val))}"]`));
+    const root = scopeEl || getActiveSpaPanel() || document;
+    const matches = Array.from(root.querySelectorAll(`[${attrName}="${CSS.escape(String(val))}"]`));
     return matches.find(isElVisiblyOnScreen) || null;
   };
 
@@ -817,18 +1325,19 @@ function render(options = { replace: false }) {
 
   if (canUseTransition) {
     clearHeroViewTransitionTags();
+    const oldActivePanel = getActiveSpaPanel() || rootAppShell || document;
     let vtDishId = null;
     let vtStoreId = null;
 
     if (currentView === 'dish-detail' && typeof modalDish !== 'undefined' && modalDish && modalDish.id != null) {
-      const sourceThumb = findSingleVisibleAttrEl('data-vt-dish', modalDish.id);
+      const sourceThumb = findSingleVisibleAttrEl('data-vt-dish', modalDish.id, oldActivePanel);
       if (sourceThumb && !sourceThumb.classList.contains('pdp-hero-img')) {
         vtDishId = String(modalDish.id);
         sourceThumb.style.viewTransitionName = 'ptit-hero-media';
         sourceThumb.setAttribute('data-vt-active', '1');
       }
     } else if (prevView === 'dish-detail') {
-      const heroEl = document.querySelector('.pdp-hero-img[data-vt-dish]');
+      const heroEl = oldActivePanel.querySelector('.pdp-hero-img[data-vt-dish]');
       if (isElVisiblyOnScreen(heroEl)) {
         vtDishId = heroEl.getAttribute('data-vt-dish');
         heroEl.style.viewTransitionName = 'ptit-hero-media';
@@ -837,14 +1346,14 @@ function render(options = { replace: false }) {
     }
 
     if (currentView === 'store-detail' && typeof activeStoreDetailId !== 'undefined' && activeStoreDetailId != null) {
-      const sourceStoreThumb = findSingleVisibleAttrEl('data-vt-store', activeStoreDetailId);
+      const sourceStoreThumb = findSingleVisibleAttrEl('data-vt-store', activeStoreDetailId, oldActivePanel);
       if (sourceStoreThumb && !sourceStoreThumb.classList.contains('store-hero-img')) {
         vtStoreId = String(activeStoreDetailId);
         sourceStoreThumb.style.viewTransitionName = 'ptit-store-media';
         sourceStoreThumb.setAttribute('data-vt-active', '1');
       }
     } else if (prevView === 'store-detail') {
-      const storeHeroEl = document.querySelector('.store-hero-img[data-vt-store]');
+      const storeHeroEl = oldActivePanel.querySelector('.store-hero-img[data-vt-store]');
       if (isElVisiblyOnScreen(storeHeroEl)) {
         vtStoreId = storeHeroEl.getAttribute('data-vt-store');
         storeHeroEl.style.viewTransitionName = 'ptit-store-media';
@@ -853,7 +1362,6 @@ function render(options = { replace: false }) {
     }
 
     const myToken = ++activeViewTransitionToken;
-    const appEl = document.getElementById('app');
 
     pendingTransitionScroll = { y: (typeof options?.scrollTop === 'number') ? options.scrollTop : null };
     clearViewTransitionRootClasses();
@@ -865,8 +1373,10 @@ function render(options = { replace: false }) {
 
       applyViewDOMUpdate();
 
+      const newActivePanel = getActiveSpaPanel() || document.getElementById('app') || document;
+
       // Tắt fade-in nội bộ của các khối khi chuyển trang để View Transition không chụp trạng thái opacity: 0 rồi chạy lại 2 lần
-      document.querySelectorAll('#app .fade-in').forEach(el => {
+      newActivePanel.querySelectorAll('.fade-in').forEach(el => {
         el.classList.remove('fade-in', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3', 'fade-in-delay-4', 'fade-in-delay-5');
       });
 
@@ -881,8 +1391,8 @@ function render(options = { replace: false }) {
 
       if (vtDishId) {
         const targetEl = currentView === 'dish-detail'
-          ? document.querySelector('.pdp-hero-img[data-vt-dish]')
-          : findSingleVisibleAttrEl('data-vt-dish', vtDishId);
+          ? newActivePanel.querySelector('.pdp-hero-img[data-vt-dish]')
+          : findSingleVisibleAttrEl('data-vt-dish', vtDishId, newActivePanel);
         if (targetEl && isElVisiblyOnScreen(targetEl)) {
           targetEl.loading = 'eager';
           targetEl.decoding = 'sync';
@@ -894,8 +1404,8 @@ function render(options = { replace: false }) {
 
       if (vtStoreId) {
         const targetStoreEl = currentView === 'store-detail'
-          ? document.querySelector('.store-hero-img[data-vt-store]')
-          : findSingleVisibleAttrEl('data-vt-store', vtStoreId);
+          ? newActivePanel.querySelector('.store-hero-img[data-vt-store]')
+          : findSingleVisibleAttrEl('data-vt-store', vtStoreId, newActivePanel);
         if (targetStoreEl && isElVisiblyOnScreen(targetStoreEl)) {
           targetStoreEl.loading = 'eager';
           targetStoreEl.decoding = 'sync';
@@ -906,7 +1416,7 @@ function render(options = { replace: false }) {
       }
 
       // Đưa toàn bộ ảnh đã cached & trong khung nhìn về sync decode trước khi Chrome chụp khung hình mới (hết nháy ảnh)
-      const nearViewportImgs = prepareViewImagesBeforeTransition(appEl);
+      const nearViewportImgs = prepareViewImagesBeforeTransition(newActivePanel);
       nearViewportImgs.forEach(img => {
         if (!waitImagesToDecode.includes(img)) {
           waitImagesToDecode.push(img);
@@ -916,7 +1426,7 @@ function render(options = { replace: false }) {
       if (waitImagesToDecode.length > 0) {
         const decodeTasks = waitImagesToDecode.slice(0, 28).map(img => {
           if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-          if (typeof img.decode === 'function') return img.decode().catch(() => {});
+          if (typeof img.decode === 'function') return img.decode().catch(() => { });
           return Promise.resolve();
         });
         await Promise.race([
@@ -949,7 +1459,7 @@ function render(options = { replace: false }) {
     clearViewTransitionRootClasses();
     clearHeroViewTransitionTags();
     applyViewDOMUpdate();
-    prepareViewImagesBeforeTransition(document.getElementById('app'));
+    prepareViewImagesBeforeTransition(getActiveSpaPanel() || document.getElementById('app'));
     focusMainContainer();
   }
 }
@@ -989,6 +1499,8 @@ function renderBannerHtml(b, idx) {
 }
 
 function renderHomeView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('home');
+  const homePanelRoot = (typeof document !== 'undefined' && document.getElementById('spa-view-home')) || document;
   const currentBanner = topBanners[currentBannerIndex];
   const homeCats = typeof getHomeCategories === 'function' ? getHomeCategories() : foodCategories;
   const customCats = homeCats.filter(c => c.isCustom);
@@ -1004,13 +1516,15 @@ function renderHomeView() {
     'restaurants-scroll',
     'home-featured-dishes-scroll'
   ].forEach(id => {
-    const domEl = document.getElementById(id);
+    const domEl = (homePanelRoot.querySelector && typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
+      ? homePanelRoot.querySelector(`#${CSS.escape(id)}`)
+      : document.getElementById(id);
     if (domEl) {
       if (domEl.scrollLeft > 0) savedHomeH[id] = domEl.scrollLeft;
-      else if (document.querySelector('#home-categories-scroll')) delete savedHomeH[id];
+      else if (homePanelRoot.querySelector('#home-categories-scroll')) delete savedHomeH[id];
     }
   });
-  document.querySelectorAll('.category-restaurants-scroll[id], .res-dishes-scroll[id]').forEach(el => {
+  homePanelRoot.querySelectorAll('.category-restaurants-scroll[id], .res-dishes-scroll[id]').forEach(el => {
     if (el.scrollLeft > 0) savedHomeH[el.id] = el.scrollLeft;
     else delete savedHomeH[el.id];
   });
@@ -1304,6 +1818,9 @@ function renderHomeView() {
   if (typeof restoreHorizontalScrolls === 'function') {
     restoreHorizontalScrolls('home');
   }
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('home');
+  }
 }
 
 // ========================================
@@ -1374,17 +1891,24 @@ function calculateFilterMatches(f) {
 function getFilteredRestaurants() {
   let list = [...restaurants];
 
-  // 1. Text search query
+  // 1. Text search query (hỗ trợ cả có dấu & không dấu tiếng Việt)
   if (searchQuery) {
     const q = searchQuery.toLowerCase().trim();
+    const qNorm = normalizeSearchVi(searchQuery);
     list = list.filter(r => {
-      const matchName = r.name.toLowerCase().includes(q);
-      const matchCat = (r.category || '').toLowerCase().includes(q);
-      const matchReview = (r.shortReview || '').toLowerCase().includes(q);
+      const matchStr = (val) => {
+        const s = String(val || '');
+        if (!s) return false;
+        return s.toLowerCase().includes(q) || (qNorm && normalizeSearchVi(s).includes(qNorm));
+      };
+      const matchName = matchStr(r.name);
+      const matchCat = matchStr(r.category);
+      const matchReview = matchStr(r.shortReview);
       const matchDish = (r.relatedDishes || []).some(d =>
-        d.name.toLowerCase().includes(q) ||
-        (d.category || '').toLowerCase().includes(q) ||
-        (typeof dbmItemMatchesQuery === 'function' && dbmItemMatchesQuery(d, q))
+        matchStr(d.name) ||
+        matchStr(d.category) ||
+        matchStr(d.description) ||
+        (typeof dbmItemMatchesQuery === 'function' && (dbmItemMatchesQuery(d, q) || (qNorm && dbmItemMatchesQuery(d, qNorm))))
       );
       return matchName || matchCat || matchReview || matchDish;
     });
@@ -1797,16 +2321,17 @@ function removeSearchFilterChip(filterKey) {
     activeFilters.ratingMin = 0;
     activeFilters.rating45 = false;
   }
-  const searchContainer = document.querySelector('.search-view-container');
+  const searchPanelRoot = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const searchContainer = searchPanelRoot.querySelector('.search-view, .search-view-container');
   if (searchContainer) {
-    document.querySelectorAll('.filter-pill-item').forEach(pill => {
+    searchPanelRoot.querySelectorAll('.filter-pill-item').forEach(pill => {
       const onclickAttr = pill.getAttribute('onclick') || '';
       if (filterKey === 'ratingMin' && onclickAttr.includes('rating45')) {
         pill.classList.remove('active');
         pill.setAttribute('aria-pressed', 'false');
       }
     });
-    const slot = document.getElementById('active-filter-pills-slot');
+    const slot = searchPanelRoot.querySelector('#active-filter-pills-slot') || document.getElementById('active-filter-pills-slot');
     if (slot) slot.innerHTML = renderActiveFilterPillsHtml();
     updateSearchResultsOnly();
   } else {
@@ -1892,6 +2417,7 @@ function renderSearchEmptyStateHtml() {
 }
 
 function renderSearchView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('search');
   const filteredList = getFilteredRestaurants();
 
   app.innerHTML = `
@@ -1910,16 +2436,19 @@ function renderSearchView() {
             value="${escapeHtml(searchQuery)}"
             autocomplete="off"
             oninput="onSearchInputChange(this.value)"
+            onkeydown="if(event.key==='Enter' && !event.isComposing && event.keyCode!==229){ recordSearchHistory(this.value); flushSearchFilterUpdate(); }"
           >
-          ${searchQuery ? `
-            <span class="search-clear-btn" onclick="clearSearch()" title="Xóa tìm kiếm">
-              ${FluentIcons.dismiss}
-            </span>
-          ` : ''}
+          <span class="search-clear-btn" style="display:${searchQuery ? 'flex' : 'none'};" onclick="clearSearch()" title="Xóa tìm kiếm">
+            ${FluentIcons.dismiss}
+          </span>
         </div>
         <button type="button" class="search-filter-toggle-btn ${(activeFilters.area !== 'all' || activeFilters.promo !== 'all' || activeFilters.shipping !== 'all' || activeFilters.priceRange !== 'all' || activeFilters.ratingMin > 0) ? 'active' : ''}" onclick="openSearchFilterModal()" title="Bộ lọc tìm kiếm nâng cao">
           ${FluentIcons.filterRegular}
         </button>
+      </div>
+
+      <div id="search-recent-slot">
+        ${typeof renderSearchHistorySectionHtml === 'function' ? renderSearchHistorySectionHtml() : ''}
       </div>
 
       <!-- Gợi ý hình ảnh (Visual Suggestions) -->
@@ -2016,11 +2545,16 @@ function renderSearchView() {
     </div>
   `;
 
-  const inputEl = document.getElementById('search-view-input');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
   if (inputEl && !searchQuery) {
     setTimeout(() => inputEl.focus(), 80);
   }
-  setTimeout(() => enableDragToScroll('visual-suggestions-scroll'), 50);
+  const visualScrollEl = (searchPanel && searchPanel.querySelector('#visual-suggestions-scroll')) || 'visual-suggestions-scroll';
+  setTimeout(() => enableDragToScroll(visualScrollEl), 50);
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('search');
+  }
 }
 
 function enableDragToScroll(elId) {
@@ -2188,8 +2722,9 @@ function renderRestaurantDetailCard(r) {
 }
 
 function updateSearchResultsOnly() {
-  const container = document.querySelector('.search-results-list');
-  const summary = document.querySelector('.results-summary-bar');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const container = searchPanel.querySelector('.search-results-list');
+  const summary = searchPanel.querySelector('.results-summary-bar');
   if (!container) return;
 
   const filteredList = getFilteredRestaurants();
@@ -2211,6 +2746,9 @@ function updateSearchResultsOnly() {
     container.innerHTML = renderSearchEmptyStateHtml();
   } else {
     container.innerHTML = filteredList.map(renderRestaurantDetailCard).join('');
+  }
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('search');
   }
 }
 
@@ -3839,6 +4377,7 @@ function openCartView() {
 }
 
 function renderCartView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('cart');
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const shippingFee = subtotal > 150000 ? 0 : 15000;
@@ -3861,10 +4400,17 @@ function renderCartView() {
       </div>
 
       ${cart.length === 0 ? `
-        <!-- Empty Cart State -->
+        <!-- Empty Cart State (Vector SVG nhẹ, thay cho ảnh GIF 1.19 MB) -->
         <div class="search-empty-state" style="padding-top: 64px;">
-          <div class="search-empty-icon empty-cart-graphic">
-            <img src="assets/animation/shopping-cart-empty-animation-gif-download-11303261.gif" alt="Giỏ hàng trống" class="empty-cart-img" />
+          <div class="empty-cart-svg-wrap" aria-hidden="true">
+            <svg width="78" height="78" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="62" cy="18" r="3.5" fill="#86EFAC" />
+              <circle cx="17" cy="24" r="2.5" fill="#4ADE80" />
+              <path d="M18 26H25.5L31.5 52.5C32.1 55.1 34.4 57 37.1 57H57.5C60.1 57 62.3 55.2 63 52.7L66.8 38.2C67.4 35.9 65.7 33.6 63.3 33.6H28.5" stroke="#00B14F" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M35 42.5C37.2 44.8 40.5 46 44 46C47.5 46 50.8 44.8 53 42.5" stroke="#16A34A" stroke-width="2.6" stroke-linecap="round" />
+              <circle cx="38" cy="64" r="3.8" fill="#00B14F" />
+              <circle cx="55" cy="64" r="3.8" fill="#00B14F" />
+            </svg>
           </div>
           <div class="search-empty-title">Giỏ hàng của bạn đang trống</div>
           <div class="search-empty-sub">Hãy khám phá các món ăn ngon lành và thêm vào giỏ nhé!</div>
@@ -4010,18 +4556,24 @@ function renderCartView() {
       `}
     </div>
   `;
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('cart');
+  }
 }
 
 function updateCartViewInPlace() {
-  const cartContainer = document.querySelector('.cart-view-container');
+  const cartPanel = (typeof document !== 'undefined' && document.getElementById('spa-view-cart')) || document;
+  const cartContainer = cartPanel.querySelector('.cart-view-container');
   if (!cartContainer) {
     if (currentView === 'cart') renderCartView();
+    else if (typeof invalidateKeepAliveView === 'function') invalidateKeepAliveView('cart');
     return;
   }
 
-  // Nếu giỏ hàng trống, render lại view để hiển thị màn hình Empty Cart
-  if (cart.length === 0) {
-    renderCartView();
+  // Nếu giỏ hàng trống hoặc đang ở trạng thái Empty Cart mà mới thêm món, dựng lại khi ở tab Giỏ hàng hoặc đánh dấu cần cập nhật lại
+  if (cart.length === 0 || !cartContainer.querySelector('.cart-layout-grid')) {
+    if (currentView === 'cart') renderCartView();
+    else if (typeof invalidateKeepAliveView === 'function') invalidateKeepAliveView('cart');
     return;
   }
 
@@ -4111,6 +4663,9 @@ function updateCartViewInPlace() {
   }
 
   updateFloatingCartBar();
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('cart');
+  }
 }
 
 function updateCartItemQty(idx, delta) {
@@ -4265,6 +4820,7 @@ function backFromCheckout() {
 }
 
 function renderCheckoutView() {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('checkout');
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const shippingFee = subtotal > 150000 ? 0 : 15000;
@@ -5379,6 +5935,8 @@ function renderActivityView() {
     }
   }
 
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('activity');
+
   // Calculate counts for 4 sub-tabs
   const counts = {
     all: ordersList.length,
@@ -5416,6 +5974,9 @@ function renderActivityView() {
     </div>
   `;
 
+  if (typeof markKeepAliveRendered === 'function') {
+    markKeepAliveRendered('activity');
+  }
   if (typeof updateFloatingTopBar === 'function') {
     updateFloatingTopBar();
   }
@@ -5425,6 +5986,7 @@ function renderActivityView() {
 }
 
 function renderSingleOrderDetailView(o) {
+  if (typeof syncAppTargetForView === 'function') syncAppTargetForView('activity:detail');
   const step = o.currentStep || 4;
   const isDelivering = o.categoryStatus === 'delivering';
   const isCompleted = o.categoryStatus === 'completed';
@@ -5817,6 +6379,7 @@ function openSearchView(keyword = '', filterKey = null) {
   if (keyword) {
     searchQuery = keyword;
     selectedVisualSuggestion = keyword;
+    if (typeof recordSearchHistory === 'function') recordSearchHistory(keyword);
   }
   if (filterKey) {
     if (filterKey === 'near') {
@@ -5844,7 +6407,8 @@ function openSearchView(keyword = '', filterKey = null) {
     restoreViewScroll('search');
   }
   setTimeout(() => {
-    const inputEl = document.getElementById('search-view-input');
+    const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+    const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
     if (inputEl) {
       inputEl.focus();
       if (searchQuery) {
@@ -5903,6 +6467,11 @@ function openHomeView(opts = {}) {
 
 function onSearchInputChange(val) {
   searchQuery = val;
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const clearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
+  if (clearBtn) {
+    clearBtn.style.display = val ? 'flex' : 'none';
+  }
   const desktopInput = document.getElementById('desktop-search-input');
   if (desktopInput && desktopInput.value !== val) {
     desktopInput.value = val;
@@ -5915,16 +6484,25 @@ function onSearchInputChange(val) {
   if (floatingClear) {
     floatingClear.style.display = val ? 'flex' : 'none';
   }
-  updateSearchResultsOnly();
+  if (typeof scheduleSearchFilterUpdate === 'function') {
+    scheduleSearchFilterUpdate();
+  } else {
+    updateSearchResultsOnly();
+  }
 }
 
 function clearSearch() {
   searchQuery = '';
   selectedVisualSuggestion = null;
-  const inputEl = document.getElementById('search-view-input');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
   if (inputEl) {
     inputEl.value = '';
     inputEl.focus();
+  }
+  const clearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
+  if (clearBtn) {
+    clearBtn.style.display = 'none';
   }
   const floatingInput = document.getElementById('floating-search-input');
   if (floatingInput) {
@@ -5938,7 +6516,14 @@ function clearSearch() {
   if (desktopInput) {
     desktopInput.value = '';
   }
-  renderSearchView();
+  if (searchPanel) {
+    searchPanel.querySelectorAll('.visual-card.active').forEach(el => el.classList.remove('active'));
+  }
+  if (typeof flushSearchFilterUpdate === 'function' && searchPanel && searchPanel.querySelector('.search-results-list')) {
+    flushSearchFilterUpdate();
+  } else {
+    renderSearchView();
+  }
 }
 
 function selectVisualSuggestion(keyword) {
@@ -5948,6 +6533,7 @@ function selectVisualSuggestion(keyword) {
   } else {
     selectedVisualSuggestion = keyword;
     searchQuery = keyword;
+    if (typeof recordSearchHistory === 'function') recordSearchHistory(keyword);
   }
   renderSearchView();
 }
@@ -5959,9 +6545,10 @@ function setDistanceFilter(dist) {
   } else {
     showToast('locationRegular', `Lọc các quán trong bán kính < ${dist} km`);
   }
-  const searchContainer = document.querySelector('.search-view-container');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const searchContainer = searchPanel.querySelector('.search-view, .search-view-container');
   if (searchContainer) {
-    document.querySelectorAll('.dist-chip, .quick-chip-item').forEach(chip => {
+    searchPanel.querySelectorAll('.dist-chip, .quick-chip-item').forEach(chip => {
       const onclickAttr = chip.getAttribute('onclick') || '';
       const isActive = (dist === null) ? onclickAttr.includes('null') : onclickAttr.includes(`(${dist})`);
       chip.classList.toggle('active', isActive);
@@ -5985,9 +6572,10 @@ function toggleFilter(filterKey) {
   if (activeFilters[filterKey]) {
     showToast('optionsRegular', `Đã bật bộ lọc: ${labelMap[filterKey]}`);
   }
-  const searchContainer = document.querySelector('.search-view-container');
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const searchContainer = searchPanel.querySelector('.search-view, .search-view-container');
   if (searchContainer) {
-    document.querySelectorAll('.filter-pill-item').forEach(pill => {
+    searchPanel.querySelectorAll('.filter-pill-item').forEach(pill => {
       const onclickAttr = pill.getAttribute('onclick') || '';
       if (onclickAttr.includes(`'${filterKey}'`) || onclickAttr.includes(`"${filterKey}"`)) {
         const isActive = Boolean(activeFilters[filterKey]);
@@ -5995,7 +6583,7 @@ function toggleFilter(filterKey) {
         pill.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       }
     });
-    const slot = document.getElementById('active-filter-pills-slot');
+    const slot = searchPanel.querySelector('#active-filter-pills-slot') || document.getElementById('active-filter-pills-slot');
     if (slot) slot.innerHTML = renderActiveFilterPillsHtml();
     updateSearchResultsOnly();
   } else {
@@ -6560,6 +7148,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof setupNativeDialogModalSync === 'function') {
     setupNativeDialogModalSync();
   }
+  if (typeof ensureSpaPanelsMounted === 'function') {
+    ensureSpaPanelsMounted();
+  }
   if (typeof DB !== 'undefined') {
     await DB.init();
   }
@@ -6580,17 +7171,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     render();
   }
 
+  if (typeof initMobilePullToRefresh === 'function') {
+    initMobilePullToRefresh();
+  }
+
   if (typeof prewarmCatalogImages === 'function') {
     prewarmCatalogImages();
+  }
+
+  // Đăng ký PWA Service Worker (cache app shell & assets để mở lại tức thì / dùng offline)
+  if (
+    typeof navigator !== 'undefined' &&
+    'serviceWorker' in navigator &&
+    (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ) {
+    const registerSw = () => navigator.serviceWorker.register('./sw.js').catch(() => { });
+    if (document.readyState === 'complete') registerSw();
+    else window.addEventListener('load', registerSw, { once: true });
   }
 
   // Gentle auto-rotation for the top banner cushion on Home
   setInterval(() => {
     if (currentView === 'home') {
       currentBannerIndex = (currentBannerIndex + 1) % topBanners.length;
-      const container = document.querySelector('.top-banner-cushion');
+      const homePanel = (typeof document !== 'undefined' && document.getElementById('spa-view-home')) || document;
+      const container = homePanel.querySelector('.top-banner-cushion');
       if (container) {
         container.innerHTML = renderBannerHtml(topBanners[currentBannerIndex], currentBannerIndex);
+        if (typeof markKeepAliveRendered === 'function') markKeepAliveRendered('home');
       }
     }
   }, 6000);

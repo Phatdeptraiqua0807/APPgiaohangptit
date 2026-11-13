@@ -393,6 +393,9 @@ const DB = {
   // ── 3. Lưu  Database (LocalStorage + File .json trực tiếp) ──
   save(reason = 'update', skipTimestamp = false) {
     if (!this.data) return;
+    if (typeof window !== 'undefined') {
+      window.__ptitDataRevision = (window.__ptitDataRevision || 0) + 1;
+    }
     if (!skipTimestamp) {
       this.data.meta.updatedAt = new Date().toISOString();
       this.data.meta.lastAction = reason;
@@ -1340,6 +1343,9 @@ const DB = {
       // Nếu server có dữ liệu mới hơn hoặc số lượng món khác biệt (được sửa từ tab/cách mở khác)
       if (remoteUpdated > currentUpdated || (remoteUpdated === currentUpdated && remoteItemsCount !== currentItemsCount) || (remoteItemsCount > currentItemsCount)) {
         this.data = remote;
+        if (typeof window !== 'undefined') {
+          window.__ptitDataRevision = (window.__ptitDataRevision || 0) + 1;
+        }
         try { localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(remote, null, 2)); } catch (_) { }
         this.syncToGlobals();
         if (typeof window.renderFoodItems === 'function') {
