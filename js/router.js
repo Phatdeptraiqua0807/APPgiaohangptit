@@ -166,7 +166,7 @@
         if (target === 'ai' && typeof openAIChatView === 'function') {
           openAIChatView();
         } else if (target === 'search' && typeof openSearchView === 'function') {
-          openSearchView(typeof searchQuery === 'string' ? searchQuery : '');
+          openSearchView(typeof searchQuery === 'string' ? searchQuery : '', null, { fromBack: true, autoFocus: false });
         } else if (target === 'cart' && typeof openCartView === 'function') {
           openCartView();
         } else if (target === 'activity' && typeof openActivityView === 'function') {
@@ -517,7 +517,11 @@
       // 8. Search
       if (path === '/search') {
         if (typeof openSearchView === 'function') {
-          openSearchView(query && query.q ? query.q : '', query && query.filter ? query.filter : null);
+          openSearchView(
+            query && query.q ? query.q : '',
+            query && query.filter ? query.filter : null,
+            { fromBack: true, syncKeyword: true, autoFocus: false }
+          );
         }
         return;
       }

@@ -487,6 +487,12 @@ function initFloatingSearchBar() {
 function onFloatingSearchInputChange(val) {
   searchQuery = val;
   const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  if (!String(val || '').trim()) {
+    selectedVisualSuggestion = null;
+    if (searchPanel && typeof searchPanel.querySelectorAll === 'function') {
+      searchPanel.querySelectorAll('.visual-card.active').forEach(el => el.classList.remove('active'));
+    }
+  }
   const inPageInput = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
   if (inPageInput && inPageInput.value !== val) {
     inPageInput.value = val;
@@ -504,6 +510,9 @@ function onFloatingSearchInputChange(val) {
   const desktopInput = document.getElementById('desktop-search-input');
   if (desktopInput && desktopInput.value !== val) {
     desktopInput.value = val;
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
   if (typeof scheduleSearchFilterUpdate === 'function') {
     scheduleSearchFilterUpdate();
@@ -738,7 +747,8 @@ function computeKeepAliveSig(logicalView) {
     const topOrder = ordersArr[0];
     const reorderSig = `${ordersArr.length}:${topOrder ? `${topOrder.orderId}:${topOrder.categoryStatus}` : ''}`;
     const bannerSig = typeof currentBannerIndex !== 'undefined' ? currentBannerIndex : 0;
-    return `home|${bannerSig}|${chipsSig}|${activeCat}|${reorderSig}|${addrShort}|${favSig}|${rev}|${userEmail}`;
+    const interestSig = typeof getHomeInterestedSignature === 'function' ? getHomeInterestedSignature() : '';
+    return `home|${bannerSig}|${chipsSig}|${activeCat}|${reorderSig}|${addrShort}|${favSig}|${interestSig}|${rev}|${userEmail}`;
   }
 
   if (logicalView === 'search') {
@@ -1569,6 +1579,7 @@ function renderHomeView() {
     'home-categories-scroll',
     'food-categories-scroll',
     'restaurants-scroll',
+    'home-interested-dishes-scroll',
     'home-featured-dishes-scroll'
   ].forEach(id => {
     const domEl = (homePanelRoot.querySelector && typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
@@ -1729,6 +1740,9 @@ function renderHomeView() {
         `).join('')}
       </div>
     </div>
+
+    <!-- Món đang quan tâm (Dựa trên kết quả tìm kiếm & các món vừa ấn vào xem qua) -->
+    ${typeof renderHomeInterestedDishesSection === 'function' ? renderHomeInterestedDishesSection() : ''}
 
     <!-- Featured Dishes Showcase (Chạm vào mặt hàng để xem mô tả, đánh giá, dinh dưỡng & an toàn thực phẩm) -->
     ${typeof renderHomeFeaturedDishesSection === 'function' ? renderHomeFeaturedDishesSection() : ''}
@@ -2462,13 +2476,6 @@ function renderSearchEmptyStateHtml() {
       </div>
     </div>
   `;
-
-  if (typeof updateFloatingTopBar === 'function') {
-    updateFloatingTopBar();
-  }
-  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
-    window.Router.syncUrl({ replace: true });
-  }
 }
 
 function renderSearchView() {
@@ -2601,10 +2608,6 @@ function renderSearchView() {
   `;
 
   const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
-  const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
-  if (inputEl && !searchQuery) {
-    setTimeout(() => inputEl.focus(), 80);
-  }
   const visualScrollEl = (searchPanel && searchPanel.querySelector('#visual-suggestions-scroll')) || 'visual-suggestions-scroll';
   setTimeout(() => enableDragToScroll(visualScrollEl), 50);
   if (typeof markKeepAliveRendered === 'function') {
@@ -2767,13 +2770,6 @@ function renderRestaurantDetailCard(r) {
       </div>
     </div>
   `;
-
-  if (typeof updateFloatingTopBar === 'function') {
-    updateFloatingTopBar();
-  }
-  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
-    window.Router.syncUrl({ replace: true });
-  }
 }
 
 function updateSearchResultsOnly() {
@@ -2801,6 +2797,17 @@ function updateSearchResultsOnly() {
     container.innerHTML = renderSearchEmptyStateHtml();
   } else {
     container.innerHTML = filteredList.map(renderRestaurantDetailCard).join('');
+  }
+
+  if (searchQuery && String(searchQuery).trim().length >= 2 && typeof recordSearchInterestKeyword === 'function') {
+    recordSearchInterestKeyword(String(searchQuery).trim());
+  }
+
+  if (typeof updateFloatingTopBar === 'function') {
+    updateFloatingTopBar();
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
   if (typeof markKeepAliveRendered === 'function') {
     markKeepAliveRendered('search');
@@ -6487,14 +6494,30 @@ function renderSingleOrderDetailView(o) {
 // 8. GENERAL ACTIONS & NAVIGATION
 // ========================================
 
-function openSearchView(keyword = '', filterKey = null) {
+function openSearchView(keyword = '', filterKey = null, opts = {}) {
+  const prevView = currentView;
+  const isFromRouter = Boolean(typeof window !== 'undefined' && window.Router && window.Router.isNavigatingFromRouter);
+  const isBackNavigation = Boolean(
+    opts.fromBack ||
+    isFromRouter ||
+    prevView === 'dish-detail' ||
+    prevView === 'store-detail' ||
+    prevView === 'dish-safety-nutrition'
+  );
+
   saveCurrentViewScroll();
   currentView = 'search';
-  if (keyword) {
+
+  if (isFromRouter || opts.syncKeyword) {
+    searchQuery = typeof keyword === 'string' ? keyword : '';
+    selectedVisualSuggestion = searchQuery || null;
+  } else if (keyword) {
     searchQuery = keyword;
     selectedVisualSuggestion = keyword;
     if (typeof recordSearchHistory === 'function') recordSearchHistory(keyword);
+    if (typeof recordSearchInterestKeyword === 'function') recordSearchInterestKeyword(keyword);
   }
+
   if (filterKey) {
     if (filterKey === 'near') {
       activeFilters.near = true;
@@ -6509,27 +6532,76 @@ function openSearchView(keyword = '', filterKey = null) {
       activeFilters.rating45 = true;
     }
   }
-  const desktopInput = document.getElementById('desktop-search-input');
-  if (desktopInput && searchQuery) {
-    desktopInput.value = searchQuery;
-  }
-  render();
-  if (keyword || filterKey) {
+
+  const savedSearchY = (typeof globalViewScrollPositions['search'] === 'number')
+    ? globalViewScrollPositions['search']
+    : ((typeof viewScrollPositionsBeforeDish !== 'undefined' && typeof viewScrollPositionsBeforeDish['search'] === 'number')
+      ? viewScrollPositionsBeforeDish['search']
+      : 0);
+
+  if (isBackNavigation) {
+    render({ scrollTop: savedSearchY, vtMode: 'back' });
+    restoreViewScroll('search', savedSearchY);
+  } else if (keyword || filterKey) {
     globalViewScrollPositions['search'] = 0;
+    render({ scrollTop: 0 });
     applyPageScroll(0);
   } else {
+    render();
     restoreViewScroll('search');
   }
-  setTimeout(() => {
-    const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
-    const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
-    if (inputEl) {
-      inputEl.focus();
-      if (searchQuery) {
-        inputEl.setSelectionRange(searchQuery.length, searchQuery.length);
-      }
+
+  // Đồng bộ tất cả ô tìm kiếm và nút xóa (kể cả khi tái sử dụng Keep-Alive panel)
+  const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  const inPageInput = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
+  if (inPageInput && inPageInput.value !== searchQuery) {
+    inPageInput.value = searchQuery;
+  }
+  const inPageClearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
+  if (inPageClearBtn) {
+    inPageClearBtn.style.display = searchQuery ? 'flex' : 'none';
+  }
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput && floatingInput.value !== searchQuery) {
+    floatingInput.value = searchQuery;
+  }
+  const floatingClear = document.getElementById('floating-search-clear-btn');
+  if (floatingClear) {
+    floatingClear.style.display = searchQuery ? 'flex' : 'none';
+  }
+  const desktopInput = document.getElementById('desktop-search-input');
+  if (desktopInput && desktopInput.value !== searchQuery) {
+    desktopInput.value = searchQuery;
+  }
+
+  // Khi ấn Back từ thông tin mặt hàng / cửa hàng: KHÔNG tự động focus vào thanh search để tránh nhảy lên đầu trang & bật bàn phím
+  if (isBackNavigation || opts.autoFocus === false) {
+    if (inPageInput && document.activeElement === inPageInput) {
+      inPageInput.blur();
     }
-  }, 100);
+    if (floatingInput && document.activeElement === floatingInput) {
+      floatingInput.blur();
+    }
+    return;
+  }
+
+  if (!keyword && !filterKey) {
+    setTimeout(() => {
+      if (currentView !== 'search') return;
+      const panel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+      const inputEl = (panel && panel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
+      if (inputEl) {
+        try {
+          inputEl.focus({ preventScroll: true });
+        } catch (_) {
+          inputEl.focus();
+        }
+        if (searchQuery) {
+          inputEl.setSelectionRange(searchQuery.length, searchQuery.length);
+        }
+      }
+    }, 80);
+  }
 }
 
 function onDesktopSearchFocus() {
@@ -6540,6 +6612,9 @@ function onDesktopSearchFocus() {
 
 function onDesktopSearchInput(val) {
   searchQuery = val;
+  if (!String(val || '').trim()) {
+    selectedVisualSuggestion = null;
+  }
   if (currentView !== 'search') {
     openSearchView(val);
   } else {
@@ -6548,6 +6623,13 @@ function onDesktopSearchInput(val) {
   const mainInput = document.getElementById('search-view-input');
   if (mainInput && mainInput.value !== val) {
     mainInput.value = val;
+  }
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput && floatingInput.value !== val) {
+    floatingInput.value = val;
+  }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
   }
 }
 
@@ -6582,6 +6664,12 @@ function openHomeView(opts = {}) {
 function onSearchInputChange(val) {
   searchQuery = val;
   const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
+  if (!String(val || '').trim()) {
+    selectedVisualSuggestion = null;
+    if (searchPanel && typeof searchPanel.querySelectorAll === 'function') {
+      searchPanel.querySelectorAll('.visual-card.active').forEach(el => el.classList.remove('active'));
+    }
+  }
   const clearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
   if (clearBtn) {
     clearBtn.style.display = val ? 'flex' : 'none';
@@ -6598,6 +6686,9 @@ function onSearchInputChange(val) {
   if (floatingClear) {
     floatingClear.style.display = val ? 'flex' : 'none';
   }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
   if (typeof scheduleSearchFilterUpdate === 'function') {
     scheduleSearchFilterUpdate();
   } else {
@@ -6610,17 +6701,26 @@ function clearSearch() {
   selectedVisualSuggestion = null;
   const searchPanel = (typeof getSpaSearchPanel === 'function') ? getSpaSearchPanel() : document;
   const inputEl = (searchPanel && searchPanel.querySelector('#search-view-input')) || document.getElementById('search-view-input');
+  const floatingBar = document.getElementById('floating-search-bar');
+  const isFloatingVisible = Boolean(floatingBar && floatingBar.classList.contains('visible'));
+  const floatingInput = document.getElementById('floating-search-input');
   if (inputEl) {
     inputEl.value = '';
-    inputEl.focus();
+  }
+  if (floatingInput) {
+    floatingInput.value = '';
+  }
+  const focusTarget = (isFloatingVisible && floatingInput) ? floatingInput : inputEl;
+  if (focusTarget) {
+    try {
+      focusTarget.focus({ preventScroll: true });
+    } catch (_) {
+      focusTarget.focus();
+    }
   }
   const clearBtn = searchPanel ? searchPanel.querySelector('.search-view-header .search-clear-btn') : null;
   if (clearBtn) {
     clearBtn.style.display = 'none';
-  }
-  const floatingInput = document.getElementById('floating-search-input');
-  if (floatingInput) {
-    floatingInput.value = '';
   }
   const floatingClear = document.getElementById('floating-search-clear-btn');
   if (floatingClear) {
@@ -6638,6 +6738,9 @@ function clearSearch() {
   } else {
     renderSearchView();
   }
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
 }
 
 function selectVisualSuggestion(keyword) {
@@ -6648,8 +6751,16 @@ function selectVisualSuggestion(keyword) {
     selectedVisualSuggestion = keyword;
     searchQuery = keyword;
     if (typeof recordSearchHistory === 'function') recordSearchHistory(keyword);
+    if (typeof recordSearchInterestKeyword === 'function') recordSearchInterestKeyword(keyword);
   }
+  const desktopInput = document.getElementById('desktop-search-input');
+  if (desktopInput) desktopInput.value = searchQuery;
+  const floatingInput = document.getElementById('floating-search-input');
+  if (floatingInput) floatingInput.value = searchQuery;
   renderSearchView();
+  if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+    window.Router.syncUrl({ replace: true });
+  }
 }
 
 function setDistanceFilter(dist) {
@@ -6759,9 +6870,16 @@ function resetAllFilters() {
     if (slot) slot.innerHTML = '';
     const input = document.getElementById('search-view-input');
     if (input) input.value = '';
+    const floatingInput = document.getElementById('floating-search-input');
+    if (floatingInput) floatingInput.value = '';
+    const desktopInput = document.getElementById('desktop-search-input');
+    if (desktopInput) desktopInput.value = '';
     updateSearchResultsOnly();
   } else {
     renderSearchView();
+    if (typeof window.Router !== 'undefined' && typeof window.Router.syncUrl === 'function') {
+      window.Router.syncUrl({ replace: true });
+    }
   }
 }
 
@@ -7308,6 +7426,8 @@ function isMobileKeyboardDevice() {
 
 function ensureFocusedControlVisible(el) {
   if (!isEditableKeyboardControl(el) || el.id === 'ai-chat-input') return;
+  if (el.id === 'search-view-input' && (window.scrollY || window.pageYOffset || 0) > 45) return;
+  if (el.id === 'floating-search-input') return;
   if (typeof el.getBoundingClientRect !== 'function' || typeof el.scrollIntoView !== 'function') return;
   const rect = el.getBoundingClientRect();
   const vv = window.visualViewport;

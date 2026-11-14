@@ -2236,15 +2236,19 @@ body.scrollbar-idle * {
 }
 
 .search-view-input-box {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: rgba(241, 245, 249, 0.85);
   border: 1.5px solid transparent;
   border-radius: 9999px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   transition: all 0.2s;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .search-view-input-box:focus-within {
@@ -2258,6 +2262,7 @@ body.scrollbar-idle * {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .search-view-input-box .search-icon .fluent-icon {
@@ -2266,23 +2271,30 @@ body.scrollbar-idle * {
 }
 
 .search-view-input-box input {
-  flex: 1;
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
   background: transparent;
   font-size: 14px;
   font-weight: 500;
   color: var(--gray-800);
+  text-overflow: ellipsis;
 }
 
 .search-clear-btn {
   color: var(--gray-400);
   width: 22px;
   height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
+  background: rgba(226, 232, 240, 0.65);
 }
 
 .search-clear-btn .fluent-icon {
@@ -2292,11 +2304,14 @@ body.scrollbar-idle * {
 
 .search-clear-btn:hover {
   color: var(--gray-700);
+  background: rgba(203, 213, 225, 0.9);
 }
 
 .search-filter-toggle-btn {
   width: 38px;
   height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2307,6 +2322,23 @@ body.scrollbar-idle * {
   flex-shrink: 0;
   transition: all 0.2s;
   border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+@media (max-width: 767px) {
+  .search-view-header {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .floating-search-inner {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+
+  .search-view-input-box {
+    gap: 6px;
+    padding: 7px 10px;
+  }
 }
 
 .search-filter-toggle-btn .fluent-icon {
@@ -9760,6 +9792,7 @@ body.view-ai-active .ai-chat-view-container {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .ai-fade-bubble,
   .ai-msg-bubble.assistant.ai-fade-bubble,
   .ai-word-fade,
@@ -9804,7 +9837,7 @@ body.view-ai-active .ai-chat-view-container {
   min-width: 0;
 }
 
-.ai-visual-header-row > span {
+.ai-visual-header-row>span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -10594,7 +10627,45 @@ body.view-ai-active .ai-chat-view-container {
    PRODUCT DETAIL VIEW, SAFETY & NUTRITION DEEP VIEW & OFFICIAL ATTP CERTIFICATE
    ========================================================================== */
 
-/* ── 1. Home Featured Dishes Horizontal Strip ── */
+/* ── 1. Home Featured & Interested Dishes Horizontal Strip ── */
+.home-interested-section {
+  position: relative;
+}
+
+.home-interest-reason-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  max-width: calc(100% - 48px);
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+.home-interest-reason-badge.viewed {
+  background: rgba(3, 105, 161, 0.92);
+}
+
+.home-interest-reason-badge.search {
+  background: rgba(5, 150, 105, 0.94);
+}
+
+.home-interest-reason-badge.related {
+  background: rgba(124, 58, 237, 0.90);
+}
+
+.home-interest-reason-badge.trending {
+  background: rgba(217, 119, 6, 0.92);
+}
+
 .home-featured-dishes-scroll {
   display: flex;
   gap: 14px;
@@ -10658,67 +10729,37 @@ body.view-ai-active .ai-chat-view-container {
   backdrop-filter: blur(4px);
 }
 
-.home-feat-safe-dot {
+.home-feat-img-badges {
   position: absolute;
   bottom: 8px;
   right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 2;
+}
+
+.home-feat-safe-dot {
+  position: static;
   padding: 2px 7px;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.78);
   color: #a7f3d0;
   font-size: 10px;
   font-weight: 800;
-}
-
-.home-feat-dish-body {
-  padding: 10px 12px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-
-.home-feat-dish-name {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--gray-900);
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 34px;
-}
-
-.home-feat-dish-store {
-  font-size: 11px;
-  color: var(--gray-500);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.home-feat-dish-foot {
-  margin-top: auto;
-  padding-top: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.home-feat-dish-price {
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--green-600);
 }
 
 .home-feat-dish-star {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #d97706;
-  background: #fffbeb;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #b45309;
+  background: rgba(254, 243, 199, 0.95);
   padding: 2px 6px;
-  border-radius: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(253, 230, 138, 0.8);
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
 }
 
 /* ── 2. Product Detail Page (PDP) Layout ── */
@@ -13683,7 +13724,7 @@ body.view-ai-active .ai-chat-view-container {
   cursor: pointer;
 }
 
-/* ── 6. Today's Meal Log List ── */
+/* ── 6. Today's Meal Log List (Optimized Card Grid & Tabular Macro Alignment) ── */
 .un-meal-logs-box {
   margin-top: 16px;
   padding-top: 14px;
@@ -13694,11 +13735,37 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   font-size: 13.5px;
   font-weight: 800;
   color: var(--gray-800);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.un-meal-logs-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.un-meal-logs-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--gray-800);
+}
+
+.un-meal-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
 }
 
 .un-empty-log {
@@ -13715,66 +13782,196 @@ body.view-ai-active .ai-chat-view-container {
 .un-meal-log-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .un-meal-log-row {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 15px;
   background: #f8fafc;
   border: 1px solid var(--gray-200);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
-.un-meal-tag {
-  display: inline-block;
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #047857;
-  background: #d1fae5;
-  padding: 2px 7px;
-  border-radius: 999px;
-  margin-bottom: 3px;
+.un-meal-log-row:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
-.un-meal-name {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--gray-900);
-}
-
-.un-order-ref {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--gray-500);
-}
-
-.un-meal-log-right {
+.un-meal-log-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.un-meal-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.un-meal-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.un-meal-macros {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 11.5px;
-  color: var(--gray-600);
+.un-meal-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #047857;
+  background: #d1fae5;
+  padding: 2.5px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.un-meal-macros strong {
-  font-size: 13px;
+.un-order-ref {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.un-meal-name-row {
+  width: 100%;
+  min-width: 0;
+}
+
+.un-meal-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--gray-900);
+  line-height: 1.35;
+  width: 100%;
+  min-width: 0;
+}
+
+.un-meal-name.is-clickable:hover .un-meal-dish-title {
+  color: var(--green-600);
+  text-decoration: underline;
+}
+
+.un-meal-qty-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #059669;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.un-meal-dish-title {
+  min-width: 0;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.un-meal-kcal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11.5px;
+  font-weight: 800;
   color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.un-meal-macros-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--gray-200);
+}
+
+.un-macro-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.un-macro-pill .un-mp-lbl {
+  color: var(--gray-600);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.un-macro-pill strong {
+  font-weight: 800;
+  color: var(--gray-900);
+  flex-shrink: 0;
+}
+
+.un-macro-pill.prot strong {
+  color: #dc2626;
+}
+
+.un-macro-pill.carb strong {
+  color: #0284c7;
+}
+
+.un-macro-pill.fat strong {
+  color: #d97706;
 }
 
 .un-remove-log-btn {
   width: 26px;
   height: 26px;
+  min-width: 26px;
+  min-height: 26px;
   border-radius: 50%;
   border: 1px solid var(--gray-200);
   background: #ffffff;
@@ -13784,12 +13981,89 @@ body.view-ai-active .ai-chat-view-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
 }
 
 .un-remove-log-btn:hover {
   background: #fee2e2;
   color: #dc2626;
   border-color: #fecaca;
+}
+
+/* ── Nút mở rộng xem thêm món tiêu thụ hôm nay (Disclosure Pattern) ── */
+.un-meal-expand-wrap {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.un-meal-expand-btn {
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.un-meal-expand-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.un-meal-expand-btn.is-expanded {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #047857;
+}
+
+.un-meal-expand-btn.is-expanded:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.un-expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.un-expand-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.un-meal-expand-btn.is-expanded .un-expand-icon {
+  transform: rotate(180deg);
+}
+
+.un-expand-count-pill {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #1e293b;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.un-meal-expand-btn.is-expanded .un-expand-count-pill {
+  background: #dcfce7;
+  color: #166534;
 }
 
 /* ── 7. Personalized Dish Recommendations Grid ── */
@@ -14769,7 +15043,7 @@ body.view-ai-active .ai-chat-view-container {
   flex: 1 1 auto;
 }
 
-.ai-trace-summary-left > span {
+.ai-trace-summary-left>span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -15672,7 +15946,7 @@ body.view-ai-active .ai-chat-view-container {
     box-sizing: border-box !important;
   }
 
-  .ai-visual-header-row > span {
+  .ai-visual-header-row>span {
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -15726,7 +16000,7 @@ body.view-ai-active .ai-chat-view-container {
     flex: 1 1 auto !important;
   }
 
-  .ai-trace-summary-left > span {
+  .ai-trace-summary-left>span {
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;

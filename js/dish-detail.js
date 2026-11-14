@@ -557,7 +557,320 @@ function getAdjustedNutritionBySelection(profile) {
 }
 
 // =========================================================================
-// 2. SECTION MẶT HÀNG NỔI BẬT TRÊN TRANG CHỦ (CHẠM ĐỂ VÀO MÔ TẢ MẶT HÀNG)
+// 2A. MỤC "MÓN ĐANG QUAN TÂM" TRÊN TRANG CHỦ (DỰA TRÊN TÌM KIẾM & XEM QUA)
+// =========================================================================
+
+const PTIT_VIEWED_DISHES_KEY = 'ptitngon_viewed_dishes_v1';
+const PTIT_SEARCH_INTEREST_KEY = 'ptitngon_search_interest_v1';
+
+function getViewedDishHistory() {
+  try {
+    const raw = localStorage.getItem(PTIT_VIEWED_DISHES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter(x => x && (x.dishId || x.dishName)) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function getSearchInterestKeywords() {
+  const combined = [];
+  const seen = new Set();
+  const pushKw = (kw) => {
+    const clean = String(kw || '').trim();
+    if (clean.length < 2) return;
+    const norm = typeof removeVnTones === 'function' ? removeVnTones(clean) : clean.toLowerCase();
+    if (!norm || seen.has(norm)) return;
+    seen.add(norm);
+    combined.push(clean);
+  };
+
+  if (typeof searchQuery === 'string' && searchQuery.trim().length >= 2) {
+    pushKw(searchQuery.trim());
+  }
+  try {
+    const raw = localStorage.getItem(PTIT_SEARCH_INTEREST_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(parsed)) parsed.forEach(pushKw);
+  } catch (_) { }
+  if (typeof getSearchHistory === 'function') {
+    getSearchHistory().forEach(pushKw);
+  }
+  return combined.slice(0, 8);
+}
+
+function recordSearchInterestKeyword(keyword) {
+  const clean = String(keyword || '').trim().slice(0, 48);
+  if (clean.length < 2) return;
+  try {
+    const raw = localStorage.getItem(PTIT_SEARCH_INTEREST_KEY);
+    const prev = raw ? JSON.parse(raw) : [];
+    const list = Array.isArray(prev) ? prev : [];
+    const normClean = typeof removeVnTones === 'function' ? removeVnTones(clean) : clean.toLowerCase();
+    const next = [
+      clean,
+      ...list.filter(k => {
+        const n = typeof removeVnTones === 'function' ? removeVnTones(k) : String(k || '').toLowerCase();
+        return n && n !== normClean;
+      })
+    ].slice(0, 10);
+    localStorage.setItem(PTIT_SEARCH_INTEREST_KEY, JSON.stringify(next));
+  } catch (_) { }
+  if (typeof invalidateKeepAliveView === 'function') {
+    invalidateKeepAliveView('home');
+  }
+}
+
+function recordDishViewedForInterest(dish, meta = {}) {
+  if (!dish || typeof dish !== 'object') return;
+  const dishId = dish.id != null ? String(dish.id) : '';
+  const dishName = String(dish.name || '').trim();
+  if (!dishId && !dishName) return;
+
+  const entry = {
+    dishId,
+    dishName,
+    category: String(dish.category || '').trim(),
+    restaurantId: dish.restaurantId != null ? Number(dish.restaurantId) : null,
+    viewedAt: Date.now(),
+    sourceView: String(meta.sourceView || 'home'),
+    searchKeyword: String(meta.searchKeyword || '').trim().slice(0, 40)
+  };
+
+  try {
+    const prev = getViewedDishHistory();
+    const next = [
+      entry,
+      ...prev.filter(x => {
+        if (dishId && x.dishId) return String(x.dishId) !== dishId;
+        return String(x.dishName || '').toLowerCase() !== dishName.toLowerCase();
+      })
+    ].slice(0, 20);
+    localStorage.setItem(PTIT_VIEWED_DISHES_KEY, JSON.stringify(next));
+  } catch (_) { }
+
+  if (typeof invalidateKeepAliveView === 'function') {
+    invalidateKeepAliveView('home');
+  }
+}
+
+function clearHomeInterestedHistory() {
+  try {
+    localStorage.removeItem(PTIT_VIEWED_DISHES_KEY);
+    localStorage.removeItem(PTIT_SEARCH_INTEREST_KEY);
+  } catch (_) { }
+  if (typeof clearSearchHistory === 'function') {
+    clearSearchHistory();
+  }
+  if (typeof invalidateKeepAliveView === 'function') {
+    invalidateKeepAliveView('home');
+  }
+  if (typeof currentView !== 'undefined' && currentView === 'home' && typeof renderHomeView === 'function') {
+    renderHomeView();
+  }
+  if (typeof showToast === 'function') {
+    showToast('sparkleRegular', 'Đã làm mới danh sách món đang quan tâm');
+  }
+}
+
+function getHomeInterestedSignature() {
+  const viewedSig = getViewedDishHistory().slice(0, 8).map(v => `${v.dishId || v.dishName}:${v.searchKeyword || ''}`).join(',');
+  const kwSig = getSearchInterestKeywords().slice(0, 5).join('|');
+  return `${viewedSig}#${kwSig}`;
+}
+
+function matchDishWithSearchKeyword(item, keyword) {
+  const kw = String(keyword || '').trim().toLowerCase();
+  if (!kw) return false;
+  const kwNorm = typeof removeVnTones === 'function' ? removeVnTones(kw) : kw;
+  const checkField = (val) => {
+    const s = String(val || '').toLowerCase();
+    if (!s) return false;
+    if (s.includes(kw)) return true;
+    if (kwNorm && typeof removeVnTones === 'function') {
+      return removeVnTones(s).includes(kwNorm);
+    }
+    return false;
+  };
+  return (
+    checkField(item.name) ||
+    checkField(item.category) ||
+    checkField(item.description) ||
+    checkField(item.restaurantName) ||
+    (Array.isArray(item.tags) && item.tags.some(checkField))
+  );
+}
+
+function getInterestedDishesForHome(limit = 10) {
+  if (typeof DB === 'undefined' || !DB.isReady) return { items: [], hasUserActivity: false, activeKeywords: [], viewedCount: 0 };
+  const allItems = DB.getItems().filter(it => it.inStock !== false);
+  if (allItems.length === 0) return { items: [], hasUserActivity: false, activeKeywords: [], viewedCount: 0 };
+
+  const viewedHistory = getViewedDishHistory();
+  const searchKeywords = getSearchInterestKeywords();
+  const hasUserActivity = viewedHistory.length > 0 || searchKeywords.length > 0;
+
+  const picked = [];
+  const usedIds = new Set();
+  const interestedCategories = new Set();
+
+  const addDishWithReason = (item, reasonLabel, reasonType) => {
+    if (!item || usedIds.has(String(item.id)) || picked.length >= limit) return false;
+    usedIds.add(String(item.id));
+    if (item.category) interestedCategories.add(item.category);
+    picked.push({
+      item,
+      reasonLabel,
+      reasonType // 'viewed' | 'search' | 'related' | 'trending'
+    });
+    return true;
+  };
+
+  // 1. Ưu tiên cao nhất: Các món người dùng vừa trực tiếp ấn vào xem qua (từ Trang chủ, Tìm kiếm, Cửa hàng...)
+  viewedHistory.forEach(entry => {
+    const found = allItems.find(it =>
+      (entry.dishId && String(it.id) === String(entry.dishId)) ||
+      (entry.dishName && String(it.name || '').toLowerCase() === String(entry.dishName).toLowerCase())
+    );
+    if (found) {
+      let badgeText = '👀 Vừa xem qua';
+      if (entry.searchKeyword) {
+        const shortKw = entry.searchKeyword.length > 16 ? entry.searchKeyword.slice(0, 15) + '…' : entry.searchKeyword;
+        badgeText = `🔍 Xem từ "${shortKw}"`;
+      } else if (entry.sourceView === 'home') {
+        badgeText = '👀 Vừa xem ở Trang chủ';
+      } else if (entry.sourceView === 'search') {
+        badgeText = '👀 Xem từ Tìm kiếm';
+      }
+      addDishWithReason(found, badgeText, 'viewed');
+    }
+  });
+
+  // 2. Các món khớp trực tiếp với từ khóa tìm kiếm gần đây của người dùng
+  searchKeywords.forEach(kw => {
+    const shortKw = kw.length > 16 ? kw.slice(0, 15) + '…' : kw;
+    const matches = allItems
+      .filter(it => !usedIds.has(String(it.id)) && matchDishWithSearchKeyword(it, kw))
+      .sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8));
+    matches.slice(0, 3).forEach(it => {
+      addDishWithReason(it, `🔍 Theo tìm kiếm "${shortKw}"`, 'search');
+    });
+  });
+
+  // 3. Các món cùng danh mục / cùng gu với những món vừa xem hoặc vừa tìm kiếm
+  if (interestedCategories.size > 0 && picked.length < limit) {
+    const catList = Array.from(interestedCategories);
+    catList.forEach(cat => {
+      const related = allItems
+        .filter(it => !usedIds.has(String(it.id)) && String(it.category || '').toLowerCase() === String(cat).toLowerCase())
+        .sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8));
+      related.slice(0, 2).forEach(it => {
+        addDishWithReason(it, `✨ Cùng gu ${cat}`, 'related');
+      });
+    });
+  }
+
+  // 4. Nếu danh sách vẫn chưa đủ (hoặc người dùng mới mở app chưa tìm kiếm/xem món nào):
+  //    Bổ sung từ món yêu thích, giỏ hàng hoặc gợi ý xu hướng đang được quan tâm
+  if (picked.length < limit) {
+    const favDishes = allItems.filter(it => !usedIds.has(String(it.id)) && (it.fav || (typeof DB.isItemFavorite === 'function' && DB.isItemFavorite(it.id))));
+    favDishes.slice(0, 3).forEach(it => {
+      addDishWithReason(it, '❤️ Món bạn đã thả tim', 'viewed');
+    });
+  }
+
+  if (picked.length < limit) {
+    const fallbackPool = typeof dbmPickFairDiverseItems === 'function'
+      ? dbmPickFairDiverseItems(allItems.filter(it => !usedIds.has(String(it.id))), limit - picked.length, it => it.category || it.categoryId, 2, 'home-interested-fallback')
+      : allItems.filter(it => !usedIds.has(String(it.id))).slice(0, limit - picked.length);
+    fallbackPool.forEach(it => {
+      addDishWithReason(
+        it,
+        hasUserActivity ? `✨ Gợi ý hợp khẩu vị` : `🔥 Sinh viên hay tìm`,
+        hasUserActivity ? 'related' : 'trending'
+      );
+    });
+  }
+
+  return {
+    items: picked.slice(0, limit),
+    hasUserActivity,
+    activeKeywords: searchKeywords.slice(0, 4),
+    viewedCount: viewedHistory.length
+  };
+}
+
+function renderHomeInterestedDishesSection() {
+  const data = getInterestedDishesForHome(10);
+  if (!data.items || data.items.length === 0) return '';
+
+  return `
+    <div class="restaurants-section home-interested-section fade-in" id="home-interested-section">
+      <div class="section-head">
+        <h2 class="section-title">Món đang quan tâm</h2>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="scroll-arrow-controls">
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-interested-dishes-scroll', -260)" title="Cuộn sang trái" aria-label="Cuộn sang trái">
+              ${FluentIcons.chevronLeft}
+            </button>
+            <button type="button" class="scroll-arrow-btn small" onclick="scrollHorizontally('home-interested-dishes-scroll', 260)" title="Cuộn sang phải" aria-label="Cuộn sang phải">
+              ${FluentIcons.chevronRight}
+            </button>
+          </div>
+          <button type="button" class="section-see-all" onclick="openSearchView('${data.activeKeywords[0] ? escapeHtml(data.activeKeywords[0]) : ''}')">Xem tất cả</button>
+        </div>
+      </div>
+
+      <div class="home-featured-dishes-scroll home-interested-dishes-scroll" id="home-interested-dishes-scroll">
+        ${data.items.map(({ item, reasonLabel, reasonType }) => {
+    const store = restaurants.find(r => Number(r.id) === Number(item.restaurantId))
+      || (DB.data && DB.data.restaurants ? DB.data.restaurants.find(r => Number(r.id) === Number(item.restaurantId)) : null);
+    const prof = getDishNutritionAndSafetyProfile(item, store);
+    const isDishFav = (typeof item.fav === 'boolean')
+      ? item.fav
+      : (typeof DB !== 'undefined' && DB.isItemFavorite ? DB.isItemFavorite(item.id) : false);
+    return `
+            <div class="home-feat-dish-card home-interest-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
+              <div class="home-feat-dish-img-wrap">
+                <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <span class="home-interest-reason-badge ${escapeHtml(reasonType)}">${escapeHtml(reasonLabel)}</span>
+                <button type="button"
+                  class="dish-fav-btn ${isDishFav ? 'active' : ''}"
+                  data-fav-dish-id="${escapeHtml(String(item.id))}"
+                  onclick="event.stopPropagation(); toggleDishFav('${escapeHtml(String(item.id))}', ${store ? store.id : (item.restaurantId || 1)})"
+                  title="Lưu món yêu thích"
+                  aria-label="Lưu món yêu thích"
+                >
+                  ${isDishFav ? FluentIcons.heartFilled : FluentIcons.heartRegular}
+                </button>
+                <div class="home-feat-img-badges">
+                  <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
+                  <span class="home-feat-safe-dot" title="Điểm Healthy & VSATTP">🥗 ${prof.healthyScore}/10</span>
+                </div>
+              </div>
+              <div class="home-feat-dish-body">
+                <div class="home-feat-dish-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+                <div class="home-feat-dish-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName || (store ? store.name : 'ptitngon'))}</div>
+                <div class="home-feat-dish-foot">
+                  <span class="home-feat-dish-price">${formatVND(item.price)}</span>
+                  <button type="button"
+                    class="dish-add-btn"
+                    onclick="event.stopPropagation(); openDishDetailById('${escapeHtml(item.id)}')"
+                    title="Xem chi tiết & thêm vào giỏ"
+                    aria-label="Thêm món"
+                  >+</button>
+                </div>
+              </div>
+            </div>
+          `;
+  }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// =========================================================================
+// 2B. SECTION MẶT HÀNG NỔI BẬT TRÊN TRANG CHỦ (CHẠM ĐỂ VÀO MÔ TẢ MẶT HÀNG)
 // =========================================================================
 
 function renderHomeFeaturedDishesSection() {
@@ -597,14 +910,16 @@ function renderHomeFeaturedDishesSection() {
               <div class="home-feat-dish-img-wrap">
           <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
-                <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
+                <div class="home-feat-img-badges">
+                  <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
+                  <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
+                </div>
               </div>
               <div class="home-feat-dish-body">
                 <div class="home-feat-dish-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
                 <div class="home-feat-dish-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName)}</div>
                 <div class="home-feat-dish-foot">
                   <span class="home-feat-dish-price">${formatVND(item.price)}</span>
-                  <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
                 </div>
               </div>
             </div>
@@ -768,11 +1083,27 @@ function openDishDetailView(dish, restaurant, navOptions = { replace: false }) {
   closePDPMobileOrderDrawer();
 
   if (currentView !== 'dish-detail' && currentView !== 'dish-safety-nutrition') {
+    if (currentView === 'search') {
+      if (typeof flushSearchFilterUpdate === 'function' && typeof searchFilterDebounceTimer !== 'undefined' && searchFilterDebounceTimer) {
+        flushSearchFilterUpdate();
+      }
+      if (typeof window !== 'undefined' && window.Router && typeof window.Router.syncUrl === 'function') {
+        window.Router.syncUrl({ replace: true });
+      }
+    }
     previousViewBeforeDish = (navOptions && navOptions.previousView) ? navOptions.previousView : (currentView || 'home');
     if (typeof saveCurrentViewScroll === 'function') {
       saveCurrentViewScroll();
     }
     viewScrollPositionsBeforeDish[previousViewBeforeDish] = window.scrollY;
+  }
+
+  // Ghi nhận món ăn người dùng vừa ấn vào xem để hiển thị ở mục "Món đang quan tâm" trên Trang chủ
+  if (typeof recordDishViewedForInterest === 'function') {
+    recordDishViewedForInterest(dish, {
+      sourceView: previousViewBeforeDish,
+      searchKeyword: (previousViewBeforeDish === 'search' && typeof searchQuery === 'string') ? searchQuery.trim() : ''
+    });
   }
 
   modalDish = dish;
@@ -1689,8 +2020,8 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
 
           <!-- Các câu hỏi gợi ý 2 dòng lướt đồng bộ (có nút scroll-arrow-btn thông minh hiện khi hover) -->
           ${(() => {
-            const qData = getShuffledDishAIQuestions();
-            return `
+      const qData = getShuffledDishAIQuestions();
+      return `
               <div class="sn-ai-chips-wrapper">
                 <button
                   type="button"
@@ -1704,8 +2035,8 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                 <div class="sn-ai-chips-scroll-container" id="sn-ai-chips-scroll" onscroll="syncDishAIChipsScroll(this)" data-lenis-prevent>
                   <div class="sn-ai-chips-track">
                     ${qData.row1.map(qIdx => {
-                      const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
-                      return `
+        const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+        return `
                         <button
                           type="button"
                           class="sn-ai-chip"
@@ -1715,12 +2046,12 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                           ${escapeHtml(qText)}
                         </button>
                       `;
-                    }).join('')}
+      }).join('')}
                   </div>
                   <div class="sn-ai-chips-track">
                     ${qData.row2.map(qIdx => {
-                      const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
-                      return `
+        const qText = DISH_AI_QUICK_QUESTIONS[qIdx] || '';
+        return `
                         <button
                           type="button"
                           class="sn-ai-chip"
@@ -1730,7 +2061,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                           ${escapeHtml(qText)}
                         </button>
                       `;
-                    }).join('')}
+      }).join('')}
                   </div>
                 </div>
                 <button
@@ -1744,7 +2075,7 @@ function renderDishNutritionDetailTab(dish, store, profile, dynNutri) {
                 </button>
               </div>
             `;
-          })()}
+    })()}
 
           <!-- Khung hiển thị hội thoại AI tràn viền (Full-bleed edge-to-edge chat thread) -->
           <div class="sn-ai-thread ${logs.length === 0 && !dishAIIsThinking ? 'is-empty' : ''}" id="sn-ai-thread" data-lenis-prevent>

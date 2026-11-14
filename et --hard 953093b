@@ -1,0 +1,53 @@
+[33md2ab1fc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix search điện thoại
+[33m953093b[m feat: initialize core application logic and UI modules for PtitNgon food delivery app
+[33m0b604e9[m feat: add main stylesheet for ptitngon delivery app
+[33m930b820[m AI chat
+[33mb331bdf[m toast fluent icon
+[33m15f6d59[m animation
+[33mb673dd8[m fix bàn phím điện thoại
+[33mb6dfc59[m tối ưu
+[33m3de29c2[m fix tiếp
+[33mf1f37e2[m fix lỗi nhẹ
+[33m68d59aa[m áp dụng dải cuộn ngang lên tất cả
+[33m5dd769b[m #4, #3, và các mục #1, #2, #5, #6
+[33mc995ec5[m somechange before big update
+[33m9a0294d[m cart and checkout
+[33m795a055[m toast xếp chồng
+[33m155c75e[m toast update and ai-visual-dishes-block add elemen
+[33m4064a6a[m toast update
+[33ma4d3232[m feat: implement full-featured database manager and AI catalog generator UI and logic
+[33m2384ad6[m backbutton
+[33m0d3ad14[m nút back đồng bộ API lịch sử trình duyệt
+[33mc2c145a[m trùng tu giao diện hoạt động, loại bỏ trải nghiệm realod page
+[33mee0a386[m fix vị trí và chỗ cho AI để lướt
+[33m3cda092[m update giao diện
+[33mc8d893d[m pin top when no message on Chat Ai
+[33m16eb569[m aurora auro
+[33m4f873b1[m improve ask AI
+[33me5294f1[m fix more
+[33mf95cf90[m fix keyboard fo mobile
+[33m98464bf[m reverse
+[33m8cc83d9[m fix keyboard for mobile
+[33m8bdbc28[m remove chat AI pop up
+[33m9d0c7d2[m cat
+[33mcc297f6[m gardient improve
+[33mc9dbc4e[m feat: add core UI styles and application logic for food delivery app
+[33m3bed728[m feat: impleiment frontend application for PTIT food delivery service
+[33mf30291e[m feat: add styling, AI chat, and fluent icons for food delivery app UI
+[33mf1bf766[m rung
+[33m78a63a4[m feat: add fluent UI icons, CSS styles, and application modules for delivery app
+[33m18d1121[m fix Locomotive Scroll và thêm màn hình thanh toán thành công
+[33m3dbe531[m fix some page-nav-header glitch and animation and live server-node js server corrupt
+[33m9eec2d6[m feat: initialize PtitNgon food delivery app with base layout and styling
+[33m19bf6ae[m sửa lỗi bé xíu
+[33m6b35006[m feat: initialize food delivery web app structure with index, style, and app scripts
+[33md9b093d[m feat: initialize frontend application with html, css, and js structure
+[33mb31220a[m fix lỗi giật giật
+[33macf0f3d[m tối ưu mục tiêu sức khoẻ
+[33mcc65e9b[m overlay update and maps
+[33mb3dee87[m feat: improve search UI, account, DB, filter,  and maps
+[33m6d6dbee[m feat: initialize PTITNgon food delivery app with base layout, data, and styling
+[33m91cae9b[m Please provide the changes or diff for the files so I can generate the commit message.
+[33m405e80a[m nvidia support
+[33m86834af[m feat: add core database manager and food data modules for enhanced item tagging and voucher support
+[33mb84f55c[m No changes provided

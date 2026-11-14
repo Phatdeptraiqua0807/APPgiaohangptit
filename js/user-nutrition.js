@@ -86,21 +86,298 @@ function getPersonaMeta(personaId) {
   return USER_PERSONA_OPTIONS.find(p => p.id === personaId) || USER_PERSONA_OPTIONS[0];
 }
 
-function computeBMIInfo(weightKg, heightCm) {
+function pickVariedHealthComment(pool, seedNum = 0) {
+  if (!Array.isArray(pool) || pool.length === 0) return '';
+  const hourBucket = Math.floor(new Date().getHours() / 4); // Đổi nhẹ theo khung giờ trong ngày
+  const dayOfYear = Math.floor(Date.now() / 86400000);
+  const idx = Math.abs(Math.round(seedNum) + hourBucket + dayOfYear) % pool.length;
+  return pool[idx];
+}
+
+function computeBMIInfo(weightKg, heightCm, hpContext = {}) {
   const w = Math.max(30, Number(weightKg) || 60);
   const hMeter = Math.max(1.2, (Number(heightCm) || 168) / 100);
   const bmi = Number((w / (hMeter * hMeter)).toFixed(1));
+  const persona = hpContext.personaType || 'normal';
+  const act = hpContext.activityLevel || 'moderate';
+  const seed = Math.round(bmi * 10 + w + (Number(heightCm) || 168));
 
   if (bmi < 18.5) {
-    return { bmi, status: 'Hơi thiếu cân', color: '#0284c7', advice: 'Nên ăn đủ bữa và bổ sung thêm đạm + tinh bột tốt.' };
+    const lowPool = [
+      'Nên ăn đủ 3 bữa chính và bổ sung thêm đạm nạc + tinh bột hấp thu chậm.',
+      'Cơ thể cần thêm năng lượng tích cực — hãy ưu tiên phở bò, cơm tấm sườn hoặc sinh tố bơ hạt nhé!',
+      'Hãy chia nhỏ bữa ăn trong ngày, kết hợp thêm bữa phụ giàu Protein để tăng cân khỏe mạnh.',
+      'Đừng bỏ bữa sáng nhé! Bổ sung thêm trứng, sữa và thịt nạc sẽ giúp thể lực cải thiện rõ rệt.'
+    ];
+    return {
+      bmi,
+      status: 'Hơi thiếu cân',
+      color: '#0284c7',
+      advice: pickVariedHealthComment(lowPool, seed),
+      advicePool: lowPool
+    };
   }
+
   if (bmi < 23) {
-    return { bmi, status: 'Vóc dáng cân đối chuẩn', color: '#059669', advice: 'Thể trạng rất lý tưởng! Hãy duy trì dinh dưỡng cân bằng.' };
+    let idealPool = [];
+    if (persona === 'gym') {
+      idealPool = [
+        'Tỷ lệ cơ thể rất chuẩn để phát triển cơ bắp! Hãy ưu tiên nạp đủ 2g Protein/kg mỗi ngày.',
+        'Phong độ thể hình tuyệt vời! Đừng quên bổ sung đạm và tinh bột tốt trong vòng 1 giờ sau tập nhé.',
+        'Chỉ số BMI vàng cho Gymer! Kết hợp thịt nạc, ức gà, trứng cùng giấc ngủ sâu để phục hồi cơ tối ưu.',
+        'Nền tảng thể lực rất săn chắc! Hãy duy trì chia đều lượng đạm qua các bữa ăn trong ngày.'
+      ];
+    } else if (persona === 'keep_fit' || hpContext.wantKeepFit) {
+      idealPool = [
+        'Vóc dáng đang ở ngưỡng vàng! Ưu tiên thực đơn Eat Clean, gỏi cuốn, bún tươi và rau xanh để giữ form.',
+        'Chỉ số cơ thể rất cân đối! Hãy duy trì thói quen uống đủ nước và hạn chế trà sữa nhiều đường.',
+        'Form người rất gọn gàng chuẩn chỉnh! Chia tỷ lệ 50% rau xanh - 25% đạm - 25% tinh bột mỗi bữa là đẹp nhất.',
+        'Thể trạng săn chắc đáng mơ ước! Hãy ưu tiên các món hấp, luộc, áp chảo ít dầu mỡ cho bữa tối nhé.'
+      ];
+    } else if (act === 'active') {
+      idealPool = [
+        'Thể lực và vóc dáng rất năng động! Hãy bù đủ điện giải, nước lọc và đạm chất lượng sau khi vận động.',
+        'Cơ thể cân đối, trao đổi chất tốt! Bạn có thể thoải mái thưởng thức các bữa chính giàu năng lượng.',
+        'Chỉ số BMI lý tưởng cho người hay vận động! Chú ý nạp đủ tinh bột tốt để luôn tràn đầy sức bền.'
+      ];
+    } else {
+      idealPool = [
+        'Vóc dáng cân đối chuẩn chỉnh! Hãy kết hợp đa dạng đạm nạc, rau củ tươi và uống đủ nước mỗi ngày.',
+        'Chỉ số BMI rất đẹp! Duy trì nhịp sinh hoạt điều độ và ăn tối trước 20h00 sẽ giúp cơ thể luôn nhẹ nhàng.',
+        'Thể trạng đang ở vùng khỏe mạnh nhất! Ưu tiên món ăn tươi nóng, cân bằng giữa thịt, cá và rau xanh nhé.',
+        'Cơ thể rất hài hòa! Một bữa trưa đủ chất và bữa tối thanh đạm sẽ giúp bạn giữ vững phong độ học tập & làm việc.',
+        'Tỷ lệ chiều cao - cân nặng rất chuẩn! Hãy lắng nghe cơ thể, ăn vừa đủ no (khoảng 80%) để hệ tiêu hóa luôn khỏe.',
+        'Sức khỏe nền tảng rất tốt! Đừng quên nhấp từng ngụm nước lọc trong ngày và tăng cường trái cây tươi nhé.'
+      ];
+    }
+    const subStatus = bmi < 20 ? 'Thể trạng thon gọn chuẩn' : (bmi <= 21.8 ? 'Vóc dáng cân đối chuẩn' : 'Thể hình săn chắc cân đối');
+    return {
+      bmi,
+      status: subStatus,
+      color: '#059669',
+      advice: pickVariedHealthComment(idealPool, seed),
+      advicePool: idealPool
+    };
   }
+
   if (bmi < 25) {
-    return { bmi, status: 'Hơi đầy đặn', color: '#d97706', advice: 'Ưu tiên món thanh đạm, giảm đồ ngọt & nước có đường.' };
+    const warmPool = [
+      'Ưu tiên các món thanh đạm nhiều rau xanh, giảm nhẹ đồ chiên rán và nước ngọt có gas nhé.',
+      'Chỉ cần giảm khoảng 200–300 kcal mỗi ngày và đi bộ nhẹ 20 phút sau bữa tối là vóc dáng sẽ cực kỳ gọn gàng!',
+      'Hãy bắt đầu bữa ăn bằng rau củ hoặc canh trước khi ăn tinh bột để no lâu và kiểm soát đường huyết tốt hơn.',
+      'Thay thế đồ ăn vặt chiều bằng trái cây ít ngọt hoặc sữa chua không đường sẽ giúp bạn nhẹ bụng hơn rất nhiều.'
+    ];
+    return {
+      bmi,
+      status: 'Hơi đầy đặn',
+      color: '#d97706',
+      advice: pickVariedHealthComment(warmPool, seed),
+      advicePool: warmPool
+    };
   }
-  return { bmi, status: 'Cần kiểm soát cân nặng', color: '#dc2626', advice: 'Khuyến nghị kiểm soát Kcal hàng ngày và tăng rau xanh, đạm nạc.' };
+
+  const highPool = [
+    'Khuyến nghị kiểm soát quỹ Kcal hàng ngày, tăng cường đạm nạc (ức gà, cá, đậu hũ) và rau xanh giàu chất xơ.',
+    'Hãy ưu tiên phương pháp chế biến luộc, hấp, trộn salad và hạn chế ăn khuya sau 20h30 để giảm mỡ bền vững.',
+    'Chia rõ khẩu phần từng bữa: tăng gấp đôi lượng rau củ và uống 1 cốc nước lọc trước bữa ăn 15 phút nhé!',
+    'Kết hợp thâm hụt Kcal vừa phải (300–400 kcal/ngày) cùng vận động đều đặn sẽ giúp cơ thể săn chắc khỏe khoắn.'
+  ];
+  return {
+    bmi,
+    status: 'Cần kiểm soát cân nặng',
+    color: '#dc2626',
+    advice: pickVariedHealthComment(highPool, seed),
+    advicePool: highPool
+  };
+}
+
+function getDynamicNutritionRingAdvice(summary) {
+  if (!summary || !summary.healthProfile) return 'Hãy duy trì chế độ dinh dưỡng cân bằng và uống đủ nước hôm nay.';
+  const hp = summary.healthProfile;
+  const consumedCal = Number(summary.consumed?.calories) || 0;
+  const goalCal = Math.max(1000, Number(hp.dailyCalorieGoal) || 2000);
+  const calRatio = consumedCal / goalCal;
+  const consumedProt = Number(summary.consumed?.protein) || 0;
+  const goalProt = Math.max(30, Number(hp.macroGoals?.protein) || 75);
+  const protRatio = consumedProt / goalProt;
+  const waterCups = Number(summary.waterCups) || 0;
+  const waterGoal = Math.max(6, Number(hp.recommendedWaterCups) || 8);
+  const entriesCount = Array.isArray(summary.entries) ? summary.entries.length : 0;
+  const hour = new Date().getHours();
+  const seed = Math.round(consumedCal + consumedProt * 3 + waterCups * 7 + entriesCount * 13 + hp.weightKg);
+
+  if (summary.isOverCalories) {
+    const overCal = Math.abs(summary.remainingCalories);
+    const overPool = [
+      `Hôm nay bạn đã nạp nhỉnh hơn mục tiêu ${overCal} kcal — hãy đi bộ nhẹ 20 phút và uống thêm nước ấm để tiêu hóa tốt nhé!`,
+      `Vượt nhẹ ${overCal} kcal không sao cả! Bữa tiếp theo hãy ưu tiên rau luộc, canh thanh đạm và hạn chế đồ ngọt nhé.`,
+      `Năng lượng hôm nay khá dồi dào (+${overCal} kcal). Bạn có thể tập giãn cơ hoặc vận động nhẹ buổi tối để cân bằng lại!`
+    ];
+    return pickVariedHealthComment(overPool, seed);
+  }
+
+  if (entriesCount === 0 || consumedCal === 0) {
+    if (hour < 10) {
+      const morningPool = [
+        `Chào buổi sáng! BMI ${hp.bmiInfo.bmi} (${hp.bmiInfo.status.toLowerCase()}) — hãy khởi động ngày mới với 1 cốc nước ấm và bữa sáng giàu đạm nhé.`,
+        `${hp.bmiInfo.advice} Quỹ năng lượng hôm nay của bạn là ${goalCal} kcal.`,
+        `Một bữa sáng ấm nóng (phở, bún hoặc bánh mì trứng) sẽ giúp bạn tập trung học tập & làm việc suốt buổi sáng!`
+      ];
+      return pickVariedHealthComment(morningPool, seed);
+    }
+    if (hour < 14) {
+      const lunchPool = [
+        `Đến giờ nạp năng lượng bữa trưa rồi! Bạn đang có trọn vẹn ${goalCal} kcal — hãy chọn món đủ đạm và rau xanh nhé.`,
+        `${hp.bmiInfo.advice} Đừng quên ghi nhận bữa trưa để theo dõi đa lượng trong ngày!`,
+        `Chỉ số BMI ${hp.bmiInfo.bmi} rất ổn định! Hãy ưu tiên bữa trưa cân bằng để chiều làm việc không bị buồn ngủ nhé.`
+      ];
+      return pickVariedHealthComment(lunchPool, seed);
+    }
+    return hp.bmiInfo.advice;
+  }
+
+  if (calRatio < 0.45) {
+    const earlyProgressPool = [
+      `Khởi đầu rất tốt (${consumedCal}/${goalCal} kcal)! Bạn còn ${summary.remainingCalories} kcal cho các bữa tiếp theo trong ngày.`,
+      `Nhịp ăn hôm nay rất hợp lý! Đã nạp ${consumedProt}g Đạm — hãy tiếp tục duy trì thực đơn cân bằng và tươi sạch nhé.`,
+      waterCups < Math.floor(waterGoal / 2)
+        ? `Bạn đã nạp ${consumedCal} kcal gọn nhẹ. Nhớ uống thêm nước lọc (${waterCups}/${waterGoal} cốc) để trao đổi chất hiệu quả hơn!`
+        : `${hp.bmiInfo.advice} Hiện bạn đã hoàn thành ${Math.round(calRatio * 100)}% định mức Kcal hôm nay.`
+    ];
+    return pickVariedHealthComment(earlyProgressPool, seed);
+  }
+
+  if (calRatio <= 0.85) {
+    const midProgressPool = [
+      protRatio >= 0.7
+        ? `Tuyệt vời! Lượng Đạm đã đạt ${consumedProt}g/${goalProt}g (${Math.round(protRatio * 100)}%), rất lý tưởng để nuôi dưỡng cơ bắp săn chắc.`
+        : `Bạn đã đi được ${Math.round(calRatio * 100)}% quỹ Kcal hôm nay. Bữa tới hãy ưu tiên món giàu Đạm nạc (còn thiếu ~${Math.max(0, goalProt - consumedProt)}g Đạm) nhé!`,
+      `Còn lại ${summary.remainingCalories} kcal cho hôm nay — vừa vặn cho một bữa ăn thanh đạm, nhiều rau xanh và ít dầu mỡ!`,
+      `Cơ thể đang hấp thu năng lượng rất cân đối (${consumedCal} kcal). Kết hợp uống đủ ${waterGoal} cốc nước để giữ vóc dáng chuẩn nhé!`
+    ];
+    return pickVariedHealthComment(midProgressPool, seed);
+  }
+
+  const nearGoalPool = [
+    `Quỹ năng lượng hôm nay gần chạm đích hoàn hảo (còn ${summary.remainingCalories} kcal)! Nếu đói nhẹ, hãy dùng trái cây ít ngọt hoặc sữa chua nhé.`,
+    `Bạn đã hoàn thành ${Math.round(calRatio * 100)}% mục tiêu Kcal hôm nay rất kỷ luật! Hãy nghỉ ngơi điều độ và hạn chế ăn khuya nhé.`,
+    `Dinh dưỡng hôm nay rất trọn vẹn (${consumedCal}/${goalCal} kcal • ${consumedProt}g Đạm). Uống thêm 1 cốc nước ấm sẽ giúp tiêu hóa êm ái hơn!`
+  ];
+  return pickVariedHealthComment(nearGoalPool, seed);
+}
+
+let isTodayMealLogsExpanded = false;
+
+function toggleTodayMealLogsExpanded() {
+  isTodayMealLogsExpanded = !isTodayMealLogsExpanded;
+  const box = document.querySelector('.un-meal-logs-box');
+  if (box && typeof getNormalizedUserHealthProfile === 'function' && typeof getTodayDateKey === 'function') {
+    const user = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCurrentUser() : null;
+    if (user) {
+      const hp = getNormalizedUserHealthProfile(user);
+      const summary = getTodayNutritionSummary(user, hp, getTodayDateKey());
+      box.innerHTML = renderTodayMealLogsBoxInnerHtml(summary);
+      return;
+    }
+  }
+  updateProfileNutritionDashboardInPlace();
+}
+
+function renderTodayMealLogsBoxInnerHtml(summary) {
+  const entries = Array.isArray(summary?.entries) ? summary.entries : [];
+  const sortedEntries = [...entries].sort((a, b) => (Number(b.calories) || 0) - (Number(a.calories) || 0));
+  const totalCount = sortedEntries.length;
+  const initialLimit = 3;
+  const hasOverflow = totalCount > initialLimit;
+  const visibleEntries = (hasOverflow && !isTodayMealLogsExpanded)
+    ? sortedEntries.slice(0, initialLimit)
+    : sortedEntries;
+  const hiddenCount = Math.max(0, totalCount - initialLimit);
+
+  const renderLogRow = (en) => {
+    const cleanOrderId = en.orderId ? String(en.orderId).replace(/^#/, '') : '';
+    const hasDishLink = Boolean(en.dishId);
+    return `
+      <div class="un-meal-log-row">
+        <div class="un-meal-log-top">
+          <div class="un-meal-meta-left">
+            <span class="un-meal-tag">${escapeHtml(en.mealType || 'Bữa ăn')}${en.time ? ` • ${escapeHtml(en.time)}` : ''}</span>
+            ${cleanOrderId ? `<span class="un-order-ref" title="Ghi nhận từ đơn hàng #${escapeHtml(cleanOrderId)}">#${escapeHtml(cleanOrderId)}</span>` : ''}
+          </div>
+          <div class="un-meal-meta-right">
+            <button
+              type="button"
+              class="un-remove-log-btn"
+              onclick="removeTodayMealEntry('${escapeHtml(en.id)}')"
+              title="Xóa khỏi nhật ký hôm nay"
+              aria-label="Xóa mục nhật ký"
+            >✕</button>
+          </div>
+        </div>
+
+        <div class="un-meal-name-row">
+          <div
+            class="un-meal-name ${hasDishLink ? 'is-clickable' : ''}"
+            ${hasDishLink ? `role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(String(en.dishId))}')" title="Chạm để xem chi tiết dinh dưỡng mặt hàng"` : ''}
+          >
+            ${en.quantity > 1 ? `<span class="un-meal-qty-badge">${en.quantity}x</span>` : ''}
+            <span class="un-meal-dish-title" title="${escapeHtml(en.dishName)}">${escapeHtml(en.dishName)}</span>
+            <span class="un-meal-kcal-badge">${FluentIcons.fireFilled} ${en.calories} kcal</span>
+          </div>
+        </div>
+
+        <div class="un-meal-macros-grid">
+          <div class="un-macro-pill prot">
+            <span class="un-mp-lbl">🥩 Đạm</span>
+            <strong>${en.protein}g</strong>
+          </div>
+          <div class="un-macro-pill carb">
+            <span class="un-mp-lbl">🌾 Tinh bột</span>
+            <strong>${en.carbs}g</strong>
+          </div>
+          <div class="un-macro-pill fat">
+            <span class="un-mp-lbl">🥑 Chất béo</span>
+            <strong>${en.fat}g</strong>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  return `
+    <div class="un-meal-logs-head">
+      <div class="un-meal-logs-title-wrap">
+        <span class="un-meal-logs-title">🍽️ Nhật ký món đã tiêu thụ hôm nay</span>
+        <span class="un-meal-count-badge">${totalCount} mục</span>
+      </div>
+    </div>
+
+    ${totalCount === 0 ? `
+      <div class="un-empty-log">
+        Hôm nay bạn chưa ghi nhận bữa ăn nào. Khi bạn đặt đơn hàng hoặc bấm <strong>"🍽️ Đã ăn"</strong> ở danh sách gợi ý bên dưới, lượng Kcal sẽ tự động cập nhật tại đây!
+      </div>
+    ` : `
+      <div class="un-meal-log-list" id="un-meal-log-list-container">
+        ${visibleEntries.map(renderLogRow).join('')}
+      </div>
+
+      ${hasOverflow ? `
+        <div class="un-meal-expand-wrap">
+          <button
+            type="button"
+            class="un-meal-expand-btn ${isTodayMealLogsExpanded ? 'is-expanded' : ''}"
+            onclick="toggleTodayMealLogsExpanded()"
+            aria-expanded="${isTodayMealLogsExpanded ? 'true' : 'false'}"
+            aria-controls="un-meal-log-list-container"
+          >
+            <span class="un-expand-icon">${FluentIcons.chevronDown}</span>
+            <span>${isTodayMealLogsExpanded ? 'Thu gọn danh sách (chỉ xem top 3)' : `Mở rộng xem thêm ${hiddenCount} món khác`}</span>
+            <span class="un-expand-count-pill">${isTodayMealLogsExpanded ? 'Đang hiện tất cả' : `+${hiddenCount}`}</span>
+          </button>
+        </div>
+      ` : ''}
+    `}
+  `;
 }
 
 function computePersonalNutritionTargets(hp) {
@@ -168,7 +445,7 @@ function computePersonalNutritionTargets(hp) {
       fat: fatGrams
     },
     recommendedWaterCups,
-    bmiInfo: computeBMIInfo(weight, height)
+    bmiInfo: computeBMIInfo(weight, height, { personaType: persona, activityLevel: hp.activityLevel || 'moderate', wantKeepFit })
   };
 }
 
@@ -557,7 +834,7 @@ function renderProfileNutritionManagerTab(activeUser) {
                   ${FluentIcons.sparkleFilled} Còn lại: <strong>${summary.remainingCalories} kcal</strong> hôm nay
                 </span>
               `}
-              <div class="un-ring-subnote">${escapeHtml(hp.bmiInfo.advice)}</div>
+              <div class="un-ring-subnote">${escapeHtml(getDynamicNutritionRingAdvice(summary))}</div>
             </div>
           </div>
 
@@ -612,42 +889,7 @@ function renderProfileNutritionManagerTab(activeUser) {
 
         <!-- Danh sách Nhật ký Bữa ăn Hôm nay -->
         <div class="un-meal-logs-box">
-          <div class="un-meal-logs-head">
-            <span>🍽️ Nhật ký món đã tiêu thụ hôm nay (${summary.entries.length} mục)</span>
-            ${summary.entries.length > 0 ? `<span style="font-size:11.5px; color:var(--gray-500);">Tổng ${summary.consumed.calories} kcal</span>` : ''}
-          </div>
-
-          ${summary.entries.length === 0 ? `
-            <div class="un-empty-log">
-              Hôm nay bạn chưa ghi nhận bữa ăn nào. Khi bạn đặt đơn hàng hoặc bấm <strong>"🍽️ Đã ăn"</strong> ở danh sách gợi ý bên dưới, lượng Kcal sẽ tự động cập nhật tại đây!
-            </div>
-          ` : `
-            <div class="un-meal-log-list">
-              ${summary.entries.map(en => `
-                <div class="un-meal-log-row">
-                  <div class="un-meal-log-left">
-                    <span class="un-meal-tag">${escapeHtml(en.mealType || 'Bữa ăn')} • ${escapeHtml(en.time || '')}</span>
-                    <div class="un-meal-name">
-                      ${en.quantity > 1 ? `${en.quantity}x ` : ''}${escapeHtml(en.dishName)}
-                      ${en.orderId ? `<span class="un-order-ref">(${escapeHtml(en.orderId)})</span>` : ''}
-                    </div>
-                  </div>
-                  <div class="un-meal-log-right">
-                    <div class="un-meal-macros">
-                      <strong>${FluentIcons.fireFilled} ${en.calories} kcal</strong>
-                      <span>🥩 ${en.protein}g • 🌾 ${en.carbs}g • 🥑 ${en.fat}g</span>
-                    </div>
-                    <button
-                      type="button"
-                      class="un-remove-log-btn"
-                      onclick="removeTodayMealEntry('${escapeHtml(en.id)}')"
-                      title="Xóa khỏi nhật ký hôm nay"
-                    >✕</button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `}
+          ${renderTodayMealLogsBoxInnerHtml(summary)}
         </div>
       </div>
 
@@ -1102,7 +1344,7 @@ function updateProfileNutritionDashboardInPlace() {
           ${FluentIcons.sparkleFilled} Còn lại: <strong>${summary.remainingCalories} kcal</strong> hôm nay
         </span>
       `}
-      <div class="un-ring-subnote">${escapeHtml(hp.bmiInfo.advice)}</div>
+      <div class="un-ring-subnote">${escapeHtml(getDynamicNutritionRingAdvice(summary))}</div>
     `;
   }
 
@@ -1168,44 +1410,7 @@ function updateProfileNutritionDashboardInPlace() {
   // 5. Cập nhật danh sách món ăn đã tiêu thụ hôm nay
   const mealLogsBox = dashWrap.querySelector('.un-meal-logs-box');
   if (mealLogsBox) {
-    mealLogsBox.innerHTML = `
-      <div class="un-meal-logs-head">
-        <span>🍽️ Nhật ký món đã tiêu thụ hôm nay (${summary.entries.length} mục)</span>
-        ${summary.entries.length > 0 ? `<span style="font-size:11.5px; color:var(--gray-500);">Tổng ${summary.consumed.calories} kcal</span>` : ''}
-      </div>
-
-      ${summary.entries.length === 0 ? `
-        <div class="un-empty-log">
-          Hôm nay bạn chưa ghi nhận bữa ăn nào. Khi bạn đặt đơn hàng hoặc bấm <strong>"🍽️ Đã ăn"</strong> ở danh sách gợi ý bên dưới, lượng Kcal sẽ tự động cập nhật tại đây!
-        </div>
-      ` : `
-        <div class="un-meal-log-list">
-          ${summary.entries.map(en => `
-            <div class="un-meal-log-row">
-              <div class="un-meal-log-left">
-                <span class="un-meal-tag">${escapeHtml(en.mealType || 'Bữa ăn')} • ${escapeHtml(en.time || '')}</span>
-                <div class="un-meal-name">
-                  ${en.quantity > 1 ? `${en.quantity}x ` : ''}${escapeHtml(en.dishName)}
-                  ${en.orderId ? `<span class="un-order-ref">(${escapeHtml(en.orderId)})</span>` : ''}
-                </div>
-              </div>
-              <div class="un-meal-log-right">
-                <div class="un-meal-macros">
-                  <strong>${FluentIcons.fireFilled} ${en.calories} kcal</strong>
-                  <span>🥩 ${en.protein}g • 🌾 ${en.carbs}g • 🥑 ${en.fat}g</span>
-                </div>
-                <button
-                  type="button"
-                  class="un-remove-log-btn"
-                  onclick="removeTodayMealEntry('${escapeHtml(en.id)}')"
-                  title="Xóa khỏi nhật ký hôm nay"
-                >✕</button>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `}
-    `;
+    mealLogsBox.innerHTML = renderTodayMealLogsBoxInnerHtml(summary);
   }
 
   // 6. Cập nhật khối Gợi ý Sản phẩm Cá nhân hóa

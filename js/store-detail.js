@@ -36,6 +36,15 @@ function openStoreDetailView(storeId, tab = 'for-you', sourceView = null) {
     return;
   }
 
+  if (typeof currentView === 'string' && currentView === 'search') {
+    if (typeof flushSearchFilterUpdate === 'function' && typeof searchFilterDebounceTimer !== 'undefined' && searchFilterDebounceTimer) {
+      flushSearchFilterUpdate();
+    }
+    if (typeof window !== 'undefined' && window.Router && typeof window.Router.syncUrl === 'function') {
+      window.Router.syncUrl({ replace: true });
+    }
+  }
+
   if (typeof saveCurrentViewScroll === 'function') {
     saveCurrentViewScroll();
   }
@@ -75,7 +84,11 @@ function backFromStoreDetailView() {
     return;
   }
   if (storeDetailSourceView === 'search' && typeof openSearchView === 'function') {
-    openSearchView(typeof searchQuery === 'string' ? searchQuery : '', typeof activeFilterChip !== 'undefined' ? activeFilterChip : null);
+    openSearchView(
+      typeof searchQuery === 'string' ? searchQuery : '',
+      typeof activeFilterChip !== 'undefined' ? activeFilterChip : null,
+      { fromBack: true, autoFocus: false }
+    );
     return;
   }
   if (storeDetailSourceView === 'dish-detail' && typeof modalDish !== 'undefined' && modalDish && typeof renderDishDetailView === 'function') {
