@@ -196,74 +196,105 @@ function getDynamicNutritionRingAdvice(summary) {
   const hp = summary.healthProfile;
   const consumedCal = Number(summary.consumed?.calories) || 0;
   const goalCal = Math.max(1000, Number(hp.dailyCalorieGoal) || 2000);
-  const calRatio = consumedCal / goalCal;
+  const pct = Math.round((consumedCal / goalCal) * 100);
+  const remainingCal = Math.max(0, Number(summary.remainingCalories) || 0);
   const consumedProt = Number(summary.consumed?.protein) || 0;
   const goalProt = Math.max(30, Number(hp.macroGoals?.protein) || 75);
-  const protRatio = consumedProt / goalProt;
   const waterCups = Number(summary.waterCups) || 0;
   const waterGoal = Math.max(6, Number(hp.recommendedWaterCups) || 8);
   const entriesCount = Array.isArray(summary.entries) ? summary.entries.length : 0;
-  const hour = new Date().getHours();
-  const seed = Math.round(consumedCal + consumedProt * 3 + waterCups * 7 + entriesCount * 13 + hp.weightKg);
 
-  if (summary.isOverCalories) {
-    const overCal = Math.abs(summary.remainingCalories);
+  const now = new Date();
+  const hour = now.getHours();
+  const isMorning = hour >= 5 && hour < 11;
+  const isMiddayOrAfternoon = hour >= 11 && hour < 18;
+  const isEvening = hour >= 18 || hour < 5;
+
+  const seed = Math.round(consumedCal + consumedProt * 3 + waterCups * 7 + entriesCount * 13 + hour * 5 + now.getDay() * 11 + hp.weightKg);
+
+  // 1. Sáng sớm đã ăn đầy hoặc vượt mức (>= 80% khi chưa tới 11h trưa)
+  if (isMorning && pct >= 80) {
+    if (summary.isOverCalories || pct > 100) {
+      const overCal = Math.abs(Number(summary.remainingCalories) || (consumedCal - goalCal));
+      const morningOverPool = [
+        `Mới buổi sáng (${hour}h) mà bạn đã nạp vượt mức cả ngày (+${overCal} kcal, ${pct}%)! Hôm nay không nên ăn thêm nữa, hãy kiểm tra xem có món nào chưa ăn thì xoá khỏi danh sách nhé.`,
+        `Sáng sớm đã vượt ${overCal} kcal so với mục tiêu rồi! Bạn đừng ăn thêm nữa hôm nay, hãy uống nhiều nước, vận động nhẹ và xoá bớt món chưa ăn trong nhật ký nếu lỡ ghi nhận nhé.`
+      ];
+      return pickVariedHealthComment(morningOverPool, seed);
+    }
+    const morningFullPool = [
+      `Mới buổi sáng mà bạn đã nạp đầy ${pct}% quỹ Kcal cả ngày rồi! Trưa và tối nay hãy ăn thật nhẹ (ưu tiên rau xanh, canh thanh đạm), uống đủ ${waterGoal} cốc nước và vận động nhiều hơn nhé.`,
+      `Chào buổi sáng! Mới sáng sớm bạn đã hoàn thành ${pct}% năng lượng trong ngày (${consumedCal}/${goalCal} kcal). Phần thời gian còn lại hãy hạn chế tinh bột & dầu mỡ, chỉ ăn nhẹ và đi lại vận động nhé!`,
+      `Quỹ Kcal hôm nay gần như đã đủ ngay từ buổi sáng (${pct}%)! Hôm nay bạn nên ăn nhẹ nhàng ở các bữa sau và dành thời gian vận động để tiêu hao năng lượng cân bằng nhé.`
+    ];
+    return pickVariedHealthComment(morningFullPool, seed);
+  }
+
+  // 2. Quá 100% mục tiêu
+  if (summary.isOverCalories || pct > 100) {
+    const overCal = Math.abs(Number(summary.remainingCalories) || (consumedCal - goalCal));
     const overPool = [
-      `Hôm nay bạn đã nạp nhỉnh hơn mục tiêu ${overCal} kcal — hãy đi bộ nhẹ 20 phút và uống thêm nước ấm để tiêu hóa tốt nhé!`,
-      `Vượt nhẹ ${overCal} kcal không sao cả! Bữa tiếp theo hãy ưu tiên rau luộc, canh thanh đạm và hạn chế đồ ngọt nhé.`,
-      `Năng lượng hôm nay khá dồi dào (+${overCal} kcal). Bạn có thể tập giãn cơ hoặc vận động nhẹ buổi tối để cân bằng lại!`
+      `Bạn đã nạp vượt mức hôm nay (+${overCal} kcal, ${pct}%). Không nên ăn thêm nữa nhé — hãy điều chỉnh lại, nếu có món nào chưa ăn thì nên xoá khỏi danh sách!`,
+      `Quỹ năng lượng đã vượt ngưỡng ${goalCal} kcal (+${overCal} kcal). Bạn không nên ăn thêm nữa hôm nay; hãy kiểm tra nhật ký bên dưới và xoá những món bạn chưa thực sự ăn nhé.`,
+      `Đã vượt ${overCal} kcal so với khuyến nghị (${pct}%). Tạm ngưng nạp thêm đồ ăn hôm nay, uống nước ấm, vận động nhẹ và xoá khỏi danh sách nếu có món nào chưa ăn nha!`,
+      `Cảnh báo dư ${overCal} kcal! Hôm nay không nên ăn nữa bạn nhé — thử rà soát lại xem có món nào lỡ bấm nhầm hoặc chưa ăn thì xoá khỏi danh sách ngay để số liệu chuẩn xác hơn.`
     ];
     return pickVariedHealthComment(overPool, seed);
   }
 
-  if (entriesCount === 0 || consumedCal === 0) {
-    if (hour < 10) {
-      const morningPool = [
-        `Chào buổi sáng! BMI ${hp.bmiInfo.bmi} (${hp.bmiInfo.status.toLowerCase()}) — hãy khởi động ngày mới với 1 cốc nước ấm và bữa sáng giàu đạm nhé.`,
-        `${hp.bmiInfo.advice} Quỹ năng lượng hôm nay của bạn là ${goalCal} kcal.`,
-        `Một bữa sáng ấm nóng (phở, bún hoặc bánh mì trứng) sẽ giúp bạn tập trung học tập & làm việc suốt buổi sáng!`
-      ];
-      return pickVariedHealthComment(morningPool, seed);
-    }
-    if (hour < 14) {
-      const lunchPool = [
-        `Đến giờ nạp năng lượng bữa trưa rồi! Bạn đang có trọn vẹn ${goalCal} kcal — hãy chọn món đủ đạm và rau xanh nhé.`,
-        `${hp.bmiInfo.advice} Đừng quên ghi nhận bữa trưa để theo dõi đa lượng trong ngày!`,
-        `Chỉ số BMI ${hp.bmiInfo.bmi} rất ổn định! Hãy ưu tiên bữa trưa cân bằng để chiều làm việc không bị buồn ngủ nhé.`
-      ];
-      return pickVariedHealthComment(lunchPool, seed);
-    }
-    return hp.bmiInfo.advice;
-  }
-
-  if (calRatio < 0.45) {
-    const earlyProgressPool = [
-      `Khởi đầu rất tốt (${consumedCal}/${goalCal} kcal)! Bạn còn ${summary.remainingCalories} kcal cho các bữa tiếp theo trong ngày.`,
-      `Nhịp ăn hôm nay rất hợp lý! Đã nạp ${consumedProt}g Đạm — hãy tiếp tục duy trì thực đơn cân bằng và tươi sạch nhé.`,
-      waterCups < Math.floor(waterGoal / 2)
-        ? `Bạn đã nạp ${consumedCal} kcal gọn nhẹ. Nhớ uống thêm nước lọc (${waterCups}/${waterGoal} cốc) để trao đổi chất hiệu quả hơn!`
-        : `${hp.bmiInfo.advice} Hiện bạn đã hoàn thành ${Math.round(calRatio * 100)}% định mức Kcal hôm nay.`
+  // 3. Buổi tối nhưng Kcal vẫn còn thấp (< 60%)
+  if (isEvening && pct < 60) {
+    const eveningLowPool = [
+      `Đã tối rồi mà lượng Kcal hôm nay mới đạt ${pct}% (${consumedCal}/${goalCal} kcal). Hôm nay bạn chưa ăn đủ theo khuyến cáo — bạn có ăn ngoài không? Ấn nút "+ Ghi nhận bữa ăn" để tôi biết nhé!`,
+      `Buổi tối rồi nhưng nhật ký mới ghi nhận ${pct}% mục tiêu (còn thiếu ${remainingCal} kcal). Hôm nay bạn chưa ăn đủ theo khuyến cáo đâu — nếu có ăn ngoài, hãy ấn nút "+ Ghi nhận bữa ăn" để tôi cập nhật nhé!`,
+      `Hôm nay bạn chưa ăn đủ theo khuyến cáo (mới ${consumedCal}/${goalCal} kcal dù đã tối). Bạn có ăn ngoài hay dùng thêm bữa phụ không? Bấm nút "+ Ghi nhận bữa ăn" để tôi biết và tính toán chuẩn hơn nhé!`
     ];
-    return pickVariedHealthComment(earlyProgressPool, seed);
+    return pickVariedHealthComment(eveningLowPool, seed);
   }
 
-  if (calRatio <= 0.85) {
-    const midProgressPool = [
-      protRatio >= 0.7
-        ? `Tuyệt vời! Lượng Đạm đã đạt ${consumedProt}g/${goalProt}g (${Math.round(protRatio * 100)}%), rất lý tưởng để nuôi dưỡng cơ bắp săn chắc.`
-        : `Bạn đã đi được ${Math.round(calRatio * 100)}% quỹ Kcal hôm nay. Bữa tới hãy ưu tiên món giàu Đạm nạc (còn thiếu ~${Math.max(0, goalProt - consumedProt)}g Đạm) nhé!`,
-      `Còn lại ${summary.remainingCalories} kcal cho hôm nay — vừa vặn cho một bữa ăn thanh đạm, nhiều rau xanh và ít dầu mỡ!`,
-      `Cơ thể đang hấp thu năng lượng rất cân đối (${consumedCal} kcal). Kết hợp uống đủ ${waterGoal} cốc nước để giữ vóc dáng chuẩn nhé!`
+  // 4. Đạt 80% - 100%: Đủ cho ngày hôm nay
+  if (pct >= 80 && pct <= 100) {
+    const completePool = [
+      `Tuyệt, vậy là đã đủ cho ngày hôm nay (${pct}%)! Hãy ăn nhẹ và vận động để có sức khoẻ tuyệt vời nhé.`,
+      `Tuyệt vời! Bạn đã hoàn thành ${consumedCal}/${goalCal} kcal (${pct}%) rất chuẩn mực cho ngày hôm nay — hãy ăn nhẹ nhàng nếu đói và vận động điều độ để có sức khoẻ tuyệt vời nhé!`,
+      `Quá ổn áp — vậy là đã đủ năng lượng cho ngày hôm nay (${pct}%, Đạm ${consumedProt}g). Hãy ăn nhẹ, uống đủ nước và vận động thư giãn để giữ sức khoẻ tuyệt vời nhé!`,
+      `Đạt ngưỡng lý tưởng ${pct}% rồi! Hôm nay coi như đã đủ quỹ Kcal, bạn chỉ cần ăn nhẹ (trái cây ít ngọt, sữa chua) và vận động nhẹ nhàng thôi nhé.`
     ];
-    return pickVariedHealthComment(midProgressPool, seed);
+    return pickVariedHealthComment(completePool, seed);
   }
 
-  const nearGoalPool = [
-    `Quỹ năng lượng hôm nay gần chạm đích hoàn hảo (còn ${summary.remainingCalories} kcal)! Nếu đói nhẹ, hãy dùng trái cây ít ngọt hoặc sữa chua nhé.`,
-    `Bạn đã hoàn thành ${Math.round(calRatio * 100)}% mục tiêu Kcal hôm nay rất kỷ luật! Hãy nghỉ ngơi điều độ và hạn chế ăn khuya nhé.`,
-    `Dinh dưỡng hôm nay rất trọn vẹn (${consumedCal}/${goalCal} kcal • ${consumedProt}g Đạm). Uống thêm 1 cốc nước ấm sẽ giúp tiêu hóa êm ái hơn!`
+  // 5. Khoảng 70% - 80%: Sắp chạm ngưỡng đủ
+  if (pct > 70 && pct < 80) {
+    const nearCompletePool = [
+      `Bạn đang tiến rất sát mục tiêu hôm nay (${pct}%, còn ${remainingCal} kcal). Chỉ cần thêm một bữa nhẹ giàu đạm và rau xanh nữa là vừa đẹp!`,
+      `Phong độ rất tốt (${consumedCal}/${goalCal} kcal)! Bạn đang đáp ứng tốt yêu cầu sức khoẻ và chỉ còn ${remainingCal} kcal nữa thôi.`,
+      `Đã hoàn thành ${pct}% định mức Kcal hôm nay (Đạm ${consumedProt}g/${goalProt}g). Hãy chọn món thanh đạm cho bữa tiếp theo để về đích hoàn hảo nhé!`
+    ];
+    return pickVariedHealthComment(nearCompletePool, seed);
+  }
+
+  // 6. Khoảng 30% - 70%: Đang làm rất ổn
+  if (pct > 30 && pct <= 70) {
+    const steadyPool = [
+      `Bạn đang làm rất ổn (${pct}%), đáp ứng tốt yêu cầu sức khoẻ! Bạn còn ${remainingCal} kcal cho các bữa tiếp theo trong ngày.`,
+      `Nhịp dinh dưỡng hôm nay rất cân đối (${consumedCal}/${goalCal} kcal) — bạn đang làm rất ổn, đáp ứng tốt yêu cầu sức khoẻ và đã nạp ${consumedProt}g Đạm!`,
+      `Tiến độ ${pct}% quá đẹp! Bạn đang làm rất ổn, đáp ứng tốt yêu cầu sức khoẻ. Nhớ uống đủ nước (${waterCups}/${waterGoal} cốc) để trao đổi chất tốt hơn nhé.`,
+      `Bạn đang kiểm soát Kcal rất ổn định (${pct}%), đáp ứng tốt yêu cầu sức khoẻ! Bữa tới tiếp tục ưu tiên đạm nạc và nhiều rau xanh nha.`
+    ];
+    return pickVariedHealthComment(steadyPool, seed);
+  }
+
+  // 7. Dưới hoặc bằng 30% (sáng/trưa/chiều)
+  const lowPool = [
+    isMorning
+      ? `Chào buổi sáng! Bạn mới nạp ${pct}% năng lượng (${consumedCal}/${goalCal} kcal) — hãy ăn uống thật ngon và bổ dưỡng để khởi đầu ngày mới tràn đầy sức sống nhé!`
+      : `Năng lượng hiện tại mới ở mức ${pct}% (${consumedCal}/${goalCal} kcal). Hãy ăn uống thật ngon và bổ dưỡng để cơ thể có đủ sức khoẻ học tập & làm việc nhé!`,
+    isMiddayOrAfternoon
+      ? `Đã trưa/chiều rồi mà bạn mới nạp ${pct}% quỹ Kcal (${consumedCal} kcal). Đừng bỏ bữa nhé — hãy ăn uống thật ngon miệng và bổ dưỡng với đủ đạm, tinh bột và rau xanh!`
+      : `Quỹ năng lượng còn rất nhiều (mới dùng ${pct}%). Hãy thưởng thức những món ăn thật ngon và bổ dưỡng để nạp đủ dưỡng chất cho hôm nay!`,
+    `Mới đạt ${pct}% mục tiêu Kcal trong ngày (${consumedCal} kcal). Hãy ăn uống thật ngon và bổ dưỡng, kết hợp uống thêm nước lọc (${waterCups}/${waterGoal} cốc) nhé!`
   ];
-  return pickVariedHealthComment(nearGoalPool, seed);
+  return pickVariedHealthComment(lowPool, seed);
 }
 
 let isTodayMealLogsExpanded = false;
