@@ -344,6 +344,20 @@ function renderTodayMealLogsBoxInnerHtml(summary) {
     `;
   };
 
+  const expandBtnHtml = hasOverflow ? `
+    <button
+      type="button"
+      class="un-meal-expand-btn ${isTodayMealLogsExpanded ? 'is-expanded' : ''}"
+      onclick="toggleTodayMealLogsExpanded()"
+      aria-expanded="${isTodayMealLogsExpanded ? 'true' : 'false'}"
+      aria-controls="un-meal-log-list-container"
+    >
+      <span class="un-expand-icon">${FluentIcons.chevronDown}</span>
+      <span>${isTodayMealLogsExpanded ? 'Thu gọn danh sách' : `Mở rộng xem thêm ${hiddenCount} món khác`}</span>
+      <span class="un-expand-count-pill">${isTodayMealLogsExpanded ? 'Đang hiện tất cả' : `+${hiddenCount}`}</span>
+    </button>
+  ` : '';
+
   return `
     <div class="un-meal-logs-head">
       <div class="un-meal-logs-title-wrap">
@@ -359,21 +373,12 @@ function renderTodayMealLogsBoxInnerHtml(summary) {
     ` : `
       <div class="un-meal-log-list" id="un-meal-log-list-container">
         ${visibleEntries.map(renderLogRow).join('')}
+        ${hasOverflow && !isTodayMealLogsExpanded ? expandBtnHtml : ''}
       </div>
 
-      ${hasOverflow ? `
+      ${hasOverflow && isTodayMealLogsExpanded ? `
         <div class="un-meal-expand-wrap">
-          <button
-            type="button"
-            class="un-meal-expand-btn ${isTodayMealLogsExpanded ? 'is-expanded' : ''}"
-            onclick="toggleTodayMealLogsExpanded()"
-            aria-expanded="${isTodayMealLogsExpanded ? 'true' : 'false'}"
-            aria-controls="un-meal-log-list-container"
-          >
-            <span class="un-expand-icon">${FluentIcons.chevronDown}</span>
-            <span>${isTodayMealLogsExpanded ? 'Thu gọn danh sách (chỉ xem top 3)' : `Mở rộng xem thêm ${hiddenCount} món khác`}</span>
-            <span class="un-expand-count-pill">${isTodayMealLogsExpanded ? 'Đang hiện tất cả' : `+${hiddenCount}`}</span>
-          </button>
+          ${expandBtnHtml}
         </div>
       ` : ''}
     `}
@@ -1034,8 +1039,8 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
         <!-- 4 Thẻ chọn nhanh Nhóm người dùng 1 chạm -->
         <div class="un-persona-grid">
           ${USER_PERSONA_OPTIONS.map(opt => {
-            const isSelected = hp.personaType === opt.id;
-            return `
+    const isSelected = hp.personaType === opt.id;
+    return `
               <div
                 class="un-persona-card ${isSelected ? 'active' : ''}"
                 style="${isSelected ? `border-color:${opt.color}; background:${opt.bg};` : ''}"
@@ -1053,7 +1058,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
                 <div class="un-persona-desc">${escapeHtml(opt.desc)}</div>
               </div>
             `;
-          }).join('')}
+  }).join('')}
         </div>
 
         <!-- Thanh câu hỏi nhanh: Muốn giữ dáng không? + Cân nặng, Chiều cao hiện tại thế nào? -->
@@ -1140,8 +1145,8 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
               <div class="un-qq-label" style="margin-bottom:6px;">${FluentIcons.tagFilled} Ưu tiên dinh dưỡng cá nhân (chạm để bật/tắt):</div>
               <div class="un-act-pills">
                 ${DIETARY_NOTE_TAGS.map(tag => {
-                  const hasTag = hp.dietaryNotes.includes(tag);
-                  return `
+    const hasTag = hp.dietaryNotes.includes(tag);
+    return `
                     <button
                       type="button"
                       class="un-act-pill ${hasTag ? 'active' : ''}"
@@ -1150,7 +1155,7 @@ function renderUserNutritionSurveyModalContent(targetUser = null) {
                       ${hasTag ? '✓ ' : '+ '}${escapeHtml(tag)}
                     </button>
                   `;
-                }).join('')}
+  }).join('')}
               </div>
             </div>
           </div>
@@ -1988,8 +1993,8 @@ function renderPersonalDishMatchBanner(dish, dynNutri) {
         </div>
         <div class="ppm-verdict">
           <span>${isOver
-            ? `⚠️ Sẽ vượt ${totalAfter - dailyGoal} kcal so với mục tiêu hôm nay`
-            : `✓ Sau khi ăn còn ${afterRemaining} kcal trong ngân sách hôm nay`}</span>
+      ? `⚠️ Sẽ vượt ${totalAfter - dailyGoal} kcal so với mục tiêu hôm nay`
+      : `✓ Sau khi ăn còn ${afterRemaining} kcal trong ngân sách hôm nay`}</span>
           <span class="ppm-link">Quản lý Kcal →</span>
         </div>
       </div>
