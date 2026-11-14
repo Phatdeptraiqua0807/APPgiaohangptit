@@ -10740,7 +10740,9 @@ body.view-ai-active .ai-chat-view-container {
 }
 
 .home-feat-safe-dot {
-  position: static;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -10753,7 +10755,17 @@ body.view-ai-active .ai-chat-view-container {
   white-space: nowrap;
 }
 
+.home-feat-img-badges .home-feat-safe-dot {
+  position: static;
+}
+
 .home-feat-dish-star {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.home-feat-img-badges .home-feat-dish-star {
   display: inline-flex;
   align-items: center;
   gap: 2px;

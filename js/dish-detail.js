@@ -910,16 +910,14 @@ function renderHomeFeaturedDishesSection() {
               <div class="home-feat-dish-img-wrap">
           <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
-                <div class="home-feat-img-badges">
-                  <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
-                  <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
-                </div>
+                <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
               <div class="home-feat-dish-body">
                 <div class="home-feat-dish-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
                 <div class="home-feat-dish-store">${FluentIcons.shop} ${escapeHtml(item.restaurantName)}</div>
                 <div class="home-feat-dish-foot">
                   <span class="home-feat-dish-price">${formatVND(item.price)}</span>
+                  <span class="home-feat-dish-star">⭐ ${prof.ratingVal}</span>
                 </div>
               </div>
             </div>
