@@ -192,8 +192,8 @@ function computeBMIInfo(weightKg, heightCm, hpContext = {}) {
 }
 
 function getDynamicNutritionRingAdvice(summary) {
-  if (!summary || !summary.healthProfile) return 'Hãy duy trì chế độ dinh dưỡng cân bằng và uống đủ nước hôm nay.';
-  const hp = summary.healthProfile;
+  const hp = summary && (summary.hp || summary.healthProfile);
+  if (!summary || !hp) return 'Hãy duy trì chế độ dinh dưỡng cân bằng và uống đủ nước hôm nay.';
   const consumedCal = Number(summary.consumed?.calories) || 0;
   const goalCal = Math.max(1000, Number(hp.dailyCalorieGoal) || 2000);
   const pct = Math.round((consumedCal / goalCal) * 100);
