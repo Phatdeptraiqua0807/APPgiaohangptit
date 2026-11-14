@@ -1588,7 +1588,7 @@ function renderAIDishVisualCards(items, msgIdx) {
                   data-vt-dish="${escapeHtml(String(item.id))}"
                   src="${escapeHtml(item.image)}"
                   alt="${escapeHtml(item.name)}"
-                  onerror="this.src='assets/images/hung_chien_gion.jpg'"
+                  onerror="this.src='assets/images/hung_chien_gion.webp'"
                 >
                 <span class="ai-dish-rating-pill">⭐ ${rating}</span>
                 ${isFreeship ? `<span class="ai-dish-freeship-pill">Freeship 0đ</span>` : ''}
@@ -1667,9 +1667,9 @@ function renderAIOrdersVisualList(orders) {
     return `
             <div class="ai-order-mini-card">
               <img
-                src="${escapeHtml(o.restaurantImage || 'assets/images/hung_chien_gion.jpg')}"
+                src="${escapeHtml(o.restaurantImage || 'assets/images/hung_chien_gion.webp')}"
                 alt="${escapeHtml(o.restaurantName || o.resName || 'Quán ăn')}"
-                onerror="this.src='assets/images/hung_chien_gion.jpg'"
+                onerror="this.src='assets/images/hung_chien_gion.webp'"
               >
               <div class="ai-order-mini-info">
                 <div class="ai-order-mini-top">

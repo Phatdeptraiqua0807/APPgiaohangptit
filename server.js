@@ -444,7 +444,7 @@ const CatalogIndex = {
       sizes: (it.sizes || []).map(s => ({ name: s.name, extraPrice: s.extraPrice || 0 })),
       toppingsCount: Array.isArray(it.toppings) ? it.toppings.length : 0,
       description: it.description || '',
-      image: it.image || 'assets/images/hung_chien_gion.jpg',
+      image: it.image || 'assets/images/hung_chien_gion.webp',
       toppings: it.toppings || []
     };
   },

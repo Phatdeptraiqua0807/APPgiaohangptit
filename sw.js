@@ -19,8 +19,8 @@ const CORE_SHELL_URLS = [
   './js/order-success.js?v=2.0',
   './js/router.js?v=1.7',
   './assets/animation/payment-success.json',
-  './assets/images/hung_chien_gion.jpg',
-  './assets/images/vietnamese-food-top-banner.jpg'
+  './assets/images/hung_chien_gion.webp',
+  './assets/images/vietnamese-food-top-banner.webp'
 ];
 
 self.addEventListener('install', (event) => {

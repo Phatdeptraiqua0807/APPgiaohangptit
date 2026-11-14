@@ -1143,7 +1143,7 @@ function dbmAiReviewHtml(job) {
           <div class="dbm-ai-card ${it.saved ? 'saved' : ''} ${it.include ? '' : 'excluded'}"
                ondragover="dbmCardDragOver(event)" ondragleave="dbmCardDragLeave(event)" ondrop="dbmAiCardDrop(event, '${jid}', ${idx})">
             <div class="dbm-ai-card-img">
-              <img src="${escapeHtml(dbmAiItemImage(it))}" alt="${escapeHtml(it.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+              <img src="${escapeHtml(dbmAiItemImage(it))}" alt="${escapeHtml(it.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
               ${!it.image ? `<span class="dbm-noimg-badge">Chưa có ảnh</span>` : ''}
               ${it.regen ? `<div class="dbm-card-busy"><span class="dbm-spinner"></span></div>` : ''}
               ${it.saved ? `<span class="dbm-saved-badge">✓ Đã lưu</span>` : `<label class="dbm-card-check"><input type="checkbox" ${it.include ? 'checked' : ''} onchange="dbmAiToggleInclude('${jid}', ${idx}, this.checked)"></label>`}

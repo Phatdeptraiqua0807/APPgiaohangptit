@@ -169,33 +169,33 @@ function fileTypeOrEmpty(f) { return (f && f.type) || ''; }
 // ─────────────────────────────────────────────────────────────────────────
 
 const DBM_CULINARY_RULES = [
-  { re: /\bpho bo\b/, vi: 'phở bò tái nạm hà nội', en: 'vietnamese beef pho noodle soup bowl', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.jpg' },
-  { re: /\bpho ga\b/, vi: 'phở gà ta nước trong', en: 'vietnamese chicken pho noodle soup', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.jpg' },
-  { re: /\bpho\b/, vi: 'phở truyền thống việt nam', en: 'vietnamese pho noodle soup bowl', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.jpg' },
-  { re: /\bbun bo\b/, vi: 'bún bò huế giò heo', en: 'bun bo hue spicy beef noodle soup', local: 'assets/images/bun_bo_hue_1792459733043.jpg' },
-  { re: /\bbun cha\b|\bbun thit nuong\b/, vi: 'bún chả thịt nướng hà nội', en: 'vietnamese bun cha grilled pork vermicelli', local: 'assets/images/bun_cha_1792459712673.jpg' },
-  { re: /\bbun dau\b/, vi: 'bún đậu mắm tôm mẹt đầy đủ', en: 'vietnamese bun dau mam tom fried tofu platter', local: 'assets/images/bun_cha_1792459712673.jpg' },
-  { re: /\bbun rieu\b|\bbun ca\b|\bbun hai san\b/, vi: 'bún riêu cua hải sản nóng hổi', en: 'vietnamese crab seafood noodle soup', local: 'assets/images/bun_bo_hue_1792459733043.jpg' },
-  { re: /\bmi cay\b/, vi: 'mì cay hải sản bò mỹ hàn quốc', en: 'korean spicy seafood ramen noodles bowl', local: 'assets/images/bun_bo_hue_1792459733043.jpg' },
-  { re: /\bmi tron\b|\bmi xao\b|\bramen\b|\budon\b|\bhu tieu\b|\bmien\b/, vi: 'mì trộn xào thập cẩm trứng lòng đào', en: 'asian stir fried noodles egg dish', local: 'assets/images/bun_cha_1792459712673.jpg' },
-  { re: /\bmi y\b|\bspaghetti\b|\bpasta\b/, vi: 'mì ý sốt bò bằm phô mai', en: 'spaghetti bolognese pasta plate', mealDb: 'Spaghetti', local: 'assets/images/pizza.jpg' },
-  { re: /\bbanh mi\b/, vi: 'bánh mì thịt nướng pate giòn rụm', en: 'vietnamese banh mi crispy baguette sandwich', mealDb: 'Banh Mi', local: 'assets/images/banh_mi_1792459688980.jpg' },
-  { re: /\bcom tam\b|\bcom suon\b/, vi: 'cơm tấm sườn bì chả trứng ốp la', en: 'vietnamese broken rice grilled pork chop com tam', local: 'assets/images/com_tam_1792459701659.jpg' },
-  { re: /\bcom ga\b|\bcom rang\b|\bcom chien\b|\bcom tron\b|\bbibimbap\b/, vi: 'cơm gà xối mỡ da giòn', en: 'crispy chicken rice plate asian food', local: 'assets/images/com_tam_1792459701659.jpg' },
-  { re: /\bgoi cuon\b|\bpho cuon\b|\bnem cuon\b|\bnem nuong\b/, vi: 'gỏi cuốn tôm thịt tươi nước chấm', en: 'vietnamese fresh shrimp spring rolls', local: 'assets/images/goi_cuon_1792459722505.jpg' },
-  { re: /\bga ran\b|\bga chien\b|\bcanh ga\b/, vi: 'gà rán sốt cay giòn rụm', en: 'crispy golden korean fried chicken', mealDb: 'Chicken', local: 'assets/images/ga_ran.jpg' },
-  { re: /\bxien nuong\b|\bthit xien\b|\bnuong bbq\b|\bdo nuong\b/, vi: 'thịt xiên nướng than hoa đường phố', en: 'grilled bbq meat skewers street food', local: 'assets/images/hung_chien_gion.jpg' },
-  { re: /\bnem chua ran\b|\bca vien\b|\bxien ban\b|\bkhoai tay chien\b|\bchien gion\b/, vi: 'đồ ăn vặt xiên que chiên giòn', en: 'crispy fried street food snacks platter', local: 'assets/images/hung_chien_gion.jpg' },
-  { re: /\bbanh xeo\b|\bbanh khot\b|\bbanh cuon\b|\bbanh trang\b/, vi: 'bánh xèo tôm thịt vàng giòn rau sống', en: 'vietnamese crispy crepe banh xeo', local: 'assets/images/banh_xeo_1792459745179.jpg' },
-  { re: /\btokbokki\b|\bbanh gao\b/, vi: 'bánh gạo cay tokbokki phô mai hàn quốc', en: 'korean spicy tteokbokki cheese rice cakes', local: 'assets/images/hung_chien_gion.jpg' },
-  { re: /\bkimbap\b|\bsushi\b/, vi: 'cơm cuộn rong biển sushi kimbap', en: 'sushi kimbap rolls platter', mealDb: 'Sushi', local: 'assets/images/sushi.jpg' },
-  { re: /\bpizza\b|\bburger\b|\bhamburger\b|\bbit tet\b|\bbo ne\b|\bsteak\b/, vi: 'bánh pizza phô mai hải sản nóng hổi', en: 'cheesy pizza burger food photography', mealDb: 'Pizza', local: 'assets/images/pizza.jpg' },
-  { re: /\bsalad\b|\buc ga\b|\beat clean\b|\bgao lut\b/, vi: 'salad ức gà áp chảo bơ rau xanh eat clean', en: 'healthy grilled chicken avocado salad bowl', mealDb: 'Salad', local: 'assets/images/goi_cuon_1792459722505.jpg' },
-  { re: /\blau\b|\bhotpot\b|\bchao\b|\bsup\b|\bxoi\b|\bdimsum\b|\bha cao\b/, vi: 'nồi lẩu thái hải sản chua cay', en: 'asian spicy seafood hotpot soup bowl', local: 'assets/images/bun_bo_hue_1792459733043.jpg' },
-  { re: /\btra sua\b|\btran chau\b|\bkem cheese\b|\bmatcha\b|\btra dao\b|\btra chanh\b|\btra trai cay\b/, vi: 'ly trà sữa trân châu đường đen kem phô mai', en: 'brown sugar boba pearl milk tea cup', local: 'assets/images/tra_sua.jpg' },
-  { re: /\bca phe\b|\bbac xiu\b|\blatte\b|\bamericano\b/, vi: 'ly cà phê sữa đá phin việt nam', en: 'vietnamese iced condensed milk coffee glass', cocktailDb: 'Coffee', local: 'assets/images/ca_phe.jpg' },
-  { re: /\bnuoc ep\b|\bsinh to\b|\bsmoothie\b|\bsua chua\b|\bche\b|\btau hu\b|\bflan\b|\bbanh ngot\b|\btiramisu\b/, vi: 'ly sinh tố chè trái cây tươi mát lạnh', en: 'fresh tropical fruit smoothie dessert bowl', cocktailDb: 'Smoothie', local: 'assets/images/tra_sua.jpg' },
-  { re: /\bcom\b/, vi: 'cơm phần món mặn việt nam', en: 'vietnamese savory rice dish plate', local: 'assets/images/com_tam_1792459701659.jpg' }
+  { re: /\bpho bo\b/, vi: 'phở bò tái nạm hà nội', en: 'vietnamese beef pho noodle soup bowl', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.webp' },
+  { re: /\bpho ga\b/, vi: 'phở gà ta nước trong', en: 'vietnamese chicken pho noodle soup', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.webp' },
+  { re: /\bpho\b/, vi: 'phở truyền thống việt nam', en: 'vietnamese pho noodle soup bowl', mealDb: 'Pho', local: 'assets/images/pho_bo_1792459676492.webp' },
+  { re: /\bbun bo\b/, vi: 'bún bò huế giò heo', en: 'bun bo hue spicy beef noodle soup', local: 'assets/images/bun_bo_hue_1792459733043.webp' },
+  { re: /\bbun cha\b|\bbun thit nuong\b/, vi: 'bún chả thịt nướng hà nội', en: 'vietnamese bun cha grilled pork vermicelli', local: 'assets/images/bun_cha_1792459712673.webp' },
+  { re: /\bbun dau\b/, vi: 'bún đậu mắm tôm mẹt đầy đủ', en: 'vietnamese bun dau mam tom fried tofu platter', local: 'assets/images/bun_cha_1792459712673.webp' },
+  { re: /\bbun rieu\b|\bbun ca\b|\bbun hai san\b/, vi: 'bún riêu cua hải sản nóng hổi', en: 'vietnamese crab seafood noodle soup', local: 'assets/images/bun_bo_hue_1792459733043.webp' },
+  { re: /\bmi cay\b/, vi: 'mì cay hải sản bò mỹ hàn quốc', en: 'korean spicy seafood ramen noodles bowl', local: 'assets/images/bun_bo_hue_1792459733043.webp' },
+  { re: /\bmi tron\b|\bmi xao\b|\bramen\b|\budon\b|\bhu tieu\b|\bmien\b/, vi: 'mì trộn xào thập cẩm trứng lòng đào', en: 'asian stir fried noodles egg dish', local: 'assets/images/bun_cha_1792459712673.webp' },
+  { re: /\bmi y\b|\bspaghetti\b|\bpasta\b/, vi: 'mì ý sốt bò bằm phô mai', en: 'spaghetti bolognese pasta plate', mealDb: 'Spaghetti', local: 'assets/images/pizza.webp' },
+  { re: /\bbanh mi\b/, vi: 'bánh mì thịt nướng pate giòn rụm', en: 'vietnamese banh mi crispy baguette sandwich', mealDb: 'Banh Mi', local: 'assets/images/banh_mi_1792459688980.webp' },
+  { re: /\bcom tam\b|\bcom suon\b/, vi: 'cơm tấm sườn bì chả trứng ốp la', en: 'vietnamese broken rice grilled pork chop com tam', local: 'assets/images/com_tam_1792459701659.webp' },
+  { re: /\bcom ga\b|\bcom rang\b|\bcom chien\b|\bcom tron\b|\bbibimbap\b/, vi: 'cơm gà xối mỡ da giòn', en: 'crispy chicken rice plate asian food', local: 'assets/images/com_tam_1792459701659.webp' },
+  { re: /\bgoi cuon\b|\bpho cuon\b|\bnem cuon\b|\bnem nuong\b/, vi: 'gỏi cuốn tôm thịt tươi nước chấm', en: 'vietnamese fresh shrimp spring rolls', local: 'assets/images/goi_cuon_1792459722505.webp' },
+  { re: /\bga ran\b|\bga chien\b|\bcanh ga\b/, vi: 'gà rán sốt cay giòn rụm', en: 'crispy golden korean fried chicken', mealDb: 'Chicken', local: 'assets/images/ga_ran.webp' },
+  { re: /\bxien nuong\b|\bthit xien\b|\bnuong bbq\b|\bdo nuong\b/, vi: 'thịt xiên nướng than hoa đường phố', en: 'grilled bbq meat skewers street food', local: 'assets/images/hung_chien_gion.webp' },
+  { re: /\bnem chua ran\b|\bca vien\b|\bxien ban\b|\bkhoai tay chien\b|\bchien gion\b/, vi: 'đồ ăn vặt xiên que chiên giòn', en: 'crispy fried street food snacks platter', local: 'assets/images/hung_chien_gion.webp' },
+  { re: /\bbanh xeo\b|\bbanh khot\b|\bbanh cuon\b|\bbanh trang\b/, vi: 'bánh xèo tôm thịt vàng giòn rau sống', en: 'vietnamese crispy crepe banh xeo', local: 'assets/images/banh_xeo_1792459745179.webp' },
+  { re: /\btokbokki\b|\bbanh gao\b/, vi: 'bánh gạo cay tokbokki phô mai hàn quốc', en: 'korean spicy tteokbokki cheese rice cakes', local: 'assets/images/hung_chien_gion.webp' },
+  { re: /\bkimbap\b|\bsushi\b/, vi: 'cơm cuộn rong biển sushi kimbap', en: 'sushi kimbap rolls platter', mealDb: 'Sushi', local: 'assets/images/sushi.webp' },
+  { re: /\bpizza\b|\bburger\b|\bhamburger\b|\bbit tet\b|\bbo ne\b|\bsteak\b/, vi: 'bánh pizza phô mai hải sản nóng hổi', en: 'cheesy pizza burger food photography', mealDb: 'Pizza', local: 'assets/images/pizza.webp' },
+  { re: /\bsalad\b|\buc ga\b|\beat clean\b|\bgao lut\b/, vi: 'salad ức gà áp chảo bơ rau xanh eat clean', en: 'healthy grilled chicken avocado salad bowl', mealDb: 'Salad', local: 'assets/images/goi_cuon_1792459722505.webp' },
+  { re: /\blau\b|\bhotpot\b|\bchao\b|\bsup\b|\bxoi\b|\bdimsum\b|\bha cao\b/, vi: 'nồi lẩu thái hải sản chua cay', en: 'asian spicy seafood hotpot soup bowl', local: 'assets/images/bun_bo_hue_1792459733043.webp' },
+  { re: /\btra sua\b|\btran chau\b|\bkem cheese\b|\bmatcha\b|\btra dao\b|\btra chanh\b|\btra trai cay\b/, vi: 'ly trà sữa trân châu đường đen kem phô mai', en: 'brown sugar boba pearl milk tea cup', local: 'assets/images/tra_sua.webp' },
+  { re: /\bca phe\b|\bbac xiu\b|\blatte\b|\bamericano\b/, vi: 'ly cà phê sữa đá phin việt nam', en: 'vietnamese iced condensed milk coffee glass', cocktailDb: 'Coffee', local: 'assets/images/ca_phe.webp' },
+  { re: /\bnuoc ep\b|\bsinh to\b|\bsmoothie\b|\bsua chua\b|\bche\b|\btau hu\b|\bflan\b|\bbanh ngot\b|\btiramisu\b/, vi: 'ly sinh tố chè trái cây tươi mát lạnh', en: 'fresh tropical fruit smoothie dessert bowl', cocktailDb: 'Smoothie', local: 'assets/images/tra_sua.webp' },
+  { re: /\bcom\b/, vi: 'cơm phần món mặn việt nam', en: 'vietnamese savory rice dish plate', local: 'assets/images/com_tam_1792459701659.webp' }
 ];
 
 const DBM_IMAGE_SOURCE_LABELS = {
@@ -261,7 +261,7 @@ function dbmBuildCulinarySearchPlan(name, { suffix = 'món ăn', category = '', 
     enQueries: enQueries.slice(0, 3),
     mealDb: rule?.mealDb || '',
     cocktailDb: rule?.cocktailDb || '',
-    localFallback: rule?.local || 'assets/images/hung_chien_gion.jpg'
+    localFallback: rule?.local || 'assets/images/hung_chien_gion.webp'
   };
 }
 
@@ -755,7 +755,7 @@ function renderHomeCategoryRestaurantSections() {
       return `
         <div class="restaurant-card" role="button" tabindex="0" onclick="openDishDetailById('${dishIdEsc}')">
           <div class="restaurant-card-img-wrapper">
-            <img class="restaurant-card-img" data-vt-dish="${dishIdEsc}" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <img class="restaurant-card-img" data-vt-dish="${dishIdEsc}" src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
             <span class="restaurant-card-badge ${scoreBadgeClass}">🥗 ${scoreNum.toFixed(1)}/10 • ${hInfo.badgeLabel || 'Lành mạnh'}</span>
             <button type="button"
               class="restaurant-card-fav ${isDishFav ? 'active' : ''}"
@@ -892,7 +892,7 @@ Object.assign(DB, {
       visualName: name,
       keyword: name,
       icon: String(p.icon || '').trim() || (cat ? cat.icon : (type === 'tag' ? '#️⃣' : '🛍️')),
-      image: String(p.image || '').trim() || (cat ? cat.image : 'assets/images/hung_chien_gion.jpg'),
+      image: String(p.image || '').trim() || (cat ? cat.image : 'assets/images/hung_chien_gion.webp'),
       description: String(p.description ?? '').trim() || (cat ? cat.description : `Danh mục ${name}`),
       showInVisualSuggestions: p.showInVisualSuggestions !== false,
       showOnHome: p.showOnHome !== false,
@@ -975,7 +975,7 @@ Object.assign(DB, {
       if (!fallback) {
         fallback = {
           id: 'cat_other', name: 'Khác', visualName: 'Khác', keyword: 'Khác', icon: '🛍️',
-          image: 'assets/images/hung_chien_gion.jpg', description: 'Mặt hàng chưa phân loại',
+          image: 'assets/images/hung_chien_gion.webp', description: 'Mặt hàng chưa phân loại',
           showInVisualSuggestions: false, showOnHome: true, type: 'manual', tagRule: [],
           isCustom: true, createdAt: new Date().toISOString()
         };
@@ -1060,7 +1060,7 @@ Object.assign(DB, {
         if (Number(it.restaurantId) === Number(store.id)) it.restaurantName = store.name;
       });
     } else {
-      if (!fields.image) fields.image = cat?.image || 'assets/images/hung_chien_gion.jpg';
+      if (!fields.image) fields.image = cat?.image || 'assets/images/hung_chien_gion.webp';
       const maxId = this.data.restaurants.reduce((m, r) => Math.max(m, Number(r.id) || 0), 1000);
       store = {
         id: maxId + 1,
@@ -1340,7 +1340,7 @@ Object.assign(DB, {
       fields.image = imageIn;
       fields.imageIsPlaceholder = Boolean(p.imageIsPlaceholder) || imageIn.startsWith('data:image/svg+xml');
     } else if (!item) {
-      fields.image = (cat && cat.image) || 'assets/images/hung_chien_gion.jpg';
+      fields.image = (cat && cat.image) || 'assets/images/hung_chien_gion.webp';
       fields.imageIsPlaceholder = true;
     }
 

@@ -222,7 +222,7 @@ const DB = {
       this.data.restaurants.push({
         id: 1000,
         name: 'Gian Hàng Tự Chọn PTIT (Mặt Hàng Tùy Chỉnh)',
-        image: 'assets/images/hero_banner_1792459663182.jpg',
+        image: 'assets/images/hero_banner_1792459663182.webp',
         categoryId: 'cat_custom',
         category: 'Tùy chỉnh',
         rating: 5.0,
@@ -355,7 +355,7 @@ const DB = {
       .map(c => ({
         id: c.id,
         name: c.visualName || c.name,
-        image: c.image || 'assets/images/hung_chien_gion.jpg',
+        image: c.image || 'assets/images/hung_chien_gion.webp',
         keyword: c.keyword || c.name,
         icon: c.icon || '🍽️',
         isCustom: !!c.isCustom
@@ -618,7 +618,7 @@ const DB = {
       visualName: cleanName,
       keyword: cleanKeyword,
       icon: String(icon || '🛍️').trim() || '🛍️',
-      image: String(image || '').trim() || 'assets/images/hung_chien_gion.jpg',
+      image: String(image || '').trim() || 'assets/images/hung_chien_gion.webp',
       description: String(description || `Danh mục ${cleanName} tùy chỉnh`).trim(),
       showInVisualSuggestions: Boolean(showInVisualSuggestions),
       isCustom: true,
@@ -716,7 +716,7 @@ const DB = {
     const newRes = {
       id: maxId + 1,
       name: cleanName,
-      image: image || cat?.image || 'assets/images/hung_chien_gion.jpg',
+      image: image || cat?.image || 'assets/images/hung_chien_gion.webp',
       categoryId: cat ? cat.id : 'cat_custom',
       category: cat ? cat.name : 'Tùy chỉnh',
       rating: 5.0,
@@ -785,7 +785,7 @@ const DB = {
       name: cleanName,
       price: priceNum,
       priceFormatted: formatPriceVND(priceNum),
-      image: String(payload.image || '').trim() || (cat ? cat.image : 'assets/images/hung_chien_gion.jpg'),
+      image: String(payload.image || '').trim() || (cat ? cat.image : 'assets/images/hung_chien_gion.webp'),
       description: String(payload.description || '').trim() || `${cleanName} thuộc danh mục ${cat ? cat.name : 'mặt hàng mới'}, đảm bảo chất lượng tươi ngon.`,
       sizes: sizes,
       toppings: toppings,

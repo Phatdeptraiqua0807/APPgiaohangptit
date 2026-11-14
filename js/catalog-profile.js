@@ -28,19 +28,19 @@ const USER_AVATAR_PRESETS = [
 ];
 
 const PRESET_FOOD_IMAGES = [
-  { label: 'Hùng chiên giòn', path: 'assets/images/hung_chien_gion.jpg' },
-  { label: 'Phở bò', path: 'assets/images/pho_bo_1792459676492.jpg' },
-  { label: 'Bánh mì', path: 'assets/images/banh_mi_1792459688980.jpg' },
-  { label: 'Cơm tấm', path: 'assets/images/com_tam_1792459701659.jpg' },
-  { label: 'Bún bò Huế', path: 'assets/images/bun_bo_hue_1792459733043.jpg' },
-  { label: 'Bún chả', path: 'assets/images/bun_cha_1792459712673.jpg' },
-  { label: 'Gỏi cuốn', path: 'assets/images/goi_cuon_1792459722505.jpg' },
-  { label: 'Bánh xèo', path: 'assets/images/banh_xeo_1792459745179.jpg' },
-  { label: 'Gà rán / Burger', path: 'assets/images/ga_ran.jpg' },
-  { label: 'Pizza / Mỳ Ý', path: 'assets/images/pizza.jpg' },
-  { label: 'Sushi Nhật', path: 'assets/images/sushi.jpg' },
-  { label: 'Trà sữa / Chè', path: 'assets/images/tra_sua.jpg' },
-  { label: 'Cà phê / Đồ uống', path: 'assets/images/ca_phe.jpg' }
+  { label: 'Hùng chiên giòn', path: 'assets/images/hung_chien_gion.webp' },
+  { label: 'Phở bò', path: 'assets/images/pho_bo_1792459676492.webp' },
+  { label: 'Bánh mì', path: 'assets/images/banh_mi_1792459688980.webp' },
+  { label: 'Cơm tấm', path: 'assets/images/com_tam_1792459701659.webp' },
+  { label: 'Bún bò Huế', path: 'assets/images/bun_bo_hue_1792459733043.webp' },
+  { label: 'Bún chả', path: 'assets/images/bun_cha_1792459712673.webp' },
+  { label: 'Gỏi cuốn', path: 'assets/images/goi_cuon_1792459722505.webp' },
+  { label: 'Bánh xèo', path: 'assets/images/banh_xeo_1792459745179.webp' },
+  { label: 'Gà rán / Burger', path: 'assets/images/ga_ran.webp' },
+  { label: 'Pizza / Mỳ Ý', path: 'assets/images/pizza.webp' },
+  { label: 'Sushi Nhật', path: 'assets/images/sushi.webp' },
+  { label: 'Trà sữa / Chè', path: 'assets/images/tra_sua.webp' },
+  { label: 'Cà phê / Đồ uống', path: 'assets/images/ca_phe.webp' }
 ];
 
 // ── Đồng bộ State từ User đang đăng nhập sang toàn bộ App UI ──
@@ -427,7 +427,7 @@ function renderCatalogItemsGridHtml(itemsList) {
     return `
           <div class="db-item-card ${isOut ? 'out-of-stock' : ''}">
             <div class="db-item-img-wrap">
-              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
               <span class="db-item-sku">${escapeHtml(item.sku || 'SP')}</span>
               ${item.isCustom ? `<span class="db-item-custom-badge">Tùy chỉnh ${FluentIcons.sparkleFilled}</span>` : ''}
               ${isOut ? `<span class="db-item-out-overlay">TẠM HẾT</span>` : ''}
@@ -740,7 +740,7 @@ function copyDatabaseJsonToClipboard() {
 // =========================================================================
 
 let tempCatIcon = '🧋';
-let tempCatImage = 'assets/images/hung_chien_gion.jpg';
+let tempCatImage = 'assets/images/hung_chien_gion.webp';
 let pendingReturnToItemModal = null;
 
 function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
@@ -752,7 +752,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null) {
   const editingCat = editCatId ? DB.getCategoryById(editCatId) : null;
 
   tempCatIcon = editingCat ? editingCat.icon : '🛍️';
-  tempCatImage = editingCat ? editingCat.image : 'assets/images/hung_chien_gion.jpg';
+  tempCatImage = editingCat ? editingCat.image : 'assets/images/hung_chien_gion.webp';
 
   sheet.innerHTML = `
     <div class="delivery-modal-header">
@@ -942,7 +942,7 @@ function submitCategoryEditor(editCatId) {
 
 let tempItemSizes = [];
 let tempItemToppings = [];
-let tempItemImage = 'assets/images/hung_chien_gion.jpg';
+let tempItemImage = 'assets/images/hung_chien_gion.webp';
 
 function openItemEditorModal(editItemId = null, preselectedCatId = null, restoredDraft = null) {
   const sheet = document.getElementById('modal-bottom-sheet');
@@ -959,7 +959,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
   const selectedStoreId = restoredDraft?.restaurantId
     || (editingItem ? editingItem.restaurantId : 1000);
 
-  tempItemImage = restoredDraft?.image || (editingItem ? editingItem.image : 'assets/images/hung_chien_gion.jpg');
+  tempItemImage = restoredDraft?.image || (editingItem ? editingItem.image : 'assets/images/hung_chien_gion.webp');
 
   tempItemSizes = restoredDraft?.sizes
     || (editingItem && Array.isArray(editingItem.sizes) && editingItem.sizes.length > 0
@@ -2491,7 +2491,7 @@ function renderFavoritesSectionContent(favDishes, favStores) {
                   onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${store.id}, ${originalIdx})`}"
                 >
                   <div class="fav-dish-img-wrap">
-                    <img class="fav-dish-img" data-vt-dish="${dishIdEsc}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <img class="fav-dish-img" data-vt-dish="${dishIdEsc}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                     <button type="button"
                       class="fav-card-heart-btn active"
                       data-fav-dish-id="${dishIdEsc}"
@@ -2560,7 +2560,7 @@ function renderFavoritesSectionContent(favDishes, favStores) {
                   onclick="openStoreDetailView(${r.id}, 'for-you', 'favorites')"
                 >
                   <div class="fav-store-img-wrap">
-                    <img class="fav-store-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <img class="fav-store-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                     ${r.badge ? `<span class="fav-store-badge">${escapeHtml(r.badge)}</span>` : ''}
                   </div>
                   <div class="fav-store-body">

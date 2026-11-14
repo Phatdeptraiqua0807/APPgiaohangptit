@@ -69,7 +69,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
   dbmEditorIngredients = JSON.parse(JSON.stringify(base.ingredients || []));
   dbmTagState.item = dbmParseTags(base.tags);
   const nutri = base.nutrition || {};
-  const previewSrc = tempItemImage || (selectedCat ? selectedCat.image : 'assets/images/hung_chien_gion.jpg');
+  const previewSrc = tempItemImage || (selectedCat ? selectedCat.image : 'assets/images/hung_chien_gion.webp');
   const aiReady = typeof dbmAiFillItemForm === 'function';
 
   dbmDropHandlers['itemimg'] = async dropped => {
@@ -148,7 +148,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
         <summary><span>🖼️ Hình ảnh mặt hàng (Đa nguồn Free & Kéo thả)</span></summary>
         <div class="dbm-section-body">
           <div class="dbm-image-editor">
-            <div class="dbm-image-preview"><img id="item-editor-img-preview" src="${escapeHtml(previewSrc)}" alt="Ảnh mặt hàng" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <div class="dbm-image-preview"><img id="item-editor-img-preview" src="${escapeHtml(previewSrc)}" alt="Ảnh mặt hàng" onerror="this.src='assets/images/hung_chien_gion.webp'">
               <span class="dbm-image-state" id="item-editor-img-state">${tempItemImage && !dbmEditorImageIsPlaceholder ? '' : 'Chưa có ảnh thật'}</span>
             </div>
             <div class="dbm-image-source">
@@ -656,7 +656,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null, pr
   const editing = editCatId ? DB.getCategoryById(editCatId) : null;
 
   tempCatIcon = editing ? editing.icon : (presetTags ? '#️⃣' : '🛍️');
-  tempCatImage = editing ? editing.image : 'assets/images/hung_chien_gion.jpg';
+  tempCatImage = editing ? editing.image : 'assets/images/hung_chien_gion.webp';
   dbmCatType = editing ? (editing.type || 'manual') : (presetTags ? 'tag' : 'manual');
   dbmTagState.cat = dbmParseTags(editing ? editing.tagRule : (presetTags || []));
 
@@ -703,7 +703,7 @@ function openCategoryEditorModal(editCatId = null, fromItemModalDraft = null, pr
       <div class="delivery-input-group">
         <label class="delivery-input-label">Ảnh đại diện (thả ảnh, chọn từ thư viện hoặc dán URL)</label>
         <div class="dbm-image-editor">
-          <div class="dbm-image-preview small"><img id="cat-editor-img-preview" src="${escapeHtml(tempCatImage)}" alt="Ảnh danh mục" onerror="this.src='assets/images/hung_chien_gion.jpg'"></div>
+          <div class="dbm-image-preview small"><img id="cat-editor-img-preview" src="${escapeHtml(tempCatImage)}" alt="Ảnh danh mục" onerror="this.src='assets/images/hung_chien_gion.webp'"></div>
           <div class="dbm-image-source">
             ${dbmDropzoneHtml('catimg', 'Thả ảnh hoặc bấm để chọn', { multiple: false, compact: true })}
             <input type="text" id="cat-editor-image" class="delivery-input-field" placeholder="URL ảnh"
@@ -1126,7 +1126,7 @@ function openStoreEditorModal(editStoreId = null, returnDraft = null) {
       <div class="delivery-input-group">
         <label class="delivery-input-label">Ảnh cửa hàng</label>
         <div class="dbm-image-editor">
-          <div class="dbm-image-preview small"><img id="store-editor-img-preview" src="${escapeHtml(dbmStoreImage || 'assets/images/hung_chien_gion.jpg')}" alt="" onerror="this.src='assets/images/hung_chien_gion.jpg'"></div>
+          <div class="dbm-image-preview small"><img id="store-editor-img-preview" src="${escapeHtml(dbmStoreImage || 'assets/images/hung_chien_gion.webp')}" alt="" onerror="this.src='assets/images/hung_chien_gion.webp'"></div>
           <div class="dbm-image-source">
             ${dbmDropzoneHtml('storeimg', 'Thả ảnh hoặc bấm để chọn', { multiple: false, compact: true })}
             <input type="text" id="store-editor-image" class="delivery-input-field" placeholder="URL ảnh" value="${escapeHtml(dbmStoreImage.startsWith('data:') ? '' : dbmStoreImage)}" onchange="dbmSetStoreImage(this.value.trim())">

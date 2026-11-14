@@ -68,7 +68,7 @@ function dbmRefreshManager() {
 }
 
 function dbmThumb(src, alt = '') {
-  return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">`;
+  return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.webp'">`;
 }
 
 // ── Vùng thả ảnh dùng chung ──

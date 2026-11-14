@@ -3,9 +3,9 @@ window.__DATABASE_SEED__ = {
   "meta": {
     "dbName": "ptitngon_database",
     "version": "3.0.0",
-    "updatedAt": "2026-11-10T14:54:58.256Z",
+    "updatedAt": "2026-11-14T14:49:50.421Z",
     "description": "Cơ sở dữ liệu hoàn chỉnh ptitngon v3: Mặt hàng (tag, dinh dưỡng, nguyên liệu, địa điểm, đánh giá, đã bán, voucher), Danh mục thủ công & theo Tag, Cửa hàng, Thư viện ảnh & Hồ sơ người dùng",
-    "lastAction": "place_order"
+    "lastAction": "bulk_update_items"
   },
   "categories": [
     {
@@ -14,7 +14,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Hùng chiên giòn",
       "keyword": "Hùng chiên giòn",
       "icon": "🔥",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "description": "Hùng chiên giòn",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -30,7 +30,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Phở bò",
       "keyword": "Phở",
       "icon": "🍜",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Phở",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -46,7 +46,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bánh mì",
       "keyword": "Bánh mì",
       "icon": "🥖",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/banh_mi_1792459688980.webp",
       "description": "Bánh mì",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -62,7 +62,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Cơm tấm",
       "keyword": "Cơm tấm",
       "icon": "🍚",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Cơm tấm",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -78,7 +78,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bún bò Huế",
       "keyword": "Bún bò",
       "icon": "🍝",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Bún bò",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -94,7 +94,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bún chả",
       "keyword": "Bún chả",
       "icon": "🥩",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Bún chả",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -110,7 +110,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Hủ tiếu",
       "keyword": "Hủ tiếu",
       "icon": "🥘",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Hủ tiếu",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -126,7 +126,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Gà rán",
       "keyword": "Gà rán",
       "icon": "🍗",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Gà rán",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -142,7 +142,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Pizza",
       "keyword": "Pizza",
       "icon": "🍕",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/pizza.webp",
       "description": "Pizza",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -158,7 +158,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Sushi",
       "keyword": "Sushi",
       "icon": "🍣",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/sushi.webp",
       "description": "Sushi",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -174,7 +174,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Trà sữa",
       "keyword": "Trà sữa",
       "icon": "🧋",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Trà sữa",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -190,7 +190,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Cà phê",
       "keyword": "Cà phê",
       "icon": "☕",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/ca_phe.webp",
       "description": "Cà phê",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -206,7 +206,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bánh xèo",
       "keyword": "Bánh xèo",
       "icon": "🥞",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/banh_xeo_1792459745179.webp",
       "description": "Bánh xèo",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -222,7 +222,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Gỏi cuốn",
       "keyword": "Gỏi cuốn",
       "icon": "🥗",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Gỏi cuốn",
       "showInVisualSuggestions": true,
       "isCustom": false,
@@ -238,7 +238,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Nem nướng",
       "keyword": "Nem nướng",
       "icon": "🍢",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Nem nướng",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -254,7 +254,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Lẩu",
       "keyword": "Lẩu",
       "icon": "🍲",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Lẩu",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -270,7 +270,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Chè",
       "keyword": "Chè",
       "icon": "🍧",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Chè",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -286,7 +286,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Burger",
       "keyword": "Burger",
       "icon": "🍔",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Burger",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -302,7 +302,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bánh cuốn",
       "keyword": "Bánh cuốn",
       "icon": "🥟",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Bánh cuốn",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -318,7 +318,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Cơm gà",
       "keyword": "Cơm gà",
       "icon": "🍛",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Cơm gà",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -334,7 +334,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Cơm niêu",
       "keyword": "Cơm niêu",
       "icon": "🍱",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Cơm niêu",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -350,7 +350,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Bún đậu",
       "keyword": "Bún đậu",
       "icon": "🍱",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Bún đậu",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -366,7 +366,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Mì Quảng",
       "keyword": "Mì Quảng",
       "icon": "🍜",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Mì Quảng",
       "showInVisualSuggestions": false,
       "isCustom": false,
@@ -382,7 +382,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Cay & Chiên giòn",
       "keyword": "Cay & Chiên giòn",
       "icon": "🌶️",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "description": "Danh mục tự động gom mọi mặt hàng mang tag #cay hoặc #chiên giòn",
       "showInVisualSuggestions": true,
       "showOnHome": false,
@@ -401,7 +401,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Healthy Thanh Đạm",
       "keyword": "Healthy Thanh Đạm",
       "icon": "🥗",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Danh mục tự động gom các món lành mạnh mang tag #healthy hoặc #thanh đạm",
       "showInVisualSuggestions": true,
       "showOnHome": false,
@@ -420,7 +420,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Ăn Xế & Giải Khát",
       "keyword": "Ăn Xế & Giải Khát",
       "icon": "🧋",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Danh mục tự động gom các món mang tag #ăn vặt, #đồ uống hoặc #tráng miệng",
       "showInVisualSuggestions": true,
       "showOnHome": false,
@@ -440,7 +440,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Đặc sản Tây Bắc",
       "keyword": "Đặc sản Tây Bắc",
       "icon": "🌽",
-      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
       "description": "Các món mèn mén ngô, thắng cố và đặc sản núi rừng nướng mắc khén hạt dổi",
       "showInVisualSuggestions": true,
       "showOnHome": true,
@@ -456,7 +456,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Mì cay",
       "keyword": "Mì cay",
       "icon": "🌶️",
-      "image": "assets/images/uploads/images_1794065198859_s579.jpg",
+      "image": "assets/images/uploads/images_1794065198859_s579.webp",
       "description": "Mì cay Hàn Quốc 7 cấp độ đậm đà, ngập tràn topping giá rẻ cho sinh viên",
       "showInVisualSuggestions": true,
       "showOnHome": true,
@@ -472,7 +472,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Món Âu",
       "keyword": "Món Âu",
       "icon": "🥩",
-      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.jpg",
+      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.webp",
       "description": "Các món ăn Tây Âu tinh tế từ Bít tết, Mì Ý, Súp kem tới Salad chuẩn vị",
       "showInVisualSuggestions": true,
       "showOnHome": true,
@@ -488,7 +488,7 @@ window.__DATABASE_SEED__ = {
       "visualName": "Ăn tao nhã mỗi ngày",
       "keyword": "Ăn tao nhã mỗi ngày",
       "icon": "🍓",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Danh mục Ăn tao nhã mỗi ngày",
       "showInVisualSuggestions": true,
       "showOnHome": true,
@@ -656,7 +656,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 1003,
       "name": "Le Petit Bistro - Bít Tết & Món Âu Hà Đông",
-      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.jpg",
+      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.webp",
       "categoryId": "cat_custom_mon_au_xxhj",
       "category": "Món Âu",
       "rating": 5,
@@ -681,7 +681,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 1002,
       "name": "Mì Cay Seoul 7 Cấp Độ - Học Viện PTIT",
-      "image": "assets/images/uploads/images_1794065198859_s579.jpg",
+      "image": "assets/images/uploads/images_1794065198859_s579.webp",
       "categoryId": "cat_custom_mi_cay_t05c",
       "category": "Mì cay",
       "rating": 5,
@@ -706,7 +706,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 1001,
       "name": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
-      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
       "categoryId": "cat_custom_dac_san_tay_bac_om9b",
       "category": "Đặc sản Tây Bắc",
       "rating": 5,
@@ -731,7 +731,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 999,
       "name": "Bếp Hùng Chiên Giòn - Hỏa Ngục Độc Quyền",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "categoryId": "cat_hung_chien_gion",
       "category": "Hùng chiên giòn",
       "rating": 5,
@@ -758,7 +758,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 1,
       "name": "Phở Hòa Pasteur - Gia Truyền 1968",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "categoryId": "cat_pho",
       "category": "Phở",
       "rating": 4.9,
@@ -785,7 +785,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 2,
       "name": "Bánh Mì Huỳnh Hoa - Đặc Sản Sài Gòn",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/banh_mi_1792459688980.webp",
       "categoryId": "cat_banh_mi",
       "category": "Bánh mì",
       "rating": 4.8,
@@ -812,7 +812,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 3,
       "name": "Cơm Tấm Sườn Bì Chả Ba Ghiền",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "categoryId": "cat_com_tam",
       "category": "Cơm tấm",
       "rating": 4.7,
@@ -838,7 +838,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 4,
       "name": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "categoryId": "cat_bun_bo",
       "category": "Bún bò",
       "rating": 4.9,
@@ -864,7 +864,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 5,
       "name": "Bún Chả Hà Nội Phố Cổ 1986",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "categoryId": "cat_bun_cha",
       "category": "Bún chả",
       "rating": 4.8,
@@ -890,7 +890,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 6,
       "name": "Hủ Tiếu Nam Vang Thành Đạt",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "categoryId": "cat_hu_tieu",
       "category": "Hủ tiếu",
       "rating": 4.8,
@@ -916,7 +916,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 7,
       "name": "Gà Rán Giòn Rụm Texas Crunch",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "categoryId": "cat_ga_ran",
       "category": "Gà rán",
       "rating": 4.8,
@@ -942,7 +942,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 8,
       "name": "Pizza Napoli & Pasta Ý - Lò Củi Thủ Công",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/pizza.webp",
       "categoryId": "cat_pizza",
       "category": "Pizza",
       "rating": 4.9,
@@ -968,7 +968,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 9,
       "name": "Sushi Hokkaido & Sashimi Tươi Sống",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/sushi.webp",
       "categoryId": "cat_sushi",
       "category": "Sushi",
       "rating": 4.9,
@@ -994,7 +994,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 10,
       "name": "Gong Cha & Koi Thé - Trà Sữa Đài Loan",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "categoryId": "cat_tra_sua",
       "category": "Trà sữa",
       "rating": 4.8,
@@ -1020,7 +1020,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 11,
       "name": "The Coffee House & Cà Phê Muối Sài Gòn",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/ca_phe.webp",
       "categoryId": "cat_ca_phe",
       "category": "Cà phê",
       "rating": 4.9,
@@ -1046,7 +1046,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 12,
       "name": "Bánh Xèo & Bánh Khọt Mười Xiềm",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/banh_xeo_1792459745179.webp",
       "categoryId": "cat_banh_xeo",
       "category": "Bánh xèo",
       "rating": 4.8,
@@ -1072,7 +1072,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 13,
       "name": "Cơm Gà Xối Mỡ 142 Thập Toàn",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "categoryId": "cat_com_ga",
       "category": "Cơm gà",
       "rating": 4.8,
@@ -1098,7 +1098,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 14,
       "name": "Gỏi Cuốn & Bánh Tráng Hoàng Ty",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "categoryId": "cat_goi_cuon",
       "category": "Gỏi cuốn",
       "rating": 4.8,
@@ -1124,7 +1124,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 15,
       "name": "Nem Nướng Nha Trang D'ran",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "categoryId": "cat_nem_nuong",
       "category": "Nem nướng",
       "rating": 4.8,
@@ -1150,7 +1150,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 16,
       "name": "Bánh Cuốn Nóng Tây Hồ Gia Truyền",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "categoryId": "cat_banh_cuon",
       "category": "Bánh cuốn",
       "rating": 4.8,
@@ -1176,7 +1176,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 17,
       "name": "The Burger Shack - Bò Nướng Phô Mai",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "categoryId": "cat_burger",
       "category": "Burger",
       "rating": 4.8,
@@ -1202,7 +1202,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 18,
       "name": "Chè Thái Ý Phương & Chè Bưởi An Giang",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "categoryId": "cat_che",
       "category": "Chè",
       "rating": 4.8,
@@ -1228,7 +1228,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 19,
       "name": "Cơm Niêu Sài Gòn - Hương Vị Quê Nhà",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "categoryId": "cat_com_nieu",
       "category": "Cơm niêu",
       "rating": 4.9,
@@ -1254,7 +1254,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 20,
       "name": "Lẩu Thái Chua Cay & Hải Sản Tươi",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "categoryId": "cat_lau",
       "category": "Lẩu",
       "rating": 4.8,
@@ -1280,7 +1280,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 21,
       "name": "Bún Đậu Mắm Tôm A Chảnh Chuẩn Vị",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "categoryId": "cat_bun_dau",
       "category": "Bún đậu",
       "rating": 4.8,
@@ -1306,7 +1306,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 22,
       "name": "Mì Quảng Bà Mua - Hương Vị Xứ Quảng",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "categoryId": "cat_mi_quang",
       "category": "Mì Quảng",
       "rating": 4.8,
@@ -1332,7 +1332,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": 1000,
       "name": "Gian Hàng Tự Chọn PTIT (Mặt Hàng Tùy Chỉnh)",
-      "image": "assets/images/hero_banner_1792459663182.jpg",
+      "image": "assets/images/hero_banner_1792459663182.webp",
       "categoryId": "cat_custom",
       "category": "Tùy chỉnh",
       "rating": 5,
@@ -2797,7 +2797,7 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20",
         "PTITNGON10"
       ],
-      "image": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067682681_mfkc.jpg",
+      "image": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067682681_mfkc.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -2890,7 +2890,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.jpg",
+      "image": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -2972,7 +2972,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "HEALTHY20"
       ],
-      "image": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067640773_w18f.jpg",
+      "image": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067640773_w18f.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3151,7 +3151,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.jpg",
+      "image": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3254,7 +3254,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/images_1794065178470_ug90.jpg",
+      "image": "assets/images/uploads/images_1794065178470_ug90.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3357,7 +3357,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/images_1794065250494_8fgh.jpg",
+      "image": "assets/images/uploads/images_1794065250494_8fgh.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3464,7 +3464,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.jpg",
+      "image": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3568,7 +3568,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/images_1794065216865_ntmf.jpg",
+      "image": "assets/images/uploads/images_1794065216865_ntmf.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3671,7 +3671,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/images_1794065198859_s579.jpg",
+      "image": "assets/images/uploads/images_1794065198859_s579.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3765,7 +3765,7 @@ window.__DATABASE_SEED__ = {
         "FREESHIP",
         "PTITNGON50"
       ],
-      "image": "assets/images/uploads/images_1794064807416_c34i.jpg",
+      "image": "assets/images/uploads/images_1794064807416_c34i.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3855,7 +3855,7 @@ window.__DATABASE_SEED__ = {
         "FREESHIP",
         "PTITNGON10"
       ],
-      "image": "assets/images/uploads/images_1794064795737_pw8r.jpg",
+      "image": "assets/images/uploads/images_1794064795737_pw8r.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -3945,7 +3945,7 @@ window.__DATABASE_SEED__ = {
         "FREESHIP",
         "PTITNGON10"
       ],
-      "image": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.jpg",
+      "image": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -4035,7 +4035,7 @@ window.__DATABASE_SEED__ = {
         "PTITNGON10",
         "FREESHIP"
       ],
-      "image": "assets/images/uploads/images_1794064752205_s8wx.jpg",
+      "image": "assets/images/uploads/images_1794064752205_s8wx.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -4125,7 +4125,7 @@ window.__DATABASE_SEED__ = {
         "FREESHIP",
         "PTITNGON10"
       ],
-      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+      "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
       "imageIsPlaceholder": false,
       "isCustom": true,
       "createdByUserId": "user_ptit_01",
@@ -4173,7 +4173,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hùng Chiên Giòn Hỏa Ngục",
       "price": 69000,
       "priceFormatted": "69.000đ",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "description": "Món Hùng Chiên Giòn uy lực vô song, lớp vỏ bọc lửa hắc ám giòn tan rụm rụm, năng lượng bùng nổ đánh thức mọi giác quan!",
       "sizes": [
         {
@@ -4283,7 +4283,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hùng Chiên Giòn Lắc Phô Mai Nham Thạch",
       "price": 79000,
       "priceFormatted": "79.000đ",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "description": "Hùng chiên giòn vàng ươm lắc đẫm phô mai nham thạch hảo hạng, thơm lừng béo ngậy xen lẫn vị cay tê cuốn hút.",
       "sizes": [
         {
@@ -4379,7 +4379,7 @@ window.__DATABASE_SEED__ = {
       "name": "Combo Hùng Chiên Giòn + Nước Tăng Lực Hắc Ám",
       "price": 99000,
       "priceFormatted": "99.000đ",
-      "image": "assets/images/hung_chien_gion.jpg",
+      "image": "assets/images/hung_chien_gion.webp",
       "description": "Combo hoàn hảo hồi phục 100% mana và thể lực: 1 phần Hùng Chiên Giòn bốc lửa + 1 lon nước tăng lực hắc ám mát lạnh sảng khoái.",
       "sizes": [
         {
@@ -4468,7 +4468,7 @@ window.__DATABASE_SEED__ = {
       "name": "Phở Tái Nạm Gầu Bò",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Tô phở nóng hổi với thịt bò tái tươi mọng, nạm bò mềm ngậy và gầu bò giòn rụm trên nền nước dùng trong vắt gia truyền hầm 12 tiếng.",
       "sizes": [
         {
@@ -4571,7 +4571,7 @@ window.__DATABASE_SEED__ = {
       "name": "Phở Đặc Biệt Thập Cẩm Bò Viên",
       "price": 85000,
       "priceFormatted": "85.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/images_1794665754243_g3o3.webp",
       "description": "Đầy đủ tinh hoa: Bò tái, nạm, gầu, gân dẻo, bắp hoa và bò viên gân giòn rụm trong tô nước dùng thơm nồng hoa hồi quế chi.",
       "sizes": [
         {
@@ -4652,7 +4652,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9.3,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:15:54.263Z"
     },
     {
       "id": "item_1_3",
@@ -4664,7 +4666,7 @@ window.__DATABASE_SEED__ = {
       "name": "Phở Gà Ta Đùi Xé Lá Chanh",
       "price": 60000,
       "priceFormatted": "60.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/images_1794665743547_3c25.webp",
       "description": "Thịt gà ta thả vườn da vàng óng giòn sần sật, thịt chắc ngọt thơm thoang thoảng mùi lá chanh tươi thái chỉ.",
       "sizes": [
         {
@@ -4739,7 +4741,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.9,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:15:43.586Z"
     },
     {
       "id": "item_1_4",
@@ -4751,7 +4755,7 @@ window.__DATABASE_SEED__ = {
       "name": "Quẩy Giòn Nóng & Trứng Chần",
       "price": 15000,
       "priceFormatted": "15.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/images_1794665789263_l2qb.webp",
       "description": "Đĩa quẩy chiên vàng ruộm giòn rụm ăn kèm chén trứng gà ta chần nước béo bùi ngọt lịm.",
       "sizes": [
         {
@@ -4827,7 +4831,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:16:29.319Z"
     },
     {
       "id": "item_1_5",
@@ -4839,7 +4845,7 @@ window.__DATABASE_SEED__ = {
       "name": "Tiết Hầm Hành Trần Nước Béo",
       "price": 20000,
       "priceFormatted": "20.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/e1910c90_a1c1_4c43_97fc_f90ee2dca678_1794665810771_531m.webp",
       "description": "Chén tiết bò mềm mịn như thạch, ngập trong nước dùng ngọt đậm đà phủ kín hành hoa và tiêu xay thơm nồng.",
       "sizes": [
         {
@@ -4908,7 +4914,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:16:51.121Z"
     },
     {
       "id": "item_2_1",
@@ -4920,7 +4928,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Mì Huỳnh Hoa Đặc Biệt Nửa Ký",
       "price": 58000,
       "priceFormatted": "58.000đ",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/banh_mi_1792459688980.webp",
       "description": "Vua bánh mì Sài Gòn với hơn nửa ký nhân: 5 tầng giò chả, thịt nguội, xá xíu, chà bông và lớp pate bơ Pháp trứ danh.",
       "sizes": [
         {
@@ -5012,7 +5020,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Mì Xíu Mại Trứng Muối",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/uploads/images_1794665832109_275k.webp",
       "description": "Xíu mại thịt heo sốt cà chua đậm đà kèm trứng muối bùi béo, rắc hành ngò thơm phức.",
       "sizes": [
         {
@@ -5085,7 +5093,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:17:12.155Z"
     },
     {
       "id": "item_2_3",
@@ -5097,7 +5107,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Mì Heo Quay Giòn Bì Sốt Tiêu",
       "price": 42000,
       "priceFormatted": "42.000đ",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/uploads/images_1794665976935_mhuc.webp",
       "description": "Thịt ba chỉ heo quay da giòn nổ lách tách, chan sốt tiêu đen đậm đà và đồ chua ngọt thanh giải ngấy.",
       "sizes": [
         {
@@ -5167,7 +5177,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.5,
-      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa"
+      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:19:36.971Z"
     },
     {
       "id": "item_2_4",
@@ -5179,7 +5191,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Mì Chả Lụa Chà Bông Bơ Pháp",
       "price": 38000,
       "priceFormatted": "38.000đ",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/uploads/images_1794666001882_zlaa.webp",
       "description": "Ổ bánh mì truyền thống thanh nhẹ với chả lụa loại 1, chà bông heo tơi xốp và bơ trứng thơm dịu.",
       "sizes": [
         {
@@ -5244,7 +5256,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:20:01.909Z"
     },
     {
       "id": "item_2_5",
@@ -5256,7 +5270,7 @@ window.__DATABASE_SEED__ = {
       "name": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
       "price": 20000,
       "priceFormatted": "20.000đ",
-      "image": "assets/images/banh_mi_1792459688980.jpg",
+      "image": "assets/images/uploads/images_1794666037825_ez5e.webp",
       "description": "Ly 1000ml trà lài pha tắc tươi giải nhiệt thơm mát, thanh lọc cơ thể với hạt chia hữu cơ.",
       "sizes": [
         {
@@ -5322,7 +5336,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa"
+      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:20:37.891Z"
     },
     {
       "id": "item_3_1",
@@ -5334,7 +5350,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Sườn Cốt Lết Khổng Lồ Nướng Than",
       "price": 62000,
       "priceFormatted": "62.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/834c9f68_5_768x768_1794666072747_nv14.webp",
       "description": "Miếng sườn cốt lết khổng lồ che kín đĩa cơm tấm thơm mùi lá dứa, kèm mỡ hành tóp mỡ giòn rụm.",
       "sizes": [
         {
@@ -5421,7 +5437,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 7.7,
-      "healthyLevel": "Cân bằng vừa phải • Giàu đạm, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Giàu đạm, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:21:12.816Z"
     },
     {
       "id": "item_3_2",
@@ -5433,7 +5451,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Tấm Sườn Bì Chả Trứng Ốp La",
       "price": 82000,
       "priceFormatted": "82.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/images_1794666083572_4j7q.webp",
       "description": "Combo Sà Bì Chưởng trứ danh đầy ắp sườn nướng, bì thính, chả trứng béo mềm và trứng ốp la lòng đào.",
       "sizes": [
         {
@@ -5506,7 +5524,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 7.7,
-      "healthyLevel": "Cân bằng vừa phải • Giàu đạm, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Giàu đạm, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:21:23.607Z"
     },
     {
       "id": "item_3_3",
@@ -5518,7 +5538,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Sườn Cây Ướp Mật Ong Nướng",
       "price": 75000,
       "priceFormatted": "75.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/images_1794666117713_a4d9.webp",
       "description": "Dải sườn cọng cây dày thịt ướp mật ong rừng nguyên chất nướng xém cạnh, thơm ngậy ngọt thịt.",
       "sizes": [
         {
@@ -5586,7 +5606,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:21:57.783Z"
     },
     {
       "id": "item_3_4",
@@ -5598,7 +5620,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Đùi Gà Nướng Mắm Tỏi Giòn",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/images_1794666098397_28lf.webp",
       "description": "Đùi gà góc tư tẩm nước mắm nhĩ tỏi ớt nướng vàng óng mọng nước, da gà béo giòn thơm nức.",
       "sizes": [
         {
@@ -5664,7 +5686,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:21:38.537Z"
     },
     {
       "id": "item_3_5",
@@ -5676,7 +5700,7 @@ window.__DATABASE_SEED__ = {
       "name": "Canh Khổ Qua Nhồi Thịt Xương Hầm",
       "price": 20000,
       "priceFormatted": "20.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/images_1794666129585_5352.webp",
       "description": "Tô canh khổ qua thanh mát nấu xương hầm ngọt nước, thịt nạc dăm xay nhồi mộc nhĩ nêm nếm vừa vặn.",
       "sizes": [
         {
@@ -5740,7 +5764,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:22:09.657Z"
     },
     {
       "id": "item_4_1",
@@ -5752,7 +5778,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bún Bò Bắp Hoa Nạm Gân Trong",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Tô bún bò đậm đà sả ớt, lát bắp hoa bò vân giòn sần sật, nạm bò mềm ngậy và gân trong veo dẻo dai.",
       "sizes": [
         {
@@ -5846,7 +5872,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bún Bò Giò Heo Rút Xương & Chả Cua",
       "price": 68000,
       "priceFormatted": "68.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Đặc sản trọn vẹn: Khoanh giò heo hầm mềm béo, chả cua hồng đào, bắp bò nạm gân và huyết mềm mọng.",
       "sizes": [
         {
@@ -5932,7 +5958,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
       "price": 80000,
       "priceFormatted": "80.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/uploads/bun_bo_hue_dong_ba_ho_chi_minh_1_1794666163793_in8c.webp",
       "description": "Bát bún đại vương đầy ắp giò heo, nạm bắp, gân bò, chả cua, chả quế, chả tôm và huyết heo thanh mát.",
       "sizes": [
         {
@@ -5996,7 +6022,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9.6,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:22:43.825Z"
     },
     {
       "id": "item_4_4",
@@ -6008,7 +6036,7 @@ window.__DATABASE_SEED__ = {
       "name": "Đĩa Chả Cua Huế Hấp Quết Tay",
       "price": 20000,
       "priceFormatted": "20.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/uploads/sddefault_1794666191083_6z6q.webp",
       "description": "Chả cua gạch son quết thủ công dai giòn tự nhiên, ngọt vị thịt cua tươi và tiêu hột cay nhẹ.",
       "sizes": [
         {
@@ -6074,7 +6102,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:23:11.139Z"
     },
     {
       "id": "item_4_5",
@@ -6086,7 +6116,7 @@ window.__DATABASE_SEED__ = {
       "name": "Trà Mát Thảo Mộc Cung Đình Huế",
       "price": 15000,
       "priceFormatted": "15.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/uploads/z7025343563273_f15fb07217513aaf474132c34_1794666207131_fiig.webp",
       "description": "Ly trà atiso và la hán quả nấu đường phèn thanh nhiệt, giải cay nồng tức thì.",
       "sizes": [
         {
@@ -6145,7 +6175,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9.1,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:23:27.173Z"
     },
     {
       "id": "item_5_1",
@@ -6157,7 +6189,7 @@ window.__DATABASE_SEED__ = {
       "name": "Suất Bún Chả Nướng Than Hoa Cổ Truyền",
       "price": 50000,
       "priceFormatted": "50.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Bao gồm chả viên băm nướng lá lốt, chả ba chỉ nướng than hoa, bún tươi Phú Đô, đĩa rau kinh giới tía tô và bát nước chấm đu đủ ấm nóng.",
       "sizes": [
         {
@@ -6249,7 +6281,7 @@ window.__DATABASE_SEED__ = {
       "name": "Suất Bún Chả Đặc Biệt Thêm Nem Cua Bể",
       "price": 70000,
       "priceFormatted": "70.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/images_1794666222661_dkjp.webp",
       "description": "Bao gồm trọn vẹn suất bún chả thịt nướng than hoa hảo hạng kèm thêm 2 chiếc nem cua bể giòn rụm thơm ngon.",
       "sizes": [
         {
@@ -6313,7 +6345,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:23:42.716Z"
     },
     {
       "id": "item_5_3",
@@ -6325,7 +6359,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nem Cua Bể Hải Phòng (2 chiếc)",
       "price": 35000,
       "priceFormatted": "35.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/nem_cua_be_hai_phong_vo_gion_rum_nhan_cu_1794666240873_gqjv.webp",
       "description": "Nem gói vuông vỏ bánh đa cua giòn tan, ngập tràn thịt cua bể tươi, mộc nhĩ, tôm sú và miến dong.",
       "sizes": [
         {
@@ -6384,7 +6418,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:24:00.940Z"
     },
     {
       "id": "item_5_4",
@@ -6396,7 +6432,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nem Rán Thịt Mộc Nhĩ Truyền Thống",
       "price": 30000,
       "priceFormatted": "30.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/images_1794666252550_ovui.webp",
       "description": "Đĩa 4 cuốn nem rán truyền thống Hà Nội giòn rụm nhân thịt nạc vai, mộc nhĩ, nấm hương và miến.",
       "sizes": [
         {
@@ -6457,7 +6493,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:24:12.592Z"
     },
     {
       "id": "item_5_5",
@@ -6469,7 +6507,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bún Thịt Nướng Sả Mè Chả Giò",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Tô bún trộn thịt nướng sả mè thơm lừng, chả giò giòn tan, mỡ hành đậu phộng chan nước mắm chua ngọt.",
       "sizes": [
         {
@@ -6546,7 +6584,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hủ Tiếu Nam Vang Khô Sốt Tôm Thịt Cật",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/images_1794666267498_ny2v.webp",
       "description": "Tô hủ tiếu dai trộn sốt tương đen đặc chế, phủ đầy tôm sú, thịt nạc, cật heo, gan bùi, thịt bằm và chén súp sườn hầm thơm lừng.",
       "sizes": [
         {
@@ -6625,7 +6663,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:24:27.543Z"
     },
     {
       "id": "item_6_2",
@@ -6637,7 +6677,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hủ Tiếu Nam Vang Nước Xương Hầm",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/images_1794666275805_8cmy.webp",
       "description": "Nước dùng trong ngọt hầm từ mực khô và xương ống heo, ăn kèm tôm, thịt bằm, trứng cút và rau tần ô tươi non.",
       "sizes": [
         {
@@ -6706,7 +6746,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.7,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:24:35.843Z"
     },
     {
       "id": "item_6_3",
@@ -6718,7 +6760,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hủ Tiếu Mì Xương Tủy Heo Khổng Lồ",
       "price": 68000,
       "priceFormatted": "68.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/cach_nau_hu_tieu_xuong_f09af73bfc_1794666319286_5xbp.webp",
       "description": "Khúc xương ống tủy heo to đùng hầm mềm rục rã, hút tủy béo ngậy kèm sợi hủ tiếu mì dai vàng óng.",
       "sizes": [
         {
@@ -6781,7 +6823,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.4,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:25:19.340Z"
     },
     {
       "id": "item_6_4",
@@ -6793,7 +6837,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hủ Tiếu Mực Tươi Trứng Cút",
       "price": 60000,
       "priceFormatted": "60.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/hu_tieu_muc_vung_tau_co_gi_dac_sac_goi_y_1794666349358_cji2.webp",
       "description": "Mực ống câu tươi rói cắt khoanh dày giòn sần sật, nước lèo ngọt thanh thơm nức mùi hành lá tỏi phi.",
       "sizes": [
         {
@@ -6852,7 +6896,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.3,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:25:49.395Z"
     },
     {
       "id": "item_6_5",
@@ -6864,7 +6910,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chén Xí Quách Thịt Mềm Béo Ngọt",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/uploads/cach_nau_hu_tieu_xuong_xi_quach_ngon_ngo_1794666366471_aztm.webp",
       "description": "Xương heo hầm rục rã nhiều thịt nạc và gân béo, chấm muối tiêu chanh ớt ăn cực đã.",
       "sizes": [
         {
@@ -6924,7 +6970,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:26:06.535Z"
     },
     {
       "id": "item_7_1",
@@ -6936,7 +6984,7 @@ window.__DATABASE_SEED__ = {
       "name": "Combo Gà Rán Giòn Cay 3 Miếng + Khoai",
       "price": 89000,
       "priceFormatted": "89.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Gồm 2 đùi gà và 1 cánh gà chiên giòn rụm sốt cay đặc chế kèm phần khoai tây chiên vàng ươm và sốt chấm.",
       "sizes": [
         {
@@ -7028,7 +7076,7 @@ window.__DATABASE_SEED__ = {
       "name": "Gà Rán Sốt Cay Phô Mai Kéo Sợi",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/uploads/huong_dan_cach_lam_ga_chien_sot_pho_mai__1794666385263_12i2.webp",
       "description": "2 miếng gà đùi tẩm bột giòn tan phủ sốt cay ngọt Hàn Quốc và lớp phô mai Mozzarella chảy béo ngậy.",
       "sizes": [
         {
@@ -7099,7 +7147,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:26:25.393Z"
     },
     {
       "id": "item_7_3",
@@ -7111,7 +7161,7 @@ window.__DATABASE_SEED__ = {
       "name": "Gà Sốt Bơ Tỏi Mật Ong Hàn Quốc",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/uploads/images_1794666396098_4pr7.webp",
       "description": "Gà chiên giòn áo đều lớp sốt bơ tỏi phi thơm lừng cùng mật ong ngọt dịu, rắc mè rang thơm bùi.",
       "sizes": [
         {
@@ -7175,7 +7225,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 7.6,
-      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh"
+      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:26:36.153Z"
     },
     {
       "id": "item_7_4",
@@ -7187,7 +7239,7 @@ window.__DATABASE_SEED__ = {
       "name": "Burger Gà Giòn Sốt Mayonnaise Tiêu Đen",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/uploads/f_burger_ga_gion_960_1794666425619_ddhv.webp",
       "description": "Bánh mì burger mè mềm xốp kẹp miếng đùi gà chiên giòn rụm, xà lách tươi và sốt mayonnaise tiêu đen.",
       "sizes": [
         {
@@ -7255,7 +7307,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:27:05.675Z"
     },
     {
       "id": "item_7_5",
@@ -7267,7 +7321,7 @@ window.__DATABASE_SEED__ = {
       "name": "Khoai Tây Lắc Phô Mai Bột Rong Biển",
       "price": 32000,
       "priceFormatted": "32.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/uploads/vn_11134207_7ras8_mbw0r1hsja39bf_1794666461269_lbap.webp",
       "description": "Bịch khoai tây cọng chiên vàng giòn rụm lắc đều cùng bột phô mai béo ngọt mằn mặn và rong biển sấy.",
       "sizes": [
         {
@@ -7331,7 +7385,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:27:41.318Z"
     },
     {
       "id": "item_8_1",
@@ -7343,7 +7399,7 @@ window.__DATABASE_SEED__ = {
       "name": "Pizza Pepperoni Bò Xúc Xích Phô Mai",
       "price": 129000,
       "priceFormatted": "129.000đ",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/pizza.webp",
       "description": "Chiếc pizza nướng lò củi viền bánh phồng xốp, ngập tràn phô mai Mozzarella và xúc xích bò Pepperoni cay nhẹ nhập khẩu.",
       "sizes": [
         {
@@ -7429,7 +7485,7 @@ window.__DATABASE_SEED__ = {
       "name": "Pizza Hải Sản Tôm Mực Phô Mai",
       "price": 149000,
       "priceFormatted": "149.000đ",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/uploads/cach_lam_pizza_hai_san_nong_gion_hap_dan_1794666514973_8i2k.webp",
       "description": "Tôm sú tươi, mực nang, ớt chuông và phô mai béo ngậy trên nền sốt cà chua San Marzano trứ danh nước Ý.",
       "sizes": [
         {
@@ -7497,7 +7553,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 7.4,
-      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh"
+      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:28:35.040Z"
     },
     {
       "id": "item_8_3",
@@ -7509,7 +7567,7 @@ window.__DATABASE_SEED__ = {
       "name": "Pizza Bốn Loại Phô Mai Four Cheese",
       "price": 139000,
       "priceFormatted": "139.000đ",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/pizza.webp",
       "description": "Sự hòa quyện của 4 loại phô mai hảo hạng: Mozzarella, Gorgonzola phô mai xanh, Parmesan và Ricotta kèm mật ong nguyên chất.",
       "sizes": [
         {
@@ -7583,7 +7641,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mỳ Ý Bò Bằm Sốt Cà Bolognese Cổ Điển",
       "price": 69000,
       "priceFormatted": "69.000đ",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/uploads/cach_lam_mi_y_sot_thit_bo_bam_ngon_chuan_1794666533419_11i6.webp",
       "description": "Sợi mì Spaghetti chuẩn al dente đượm đà sốt thịt bò bằm hầm cà chua và rượu vang đỏ, rắc phô mai Parmesan bột.",
       "sizes": [
         {
@@ -7649,7 +7707,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 6.9,
-      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh"
+      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:28:53.448Z"
     },
     {
       "id": "item_8_5",
@@ -7661,7 +7721,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mỳ Ý Sốt Kem Nấm & Thịt Xông Khói Carbonara",
       "price": 75000,
       "priceFormatted": "75.000đ",
-      "image": "assets/images/pizza.jpg",
+      "image": "assets/images/uploads/mi_y_sot_kem_nam_thit_xong_khoi_thumbnai_1794666549243_5zni.webp",
       "description": "Sợi mì Ý sốt kem whipping cream béo ngậy, thịt xông khói áp chảo giòn thơm cùng nấm mỡ tươi ngọt ngào.",
       "sizes": [
         {
@@ -7725,7 +7785,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 7.6,
-      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh"
+      "healthyLevel": "Cân bằng vừa phải • Hơi nhiều dầu mỡ, nên ăn kèm rau xanh",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:29:09.318Z"
     },
     {
       "id": "item_9_1",
@@ -7737,7 +7799,7 @@ window.__DATABASE_SEED__ = {
       "name": "Set Sushi Cá Hồi Na Uy Tươi Thượng Hạng",
       "price": 135000,
       "priceFormatted": "135.000đ",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/uploads/images_1794666567068_rfqw.webp",
       "description": "Set gồm 4 miếng Nigiri cá hồi tươi, 4 miếng cá hồi khò lửa sốt mayo cay và 4 miếng Maki cuộn bơ sáp.",
       "sizes": [
         {
@@ -7813,7 +7875,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.4,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:29:27.114Z"
     },
     {
       "id": "item_9_2",
@@ -7825,7 +7889,7 @@ window.__DATABASE_SEED__ = {
       "name": "Sashimi Cá Hồi Cắt Dày Béo Ngậy",
       "price": 120000,
       "priceFormatted": "120.000đ",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/uploads/images_1794666586003_4h7z.webp",
       "description": "5 lát cá hồi Na Uy tươi sống loại 1 cắt lát dày múp míp, đặt trên đá lạnh kèm lá tía tô và củ cải trắng bào sợi.",
       "sizes": [
         {
@@ -7887,7 +7951,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:29:46.032Z"
     },
     {
       "id": "item_9_3",
@@ -7899,7 +7965,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Cuộn California Trứng Tôm Bơ Sáp",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/uploads/images_1794666604893_ljym.webp",
       "description": "Cuộn cơm ngoài phủ ngập trứng tôm Ebiko cam giòn tí tách, nhân thanh cua, bơ sáp và dưa leo mát giòn.",
       "sizes": [
         {
@@ -7959,7 +8025,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Ít béo, nhẹ bụng, ít calo"
+      "healthyLevel": "Rất lành mạnh • Ít béo, nhẹ bụng, ít calo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:30:04.917Z"
     },
     {
       "id": "item_9_4",
@@ -7971,7 +8039,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nigiri Bò Wagyu Khò Lửa Sốt Teriyaki",
       "price": 85000,
       "priceFormatted": "85.000đ",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/uploads/images_1794666623948_mhdc.webp",
       "description": "4 miếng cơm nắm phủ thịt bò Wagyu khò lửa thơm lừng mọng mỡ, chan sốt Teriyaki ngọt dịu và rắc hành hoa.",
       "sizes": [
         {
@@ -8029,7 +8097,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.6,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:30:23.991Z"
     },
     {
       "id": "item_9_5",
@@ -8041,7 +8111,7 @@ window.__DATABASE_SEED__ = {
       "name": "Canh Rong Biển Đậu Hũ Miso Nhật",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/sushi.jpg",
+      "image": "assets/images/uploads/gl_1794666638115_2ai2.webp",
       "description": "Bát súp tương Miso truyền thống thanh ngọt với đậu hũ non mềm mịn, rong biển Wakame và hành boa-rô.",
       "sizes": [
         {
@@ -8100,7 +8170,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.8,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:30:38.153Z"
     },
     {
       "id": "item_10_1",
@@ -8112,7 +8184,7 @@ window.__DATABASE_SEED__ = {
       "name": "Trà Sữa Trân Châu Hoàng Kim Đường Đen",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Sự kết hợp đỉnh cao giữa trà đen Ceylon đậm vị thơm lừng cùng sữa tươi thanh trùng và trân châu hoàng kim nấu đường nâu.",
       "sizes": [
         {
@@ -8204,7 +8276,7 @@ window.__DATABASE_SEED__ = {
       "name": "Trà Sữa Oolong Kem Sữa Macchiato Mặn",
       "price": 52000,
       "priceFormatted": "52.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/uploads/tra_oolong_kem_cheese_1_1794666656461_3ryb.webp",
       "description": "Cốt trà Oolong nướng khói thơm nồng hậu vị ngọt, phủ lớp váng sữa bọt biển béo ngậy mằn mặn đặc sánh.",
       "sizes": [
         {
@@ -8277,7 +8349,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 5.4,
-      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải"
+      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:30:56.507Z"
     },
     {
       "id": "item_10_3",
@@ -8287,9 +8361,9 @@ window.__DATABASE_SEED__ = {
       "categoryId": "cat_tra_sua",
       "category": "Trà sữa",
       "name": "Trà Trái Cây Nhiệt Đới 4 Mùa Thơm Mát",
-      "price": 45000,
-      "priceFormatted": "45.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "price": 39000,
+      "priceFormatted": "39.000đ",
+      "image": "assets/images/uploads/tra_trai_cay_nhiet_doi_tu_pha_tai_nha_1794666674883_8nlt.webp",
       "description": "Trà hoa quả tươi với chanh dây, dưa hấu, táo xanh, cam vàng và hạt chia mát lành thanh lọc cơ thể.",
       "sizes": [
         {
@@ -8315,8 +8389,9 @@ window.__DATABASE_SEED__ = {
       "tags": [
         "đồ uống",
         "giải khát",
-        "ăn vặt",
-        "trà sữa"
+        "trà trái cây",
+        "thanh đạm",
+        "ít calo"
       ],
       "location": "129 Trần Phú, P. Văn Quán, Q. Hà Đông, Hà Nội",
       "rating": 4.9,
@@ -8354,7 +8429,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 5.4,
-      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải"
+      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:31:27.951Z"
     },
     {
       "id": "item_10_4",
@@ -8366,7 +8443,7 @@ window.__DATABASE_SEED__ = {
       "name": "Trà Đào Cam Sả Tươi Mát Lạnh",
       "price": 42000,
       "priceFormatted": "42.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/uploads/tra_dao_cam_sa_1794666712075_69n3.webp",
       "description": "Trà lài ủ sả tươi thơm nức mũi, hòa quyện nước cam vàng và những lát đào giòn ngọt thơm lừng.",
       "sizes": [
         {
@@ -8432,7 +8509,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 5.4,
-      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải"
+      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:31:52.135Z"
     },
     {
       "id": "item_10_5",
@@ -8444,7 +8523,7 @@ window.__DATABASE_SEED__ = {
       "name": "Matcha Latte Nhật Bản Đậu Đỏ",
       "price": 50000,
       "priceFormatted": "50.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/uploads/images_1794666801205_omv3.webp",
       "description": "Bột trà xanh Uji Kyoto thơm dịu chát nhẹ kết hợp sữa tươi nguyên kem và hạt đậu đỏ bùi ngọt dẻo thơm.",
       "sizes": [
         {
@@ -8512,7 +8591,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 5.4,
-      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải"
+      "healthyLevel": "Ăn điều độ • Khá nhiều đường, nên dùng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:33:21.289Z"
     },
     {
       "id": "item_11_1",
@@ -8524,7 +8605,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cà Phê Sữa Đá Pha Phin Truyền Thống",
       "price": 29000,
       "priceFormatted": "29.000đ",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/uploads/ca_phe_sua_da_la_gi_1794666820320_eh18.webp",
       "description": "Cốt cà phê Robusta hảo hạng đậm đặc pha phin nhôm truyền thống hòa quyện cùng sữa đặc Ông Thọ ngọt bùi.",
       "sizes": [
         {
@@ -8595,7 +8676,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 7.4,
-      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:33:40.378Z"
     },
     {
       "id": "item_11_2",
@@ -8607,7 +8690,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cà Phê Muối Kem Béo Đậm Vị Xứ Huế",
       "price": 35000,
       "priceFormatted": "35.000đ",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/ca_phe.webp",
       "description": "Cà phê phin đậm đà kết hợp cùng lớp kem sữa béo ngậy được đánh bông mịn màng hòa chút muối biển tinh khiết.",
       "sizes": [
         {
@@ -8689,7 +8772,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bạc Xỉu 3 Tầng Sữa Tươi Cà Phê",
       "price": 32000,
       "priceFormatted": "32.000đ",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/uploads/bac_xiudocx_1615683586533_1794666843977_8uye.webp",
       "description": "Tách bạc xỉu 3 tầng tuyệt đẹp: Lớp sữa đặc dưới đáy, sữa tươi thanh trùng béo ngậy ở giữa và lớp bọt cà phê thơm dịu trên cùng.",
       "sizes": [
         {
@@ -8749,7 +8832,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 7.4,
-      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:34:04.017Z"
     },
     {
       "id": "item_11_4",
@@ -8761,7 +8846,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cà Phê Đen Đá Pha Phin Nguyên Chất",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/uploads/cach_pha_ca_phe_den_da_sai_gon_1_1794666877366_z1tg.webp",
       "description": "Dành cho tín đồ sành cà phê: 100% hạt Robusta Cầu Đất nguyên chất, đắng thanh hậu ngọt sâu lắng.",
       "sizes": [
         {
@@ -8821,7 +8906,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 7.4,
-      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:34:37.414Z"
     },
     {
       "id": "item_11_5",
@@ -8833,7 +8920,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cold Brew Cam Sả Thanh Nhiệt",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/ca_phe.jpg",
+      "image": "assets/images/uploads/cold_brew_cam_thumb_lon_1794666919209_yjjl.webp",
       "description": "Cà phê Arabica ngâm lạnh ủ chậm 16 tiếng hòa quyện cùng nước cam vàng tươi mát và sả cây thơm sảng khoái.",
       "sizes": [
         {
@@ -8891,7 +8978,9 @@ window.__DATABASE_SEED__ = {
         "TRASUA10K"
       ],
       "healthyScore": 7.4,
-      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải"
+      "healthyLevel": "Cân bằng vừa phải • Ít béo, năng lượng vừa phải",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:35:19.261Z"
     },
     {
       "id": "item_12_1",
@@ -8903,7 +8992,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Xèo Miền Tây Khổng Lồ Tôm Thịt Củ Hũ Dừa",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/banh_xeo_1792459745179.webp",
       "description": "Bánh xèo chảo lớn vàng ươm nghệ tươi giòn rụm, nhân tôm đất, thịt ba chỉ, củ hũ dừa giòn ngọt và giá đỗ tươi.",
       "sizes": [
         {
@@ -8988,7 +9077,7 @@ window.__DATABASE_SEED__ = {
       "name": "Đĩa Bánh Khọt Tôm Nhảy Vũng Tàu (10 Cái)",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/uploads/banh_khot_vung_tau_tom_1794666998533_qut1.webp",
       "description": "10 chiếc bánh khọt nhỏ giòn rụm màu vàng nghệ, bên trên là tôm biển tươi ngọt rắc bột tôm cháy và mỡ hành thơm phức.",
       "sizes": [
         {
@@ -9055,7 +9144,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:36:38.595Z"
     },
     {
       "id": "item_12_3",
@@ -9067,7 +9158,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Xèo Nấm Cơm Cháy Giòn Chay",
       "price": 50000,
       "priceFormatted": "50.000đ",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/uploads/banh_xeo_nam_moi_chay_nam_bo_500_1794667037405_alou.webp",
       "description": "Vỏ bánh xèo giòn rụm thuần chay nhân nấm đùi gà, nấm bào ngư, nấm kim châm, đậu xanh và củ sắn ngọt.",
       "sizes": [
         {
@@ -9127,7 +9218,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.8,
-      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ"
+      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:37:17.461Z"
     },
     {
       "id": "item_12_4",
@@ -9139,7 +9232,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Khọt Thịt Bằm Trứng Cút Béo",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/uploads/images_1794667061291_ox21.webp",
       "description": "Đĩa 10 cái bánh khọt nhân thịt nạc bằm xào nấm mèo và trứng cút lòng đào béo ngậy.",
       "sizes": [
         {
@@ -9196,7 +9289,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:37:41.315Z"
     },
     {
       "id": "item_12_5",
@@ -9208,7 +9303,7 @@ window.__DATABASE_SEED__ = {
       "name": "Rổ Rau Rừng Tây Ninh Cuốn Bánh Xèo",
       "price": 15000,
       "priceFormatted": "15.000đ",
-      "image": "assets/images/banh_xeo_1792459745179.jpg",
+      "image": "assets/images/uploads/images_1794667114530_0zbs.webp",
       "description": "Rổ rau rừng đặc sản gồm đọt cóc, lá xoài non, sao nhái, lá lụa, quế vị và xà lách tươi mơn mởn.",
       "sizes": [
         {
@@ -9268,7 +9363,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.4,
-      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:38:34.551Z"
     },
     {
       "id": "item_13_1",
@@ -9280,7 +9377,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Đùi Gà Góc Tư Xối Mỡ Da Giòn",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/thanh_pham_362_1794667128126_6ywn.webp",
       "description": "Đùi gà góc tư thịt dày mọng nước xối mỡ sôi sùng sục cho lớp da giòn rụm bóng bẩy, ăn kèm cơm chiên đỏ và dưa leo cà chua.",
       "sizes": [
         {
@@ -9354,7 +9451,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:38:48.175Z"
     },
     {
       "id": "item_13_2",
@@ -9366,7 +9465,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Cánh Gà Chiên Nước Mắm Đậm Đà",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/maxresdefault_1794667150493_hnkp.webp",
       "description": "2 cánh gà chiên giòn áo lớp sốt nước mắm tỏi ớt kẹo sền sệt mằn mặn ngọt ngọt cực kỳ bắt cơm.",
       "sizes": [
         {
@@ -9431,7 +9530,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:39:10.704Z"
     },
     {
       "id": "item_13_3",
@@ -9443,7 +9544,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Gà Luộc Chặt Lá Chanh Muối Tiêu",
       "price": 52000,
       "priceFormatted": "52.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/com_ga_hai_nam_la_mon_an_hap_dan_1794667214934_0wxs.webp",
       "description": "Gà ta thả vườn hấp mỡ hành da vàng mọng ngọt thịt, chấm muối tiêu chanh ớt ớt đỏ cay nồng.",
       "sizes": [
         {
@@ -9501,7 +9602,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 9,
-      "healthyLevel": "Rất lành mạnh • Giàu đạm"
+      "healthyLevel": "Rất lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:40:14.973Z"
     },
     {
       "id": "item_13_4",
@@ -9513,7 +9616,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Bò Xào Lúc Lắc Khoai Tây Nghiền",
       "price": 68000,
       "priceFormatted": "68.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/com_bo_1794667284091_cztx.webp",
       "description": "Thịt bò thăn mềm xắt quân cờ xào lửa lớn với ớt chuông, hành tây và sốt tiêu đen kèm khoai tây chiên giòn.",
       "sizes": [
         {
@@ -9572,7 +9675,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.6,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:41:24.164Z"
     },
     {
       "id": "item_13_5",
@@ -9584,7 +9689,7 @@ window.__DATABASE_SEED__ = {
       "name": "Canh Rong Biển Nấu Thịt Gà Thanh Ngọt",
       "price": 15000,
       "priceFormatted": "15.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/uploads/9e669c8e_4_1794667310959_w5vv.webp",
       "description": "Chén canh thanh ngọt nấu từ ức gà băm và rong biển tươi mát, rắc hành ngò thơm nức mũi.",
       "sizes": [
         {
@@ -9641,7 +9746,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.6,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:41:51.046Z"
     },
     {
       "id": "item_14_1",
@@ -9653,7 +9760,7 @@ window.__DATABASE_SEED__ = {
       "name": "Phần 4 Gỏi Cuốn Tôm Thịt Tươi Chấm Tương",
       "price": 36000,
       "priceFormatted": "36.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "4 cuốn gỏi to tròn bọc bánh tráng dẻo dai, bên trong là tôm sú tươi luộc đỏ au, thịt ba chỉ, bún tươi và hẹ xanh chấm tương bơ đậu phộng.",
       "sizes": [
         {
@@ -9742,7 +9849,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chả Giò Tôm Cua Rế Giòn Rụm (6 Cuốn)",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Vỏ bánh tráng rế chiên phồng xốp giòn rụm nhân thịt nạc, tôm cua tươi, khoai môn và mộc nhĩ chấm sốt chua ngọt.",
       "sizes": [
         {
@@ -9820,7 +9927,7 @@ window.__DATABASE_SEED__ = {
       "name": "Phần 4 Gỏi Cuốn Tai Heo Giòn Dưa Leo",
       "price": 36000,
       "priceFormatted": "36.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/uploads/thanh_pham_1660_1794667452101_xuou.webp",
       "description": "Tai heo luộc ngâm giấm giòn sần sật cuốn cùng dưa leo, rau sống chấm mắm nêm thơm nồng chuẩn vị.",
       "sizes": [
         {
@@ -9881,7 +9988,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.1,
-      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo"
+      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:44:12.177Z"
     },
     {
       "id": "item_14_4",
@@ -9893,7 +10002,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bì Cuốn Thịt Heo Chấm Mắm Chua Ngọt",
       "price": 32000,
       "priceFormatted": "32.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/uploads/20052025_6_1794667560435_sv37.webp",
       "description": "4 cuốn bì heo trộn thính gạo rang vàng óng thơm lừng cuốn rau thơm, chấm nước mắm tỏi ớt chua ngọt.",
       "sizes": [
         {
@@ -9954,7 +10063,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 9.1,
-      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo"
+      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:46:00.472Z"
     },
     {
       "id": "item_14_5",
@@ -9966,7 +10077,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Tráng Trộn Tép Mỡ Trứng Cút Bò Khô",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/uploads/619856953_18073837619082409_515261750254_1794667612720_86lr.webp",
       "description": "Bánh tráng Tây Ninh dẻo mềm thấm đẫm muối tôm, sốt tắc bò, tóp mỡ giòn rụm, bò khô sợi và trứng cút.",
       "sizes": [
         {
@@ -9984,11 +10095,10 @@ window.__DATABASE_SEED__ = {
       "isCustom": false,
       "createdAt": "2026-09-01T08:00:00.000Z",
       "tags": [
-        "healthy",
-        "thanh đạm",
-        "ít calo",
-        "nhiều rau",
-        "chiên giòn",
+        "ăn vặt",
+        "béo ngậy",
+        "cay",
+        "khoái khẩu",
         "giá sinh viên"
       ],
       "location": "47 Đường 19/5, P. Văn Quán, Q. Hà Đông, Hà Nội",
@@ -9996,13 +10106,13 @@ window.__DATABASE_SEED__ = {
       "reviewCount": 327,
       "soldCount": 712,
       "nutrition": {
-        "calories": 295,
-        "protein": 20,
-        "carbs": 41,
-        "fat": 6,
-        "fiber": 5.2,
-        "sodium": 560,
-        "sugar": 6
+        "calories": 450,
+        "protein": 15,
+        "carbs": 60,
+        "fat": 18,
+        "fiber": 2,
+        "sodium": 1100,
+        "sugar": 10
       },
       "ingredients": [
         {
@@ -10027,8 +10137,10 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K",
         "HEALTHY20"
       ],
-      "healthyScore": 9.3,
-      "healthyLevel": "Rất lành mạnh • Nhiều chất xơ, ít béo"
+      "healthyScore": 3.5,
+      "healthyLevel": "Món ăn vặt • Nhiều gia vị, cân nhắc khi dùng thường xuyên",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:46:52.784Z"
     },
     {
       "id": "item_15_1",
@@ -10040,7 +10152,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mẹt Nem Nướng Nha Trang Phần Đặc Biệt",
       "price": 62000,
       "priceFormatted": "62.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/images_1794667681790_089e.webp",
       "description": "Mẹt gồm 6 cây nem nướng lụi than hoa, bánh tráng chiên ram giòn, bún tươi, xoài xanh, dưa leo, dưa chua và chén nước sốt thịt nếp ấm nóng.",
       "sizes": [
         {
@@ -10120,7 +10232,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:48:01.906Z"
     },
     {
       "id": "item_15_2",
@@ -10132,7 +10246,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nem Nướng Lụi Than Hoa Cuốn Ram Bắp",
       "price": 50000,
       "priceFormatted": "50.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Phần 4 cây nem nướng kèm ram bắp giòn tan, rau xà lách xoài xanh cuộn tròn bánh tráng phơi sương mềm dai.",
       "sizes": [
         {
@@ -10205,7 +10319,7 @@ window.__DATABASE_SEED__ = {
       "name": "Ram Bắp Quảng Ngãi Giòn Rụm (8 Cuốn)",
       "price": 40000,
       "priceFormatted": "40.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/images_1794667725264_97od.webp",
       "description": "Bắp non ngọt lịm quết nhuyễn cuốn bánh tráng mỏng chiên vàng giòn rụm, ngọt lịm thanh tao chấm tương ớt.",
       "sizes": [
         {
@@ -10265,7 +10379,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.5,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:48:45.301Z"
     },
     {
       "id": "item_15_4",
@@ -10277,7 +10393,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chả Cá Nha Trang Chiên Nóng Chấm Tương",
       "price": 38000,
       "priceFormatted": "38.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/489996906_1014865337458166_7195842969629_1794667738435_5tcu.webp",
       "description": "Chả cá nhồng cá thu quết tay dai giòn tự nhiên không hàn the, chiên vàng thơm chấm muối ớt chanh.",
       "sizes": [
         {
@@ -10337,7 +10453,9 @@ window.__DATABASE_SEED__ = {
         "MONCAY15K"
       ],
       "healthyScore": 8.3,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm, nhiều chất xơ",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:48:58.499Z"
     },
     {
       "id": "item_15_5",
@@ -10349,7 +10467,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nước Ép Thơm Dưa Hấu Tươi Nguyên Chất",
       "price": 22000,
       "priceFormatted": "22.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/uploads/thum_1200x676_5_1794667761013_g365.webp",
       "description": "Ly nước ép hoa quả tươi 100% không đường hóa học giải khát thơm lừng sau khi ăn đồ nướng.",
       "sizes": [
         {
@@ -10407,7 +10525,9 @@ window.__DATABASE_SEED__ = {
         "PTITNGON50"
       ],
       "healthyScore": 8.5,
-      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm"
+      "healthyLevel": "Cân bằng lành mạnh • Giàu đạm",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:49:21.053Z"
     },
     {
       "id": "item_16_1",
@@ -10419,7 +10539,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Cuốn Nóng Nhân Thịt Mộc Nhĩ Chả Quế",
       "price": 42000,
       "priceFormatted": "42.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/uploads/images_1794667790360_35x6.webp",
       "description": "Đĩa bánh cuốn tráng tay nóng hổi mỏng tang nhân thịt nạc vai xào mộc nhĩ nấm hương, rắc đầy hành phi và 2 miếng chả quế thơm.",
       "sizes": [
         {
@@ -10496,7 +10616,9 @@ window.__DATABASE_SEED__ = {
         "HEALTHY20"
       ],
       "healthyScore": 8.4,
-      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa"
+      "healthyLevel": "Cân bằng lành mạnh • Đủ chất, dễ tiêu hóa",
+      "imageIsPlaceholder": false,
+      "updatedAt": "2026-11-14T14:49:50.418Z"
     },
     {
       "id": "item_16_2",
@@ -10508,7 +10630,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Cuốn Trứng Lòng Đào Béo Ngậy",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Trứng gà ta đập trực tiếp lên mặt bánh cuốn hấp chín lòng đào mềm dẻo, cắn vào lòng đỏ béo ngậy tan chảy trên đầu lưỡi.",
       "sizes": [
         {
@@ -10585,7 +10707,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Cuốn Tôm Tươi Thịt Nạc Dăm",
       "price": 50000,
       "priceFormatted": "50.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Nhân tôm biển tươi lột vỏ xào thịt nạc dăm ngọt lịm bọc trong lớp vỏ bánh mềm mịn trơn tru.",
       "sizes": [
         {
@@ -10656,7 +10778,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Ướt Lòng Gà Trứng Non Thơm Nức",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Đặc sản Đà Lạt: Bánh ướt mềm dai ăn cùng lòng mề gà xào hành tây, thịt gà xé và chùm trứng non vàng óng.",
       "sizes": [
         {
@@ -10734,7 +10856,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chả Lụa & Chả Chiên Thêm Chấm Mắm",
       "price": 20000,
       "priceFormatted": "20.000đ",
-      "image": "assets/images/goi_cuon_1792459722505.jpg",
+      "image": "assets/images/goi_cuon_1792459722505.webp",
       "description": "Đĩa 4 lát chả lụa và chả chiên thơm béo ăn kèm bánh cuốn hoặc bánh ướt.",
       "sizes": [
         {
@@ -10806,7 +10928,7 @@ window.__DATABASE_SEED__ = {
       "name": "Classic Cheeseburger Bò Úc Nướng Than",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Bánh mì nướng bơ kẹp thịt bò Úc 150g nướng lửa than hoa mọng nước, phô mai Cheddar tan chảy, dưa leo chua và sốt đặc biệt.",
       "sizes": [
         {
@@ -10891,7 +11013,7 @@ window.__DATABASE_SEED__ = {
       "name": "Double Bacon Burger Bò 2 Tầng Phô Mai",
       "price": 89000,
       "priceFormatted": "89.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Chiếc burger khổng lồ với 2 miếng bò Úc dày cộm, 4 dải thịt xông khói giòn tan, 2 lát phô mai và hành tây caramen ngọt lịm.",
       "sizes": [
         {
@@ -10962,7 +11084,7 @@ window.__DATABASE_SEED__ = {
       "name": "Burger Cá Tuyết Giòn Rụm Sốt Tartar",
       "price": 58000,
       "priceFormatted": "58.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Filet cá tuyết tẩm bột xù chiên vàng rụm, thịt cá trắng ngọt thanh ăn kèm sốt Tartar chua béo thơm thì là.",
       "sizes": [
         {
@@ -11032,7 +11154,7 @@ window.__DATABASE_SEED__ = {
       "name": "Hành Tây Chiên Vòng Giòn Tan Onion Rings",
       "price": 35000,
       "priceFormatted": "35.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Hành tây ngọt cắt khoanh tròn tẩm bột bia chiên giòn rụm xốp xốp, chấm sốt phô mai béo ngậy.",
       "sizes": [
         {
@@ -11104,7 +11226,7 @@ window.__DATABASE_SEED__ = {
       "name": "Ly Coca-Cola Float Kem Vani Mát Lạnh",
       "price": 28000,
       "priceFormatted": "28.000đ",
-      "image": "assets/images/ga_ran.jpg",
+      "image": "assets/images/ga_ran.webp",
       "description": "Coca-Cola có ga sủi bọt mát lạnh bên trên thả một viên kem vani Pháp béo ngậy tan chảy.",
       "sizes": [
         {
@@ -11172,7 +11294,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chè Thái Ý Phương Sầu Riêng Đầy Đủ",
       "price": 38000,
       "priceFormatted": "38.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Ly chè trứ danh gồm múi sầu riêng tươi béo ngậy, mít nghệ, thạch củ năng hạt lựu, nhãn nhục, hạt đác và sữa dừa thơm ngát.",
       "sizes": [
         {
@@ -11259,7 +11381,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chè Bưởi Miền Tây Nước Cốt Dừa",
       "price": 28000,
       "priceFormatted": "28.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Cùi bưởi da xanh sơ chế giòn sần sật không hề đắng, nấu cùng đậu xanh cà vỏ bở tơi và nước cốt dừa béo ngậy.",
       "sizes": [
         {
@@ -11338,7 +11460,7 @@ window.__DATABASE_SEED__ = {
       "name": "Tàu Hũ Trân Châu Đường Đen Nóng Mịn",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Tàu hũ non tự làm mềm mịn mượt mà tan ngay trong miệng, chan nước đường phèn gừng ấm nồng và trân châu đường đen dẻo quánh.",
       "sizes": [
         {
@@ -11410,7 +11532,7 @@ window.__DATABASE_SEED__ = {
       "name": "Sữa Chua Dẻo Trái Cây Hạt Đác",
       "price": 32000,
       "priceFormatted": "32.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Sữa chua dẻo cắt viên vuông dẻo mịn phủ xoài cát, dâu tây, kiwi và hạt đác rim hoa đậu biếc thanh mát.",
       "sizes": [
         {
@@ -11481,7 +11603,7 @@ window.__DATABASE_SEED__ = {
       "name": "Chè Khúc Bạch Hạnh Nhân Thanh Mát",
       "price": 35000,
       "priceFormatted": "35.000đ",
-      "image": "assets/images/tra_sua.jpg",
+      "image": "assets/images/tra_sua.webp",
       "description": "Viên khúc bạch sữa phô mai và matcha béo mềm, vải ngâm ngọt thanh, rắc hạnh nhân lát nướng vàng thơm giòn.",
       "sizes": [
         {
@@ -11560,7 +11682,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cơm Niêu Đập Cháy Giòn Rụm Mỡ Hành",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Niêu đất nung nấu gạo Tám thơm dẻo, đáy niêu tạo lớp cháy vàng ruộm giòn tan rắc mỡ hành và chà bông.",
       "sizes": [
         {
@@ -11642,7 +11764,7 @@ window.__DATABASE_SEED__ = {
       "name": "Cá Bống Kho Tộ Nước Hàng Kẹo Ngọt",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Tộ cá bống sông kho kẹo với nước mắm cá cơm, ớt hiểm cay nồng và thịt ba chỉ béo ngậy.",
       "sizes": [
         {
@@ -11713,7 +11835,7 @@ window.__DATABASE_SEED__ = {
       "name": "Thịt Ba Chỉ Rang Cháy Cạnh Tóp Mỡ",
       "price": 58000,
       "priceFormatted": "58.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Thịt ba chỉ heo tươi rang vàng cháy cạnh cùng hành khô, tóp mỡ giòn và nước mắm rim mặn ngọt.",
       "sizes": [
         {
@@ -11784,7 +11906,7 @@ window.__DATABASE_SEED__ = {
       "name": "Canh Cua Đồng Mồng Tơi Mướp Hương",
       "price": 42000,
       "priceFormatted": "42.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Bát canh riêu cua đồng nguyên chất đóng tảng dày, nấu cùng rau mồng tơi, rau đay và mướp hương thơm mát.",
       "sizes": [
         {
@@ -11856,7 +11978,7 @@ window.__DATABASE_SEED__ = {
       "name": "Rau Luộc Thập Cẩm Chấm Kho Quẹt Tôm Khô",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/com_tam_1792459701659.jpg",
+      "image": "assets/images/com_tam_1792459701659.webp",
       "description": "Đĩa rau củ luộc xanh mướt (bông cải, đậu bắp, cà rốt, cải ngọt) chấm tộ kho quẹt tóp mỡ tôm khô đậm đà.",
       "sizes": [
         {
@@ -11929,7 +12051,7 @@ window.__DATABASE_SEED__ = {
       "name": "Set Lẩu Thái Tomyum Hải Sản (1-2 Người)",
       "price": 149000,
       "priceFormatted": "149.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Set trọn gói gồm túi nước lẩu Tomyum chua cay thơm ngát, khay tôm sú, mực nang, nghêu tươi, nấm kim châm, rau muống và 2 gói mì Koreno.",
       "sizes": [
         {
@@ -12023,7 +12145,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mì Cay Hàn Quốc 7 Cấp Độ Hải Sản",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Tô thố đất mì Koreno nấu cùng tôm sú, mực tươi, chả cá Hàn Quốc, nấm kim châm và ớt hiểm cấp độ cay tùy chọn.",
       "sizes": [
         {
@@ -12116,7 +12238,7 @@ window.__DATABASE_SEED__ = {
       "name": "Lẩu Bò Mỹ Nhúng Mắm Ruốc Chua Cay",
       "price": 139000,
       "priceFormatted": "139.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Nước dùng hầm xương bò dậy mùi sả ớt mắm ruốc, khay thịt ba chỉ bò Mỹ cuộn nấm và bắp hoa bò tươi ngon.",
       "sizes": [
         {
@@ -12192,7 +12314,7 @@ window.__DATABASE_SEED__ = {
       "name": "Đĩa Ba Chỉ Bò Mỹ Thêm Nhúng Lẩu",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "200g thịt ba chỉ bò Mỹ thái lát mỏng chuyên nhúng lẩu, mềm ngậy tan chảy ngọt thịt.",
       "sizes": [
         {
@@ -12261,7 +12383,7 @@ window.__DATABASE_SEED__ = {
       "name": "Đĩa Nấm Kim Châm & Rau Muống Mì Tươi",
       "price": 25000,
       "priceFormatted": "25.000đ",
-      "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "image": "assets/images/bun_bo_hue_1792459733043.webp",
       "description": "Đĩa rau tổng hợp gồm nấm kim châm, cải thảo, rau muống cọng, ngô ngọt và 2 vắt mì trứng tươi.",
       "sizes": [
         {
@@ -12333,7 +12455,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mẹt Bún Đậu Thập Cẩm Đầy Đủ A Chảnh",
       "price": 65000,
       "priceFormatted": "65.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Mẹt tre gồm bún lá xắt miếng, đậu hũ lướt ván chiên giòn, thịt bắp giò luộc, chả cốm Làng Vòng, nem chua rán, dồi sụn nướng than hoa và chén mắm tôm đánh bông.",
       "sizes": [
         {
@@ -12424,7 +12546,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mẹt Bún Đậu Chả Cốm Làng Vòng",
       "price": 45000,
       "priceFormatted": "45.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Bún lá tươi mềm, đậu hũ rán vàng ruộm và miếng chả cốm dẻo thơm nồng nàn hương cốm non mùa thu Hà Nội.",
       "sizes": [
         {
@@ -12493,7 +12615,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nem Chua Rán Hà Nội Giòn Bì (5 Cái)",
       "price": 35000,
       "priceFormatted": "35.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Nem chua tẩm bột chiên xù giòn rụm bên ngoài dai mềm dính răng bên trong chấm tương ớt cay ngọt.",
       "sizes": [
         {
@@ -12564,7 +12686,7 @@ window.__DATABASE_SEED__ = {
       "name": "Dồi Sụn Nướng Than Hoa Giòn Sần Sật",
       "price": 38000,
       "priceFormatted": "38.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Dồi heo nhồi sụn non sần sật, thịt nạc và rau thơm nướng xém cạnh trên than hoa thơm nức mũi.",
       "sizes": [
         {
@@ -12636,7 +12758,7 @@ window.__DATABASE_SEED__ = {
       "name": "Nước Mơ Rừng Ngâm & Sấu Ngâm Hà Nội",
       "price": 18000,
       "priceFormatted": "18.000đ",
-      "image": "assets/images/bun_cha_1792459712673.jpg",
+      "image": "assets/images/bun_cha_1792459712673.webp",
       "description": "Ly nước sấu ngâm gừng chua ngọt giòn tan hoặc nước mơ rừng ngâm đường phèn giải ngấy đỉnh cao.",
       "sizes": [
         {
@@ -12706,7 +12828,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mì Quảng Tôm Thịt Trứng Cút Truyền Thống",
       "price": 48000,
       "priceFormatted": "48.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Sợi mì gạo bản to nhuộm màu củ nghệ tươi, chan nước nhưn tôm rim thịt ba chỉ đậm đà, trứng cút, đậu phộng rang giòn và miếng bánh đa mè nướng.",
       "sizes": [
         {
@@ -12798,7 +12920,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mì Quảng Gà Ta Thả Vườn Rắc Đậu Phộng",
       "price": 52000,
       "priceFormatted": "52.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Thịt gà ta thả vườn chặt khúc kho đượm nghệ tươi và nén củ thơm ngát, ăn cùng bánh tráng mè giòn rụm.",
       "sizes": [
         {
@@ -12879,7 +13001,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mì Quảng Sườn Non Heo Nấu Đậm Vị",
       "price": 55000,
       "priceFormatted": "55.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Sườn non heo chọn lọc ướp gia vị xứ Quảng hầm mềm rục ngấm sâu từng thớ thịt, chan nước nhưn vàng óng.",
       "sizes": [
         {
@@ -12948,7 +13070,7 @@ window.__DATABASE_SEED__ = {
       "name": "Mì Quảng Ếch Nấu Nghệ Bánh Đa Giòn",
       "price": 58000,
       "priceFormatted": "58.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Thịt đùi ếch đồng săn chắc um củ nén nghệ tươi vàng ruộm trong thố đất, thơm nức mũi chấm bánh đa nướng giòn.",
       "sizes": [
         {
@@ -13019,7 +13141,7 @@ window.__DATABASE_SEED__ = {
       "name": "Bánh Tráng Mè Nướng Giòn Rụm (2 Chiếc)",
       "price": 10000,
       "priceFormatted": "10.000đ",
-      "image": "assets/images/pho_bo_1792459676492.jpg",
+      "image": "assets/images/pho_bo_1792459676492.webp",
       "description": "Bánh tráng mè đen nướng than củi giòn tan béo ngậy, bẻ vụn thả vào tô mì Quảng ăn rôm rốp.",
       "sizes": [
         {
@@ -13161,7 +13283,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Canh Rong Biển Nấu Thịt Gà Thanh Ngọt",
               "restaurantName": "Cơm Gà Xối Mỡ 142 Thập Toàn",
               "restaurantId": 13,
-              "image": "assets/images/com_tam_1792459701659.jpg",
+              "image": "assets/images/com_tam_1792459701659.webp",
               "size": {
                 "name": "1 Chén Canh",
                 "extraPrice": 0
@@ -13238,7 +13360,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Classic Cheeseburger Bò Úc Nướng Than",
               "restaurantName": "The Burger Shack - Bò Nướng Phô Mai",
               "restaurantId": 17,
-              "image": "assets/images/ga_ran.jpg",
+              "image": "assets/images/ga_ran.webp",
               "size": {
                 "name": "Burger Tiêu Chuẩn",
                 "extraPrice": 0
@@ -13298,7 +13420,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Thắng Cố Ngựa Nóng Hổi Kèm Mèn Mén",
               "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
               "restaurantId": 1001,
-              "image": "assets/images/uploads/images_1794064752205_s8wx.jpg",
+              "image": "assets/images/uploads/images_1794064752205_s8wx.webp",
               "size": {
                 "name": "Tô Chuẩn",
                 "extraPrice": 0
@@ -13315,7 +13437,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
               "restaurantName": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
               "restaurantId": 4,
-              "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+              "image": "assets/images/bun_bo_hue_1792459733043.webp",
               "size": {
                 "name": "Tô Siêu Đặc Biệt",
                 "extraPrice": 0
@@ -13332,7 +13454,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Mì Cay Đùi Gà Khổng Lồ Sốt Kim Chi",
               "restaurantName": "Mì Cay Seoul 7 Cấp Độ - Học Viện PTIT",
               "restaurantId": 1002,
-              "image": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.jpg",
+              "image": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.webp",
               "size": {
                 "name": "Cấp 0 (Không cay)",
                 "extraPrice": 0
@@ -13349,7 +13471,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Mì Ý Vẹm Xanh Sốt Kem Sữa Tỏi",
               "restaurantName": "Le Petit Bistro - Bít Tết & Món Âu Hà Đông",
               "restaurantId": 1003,
-              "image": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.jpg",
+              "image": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.webp",
               "size": {
                 "name": "Khẩu phần tiêu chuẩn",
                 "extraPrice": 0
@@ -13383,7 +13505,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Chả Lụa & Chả Chiên Thêm Chấm Mắm",
               "restaurantName": "Bánh Cuốn Nóng Tây Hồ Gia Truyền",
               "restaurantId": 16,
-              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "image": "assets/images/goi_cuon_1792459722505.webp",
               "size": {
                 "name": "1 Đĩa Ăn Kèm",
                 "extraPrice": 0
@@ -13444,7 +13566,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Nước Mơ Rừng Ngâm & Sấu Ngâm Hà Nội",
               "restaurantName": "Bún Đậu Mắm Tôm A Chảnh Chuẩn Vị",
               "restaurantId": 21,
-              "image": "assets/images/bun_cha_1792459712673.jpg",
+              "image": "assets/images/bun_cha_1792459712673.webp",
               "size": {
                 "name": "Ly 500ml Mát Lạnh",
                 "extraPrice": 0
@@ -13503,7 +13625,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
               "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
               "restaurantId": 1001,
-              "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+              "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
               "size": {
                 "name": "Suất Vừa",
                 "extraPrice": 0
@@ -13519,7 +13641,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Trà Tắc Hạt Chia Mát Lạnh 1 Lít",
               "restaurantName": "Bánh Mì Huỳnh Hoa - Đặc Sản Sài Gòn",
               "restaurantId": 2,
-              "image": "assets/images/banh_mi_1792459688980.jpg",
+              "image": "assets/images/banh_mi_1792459688980.webp",
               "size": {
                 "name": "Ly Khổng Lồ 1 Lít",
                 "extraPrice": 0
@@ -13535,7 +13657,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Phần 4 Gỏi Cuốn Tôm Thịt Tươi Chấm Tương",
               "restaurantName": "Gỏi Cuốn & Bánh Tráng Hoàng Ty",
               "restaurantId": 14,
-              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "image": "assets/images/goi_cuon_1792459722505.webp",
               "size": {
                 "name": "Phần 4 Cuốn",
                 "extraPrice": 0
@@ -13551,7 +13673,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Bì Cuốn Thịt Heo Chấm Mắm Chua Ngọt",
               "restaurantName": "Gỏi Cuốn & Bánh Tráng Hoàng Ty",
               "restaurantId": 14,
-              "image": "assets/images/goi_cuon_1792459722505.jpg",
+              "image": "assets/images/goi_cuon_1792459722505.webp",
               "size": {
                 "name": "Phần 4 Cuốn",
                 "extraPrice": 0
@@ -13599,7 +13721,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Bún Bò Đặc Biệt Thập Cẩm Đông Ba",
               "restaurantName": "Bún Bò Huế Đông Ba - Chợ Bến Thành",
               "restaurantId": 4,
-              "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+              "image": "assets/images/bun_bo_hue_1792459733043.webp",
               "size": {
                 "name": "Tô Siêu Đặc Biệt",
                 "extraPrice": 0
@@ -13648,7 +13770,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Mèn Mén Ngô Vàng Canh Chua Ớt Gió",
               "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
               "restaurantId": 1001,
-              "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+              "image": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
               "size": {
                 "name": "Suất Vừa",
                 "extraPrice": 0
@@ -13709,7 +13831,7 @@ window.__DATABASE_SEED__ = {
               "dishName": "Canh Chua Măng Nứa Thịt Băm Mèn Mén",
               "restaurantName": "Bếp Núi Rừng - Mèn Mén & Đặc Sản Tây Bắc",
               "restaurantId": 1001,
-              "image": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.jpg",
+              "image": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.webp",
               "size": {
                 "name": "Suất Thường",
                 "extraPrice": 0
@@ -13773,7 +13895,7 @@ window.__DATABASE_SEED__ = {
           "items": [
             {
               "dishName": "Phở Tái Nạm Gầu Bò",
-              "image": "assets/images/pho_bo_1792459676492.jpg",
+              "image": "assets/images/pho_bo_1792459676492.webp",
               "size": {
                 "name": "Tô Tiêu Chuẩn",
                 "extraPrice": 0
@@ -13793,7 +13915,7 @@ window.__DATABASE_SEED__ = {
             },
             {
               "dishName": "Quẩy Giòn Nóng & Trứng Chần",
-              "image": "assets/images/pho_bo_1792459676492.jpg",
+              "image": "assets/images/pho_bo_1792459676492.webp",
               "size": {
                 "name": "1 Phần Chuẩn",
                 "extraPrice": 0
@@ -13837,7 +13959,7 @@ window.__DATABASE_SEED__ = {
           "items": [
             {
               "dishName": "Bánh Mì Huỳnh Hoa Đặc Biệt Nửa Ký",
-              "image": "assets/images/banh_mi_1792459688980.jpg",
+              "image": "assets/images/banh_mi_1792459688980.webp",
               "size": {
                 "name": "Ổ Tiêu Chuẩn Nửa Ký",
                 "extraPrice": 0
@@ -13888,7 +14010,7 @@ window.__DATABASE_SEED__ = {
           "items": [
             {
               "dishName": "Cơm Tấm Sườn Bì Chả Trứng Ốp La",
-              "image": "assets/images/com_tam_1792459701659.jpg",
+              "image": "assets/images/com_tam_1792459701659.webp",
               "size": {
                 "name": "Dĩa Đầy Đủ Sà Bì Chưởng",
                 "extraPrice": 0
@@ -13932,7 +14054,7 @@ window.__DATABASE_SEED__ = {
           "items": [
             {
               "dishName": "Bún Bò Bắp Hoa Nạm Gân Trong",
-              "image": "assets/images/bun_bo_hue_1792459733043.jpg",
+              "image": "assets/images/bun_bo_hue_1792459733043.webp",
               "size": {
                 "name": "Tô Tiêu Chuẩn",
                 "extraPrice": 0
@@ -14155,7 +14277,8 @@ window.__DATABASE_SEED__ = {
             }
           ]
         }
-      }
+      },
+      "favoriteItemIds": []
     },
     {
       "id": "user_ptit_02",
@@ -14218,7 +14341,7 @@ window.__DATABASE_SEED__ = {
           "items": [
             {
               "dishName": "Trà Sữa Trân Châu Hoàng Kim Đường Đen",
-              "image": "assets/images/tra_sua.jpg",
+              "image": "assets/images/tra_sua.webp",
               "size": {
                 "name": "Size L (700ml)",
                 "extraPrice": 9000
@@ -14271,7 +14394,8 @@ window.__DATABASE_SEED__ = {
         "dietaryNotes": [],
         "isConfigured": false
       },
-      "dailyNutritionLogs": {}
+      "dailyNutritionLogs": {},
+      "favoriteItemIds": []
     }
   ],
   "vouchers": [
@@ -14374,6 +14498,462 @@ window.__DATABASE_SEED__ = {
     }
   ],
   "imageLibrary": [
+    {
+      "id": "img_images_1e6x",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667790360_35x6.webp",
+      "createdAt": "2026-11-14T14:49:50.399Z"
+    },
+    {
+      "id": "img_thum_1200x676_5_y0i9",
+      "name": "thum-1200x676-5",
+      "src": "assets/images/uploads/thum_1200x676_5_1794667761013_g365.webp",
+      "createdAt": "2026-11-14T14:49:21.036Z"
+    },
+    {
+      "id": "img_489996906_1014865337458166_7195842969629079118_n_master_ssb1",
+      "name": "489996906_1014865337458166_7195842969629079118_n_master",
+      "src": "assets/images/uploads/489996906_1014865337458166_7195842969629_1794667738435_5tcu.webp",
+      "createdAt": "2026-11-14T14:48:58.477Z"
+    },
+    {
+      "id": "img_images_dl0v",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667725264_97od.webp",
+      "createdAt": "2026-11-14T14:48:45.281Z"
+    },
+    {
+      "id": "img_images_4z3o",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667681790_089e.webp",
+      "createdAt": "2026-11-14T14:48:01.876Z"
+    },
+    {
+      "id": "img_619856953_18073837619082409_5152617502543004655_n_m44j",
+      "name": "619856953_18073837619082409_5152617502543004655_n",
+      "src": "assets/images/uploads/619856953_18073837619082409_515261750254_1794667612720_86lr.webp",
+      "createdAt": "2026-11-14T14:46:52.771Z"
+    },
+    {
+      "id": "img_images_ez75",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667603544_tnyk.webp",
+      "createdAt": "2026-11-14T14:46:43.556Z"
+    },
+    {
+      "id": "img_images_z83w",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667581084_wrym.webp",
+      "createdAt": "2026-11-14T14:46:21.096Z"
+    },
+    {
+      "id": "img_20052025_6_a401",
+      "name": "20052025 (6)",
+      "src": "assets/images/uploads/20052025_6_1794667560435_sv37.webp",
+      "createdAt": "2026-11-14T14:46:00.454Z"
+    },
+    {
+      "id": "img_thanh_pham_1660_56lu",
+      "name": "thanh-pham-1660",
+      "src": "assets/images/uploads/thanh_pham_1660_1794667452101_xuou.webp",
+      "createdAt": "2026-11-14T14:44:12.136Z"
+    },
+    {
+      "id": "img_9e669c8e_4_c1vg",
+      "name": "9e669c8e-4",
+      "src": "assets/images/uploads/9e669c8e_4_1794667310959_w5vv.webp",
+      "createdAt": "2026-11-14T14:41:51.028Z"
+    },
+    {
+      "id": "img_com_bo_fctw",
+      "name": "com-bo",
+      "src": "assets/images/uploads/com_bo_1794667284091_cztx.webp",
+      "createdAt": "2026-11-14T14:41:24.143Z"
+    },
+    {
+      "id": "img_com_ga_hai_nam_la_mon_an_hap_dan_3h73",
+      "name": "com-ga-hai-nam-la-mon-an-hap-dan",
+      "src": "assets/images/uploads/com_ga_hai_nam_la_mon_an_hap_dan_1794667214934_0wxs.webp",
+      "createdAt": "2026-11-14T14:40:14.956Z"
+    },
+    {
+      "id": "img_maxresdefault_oosg",
+      "name": "maxresdefault",
+      "src": "assets/images/uploads/maxresdefault_1794667150493_hnkp.webp",
+      "createdAt": "2026-11-14T14:39:10.683Z"
+    },
+    {
+      "id": "img_thanh_pham_362_72ft",
+      "name": "thanh-pham-362",
+      "src": "assets/images/uploads/thanh_pham_362_1794667128126_6ywn.webp",
+      "createdAt": "2026-11-14T14:38:48.161Z"
+    },
+    {
+      "id": "img_images_sdm1",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667114530_0zbs.webp",
+      "createdAt": "2026-11-14T14:38:34.538Z"
+    },
+    {
+      "id": "img_images_n9z1",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794667061291_ox21.webp",
+      "createdAt": "2026-11-14T14:37:41.303Z"
+    },
+    {
+      "id": "img_banh_xeo_nam_moi_chay_nam_bo_500_lyef",
+      "name": "banh-xeo-nam-moi-chay-nam-bo-500",
+      "src": "assets/images/uploads/banh_xeo_nam_moi_chay_nam_bo_500_1794667037405_alou.webp",
+      "createdAt": "2026-11-14T14:37:17.442Z"
+    },
+    {
+      "id": "img_banh_khot_vung_tau_tom_4zp9",
+      "name": "banh-khot-vung-tau-tom",
+      "src": "assets/images/uploads/banh_khot_vung_tau_tom_1794666998533_qut1.webp",
+      "createdAt": "2026-11-14T14:36:38.570Z"
+    },
+    {
+      "id": "img_cold_brew_cam_thumb_lon_5gzf",
+      "name": "cold-brew-cam-thumb-lon",
+      "src": "assets/images/uploads/cold_brew_cam_thumb_lon_1794666919209_yjjl.webp",
+      "createdAt": "2026-11-14T14:35:19.241Z"
+    },
+    {
+      "id": "img_cach_pha_ca_phe_den_da_sai_gon_1_4xxm",
+      "name": "cach-pha-ca-phe-den-da-sai-gon-1",
+      "src": "assets/images/uploads/cach_pha_ca_phe_den_da_sai_gon_1_1794666877366_z1tg.webp",
+      "createdAt": "2026-11-14T14:34:37.401Z"
+    },
+    {
+      "id": "img_ca_phe_pha_phin_loai_nao_ngon_yvd9p_ek7f",
+      "name": "ca-phe-pha-phin-loai-nao-ngon-yvd9p",
+      "src": "assets/images/uploads/ca_phe_pha_phin_loai_nao_ngon_yvd9p_1794666859784_6lun.webp",
+      "createdAt": "2026-11-14T14:34:19.805Z"
+    },
+    {
+      "id": "img_bac_xiudocx_1615683586533_j2c3",
+      "name": "bac-xiudocx-1615683586533",
+      "src": "assets/images/uploads/bac_xiudocx_1615683586533_1794666843977_8uye.webp",
+      "createdAt": "2026-11-14T14:34:04.004Z"
+    },
+    {
+      "id": "img_ca_phe_sua_da_la_gi_1mv5",
+      "name": "ca-phe-sua-da-la-gi",
+      "src": "assets/images/uploads/ca_phe_sua_da_la_gi_1794666820320_eh18.webp",
+      "createdAt": "2026-11-14T14:33:40.357Z"
+    },
+    {
+      "id": "img_images_nwzz",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666801205_omv3.webp",
+      "createdAt": "2026-11-14T14:33:21.272Z"
+    },
+    {
+      "id": "img_tra_sua_matcha_dau_do_2_9tv1",
+      "name": "Trà-sữa-Matcha-đậu-đỏ-2",
+      "src": "assets/images/uploads/tra_sua_matcha_dau_do_2_1794666727980_vbma.webp",
+      "createdAt": "2026-11-14T14:32:08.002Z"
+    },
+    {
+      "id": "img_tra_dao_cam_sa_o1cb",
+      "name": "tra-dao-cam-sa",
+      "src": "assets/images/uploads/tra_dao_cam_sa_1794666712075_69n3.webp",
+      "createdAt": "2026-11-14T14:31:52.124Z"
+    },
+    {
+      "id": "img_cach_lam_tra_dao_cam_sa_ary7",
+      "name": "cach-lam-tra-dao-cam-sa",
+      "src": "assets/images/uploads/cach_lam_tra_dao_cam_sa_1794666703970_4fy9.webp",
+      "createdAt": "2026-11-14T14:31:43.994Z"
+    },
+    {
+      "id": "img_tra_trai_cay_nhiet_doi_tu_pha_tai_nha_s0m6",
+      "name": "tra-trai-cay-nhiet-doi-tu-pha-tai-nha",
+      "src": "assets/images/uploads/tra_trai_cay_nhiet_doi_tu_pha_tai_nha_1794666674883_8nlt.webp",
+      "createdAt": "2026-11-14T14:31:14.916Z"
+    },
+    {
+      "id": "img_tra_oolong_kem_cheese_1_5u5k",
+      "name": "tra-oolong-kem-cheese-1",
+      "src": "assets/images/uploads/tra_oolong_kem_cheese_1_1794666656461_3ryb.webp",
+      "createdAt": "2026-11-14T14:30:56.494Z"
+    },
+    {
+      "id": "img_gl_l0ws",
+      "name": "GL",
+      "src": "assets/images/uploads/gl_1794666638115_2ai2.webp",
+      "createdAt": "2026-11-14T14:30:38.136Z"
+    },
+    {
+      "id": "img_images_7nuf",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666623948_mhdc.webp",
+      "createdAt": "2026-11-14T14:30:23.971Z"
+    },
+    {
+      "id": "img_images_sidr",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666604893_ljym.webp",
+      "createdAt": "2026-11-14T14:30:04.907Z"
+    },
+    {
+      "id": "img_images_r0nc",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666586003_4h7z.webp",
+      "createdAt": "2026-11-14T14:29:46.016Z"
+    },
+    {
+      "id": "img_images_4gol",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666567068_rfqw.webp",
+      "createdAt": "2026-11-14T14:29:27.094Z"
+    },
+    {
+      "id": "img_mi_y_sot_kem_nam_thit_xong_khoi_thumbnail_5hto",
+      "name": "mi-y-sot-kem-nam-thit-xong-khoi-thumbnail",
+      "src": "assets/images/uploads/mi_y_sot_kem_nam_thit_xong_khoi_thumbnai_1794666549243_5zni.webp",
+      "createdAt": "2026-11-14T14:29:09.299Z"
+    },
+    {
+      "id": "img_mi_y_sot_kem_nam_thit_xong_khoi_thumbnail_47ce",
+      "name": "mi-y-sot-kem-nam-thit-xong-khoi-thumbnail",
+      "src": "assets/images/uploads/mi_y_sot_kem_nam_thit_xong_khoi_thumbnai_1794666545262_1ua2.webp",
+      "createdAt": "2026-11-14T14:29:05.314Z"
+    },
+    {
+      "id": "img_cach_lam_mi_y_sot_thit_bo_bam_ngon_chuan_vi_y_1_5899_knsv",
+      "name": "cach-lam-mi-y-sot-thit-bo-bam-ngon-chuan-vi-y-1-5899",
+      "src": "assets/images/uploads/cach_lam_mi_y_sot_thit_bo_bam_ngon_chuan_1794666533419_11i6.webp",
+      "createdAt": "2026-11-14T14:28:53.437Z"
+    },
+    {
+      "id": "img_cach_lam_pizza_hai_san_nong_gion_hap_dan_ngay_tai_nha_201911300931185790_yq23",
+      "name": "cach-lam-pizza-hai-san-nong-gion-hap-dan-ngay-tai-nha-201911",
+      "src": "assets/images/uploads/cach_lam_pizza_hai_san_nong_gion_hap_dan_1794666514973_8i2k.webp",
+      "createdAt": "2026-11-14T14:28:35.027Z"
+    },
+    {
+      "id": "img_36912166_10155602218202267_8444330407482097664_n_xjgz",
+      "name": "36912166_10155602218202267_8444330407482097664_n",
+      "src": "assets/images/uploads/36912166_10155602218202267_8444330407482_1794666505081_ngga.webp",
+      "createdAt": "2026-11-14T14:28:25.138Z"
+    },
+    {
+      "id": "img_pizza_hai_san_frutti_di_mare_1_scaled_8wud",
+      "name": "Pizza-hai-san-frutti-di-mare-프루티-디-마레-1-scaled",
+      "src": "assets/images/uploads/pizza_hai_san_frutti_di_mare_1_scaled_1794666482399_7mcv.webp",
+      "createdAt": "2026-11-14T14:28:02.430Z"
+    },
+    {
+      "id": "img_vn_11134207_7ras8_mbw0r1hsja39bf_r108",
+      "name": "vn-11134207-7ras8-mbw0r1hsja39bf",
+      "src": "assets/images/uploads/vn_11134207_7ras8_mbw0r1hsja39bf_1794666461269_lbap.webp",
+      "createdAt": "2026-11-14T14:27:41.300Z"
+    },
+    {
+      "id": "img_f_burger_ga_gion_960_wojg",
+      "name": "f-burger-ga-gion-960",
+      "src": "assets/images/uploads/f_burger_ga_gion_960_1794666425619_ddhv.webp",
+      "createdAt": "2026-11-14T14:27:05.657Z"
+    },
+    {
+      "id": "img_images_kpzr",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666396098_4pr7.webp",
+      "createdAt": "2026-11-14T14:26:36.128Z"
+    },
+    {
+      "id": "img_huong_dan_cach_lam_ga_chien_sot_pho_mai_ngon_gion_rum_chuan_vi_nhat_202108301034001220_3x7a",
+      "name": "huong-dan-cach-lam-ga-chien-sot-pho-mai-ngon-gion-rum-chuan-",
+      "src": "assets/images/uploads/huong_dan_cach_lam_ga_chien_sot_pho_mai__1794666385263_12i2.webp",
+      "createdAt": "2026-11-14T14:26:25.373Z"
+    },
+    {
+      "id": "img_cach_nau_hu_tieu_xuong_xi_quach_ngon_ngot_rat_de_nau_tai_nha_202201031513121398_7znd",
+      "name": "cach-nau-hu-tieu-xuong-xi-quach-ngon-ngot-rat-de-nau-tai-nha",
+      "src": "assets/images/uploads/cach_nau_hu_tieu_xuong_xi_quach_ngon_ngo_1794666366471_aztm.webp",
+      "createdAt": "2026-11-14T14:26:06.518Z"
+    },
+    {
+      "id": "img_hu_tieu_muc_vung_tau_co_gi_dac_sac_goi_y_cho_ban_3_quan_nen_ghe_an_thu_n8ke_gmwz",
+      "name": "hu-tieu-muc-vung-tau-co-gi-dac-sac-goi-y-cho-ban-3-quan-nen-",
+      "src": "assets/images/uploads/hu_tieu_muc_vung_tau_co_gi_dac_sac_goi_y_1794666349358_cji2.webp",
+      "createdAt": "2026-11-14T14:25:49.378Z"
+    },
+    {
+      "id": "img_cach_nau_hu_tieu_xuong_f09af73bfc_7ev6",
+      "name": "cach_nau_hu_tieu_xuong_f09af73bfc",
+      "src": "assets/images/uploads/cach_nau_hu_tieu_xuong_f09af73bfc_1794666319286_5xbp.webp",
+      "createdAt": "2026-11-14T14:25:19.324Z"
+    },
+    {
+      "id": "img_images_l3r0",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666275805_8cmy.webp",
+      "createdAt": "2026-11-14T14:24:35.826Z"
+    },
+    {
+      "id": "img_images_gzqe",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666267498_ny2v.webp",
+      "createdAt": "2026-11-14T14:24:27.524Z"
+    },
+    {
+      "id": "img_images_9uvf",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666252550_ovui.webp",
+      "createdAt": "2026-11-14T14:24:12.575Z"
+    },
+    {
+      "id": "img_nem_cua_be_hai_phong_vo_gion_rum_nhan_cua_day_dan_f4x0",
+      "name": "nem-cua-be-hai-phong-vo-gion-rum-nhan-cua-day-dan",
+      "src": "assets/images/uploads/nem_cua_be_hai_phong_vo_gion_rum_nhan_cu_1794666240873_gqjv.webp",
+      "createdAt": "2026-11-14T14:24:00.925Z"
+    },
+    {
+      "id": "img_images_r1pk",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666222661_dkjp.webp",
+      "createdAt": "2026-11-14T14:23:42.698Z"
+    },
+    {
+      "id": "img_z7025343563273_f15fb07217513aaf474132c3471f7971_bju9",
+      "name": "z7025343563273_f15fb07217513aaf474132c3471f7971",
+      "src": "assets/images/uploads/z7025343563273_f15fb07217513aaf474132c34_1794666207131_fiig.webp",
+      "createdAt": "2026-11-14T14:23:27.151Z"
+    },
+    {
+      "id": "img_sddefault_bglv",
+      "name": "sddefault",
+      "src": "assets/images/uploads/sddefault_1794666191083_6z6q.webp",
+      "createdAt": "2026-11-14T14:23:11.123Z"
+    },
+    {
+      "id": "img_bun_bo_hue_dong_ba_ho_chi_minh_1_9381",
+      "name": "bun-bo-hue-dong-ba-ho-chi-minh-1",
+      "src": "assets/images/uploads/bun_bo_hue_dong_ba_ho_chi_minh_1_1794666163793_in8c.webp",
+      "createdAt": "2026-11-14T14:22:43.809Z"
+    },
+    {
+      "id": "img_images_qe4o",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666129585_5352.webp",
+      "createdAt": "2026-11-14T14:22:09.642Z"
+    },
+    {
+      "id": "img_images_j2rz",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666117713_a4d9.webp",
+      "createdAt": "2026-11-14T14:21:57.771Z"
+    },
+    {
+      "id": "img_images_osmt",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666106577_k34c.webp",
+      "createdAt": "2026-11-14T14:21:46.613Z"
+    },
+    {
+      "id": "img_images_psbb",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666098397_28lf.webp",
+      "createdAt": "2026-11-14T14:21:38.525Z"
+    },
+    {
+      "id": "img_images_xijj",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666083572_4j7q.webp",
+      "createdAt": "2026-11-14T14:21:23.588Z"
+    },
+    {
+      "id": "img_834c9f68_5_768x768_z59r",
+      "name": "834c9f68-5-768x768",
+      "src": "assets/images/uploads/834c9f68_5_768x768_1794666072747_nv14.webp",
+      "createdAt": "2026-11-14T14:21:12.798Z"
+    },
+    {
+      "id": "img_120324afamily_an_com_suon_cot_let_9_53044_xl9o",
+      "name": "120324afamily-AN-com-suon-cot-let-9_53044",
+      "src": "assets/images/uploads/120324afamily_an_com_suon_cot_let_9_5304_1794666064352_9awn.webp",
+      "createdAt": "2026-11-14T14:21:04.374Z"
+    },
+    {
+      "id": "img_images_n5e7",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666037825_ez5e.webp",
+      "createdAt": "2026-11-14T14:20:37.877Z"
+    },
+    {
+      "id": "img_images_6sc6",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666029155_tpiq.webp",
+      "createdAt": "2026-11-14T14:20:29.194Z"
+    },
+    {
+      "id": "img_images_xy8h",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666018987_lp5s.webp",
+      "createdAt": "2026-11-14T14:20:18.998Z"
+    },
+    {
+      "id": "img_images_7baj",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794666001882_zlaa.webp",
+      "createdAt": "2026-11-14T14:20:01.899Z"
+    },
+    {
+      "id": "img_images_2rji",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665994683_l58b.webp",
+      "createdAt": "2026-11-14T14:19:54.689Z"
+    },
+    {
+      "id": "img_images_mmco",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665976935_mhuc.webp",
+      "createdAt": "2026-11-14T14:19:36.951Z"
+    },
+    {
+      "id": "img_images_53rs",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665832109_275k.webp",
+      "createdAt": "2026-11-14T14:17:12.138Z"
+    },
+    {
+      "id": "img_e1910c90_a1c1_4c43_97fc_f90ee2dca678_6rq9",
+      "name": "e1910c90-a1c1-4c43-97fc-f90ee2dca678",
+      "src": "assets/images/uploads/e1910c90_a1c1_4c43_97fc_f90ee2dca678_1794665810771_531m.webp",
+      "createdAt": "2026-11-14T14:16:51.108Z"
+    },
+    {
+      "id": "img_images_0ol5",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665789263_l2qb.webp",
+      "createdAt": "2026-11-14T14:16:29.301Z"
+    },
+    {
+      "id": "img_images_8ddg",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665782885_qubq.webp",
+      "createdAt": "2026-11-14T14:16:22.914Z"
+    },
+    {
+      "id": "img_images_ncys",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665765575_0c08.webp",
+      "createdAt": "2026-11-14T14:16:05.605Z"
+    },
+    {
+      "id": "img_images_v4hs",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665754243_g3o3.webp",
+      "createdAt": "2026-11-14T14:15:54.254Z"
+    },
+    {
+      "id": "img_images_y828",
+      "name": "images",
+      "src": "assets/images/uploads/images_1794665743547_3c25.webp",
+      "createdAt": "2026-11-14T14:15:43.566Z"
+    },
     {
       "id": "img_banh_mi_kep_cha_ca_thu_9gxr",
       "name": "Bánh Mì Kẹp Chả Cá Thu",
@@ -14497,49 +15077,49 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_8cxr",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108169990_75lf.jpg",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108169990_75lf.webp",
       "createdAt": "2026-11-08T03:22:50.004Z"
     },
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_d0ro",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108166432_y2nb.png",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108166432_y2nb.webp",
       "createdAt": "2026-11-08T03:22:46.451Z"
     },
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_odw1",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108139913_sia9.png",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108139913_sia9.webp",
       "createdAt": "2026-11-08T03:22:19.927Z"
     },
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_v21s",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108136351_s3x7.jpg",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108136351_s3x7.webp",
       "createdAt": "2026-11-08T03:22:16.362Z"
     },
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_lu3j",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108131167_9dc4.png",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108131167_9dc4.webp",
       "createdAt": "2026-11-08T03:22:11.181Z"
     },
     {
       "id": "img_nuoc_ep_coc_oi_tuoi_u1qc",
       "name": "Nước Ép Cóc Ổi Tươi",
-      "src": "assets/images/uploads/nuoc_ep_coc_oi_tuoi_1794108113653_tnve.jpg",
+      "src": "assets/images/uploads/nuoc_ep_coc_oi_tuoi_1794108113653_tnve.webp",
       "createdAt": "2026-11-08T03:21:53.667Z"
     },
     {
       "id": "img_cacao_dua_non_da_xay_ribs",
       "name": "Cacao Dừa Non Đá Xay",
-      "src": "assets/images/uploads/cacao_dua_non_da_xay_1794108112101_5i2w.jpg",
+      "src": "assets/images/uploads/cacao_dua_non_da_xay_1794108112101_5i2w.webp",
       "createdAt": "2026-11-08T03:21:52.113Z"
     },
     {
       "id": "img_tra_thanh_long_do_hat_chia_u6vf",
       "name": "Trà Thanh Long Đỏ Hạt Chia",
-      "src": "assets/images/uploads/tra_thanh_long_do_hat_chia_1794108109356_pimk.jpg",
+      "src": "assets/images/uploads/tra_thanh_long_do_hat_chia_1794108109356_pimk.webp",
       "createdAt": "2026-11-08T03:21:49.390Z"
     },
     {
@@ -14551,7 +15131,7 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_tra_chanh_dao_tien_kem_cheese_767o",
       "name": "Trà Chanh Đào Tiên Kem Cheese",
-      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108105122_oj3z.png",
+      "src": "assets/images/uploads/tra_chanh_dao_tien_kem_cheese_1794108105122_oj3z.webp",
       "createdAt": "2026-11-08T03:21:45.147Z"
     },
     {
@@ -14743,31 +15323,31 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_mi_cay_dui_ga_khong_lo_sot_kim_chi_6p44",
       "name": "Mì Cay Đùi Gà Khổng Lồ Sốt Kim Chi",
-      "src": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.jpg",
+      "src": "assets/images/uploads/mi_cay_dui_ga_khong_lo_sot_kim_chi_1794067690703_bfde.webp",
       "createdAt": "2026-11-07T16:08:10.713Z"
     },
     {
       "id": "img_salad_hoang_gia_caesar_ga_nuong_pho_mai_gxf5",
       "name": "Salad Hoàng Gia Caesar Gà Nướng & Phô Mai",
-      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067682681_mfkc.jpg",
+      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067682681_mfkc.webp",
       "createdAt": "2026-11-07T16:08:02.695Z"
     },
     {
       "id": "img_salad_hoang_gia_caesar_ga_nuong_pho_mai_ck4h",
       "name": "Salad Hoàng Gia Caesar Gà Nướng & Phô Mai",
-      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067680371_a0yt.jpg",
+      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067680371_a0yt.webp",
       "createdAt": "2026-11-07T16:08:00.382Z"
     },
     {
       "id": "img_salad_hoang_gia_caesar_ga_nuong_pho_mai_ofwt",
       "name": "Salad Hoàng Gia Caesar Gà Nướng & Phô Mai",
-      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067661257_b19n.jpg",
+      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067661257_b19n.webp",
       "createdAt": "2026-11-07T16:07:41.275Z"
     },
     {
       "id": "img_salad_hoang_gia_caesar_ga_nuong_pho_mai_zct2",
       "name": "Salad Hoàng Gia Caesar Gà Nướng & Phô Mai",
-      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067656732_xbel.jpg",
+      "src": "assets/images/uploads/salad_hoang_gia_caesar_ga_nuong_pho_mai_1794067656732_xbel.webp",
       "createdAt": "2026-11-07T16:07:36.764Z"
     },
     {
@@ -14779,19 +15359,19 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_mi_y_vem_xanh_sot_kem_sua_toi_e20a",
       "name": "Mì Ý Vẹm Xanh Sốt Kem Sữa Tỏi",
-      "src": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.jpg",
+      "src": "assets/images/uploads/mi_y_vem_xanh_sot_kem_sua_toi_1794067646302_gv69.webp",
       "createdAt": "2026-11-07T16:07:26.322Z"
     },
     {
       "id": "img_sup_kem_nam_bao_ngu_kem_banh_mi_toi_9l1i",
       "name": "Súp Kem Nấm Bào Ngư Kèm Bánh Mì Tỏi",
-      "src": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067640773_w18f.jpg",
+      "src": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067640773_w18f.webp",
       "createdAt": "2026-11-07T16:07:20.802Z"
     },
     {
       "id": "img_sup_kem_nam_bao_ngu_kem_banh_mi_toi_zvk7",
       "name": "Súp Kem Nấm Bào Ngư Kèm Bánh Mì Tỏi",
-      "src": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067638137_2del.png",
+      "src": "assets/images/uploads/sup_kem_nam_bao_ngu_kem_banh_mi_toi_1794067638137_2del.webp",
       "createdAt": "2026-11-07T16:07:18.155Z"
     },
     {
@@ -14803,49 +15383,49 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_b9m4",
       "name": "Gà Cuốn Phô Mai Cordon Bleu Sốt Kem Nấm",
-      "src": "assets/images/uploads/ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_1794067624636_2d3q.jpg",
+      "src": "assets/images/uploads/ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_1794067624636_2d3q.webp",
       "createdAt": "2026-11-07T16:07:04.653Z"
     },
     {
       "id": "img_ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_ybim",
       "name": "Gà Cuốn Phô Mai Cordon Bleu Sốt Kem Nấm",
-      "src": "assets/images/uploads/ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_1794067622215_a21z.jpg",
+      "src": "assets/images/uploads/ga_cuon_pho_mai_cordon_bleu_sot_kem_nam_1794067622215_a21z.webp",
       "createdAt": "2026-11-07T16:07:02.242Z"
     },
     {
       "id": "img_bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_chien_m8a4",
       "name": "Bít Tết Bò Mỹ Sốt Tiêu Đen Kèm Khoai Tây Chiên",
-      "src": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.jpg",
+      "src": "assets/images/uploads/bit_tet_bo_my_sot_tieu_den_kem_khoai_tay_1794067618571_tde6.webp",
       "createdAt": "2026-11-07T16:06:58.646Z"
     },
     {
       "id": "img_images_k0hq",
       "name": "images",
-      "src": "assets/images/uploads/images_1794065250494_8fgh.jpg",
+      "src": "assets/images/uploads/images_1794065250494_8fgh.webp",
       "createdAt": "2026-11-07T15:27:30.526Z"
     },
     {
       "id": "img_images_jwh3",
       "name": "images",
-      "src": "assets/images/uploads/images_1794065233146_ob7c.jpg",
+      "src": "assets/images/uploads/images_1794065233146_ob7c.webp",
       "createdAt": "2026-11-07T15:27:13.180Z"
     },
     {
       "id": "img_images_sasl",
       "name": "images",
-      "src": "assets/images/uploads/images_1794065216865_ntmf.jpg",
+      "src": "assets/images/uploads/images_1794065216865_ntmf.webp",
       "createdAt": "2026-11-07T15:26:56.900Z"
     },
     {
       "id": "img_images_ywgz",
       "name": "images",
-      "src": "assets/images/uploads/images_1794065198859_s579.jpg",
+      "src": "assets/images/uploads/images_1794065198859_s579.webp",
       "createdAt": "2026-11-07T15:26:38.893Z"
     },
     {
       "id": "img_images_abkt",
       "name": "images",
-      "src": "assets/images/uploads/images_1794065178470_ug90.jpg",
+      "src": "assets/images/uploads/images_1794065178470_ug90.webp",
       "createdAt": "2026-11-07T15:26:18.501Z"
     },
     {
@@ -14887,31 +15467,31 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_images_ices",
       "name": "images",
-      "src": "assets/images/uploads/images_1794064807416_c34i.jpg",
+      "src": "assets/images/uploads/images_1794064807416_c34i.webp",
       "createdAt": "2026-11-07T15:20:07.441Z"
     },
     {
       "id": "img_images_3izp",
       "name": "images",
-      "src": "assets/images/uploads/images_1794064795737_pw8r.jpg",
+      "src": "assets/images/uploads/images_1794064795737_pw8r.webp",
       "createdAt": "2026-11-07T15:19:55.761Z"
     },
     {
       "id": "img_165419_men_men_an_voi_canh_mang_chua_nau_ca_suoi_tao_nen_huong_vi_tinh_te_nhung_van_gian_di_va_moc_mac_mang_dam_ban_sac_am_thuc_doc_dao_vung_cao_17475606_72nm",
       "name": "165419_men_men_an_voi_canh_mang_chua_nau_ca_suoi_tao_nen_huo",
-      "src": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.jpg",
+      "src": "assets/images/uploads/165419_men_men_an_voi_canh_mang_chua_nau_1794064775536_2un9.webp",
       "createdAt": "2026-11-07T15:19:35.556Z"
     },
     {
       "id": "img_images_1ull",
       "name": "images",
-      "src": "assets/images/uploads/images_1794064752205_s8wx.jpg",
+      "src": "assets/images/uploads/images_1794064752205_s8wx.webp",
       "createdAt": "2026-11-07T15:19:12.225Z"
     },
     {
       "id": "img_men_men_duoc_lam_tu_gi_5e8m",
       "name": "men-men-duoc-lam-tu-gi",
-      "src": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.jpg",
+      "src": "assets/images/uploads/men_men_duoc_lam_tu_gi_1794064696191_acch.webp",
       "createdAt": "2026-11-07T15:18:16.219Z"
     },
     {
@@ -14929,79 +15509,79 @@ window.__DATABASE_SEED__ = {
     {
       "id": "img_preset_hung",
       "name": "Hùng chiên giòn",
-      "src": "assets/images/hung_chien_gion.jpg",
+      "src": "assets/images/hung_chien_gion.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_pho",
       "name": "Phở bò gia truyền",
-      "src": "assets/images/pho_bo_1792459676492.jpg",
+      "src": "assets/images/pho_bo_1792459676492.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_banhmi",
       "name": "Bánh mì đặc biệt",
-      "src": "assets/images/banh_mi_1792459688980.jpg",
+      "src": "assets/images/banh_mi_1792459688980.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_comtam",
       "name": "Cơm tấm sườn nướng",
-      "src": "assets/images/com_tam_1792459701659.jpg",
+      "src": "assets/images/com_tam_1792459701659.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_bunbo",
       "name": "Bún bò Huế",
-      "src": "assets/images/bun_bo_hue_1792459733043.jpg",
+      "src": "assets/images/bun_bo_hue_1792459733043.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_buncha",
       "name": "Bún chả Hà Nội",
-      "src": "assets/images/bun_cha_1792459712673.jpg",
+      "src": "assets/images/bun_cha_1792459712673.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_goicuon",
       "name": "Gỏi cuốn tôm thịt",
-      "src": "assets/images/goi_cuon_1792459722505.jpg",
+      "src": "assets/images/goi_cuon_1792459722505.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_banhxeo",
       "name": "Bánh xèo giòn rụm",
-      "src": "assets/images/banh_xeo_1792459745179.jpg",
+      "src": "assets/images/banh_xeo_1792459745179.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_garan",
       "name": "Gà rán & Burger",
-      "src": "assets/images/ga_ran.jpg",
+      "src": "assets/images/ga_ran.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_pizza",
       "name": "Pizza & Mỳ Ý",
-      "src": "assets/images/pizza.jpg",
+      "src": "assets/images/pizza.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_sushi",
       "name": "Sushi & Sashimi Nhật",
-      "src": "assets/images/sushi.jpg",
+      "src": "assets/images/sushi.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_trasua",
       "name": "Trà sữa & Chè",
-      "src": "assets/images/tra_sua.jpg",
+      "src": "assets/images/tra_sua.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
       "id": "img_preset_caphe",
       "name": "Cà phê & Đồ uống",
-      "src": "assets/images/ca_phe.jpg",
+      "src": "assets/images/ca_phe.webp",
       "createdAt": "2026-10-01T08:00:00.000Z"
     }
   ]

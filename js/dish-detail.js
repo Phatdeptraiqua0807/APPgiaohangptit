@@ -832,7 +832,7 @@ function renderHomeInterestedDishesSection() {
     return `
             <div class="home-feat-dish-card home-interest-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
               <div class="home-feat-dish-img-wrap">
-                <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                 <span class="home-interest-reason-badge ${escapeHtml(reasonType)}">${escapeHtml(reasonLabel)}</span>
                 <button type="button"
                   class="dish-fav-btn ${isDishFav ? 'active' : ''}"
@@ -908,7 +908,7 @@ function renderHomeFeaturedDishesSection() {
     return `
             <div class="home-feat-dish-card" role="button" tabindex="0" onclick="openDishDetailById('${escapeHtml(item.id)}')">
               <div class="home-feat-dish-img-wrap">
-          <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+          <img data-vt-dish="${escapeHtml(String(item.id))}" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                 <span class="home-feat-healthy-badge">🥗 ${prof.healthyScore}/10 Healthy</span>
                 <span class="home-feat-safe-dot" title="Đã chứng nhận VSATTP">${FluentIcons.shieldFilled} ATTP</span>
               </div>
@@ -1192,7 +1192,7 @@ function renderDishDetailView() {
                 data-vt-dish="${escapeHtml(String(dish.id))}"
                 src="${escapeHtml(dish.image)}"
                 alt="${escapeHtml(dish.name)}"
-                onerror="this.src='assets/images/hung_chien_gion.jpg'"
+                onerror="this.src='assets/images/hung_chien_gion.webp'"
               >
               <div class="pdp-img-badges-top">
                 <span class="pdp-cat-pill">${escapeHtml(dish.category || 'Ẩm thực')}</span>
@@ -1358,7 +1358,7 @@ function renderDishDetailView() {
               <div class="pdp-related-grid">
                 ${relatedSameStore.map(rel => `
                   <div class="pdp-rel-card" onclick="openDishDetailById('${escapeHtml(rel.id)}')">
-                    <img src="${escapeHtml(rel.image)}" alt="${escapeHtml(rel.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                    <img src="${escapeHtml(rel.image)}" alt="${escapeHtml(rel.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                     <div class="pdp-rel-info">
                       <div class="pdp-rel-name">${escapeHtml(rel.name)}</div>
                       <div class="pdp-rel-price">${formatVND(rel.price)}</div>
@@ -1793,7 +1793,7 @@ function renderDishSafetyNutritionView() {
 
       <!-- Mini Dish Summary Strip -->
       <div class="sn-dish-context-strip" onclick="window.goBack()">
-        <img src="${escapeHtml(dish.image)}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+        <img src="${escapeHtml(dish.image)}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
         <div class="sn-dish-context-info">
           <div class="sn-dish-context-name">${escapeHtml(dish.name)}</div>
           <div class="sn-dish-context-meta">

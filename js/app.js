@@ -226,8 +226,8 @@ function prewarmCatalogImages() {
   window.__ptitPrewarmStarted = true;
 
   const urlSet = new Set([
-    'assets/images/hung_chien_gion.jpg',
-    'assets/images/vietnamese-food-top-banner.jpg'
+    'assets/images/hung_chien_gion.webp',
+    'assets/images/vietnamese-food-top-banner.webp'
   ]);
   if (typeof restaurants !== 'undefined' && Array.isArray(restaurants)) {
     restaurants.forEach(r => {
@@ -1610,7 +1610,7 @@ function renderHomeView() {
         <img
           class="home-hero-backdrop-img"
           src="${escapeHtml(heroBannerSrc)}"
-          onerror="window.__ptitHeroBannerSrc='assets/images/vietnamese-food-top-banner.jpg'; this.onerror=null; this.src=window.__ptitHeroBannerSrc;"
+          onerror="window.__ptitHeroBannerSrc='assets/images/vietnamese-food-top-banner.webp'; this.onerror=null; this.src=window.__ptitHeroBannerSrc;"
           alt=""
           fetchpriority="high"
           decoding="sync"
@@ -1783,7 +1783,7 @@ function renderHomeView() {
             <!-- Restaurant Main Header Info (Không hiển thị giá món ở header) -->
             <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'home')">
               <div class="res-main-img-wrap">
-                <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                 ${r.badge ? `<span class="res-badge-partner ${scoreBadgeClass}">${escapeHtml(r.badge)}</span>` : ''}
               </div>
 
@@ -1838,7 +1838,7 @@ function renderHomeView() {
           return `
                       <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                         <div class="dish-card-img-wrap">
-                          <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                          <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                           <button type="button"
                             class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                             data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -2534,7 +2534,7 @@ function renderSearchView() {
     return `
               <div class="visual-card ${isSelected ? 'active' : ''}" role="button" tabindex="0" onclick="selectVisualSuggestion('${escapeHtml(item.keyword)}')">
                 <div class="visual-card-img-wrap">
-                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="visual-card-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                 </div>
                 <span class="visual-card-label">${escapeHtml(item.name)}</span>
               </div>
@@ -2664,7 +2664,7 @@ function renderRestaurantDetailCard(r) {
       <!-- Restaurant Main Header Info -->
       <div class="res-main-info" role="button" tabindex="0" onclick="openStoreDetailView(${r.id}, 'for-you', 'search')" style="cursor:pointer;">
         <div class="res-main-img-wrap">
-          <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+          <img class="res-main-img" data-vt-store="${r.id}" src="${r.image}" alt="${escapeHtml(r.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
           ${r.badge ? `<span class="res-badge-partner">${escapeHtml(r.badge)}</span>` : ''}
         </div>
 
@@ -2735,7 +2735,7 @@ function renderRestaurantDetailCard(r) {
     return `
               <div class="dish-card-item ${isOut ? 'dish-out-of-stock' : ''}" role="button" tabindex="0" onclick="${isOut ? `showToast('alertRegular', 'Món này hiện đang tạm hết hàng!')` : `openDishOptionModalByIndices(${r.id}, ${originalIdx})`}">
                 <div class="dish-card-img-wrap">
-                  <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img class="dish-card-img" data-vt-dish="${escapeHtml(String(dish.id))}" src="${dish.image}" alt="${escapeHtml(dish.name)}" onerror="this.src='assets/images/hung_chien_gion.webp'">
                   <button type="button"
                     class="dish-fav-btn ${isDishFav ? 'active' : ''}"
                     data-fav-dish-id="${escapeHtml(String(dish.id))}"
@@ -4504,7 +4504,7 @@ function renderCartView() {
         <!-- Empty Cart State (Hoạt ảnh GIF giỏ hàng trống, tự dừng frame tĩnh khi prefers-reduced-motion) -->
         <div class="search-empty-state" style="padding-top: 64px;">
           <div class="empty-cart-graphic">
-            <img src="assets/animation/shopping-cart-empty-animation-gif-download-11303261.gif"
+            <img src="assets/animation/shopping-cart-empty-animation-gif-download-11303261.webp"
                  alt="Giỏ hàng của bạn đang trống"
                  class="empty-cart-img"
                  decoding="async"
@@ -5526,7 +5526,7 @@ function reorderOrder(orderId) {
       dishName: it.dishName || it.name,
       restaurantName: it.restaurantName || o.resName || 'ptitngon Kitchen',
       restaurantId: it.restaurantId || 1,
-      image: it.image || 'assets/images/pho_bo_1792459676492.jpg',
+      image: it.image || 'assets/images/pho_bo_1792459676492.webp',
       size: it.size || { name: 'Phần Chuẩn', extraPrice: 0 },
       toppings: it.toppings || [],
       note: it.note || '',
@@ -5578,7 +5578,7 @@ function openDishDetailFromOrderCode(orderId, itemIndex) {
       id: it.dishId || it.id || ('order-item-' + itemIndex),
       name: it.dishName || it.name || 'Món ăn',
       price: it.unitPrice || (it.totalPrice && it.quantity ? Math.round(it.totalPrice / it.quantity) : 0),
-      image: it.image || 'assets/images/pho_bo_1792459676492.jpg',
+      image: it.image || 'assets/images/pho_bo_1792459676492.webp',
       category: 'Món đã đặt',
       description: `Món ăn được đặt trong đơn hàng #${orderId}`,
       restaurantId: it.restaurantId || 1,
@@ -6318,14 +6318,14 @@ function renderSingleOrderDetailView(o) {
               </div>
               <div class="order-detail-items-list">
                 ${(o.items || []).map((it, itemIdx) => {
-          const img = it.image || (typeof DB !== 'undefined' && DB.getItemById(it.dishId || it.id)?.image) || 'assets/images/pho_bo_1792459676492.jpg';
+          const img = it.image || (typeof DB !== 'undefined' && DB.getItemById(it.dishId || it.id)?.image) || 'assets/images/pho_bo_1792459676492.webp';
           const name = it.dishName || it.name || 'Món ăn';
           const sizeText = it.size && it.size.name && it.size.name !== 'Phần Tiêu Chuẩn' ? it.size.name : '';
           const toppingsText = Array.isArray(it.toppings) && it.toppings.length > 0 ? it.toppings.map(t => t.name).join(', ') : '';
           const subInfo = [sizeText, toppingsText].filter(Boolean).join(' • ');
           return `
                     <div class="order-detail-item-row" onclick="openDishDetailFromOrderCode('${o.orderId}', ${itemIdx})" title="Chạm để xem thông tin chi tiết món ${escapeHtml(name)}">
-                      <img class="order-detail-item-img" src="${escapeHtml(img)}" alt="${escapeHtml(name)}" onerror="this.src='assets/images/pho_bo_1792459676492.jpg'">
+                      <img class="order-detail-item-img" src="${escapeHtml(img)}" alt="${escapeHtml(name)}" onerror="this.src='assets/images/pho_bo_1792459676492.webp'">
                       <div class="order-detail-item-body">
                         <div class="order-detail-item-top">
                           <span class="order-detail-item-name">${escapeHtml(name)}</span>

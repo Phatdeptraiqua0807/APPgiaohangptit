@@ -975,7 +975,7 @@ function renderProfileNutritionManagerTab(activeUser) {
             ${recs.map(({ item, prof, reasonText }) => `
               <div class="un-rec-dish-card">
                 <div class="un-rec-img-wrap" onclick="openDishDetailById('${escapeHtml(item.id)}')">
-                  <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+                  <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.webp'">
                   <span class="un-rec-kcal-badge">${FluentIcons.fireFilled} ~${prof.calories} kcal</span>
                   <span class="un-rec-healthy-badge">🥗 ${prof.healthyScore}/10</span>
                 </div>
@@ -1223,7 +1223,7 @@ function renderRecDishesGridHtml(recs) {
       ${recs.map(({ item, prof, reasonText }) => `
         <div class="un-rec-dish-card">
           <div class="un-rec-img-wrap" onclick="openDishDetailById('${escapeHtml(item.id)}')">
-            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.jpg'">
+            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='assets/images/hung_chien_gion.webp'">
             <span class="un-rec-kcal-badge">${FluentIcons.fireFilled} ~${prof.calories} kcal</span>
             <span class="un-rec-healthy-badge">🥗 ${prof.healthyScore}/10</span>
           </div>

@@ -319,7 +319,7 @@ function osvRenderRecommendationCard({ item, reason }) {
     <div class="osv-rec-card" onclick="openDishDetailById('${id}')">
       <div class="osv-rec-img-wrap">
         <img src="${escapeHtml(item.image || '')}" alt="${escapeHtml(item.name)}" loading="lazy"
-             onerror="this.src='assets/images/hung_chien_gion.jpg'">
+             onerror="this.src='assets/images/hung_chien_gion.webp'">
         <span class="osv-rec-reason">${escapeHtml(reason)}</span>
       </div>
       <div class="osv-rec-body">
