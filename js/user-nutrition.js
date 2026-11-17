@@ -305,16 +305,52 @@ function toggleTodayMealLogsExpanded() {
   if (box && typeof getNormalizedUserHealthProfile === 'function' && typeof getTodayDateKey === 'function') {
     const user = (typeof DB !== 'undefined' && DB.isReady) ? DB.getCurrentUser() : null;
     if (user) {
+      const prefersReducedMotion = Boolean(
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      );
+      const prevHeight = prefersReducedMotion ? 0 : box.getBoundingClientRect().height;
+      const animToken = (box._unAnimToken || 0) + 1;
+      box._unAnimToken = animToken;
+      box.classList.remove('is-animating');
+      box.style.blockSize = '';
+
       const hp = getNormalizedUserHealthProfile(user);
       const summary = getTodayNutritionSummary(user, hp, getTodayDateKey());
-      box.innerHTML = renderTodayMealLogsBoxInnerHtml(summary);
+      box.innerHTML = renderTodayMealLogsBoxInnerHtml(summary, { animateExtraRows: true });
+
+      if (!prefersReducedMotion && prevHeight > 0) {
+        const nextHeight = box.getBoundingClientRect().height;
+        if (Math.abs(nextHeight - prevHeight) > 1) {
+          box.style.blockSize = `${prevHeight}px`;
+          box.classList.add('is-animating');
+          void box.offsetHeight;
+          box.style.blockSize = `${nextHeight}px`;
+
+          const cleanup = () => {
+            if (box._unAnimToken !== animToken) return;
+            box.classList.remove('is-animating');
+            box.style.blockSize = '';
+          };
+          const transitions = typeof box.getAnimations === 'function'
+            ? box.getAnimations().filter((anim) => anim instanceof CSSTransition)
+            : [];
+          if (transitions.length > 0) {
+            Promise.race([
+              Promise.allSettled(transitions.map((t) => t.finished)),
+              new Promise((resolve) => setTimeout(resolve, 620))
+            ]).then(cleanup);
+          } else {
+            setTimeout(cleanup, 550);
+          }
+        }
+      }
       return;
     }
   }
   updateProfileNutritionDashboardInPlace();
 }
 
-function renderTodayMealLogsBoxInnerHtml(summary) {
+function renderTodayMealLogsBoxInnerHtml(summary, options = {}) {
   const entries = Array.isArray(summary?.entries) ? summary.entries : [];
   const sortedEntries = [...entries].sort((a, b) => (Number(b.calories) || 0) - (Number(a.calories) || 0));
   const totalCount = sortedEntries.length;
@@ -324,12 +360,15 @@ function renderTodayMealLogsBoxInnerHtml(summary) {
     ? sortedEntries.slice(0, initialLimit)
     : sortedEntries;
   const hiddenCount = Math.max(0, totalCount - initialLimit);
+  const animateExtraRows = Boolean(options?.animateExtraRows && isTodayMealLogsExpanded);
 
-  const renderLogRow = (en) => {
+  const renderLogRow = (en, idx) => {
     const cleanOrderId = en.orderId ? String(en.orderId).replace(/^#/, '') : '';
     const hasDishLink = Boolean(en.dishId);
+    const isExtraRow = animateExtraRows && idx >= initialLimit;
+    const staggerMs = isExtraRow ? Math.min((idx - initialLimit) * 50, 250) : 0;
     return `
-      <div class="un-meal-log-row">
+      <div class="un-meal-log-row${isExtraRow ? ' is-extra-row' : ''}"${isExtraRow ? ` style="--un-row-delay: ${staggerMs}ms;"` : ''}>
         <div class="un-meal-log-top">
           <div class="un-meal-meta-left">
             <span class="un-meal-tag">${escapeHtml(en.mealType || 'Bữa ăn')}${en.time ? ` • ${escapeHtml(en.time)}` : ''}</span>

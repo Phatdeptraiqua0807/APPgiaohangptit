@@ -57,7 +57,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_vercel/')) return;
   if (url.pathname.endsWith('/sw.js') || url.pathname === '/sw.js') return;
 
   // 1. Điều hướng trang (HTML): Network-First + Offline fallback
