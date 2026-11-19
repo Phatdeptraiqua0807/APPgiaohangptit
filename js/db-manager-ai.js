@@ -926,7 +926,7 @@ function renderDbmAITab() {
           <input type="checkbox" ${prefs.autoSave ? 'checked' : ''} onchange="dbmAiSetPref({ autoSave: this.checked })">
           <span>Tự động lưu vào Database khi AI tạo xong (không cần duyệt)</span>
         </label>
-        <button type="button" class="btn-primary-large dbm-ai-submit" onclick="dbmAiEnqueueFromForm()">➕ Thêm vào hàng đợi <small>Ctrl+Enter</small></button>
+        <button type="button" class="btn-primary-large dbm-ai-submit" onclick="dbmAiEnqueueFromForm()">${FluentIcons.addRegular} Thêm vào hàng đợi <small>Ctrl+Enter</small></button>
       </div>
     </div>
 

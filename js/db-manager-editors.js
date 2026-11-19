@@ -116,7 +116,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
             <div class="delivery-input-group">
               <div class="dbm-label-row">
                 <label class="delivery-input-label">Danh mục (*)</label>
-                <button type="button" class="db-inline-link-btn" onclick="jumpToNewCategoryFromItemModal('${editItemId ? escapeHtml(editItemId) : ''}')">➕ Danh mục mới</button>
+                <button type="button" class="db-inline-link-btn" onclick="jumpToNewCategoryFromItemModal('${editItemId ? escapeHtml(editItemId) : ''}')">${FluentIcons.addRegular} Danh mục mới</button>
               </div>
               <select id="item-editor-category" class="delivery-input-field" onchange="dbmOnEditorNameOrCatInput()">
                 ${manualCats.map(c => `<option value="${escapeHtml(c.id)}" ${c.id === selectedCatId ? 'selected' : ''}>${c.icon} ${escapeHtml(c.name)}${c.isCustom ? ' ✨' : ''}</option>`).join('')}
@@ -125,7 +125,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
             <div class="delivery-input-group">
               <div class="dbm-label-row">
                 <label class="delivery-input-label">Cửa hàng / quán bán</label>
-                <button type="button" class="db-inline-link-btn" onclick="dbmJumpToNewStoreFromItemModal()">➕ Cửa hàng mới</button>
+                <button type="button" class="db-inline-link-btn" onclick="dbmJumpToNewStoreFromItemModal()">${FluentIcons.addRegular} Cửa hàng mới</button>
               </div>
               <select id="item-editor-store" class="delivery-input-field" onchange="dbmOnItemStoreSelectChange(this.value)">
                 ${stores.slice().sort((a, b) => (b.id === 1000 ? 1 : 0) - (a.id === 1000 ? 1 : 0)).map(s => `
@@ -977,7 +977,7 @@ function renderDbmCategoriesTab() {
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="db-secondary-btn" onclick="openCategoryEditorModal(null, null, [])"># Danh mục theo tag</button>
-        <button type="button" class="db-primary-btn" onclick="openCategoryEditorModal()">➕ Danh mục thủ công</button>
+        <button type="button" class="db-primary-btn" onclick="openCategoryEditorModal()">${FluentIcons.addRegular} Danh mục thủ công</button>
       </div>
     </div>
 
@@ -1340,7 +1340,7 @@ function renderDbmStoresTab() {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Cửa hàng & địa điểm (${stores.length})</div>
         <div style="font-size:12px; color:var(--gray-500);">Mỗi mặt hàng thuộc một cửa hàng. Cửa hàng có địa chỉ, phí giao, thời gian giao, đánh giá riêng.</div>
       </div>
-      <button type="button" class="db-primary-btn" onclick="openStoreEditorModal()">➕ Tạo cửa hàng</button>
+      <button type="button" class="db-primary-btn" onclick="openStoreEditorModal()">${FluentIcons.addRegular} Tạo cửa hàng</button>
     </div>
 
     <div class="db-controls-card" style="margin-bottom:12px;">
@@ -1444,7 +1444,7 @@ function renderDbmVouchersTab() {
         <div style="font-size:15px; font-weight:800; color:var(--gray-900);">Mã giảm giá (${vouchers.length})</div>
         <div style="font-size:12px; color:var(--gray-500);">Mã <strong>mọi món</strong>: áp dụng cho cả giỏ. Mã <strong>chỉ món được gán</strong>: chỉ giảm trên các món bạn tick trong trình sửa mặt hàng (hoặc nút “Chọn mặt hàng”).</div>
       </div>
-      <button type="button" class="db-primary-btn" onclick="openVoucherEditorModal()">➕ Tạo mã giảm giá</button>
+      <button type="button" class="db-primary-btn" onclick="openVoucherEditorModal()">${FluentIcons.addRegular} Tạo mã giảm giá</button>
     </div>
     <div class="dbm-voucher-grid">
       ${vouchers.map(v => {

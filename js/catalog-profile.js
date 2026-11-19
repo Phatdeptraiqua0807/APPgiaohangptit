@@ -291,10 +291,10 @@ function renderCatalogManagerView() {
           </div>
           <div class="db-hero-actions">
             <button type="button" class="db-btn-white" onclick="openCategoryEditorModal()">
-              ➕ Thêm loại mặt hàng
+              ${FluentIcons.addRegular} Thêm loại mặt hàng
             </button>
             <button type="button" class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
-              ➕ Thêm mặt hàng mới
+              ${FluentIcons.addRegular} Thêm mặt hàng mới
             </button>
           </div>
         </div>
@@ -405,7 +405,7 @@ function renderCatalogItemsGridHtml(itemsList) {
         <div class="search-empty-sub">Bạn có thể thêm mặt hàng mới hoặc đặt lại bộ lọc để xem toàn bộ kho hàng.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
           <button type="button" class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">
-            ➕ Thêm mặt hàng mới ngay
+            ${FluentIcons.addRegular} Thêm mặt hàng mới ngay
           </button>
           <button type="button" class="db-secondary-btn" onclick="catalogSearchQuery=''; catalogCategoryFilter='all'; catalogStatusFilter='all'; renderCatalogManagerView();">
             Xem tất cả mặt hàng
@@ -528,7 +528,7 @@ function renderCatalogCategoriesTab(allCats, allItems) {
         <div style="font-size:12px; color:var(--gray-500);">Loại mặt hàng tùy chỉnh bạn thêm sẽ xuất hiện trên toàn ứng dụng và lưu .</div>
       </div>
       <button type="button" class="db-primary-btn" onclick="openCategoryEditorModal()">
-        ➕ Tạo loại mặt hàng tùy chỉnh
+        ${FluentIcons.addRegular} Tạo loại mặt hàng tùy chỉnh
       </button>
     </div>
 
@@ -1020,7 +1020,7 @@ function openItemEditorModal(editItemId = null, preselectedCatId = null, restore
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <label class="delivery-input-label" style="margin-bottom:0;">Thuộc Loại mặt hàng (*):</label>
           <button type="button" class="db-inline-link-btn" onclick="jumpToNewCategoryFromItemModal('${editingItem ? escapeHtml(editingItem.id) : ''}')">
-            ➕ Thêm loại mặt hàng tùy chỉnh mới
+            ${FluentIcons.addRegular} Thêm loại mặt hàng tùy chỉnh mới
           </button>
         </div>
         <select id="item-editor-category" class="delivery-input-field">
@@ -1467,7 +1467,7 @@ function renderProfileView() {
         <!-- Các nút thao tác hồ sơ -->
         <div class="profile-hero-actions">
           <button type="button" class="profile-action-btn primary" onclick="openUserProfileModal('${escapeHtml(activeUser.id)}')">
-            ✏️ Chỉnh sửa hồ sơ
+            ${FluentIcons.editFilled} Chỉnh sửa hồ sơ
           </button>
           <button type="button" class="profile-action-btn fav-entry-btn" onclick="openFavoritesView('all', 'profile')">
             ${FluentIcons.heartFilled} Yêu thích (${(Array.isArray(activeUser.favoriteItemIds) ? activeUser.favoriteItemIds.length : 0) + (Array.isArray(activeUser.favoriteRestaurantIds) ? activeUser.favoriteRestaurantIds.length : 0)})
@@ -1575,7 +1575,7 @@ function renderRememberedUsersTab(allUsers, activeUser) {
           <div style="font-size:12px; color:var(--gray-500);">Hệ thống lưu  SĐT, địa chỉ nhận hàng và toàn bộ lịch sử đơn đặt của từng người dùng.</div>
         </div>
         <button type="button" class="db-primary-btn" onclick="openUserProfileModal(null)">
-          ➕ Tạo hồ sơ mới
+          ${FluentIcons.addRegular} Tạo hồ sơ mới
         </button>
       </div>
 
@@ -1605,7 +1605,7 @@ function renderRememberedUsersGridHtml(usersList, activeUser) {
         <div class="search-empty-title">Chưa tìm thấy người dùng khớp "${escapeHtml(profileUserSearchQuery)}"</div>
         <div class="search-empty-sub">Bạn có muốn tạo ngay hồ sơ mới với thông tin này để hệ thống ghi nhớ không?</div>
         <button type="button" class="db-primary-btn" style="margin-top:14px;" onclick="openUserProfileModal(null, '${escapeHtml(profileUserSearchQuery)}')">
-          ➕ Tạo hồ sơ người dùng mới
+          ${FluentIcons.addRegular} Tạo hồ sơ người dùng mới
         </button>
       </div>
     `;
@@ -1831,7 +1831,7 @@ function renderProfileAddressesTab(activeUser) {
         <div style="font-size:12px; color:var(--gray-500);">Lưu nhiều địa chỉ (KTX, Trường học, Nhà riêng, Văn phòng) để chọn 1 chạm khi đặt đơn.</div>
       </div>
       <button type="button" class="db-primary-btn" onclick="openSavedAddressModal()">
-        ➕ Thêm địa chỉ mới
+        ${FluentIcons.addRegular} Thêm địa chỉ mới
       </button>
     </div>
 
@@ -1919,7 +1919,7 @@ function openAccountSwitcherModal() {
       <div class="acc-switch-section">
         <div class="acc-switch-head">
           <span class="acc-switch-title">Tài khoản (${users.length})</span>
-          <button type="button" class="db-primary-btn" onclick="openUserProfileModal(null)">➕ Tạo mới</button>
+          <button type="button" class="db-primary-btn" onclick="openUserProfileModal(null)">${FluentIcons.addRegular} Tạo mới</button>
         </div>
         <div class="acc-switch-list">
           ${users.map(u => {
@@ -1944,7 +1944,7 @@ function openAccountSwitcherModal() {
       <div class="acc-switch-section">
         <div class="acc-switch-head">
           <span class="acc-switch-title">Địa chỉ giao hàng của ${escapeHtml(activeUser.name)} (${addrs.length})</span>
-          <button type="button" class="db-primary-btn" onclick="openSavedAddressModal()">➕ Thêm</button>
+          <button type="button" class="db-primary-btn" onclick="openSavedAddressModal()">${FluentIcons.addRegular} Thêm</button>
         </div>
         <div class="acc-switch-list">
           ${addrs.length === 0 ? `<div class="acc-switch-sub" style="padding:8px 2px;">Chưa có địa chỉ nào được lưu.</div>` : ''}
@@ -1972,7 +1972,7 @@ function openAccountSwitcherModal() {
 
     <div class="delivery-modal-footer">
       <button type="button" class="btn-primary-large" style="flex:1;" onclick="openUserProfileModal(null)">
-        ➕ Thêm Người Dùng Mới
+        ${FluentIcons.addRegular} Thêm Người Dùng Mới
       </button>
       <button type="button" class="db-secondary-btn" onclick="closeModal()">
         Đóng

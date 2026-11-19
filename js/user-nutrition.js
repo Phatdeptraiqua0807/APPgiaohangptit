@@ -1963,7 +1963,7 @@ function openManualMealLogModal() {
     <!-- Nút thêm bữa ăn cố định dưới cùng modal -->
     <div class="delivery-modal-footer">
       <button type="button" class="btn-primary-large" style="flex:1; width:100%;" onclick="submitManualMealLogModal()">
-        ➕ Cộng Vào Lượng Kcal Tiêu Thụ Hôm Nay
+        ${FluentIcons.addRegular} Cộng Vào Lượng Kcal Tiêu Thụ Hôm Nay
       </button>
     </div>
   `;

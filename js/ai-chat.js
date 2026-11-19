@@ -1508,7 +1508,7 @@ function renderAIMessageList(messages, activeUser) {
                     onclick="copyAIMessageText(${idx}, this)"
                     title="Sao chép nội dung"
                   >
-                    📋 Sao chép
+                    ${FluentIcons.copyRegular} Sao chép
                   </button>
                 </div>
               ` : ''}
@@ -2117,7 +2117,7 @@ function copyAIMessageText(msgIdx, btnEl = null) {
     if (btnEl && btnEl.classList) {
       const origHtml = btnEl.innerHTML;
       btnEl.classList.add('copied');
-      btnEl.innerHTML = '✓ Đã chép';
+      btnEl.innerHTML = `${typeof FluentIcons !== 'undefined' && FluentIcons.checkmarkFilled ? FluentIcons.checkmarkFilled : '✓'} Đã chép`;
       setTimeout(() => {
         btnEl.classList.remove('copied');
         btnEl.innerHTML = origHtml;
@@ -4840,7 +4840,7 @@ function renderAIProfilesListView(statusBannerHtml = '') {
         style="flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;"
         onclick="openAIProfileForm(null)"
       >
-        <span>➕</span>
+        <span>${FluentIcons.addRegular}</span>
         <span>Thêm Profile AI Mới</span>
       </button>
     </div>
@@ -4886,7 +4886,7 @@ function renderAIProfileFormView(statusBannerHtml = '') {
         >
           ${FluentIcons.arrowLeft}
         </button>
-        <span>${isEditingExisting ? '✏️ Chỉnh Sửa Profile' : '➕ Tạo Profile AI Mới'}</span>
+        <span>${isEditingExisting ? '✏️ Chỉnh Sửa Profile' : `${FluentIcons.addRegular} Tạo Profile AI Mới`}</span>
       </div>
       <button type="button" class="dish-modal-close-btn" onclick="closeModal()" title="Đóng">
         ${FluentIcons.dismiss}
@@ -5044,7 +5044,7 @@ function renderAIProfileFormView(statusBannerHtml = '') {
       </button>
       ${isEditingExisting ? `
         <button type="button" class="db-secondary-btn" onclick="saveAISettingsFromModal(true)" title="Lưu cấu hình này thành một bản Profile mới riêng biệt">
-          ➕ Lưu thành bản mới
+          ${FluentIcons.addRegular} Lưu thành bản mới
         </button>
         <button type="button" class="btn-primary-large" style="flex: 1; min-width: 160px;" onclick="saveAISettingsFromModal(false)">
           ${FluentIcons.saveFilled} Cập nhật Profile

@@ -175,7 +175,7 @@ function renderCatalogManagerView() {
           </div>
           <div class="db-hero-actions">
             <button type="button" class="db-btn-white" onclick="switchCatalogTab('ai')">✨ AI tạo hàng</button>
-            <button type="button" class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng</button>
+            <button type="button" class="db-btn-accent" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">${FluentIcons.addRegular} Thêm mặt hàng</button>
           </div>
         </div>
         <div class="db-stats-grid">
@@ -434,7 +434,7 @@ function renderCatalogItemsGridHtml(itemsList) {
         <div class="search-empty-title">Chưa có mặt hàng nào khớp bộ lọc</div>
         <div class="search-empty-sub">Thêm mặt hàng mới, nhờ AI tạo giúp hoặc đặt lại bộ lọc.</div>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
-          <button type="button" class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">➕ Thêm mặt hàng mới</button>
+          <button type="button" class="db-primary-btn" onclick="openItemEditorModal(null, catalogCategoryFilter !== 'all' ? catalogCategoryFilter : null)">${FluentIcons.addRegular} Thêm mặt hàng mới</button>
           <button type="button" class="db-secondary-btn" onclick="switchCatalogTab('ai')">✨ Nhờ AI tạo</button>
           <button type="button" class="db-secondary-btn" onclick="dbmResetItemFilters()">Xem tất cả</button>
         </div>
